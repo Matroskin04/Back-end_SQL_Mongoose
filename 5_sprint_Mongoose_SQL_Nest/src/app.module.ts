@@ -102,6 +102,10 @@ import {
 } from './features/users/domain/users.subschemas';
 import { SendEmailPassRecoveryUseCase } from './features/auth/application/use-cases/send-email-pass-recovery.use-case';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersPublicRepositorySQL } from './features/users/public/infrastructure/repository/users.public.repository-sql';
+import { PasswordRecoveryPublicRepository } from './features/users/public/infrastructure/subrepositories/password-recovery.public.repository';
+import { BanInfoPublicRepository } from './features/users/public/infrastructure/subrepositories/ban-info.public.repository';
+import { EmailConfirmationPublicRepository } from './features/users/public/infrastructure/subrepositories/email-confirmation.public.repository';
 
 const services = [
   AuthService,
@@ -131,6 +135,10 @@ const queryRepositories = [
   UsersBloggerQueryRepository,
 ];
 const repositories = [
+  UsersPublicRepositorySQL,
+  PasswordRecoveryPublicRepository,
+  BanInfoPublicRepository,
+  EmailConfirmationPublicRepository,
   BlogsBloggerRepository,
   BlogsSARepository,
   CommentsRepository,
