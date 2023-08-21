@@ -1,0 +1,11 @@
+{
+  "preset": "ts-jest",
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "public",
+  "testEnvironment": "node",
+  "testRegex": ".*\\.e2e-spec.ts$",
+  "resetModules": true,
+  "transform": {
+    "^.+\\.ts$": "ts-jest"
+  }
+}
