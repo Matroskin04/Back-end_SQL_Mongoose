@@ -4,9 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { CryptoAdapter } from '../../../../infrastructure/adapters/crypto.adapter';
 import { EmailManager } from '../../../../infrastructure/managers/email-manager';
 import { InjectModel } from '@nestjs/mongoose';
-import { UsersPublicRepository } from '../../../users/public/infrastructure/repository/users-public.repository';
+import { UsersPublicRepository } from '../../../users/public/infrastructure/mongoose/repository/users-public.repository';
 import { User } from '../../../users/domain/users.entity';
 import { UserModelType } from '../../../users/domain/users.db.types';
+import { UsersPublicRepositorySQL } from '../../../users/public/infrastructure/repository/users-public-repository-s-q-l.service';
 
 export class RegisterUserCommand {
   constructor(
@@ -25,7 +26,7 @@ export class RegisterUserUseCase
     private UserModel: UserModelType,
     protected cryptoAdapter: CryptoAdapter,
     protected emailManager: EmailManager,
-    protected usersPublicRepository: UsersPublicRepository,
+    protected usersPublicRepository: UsersPublicRepositorySQL,
   ) {}
 
   async execute(command: RegisterUserCommand): Promise<void> {
@@ -43,8 +44,8 @@ export class RegisterUserUseCase
       },
       passwordRecovery: {},
     };
+    await this.usersPublicRepository.createUser();
     const user = this.UserModel.createInstance(userInfo, this.UserModel);
-    await this.usersPublicRepository.save(user);
 
     this.emailManager.sendEmailConfirmationMessage(
       user.email,

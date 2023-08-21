@@ -25,9 +25,6 @@ import { UserModelType } from '../../features/users/domain/users.db.types';
 import { User } from '../../features/users/domain/users.entity';
 import { getModelToken } from '@nestjs/mongoose';
 import { createUserTest } from '../helpers/users.helpers';
-import { UserOutputModel } from '../../features/users/super-admin/api/models/output/user.output.model';
-import any = jasmine.any;
-import { UserViewType } from '../../features/users/super-admin/infrastructure/query.repository/users-sa.types.query.repository';
 
 describe('auth+comments All operation, chains: /auth + /posts/{id}/comments + /comments', () => {
   jest.setTimeout(5 * 60 * 1000);

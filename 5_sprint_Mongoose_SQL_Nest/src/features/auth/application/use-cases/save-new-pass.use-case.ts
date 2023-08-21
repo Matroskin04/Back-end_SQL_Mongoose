@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException } from '@nestjs/common';
 import { CryptoAdapter } from '../../../../infrastructure/adapters/crypto.adapter';
-import { UsersPublicQueryRepository } from '../../../users/public/infrastructure/query.repository/users-public.query.repository';
+import { UsersPublicQueryRepository } from '../../../users/public/infrastructure/mongoose/query.repository/users-public.query.repository';
 import { createBodyErrorBadRequest } from '../../../../infrastructure/utils/functions/create-error-bad-request.function';
-import { UsersPublicRepository } from '../../../users/public/infrastructure/repository/users-public.repository';
+import { UsersPublicRepository } from '../../../users/public/infrastructure/mongoose/repository/users-public.repository';
 
 export class SaveNewPassCommand {
   constructor(public newPassword: string, public recoveryCode: string) {}

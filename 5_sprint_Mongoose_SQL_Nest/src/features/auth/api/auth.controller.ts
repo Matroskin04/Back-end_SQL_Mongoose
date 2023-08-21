@@ -44,7 +44,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { RegisterUserCommand } from '../application/use-cases/register-user.use-case';
 import { ConfirmEmailCommand } from '../application/use-cases/confirm-email.use-case';
 import { ResendConfirmationEmailMessageCommand } from '../application/use-cases/resend-confirmation-email-message.use-case';
-import { UsersPublicQueryRepository } from '../../users/public/infrastructure/query.repository/users-public.query.repository';
+import { UsersPublicQueryRepository } from '../../users/public/infrastructure/mongoose/query.repository/users-public.query.repository';
 import { SaveNewPassCommand } from '../application/use-cases/save-new-pass.use-case';
 import { LoginUserCommand } from '../application/use-cases/login-user.use-case';
 import { SendEmailPassRecoveryCommand } from '../application/use-cases/send-email-pass-recovery.use-case';

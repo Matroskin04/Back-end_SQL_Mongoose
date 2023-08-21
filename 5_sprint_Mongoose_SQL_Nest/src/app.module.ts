@@ -85,8 +85,8 @@ import { RegisterUserUseCase } from './features/auth/application/use-cases/regis
 import { CqrsModule } from '@nestjs/cqrs';
 import { ConfirmEmailUseCase } from './features/auth/application/use-cases/confirm-email.use-case';
 import { ResendConfirmationEmailMessageUseCase } from './features/auth/application/use-cases/resend-confirmation-email-message.use-case';
-import { UsersPublicQueryRepository } from './features/users/public/infrastructure/query.repository/users-public.query.repository';
-import { UsersPublicRepository } from './features/users/public/infrastructure/repository/users-public.repository';
+import { UsersPublicQueryRepository } from './features/users/public/infrastructure/mongoose/query.repository/users-public.query.repository';
+import { UsersPublicRepository } from './features/users/public/infrastructure/mongoose/repository/users-public.repository';
 import { SaveNewPassUseCase } from './features/auth/application/use-cases/save-new-pass.use-case';
 import { LoginUserUseCase } from './features/auth/application/use-cases/login-user.use-case';
 import process from 'process';
@@ -101,6 +101,7 @@ import {
   PasswordRecoverySchema,
 } from './features/users/domain/users.subschemas';
 import { SendEmailPassRecoveryUseCase } from './features/auth/application/use-cases/send-email-pass-recovery.use-case';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 const services = [
   AuthService,
@@ -159,6 +160,16 @@ const handlers = [
       limit: 5,
     }),
     ConfigModule.forRoot(),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'It-Incubator',
+      password: 'sa',
+      database: 'BackEnd_course',
+      autoLoadEntities: false,
+      synchronize: false,
+    }),
     MongooseModule.forRoot(process.env.MONGO_URL!),
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },

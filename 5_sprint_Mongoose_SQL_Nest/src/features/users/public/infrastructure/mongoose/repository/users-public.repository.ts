@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
-import { UserInstanceType } from '../../../super-admin/infrastructure/repository/users-sa.types.repositories';
-import { User } from '../../../domain/users.entity';
-import { UserModelType } from '../../../domain/users.db.types';
+import { UserInstanceType } from '../../../../super-admin/infrastructure/repository/users-sa.types.repositories';
+import { User } from '../../../../domain/users.entity';
+import { UserModelType } from '../../../../domain/users.db.types';
 
 @Injectable() //todo для чего этот декоратор
 export class UsersPublicRepository {
