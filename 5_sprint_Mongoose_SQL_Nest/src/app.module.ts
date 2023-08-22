@@ -51,7 +51,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { DevicesController } from './features/devices/api/devices.controller';
 import { DevicesService } from './features/devices/application/devices.service';
-import { DevicesQueryRepository } from './features/devices/infrastructure/query.repository/devices.query.repository';
+import { DevicesQueryRepositoryMongo } from './features/devices/infrastructure/query.repository/devices.query.repository';
 import { DevicesRepository } from './features/devices/infrastructure/repository/devices.repository';
 import { Device, DeviceSchema } from './features/devices/domain/devices.entity';
 import { JwtQueryRepository } from './features/jwt/jwt.query.repository';
@@ -85,8 +85,7 @@ import { RegisterUserUseCase } from './features/auth/application/use-cases/regis
 import { CqrsModule } from '@nestjs/cqrs';
 import { ConfirmEmailUseCase } from './features/auth/application/use-cases/confirm-email.use-case';
 import { ResendConfirmationEmailMessageUseCase } from './features/auth/application/use-cases/resend-confirmation-email-message.use-case';
-import { UsersPublicQueryRepository } from './features/users/public/infrastructure/mongoose/query.repository/users-public.query.repository';
-import { UsersPublicRepository } from './features/users/public/infrastructure/mongoose/repository/users-public.repository';
+import { UsersPublicQueryRepository } from './features/users/public/infrastructure/query.repository/users-public.query.repository';
 import { SaveNewPassUseCase } from './features/auth/application/use-cases/save-new-pass.use-case';
 import { LoginUserUseCase } from './features/auth/application/use-cases/login-user.use-case';
 import process from 'process';
@@ -102,10 +101,10 @@ import {
 } from './features/users/domain/users.subschemas';
 import { SendEmailPassRecoveryUseCase } from './features/auth/application/use-cases/send-email-pass-recovery.use-case';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersPublicRepositorySQL } from './features/users/public/infrastructure/repository/users.public.repository-sql';
 import { PasswordRecoveryPublicRepository } from './features/users/public/infrastructure/subrepositories/password-recovery.public.repository';
 import { BanInfoPublicRepository } from './features/users/public/infrastructure/subrepositories/ban-info.public.repository';
 import { EmailConfirmationPublicRepository } from './features/users/public/infrastructure/subrepositories/email-confirmation.public.repository';
+import { UsersPublicRepository } from './features/users/public/infrastructure/repository/users-public.repository';
 
 const services = [
   AuthService,
@@ -120,13 +119,13 @@ const services = [
   PostsService,
 ];
 const queryRepositories = [
+  UsersPublicQueryRepository,
   BlogsPublicQueryRepository,
   BlogsBloggerQueryRepository,
   BlogsSAQueryRepository,
   PostsQueryRepository,
   LikesInfoQueryRepository,
-  UsersPublicQueryRepository,
-  DevicesQueryRepository,
+  DevicesQueryRepositoryMongo,
   CommentsQueryRepository,
   BannedUsersQueryRepository,
   BannedUsersByBloggerQueryRepository,
@@ -135,7 +134,6 @@ const queryRepositories = [
   UsersBloggerQueryRepository,
 ];
 const repositories = [
-  UsersPublicRepositorySQL,
   PasswordRecoveryPublicRepository,
   BanInfoPublicRepository,
   EmailConfirmationPublicRepository,
@@ -146,8 +144,8 @@ const repositories = [
   LikesInfoRepository,
   PostsRepository,
   UsersBloggerRepository,
-  UsersPublicRepository,
   BannedUsersRepository,
+  UsersPublicRepository,
   UsersSARepository,
   TestingRepository,
 ];

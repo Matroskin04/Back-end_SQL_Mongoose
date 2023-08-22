@@ -1,5 +1,5 @@
 import { Controller, Delete, Get, Param, Res, UseGuards } from '@nestjs/common';
-import { DevicesQueryRepository } from '../infrastructure/query.repository/devices.query.repository';
+import { DevicesQueryRepositoryMongo } from '../infrastructure/query.repository/devices.query.repository';
 import { DevicesService } from '../application/devices.service';
 import { DeviceOutputModel } from './models/output/device.output.model';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
@@ -14,7 +14,7 @@ import { ObjectId } from 'mongodb';
 @Controller('/hometask-nest/security/devices')
 export class DevicesController {
   constructor(
-    protected devicesQueryRepository: DevicesQueryRepository,
+    protected devicesQueryRepository: DevicesQueryRepositoryMongo,
     protected devicesService: DevicesService,
   ) {}
 

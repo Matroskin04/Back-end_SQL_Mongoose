@@ -8,7 +8,7 @@ export class EmailConfirmationPublicRepository {
 
   async createEmailConfirmationInfo(
     confirmationCode: string,
-    expirationDate: Date,
+    intervalForExpirationDate: string,
     isConfirmed: boolean,
     userId: string,
   ) {
@@ -16,10 +16,37 @@ export class EmailConfirmationPublicRepository {
       `
     INSERT INTO public.users_email_confirmation( 
         "confirmationCode", "expirationDate", "isConfirmed", "userId") 
-        VALUES ($1, $2, $3, $4);
+        VALUES ($1, now() + ($2::interval), $3, $4);
     `,
-      [confirmationCode, expirationDate, isConfirmed, userId],
+      [confirmationCode, intervalForExpirationDate ?? '0', isConfirmed, userId],
     );
     return result;
+  }
+
+  async updateEmailConfirmationStatus(userId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    UPDATE public."users_email_confirmation"
+        SET "isConfirmed" = true
+        WHERE "userId" = $1;`,
+      [userId],
+    );
+    return result[1] === 1;
+  }
+
+  async updateConfirmationCode(
+    userId: string,
+    newCode: string,
+    intervalForExpirationDate: string,
+  ): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    UPDATE public.users_email_confirmation 
+        SET "confirmationCode" = $1, "expirationDate" = now() + ($2::interval)
+        WHERE "userId" = $3
+    `,
+      [newCode, intervalForExpirationDate ?? '0', userId],
+    );
+    return result[1] === 1;
   }
 }

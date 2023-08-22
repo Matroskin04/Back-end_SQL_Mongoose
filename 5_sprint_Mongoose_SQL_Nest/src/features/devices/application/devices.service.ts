@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { DevicesQueryRepository } from '../infrastructure/query.repository/devices.query.repository';
+import { DevicesQueryRepositoryMongo } from '../infrastructure/query.repository/devices.query.repository';
 import { DevicesRepository } from '../infrastructure/repository/devices.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Device } from '../domain/devices.entity';
@@ -15,7 +15,7 @@ export class DevicesService {
     @InjectModel(Device.name)
     private DeviceModel: DeviceModelType,
     protected jwtQueryRepository: JwtQueryRepository,
-    protected devicesQueryRepository: DevicesQueryRepository,
+    protected devicesQueryRepository: DevicesQueryRepositoryMongo,
     protected deviceRepository: DevicesRepository,
   ) {}
 
@@ -29,15 +29,13 @@ export class DevicesService {
     if (!payloadToken) {
       throw new UnauthorizedException();
     }
-    const device = await this.DeviceModel.createInstance(
+    await this.deviceRepository.createDevice(
       ip,
       title,
       payloadToken,
-      userId,
-      this.DeviceModel,
+      userId.toString(),
     );
 
-    await this.deviceRepository.save(device);
     return;
   }
 

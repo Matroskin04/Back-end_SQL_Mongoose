@@ -5,7 +5,7 @@ import { DeviceDBType, DeviceModelType } from '../../domain/devices.db.types';
 import { DeviceViewType } from './devices.types.query.repository';
 
 @Injectable()
-export class DevicesQueryRepository {
+export class DevicesQueryRepositoryMongo {
   constructor(
     @InjectModel(Device.name)
     private DeviceModel: DeviceModelType,

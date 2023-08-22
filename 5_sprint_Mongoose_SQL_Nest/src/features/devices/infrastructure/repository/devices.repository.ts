@@ -4,13 +4,39 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Device } from '../../domain/devices.entity';
 import { DeviceModelType } from '../../domain/devices.db.types';
 import { Injectable } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { JwtPayload } from 'jsonwebtoken';
 
 @Injectable()
 export class DevicesRepository {
   constructor(
+    @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(Device.name)
     private DeviceModel: DeviceModelType,
   ) {}
+
+  //SQL
+  async createDevice(
+    ip: string,
+    title: string,
+    payloadToken: JwtPayload,
+    userId: string,
+  ): Promise<void> {
+    await this.dataSource.query(
+      `
+    INSERT INTO public.devices(
+        "id", "ip", "title", "userId", "expirationDate")
+        VALUES ($1, $2, $3, $4, $5)`,
+      [
+        payloadToken.deviceId,
+        ip,
+        title,
+        userId,
+        payloadToken.exp! - payloadToken.iat!,
+      ],
+    );
+  }
   async save(device: DeviceInstanceType): Promise<void> {
     await device.save();
     return;

@@ -2,7 +2,7 @@ import { Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersSAQueryRepository } from '../../features/users/super-admin/infrastructure/query.repository/users-sa.query.repository';
-import { DevicesQueryRepository } from '../../features/devices/infrastructure/query.repository/devices.query.repository';
+import { DevicesQueryRepositoryMongo } from '../../features/devices/infrastructure/query.repository/devices.query.repository';
 import { Request } from 'express';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
 ) {
   constructor(
     protected usersQueryRepository: UsersSAQueryRepository,
-    protected devicesQueryRepository: DevicesQueryRepository,
+    protected devicesQueryRepository: DevicesQueryRepositoryMongo,
   ) {
     super({
       jwtFromRequest: JwtRefreshStrategy.extractJWT,
