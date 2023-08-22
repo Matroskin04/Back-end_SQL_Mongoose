@@ -3,7 +3,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { JwtAccessNotStrictGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
-import { CurrentUserId } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import { CurrentUserIdMongo } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 import { Response } from 'express';
 import { QueryBlogInputModel } from '../../blogger-blogs/api/models/input/query-blog.input.model';
@@ -46,7 +46,7 @@ export class BlogsPublicController {
   @Get(':blogId/posts')
   async getAllPostsOfBlog(
     @Param('blogId') blogId: string,
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @Query() query: QueryBlogInputModel,
     @Res() res: Response<ViewPostsOfBlogModel>,
   ) {

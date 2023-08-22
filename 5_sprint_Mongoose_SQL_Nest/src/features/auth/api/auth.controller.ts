@@ -23,7 +23,10 @@ import {
   RegistrationAuthInputModel,
 } from './models/input/registration-auth.input.model';
 import { LocalAuthGuard } from '../../../infrastructure/guards/authorization-guards/local-auth.guard';
-import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import {
+  CurrentUserId,
+  CurrentUserIdMongo,
+} from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { ValidateConfirmationCodeGuard } from '../../../infrastructure/guards/validation-guards/validate-confirmation-code.guard';
@@ -63,10 +66,10 @@ export class AuthController {
   @UseGuards(JwtAccessGuard)
   @Get('me')
   async getUserInformation(
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserId() userId: string,
   ): Promise<AuthOutputModel> {
     const result = await this.usersPublicQueryRepository.getUserInfoById(
-      userId.toString(),
+      userId,
     );
 
     if (result) return result;
@@ -75,7 +78,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard, BlogOwnerByIdGuard)
   @Post('login')
   async loginUser(
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserId() userId: string,
     @Res({ passthrough: true }) res: Response<ViewTokenModel>,
     @Ip() ip: string,
     @TitleOfDevice() title: string,
@@ -149,7 +152,7 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Post('refresh-token')
   async newRefreshToken(
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @RefreshToken() refreshToken: string,
     @Res() res: Response<ViewTokenModel | string>,
   ) {

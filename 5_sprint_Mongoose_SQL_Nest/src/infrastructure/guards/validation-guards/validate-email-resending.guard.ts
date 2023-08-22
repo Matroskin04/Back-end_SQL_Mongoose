@@ -20,8 +20,8 @@ export class ValidateEmailResendingGuard implements CanActivate {
     const emailConfirmationInfo = await this.dataSource.query(
       `
     SELECT ec."isConfirmed", ec."userId"
-      FROM "users" AS u
-      JOIN "users_email_confirmation" ec ON u."id" = ec."userId"
+      FROM public."users" AS u
+      JOIN public."users_email_confirmation" ec ON u."id" = ec."userId"
       WHERE u.email = $1`,
       [request.body.email],
     );

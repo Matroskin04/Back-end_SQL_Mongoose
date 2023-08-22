@@ -15,7 +15,7 @@ import { Response } from 'express';
 import { CommentsService } from '../application/comments.service';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
-import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import { CurrentUserIdMongo } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 import { UpdateCommentInputModel } from './models/input/update-comment.input.model';
 import { UpdateCommentLikeStatusInputModel } from './models/input/update-comment-like-status.input.model';
@@ -33,7 +33,7 @@ export class CommentsController {
   @Get(':id')
   async getCommentById(
     @Param('id') commentId: string,
-    @CurrentUserId() userId: ObjectId | null,
+    @CurrentUserIdMongo() userId: ObjectId | null,
     @Res() res: Response<CommentOutputModel>,
   ) {
     const result = await this.commentsQueryRepository.getCommentById(
@@ -50,7 +50,7 @@ export class CommentsController {
   @Put(':id')
   async updateComment(
     @Param('id') commentId: string,
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @Body() inputCommentModel: UpdateCommentInputModel,
     @Res() res: Response<void>,
   ) {
@@ -68,7 +68,7 @@ export class CommentsController {
   @Put(':id/like-status')
   async updateLikeStatusOfComment(
     @Param('id') commentId: string,
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @Body() inputLikeInfoModel: UpdateCommentLikeStatusInputModel,
     @Res() res: Response<string>,
   ) {
@@ -89,7 +89,7 @@ export class CommentsController {
   @Delete(':id')
   async deleteComment(
     @Param('id') commentId: string,
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @Res() res: Response<void>,
   ) {
     const result = await this.commentsService.deleteComment(

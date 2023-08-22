@@ -24,7 +24,7 @@ import { CommentsQueryRepository } from '../../comments/infrastructure/query.rep
 import { Response } from 'express';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
-import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import { CurrentUserIdMongo } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CreateCommentByPostIdModel } from '../../comments/api/models/input/create-comment.input.model';
@@ -47,7 +47,7 @@ export class PostsController {
   @Get()
   async getAllPosts(
     @Query() query: QueryPostInputModel,
-    @CurrentUserId() userId: ObjectId | null,
+    @CurrentUserIdMongo() userId: ObjectId | null,
     @Res() res: Response<ViewAllPostsModel>,
   ) {
     const result = await this.postsQueryRepository.getAllPosts(query, userId);
@@ -58,7 +58,7 @@ export class PostsController {
   @Get(':id')
   async getPostById(
     @Param('id') postId: string,
-    @CurrentUserId() userId: ObjectId | null,
+    @CurrentUserIdMongo() userId: ObjectId | null,
     @Res() res: Response<PostOutputModel>,
   ) {
     const result = await this.postsQueryRepository.getPostById(
@@ -75,7 +75,7 @@ export class PostsController {
   @Get(':postId/comments')
   async getAllCommentsOfPost(
     @Param('postId') postId: string,
-    @CurrentUserId() userId: ObjectId | null,
+    @CurrentUserIdMongo() userId: ObjectId | null,
     @Query() query: QueryPostInputModel,
     @Res() res: Response<ViewAllCommentsOfPostModel>,
   ) {
@@ -106,7 +106,7 @@ export class PostsController {
   @Post(':postId/comments')
   async createCommentByPostId(
     @Param('postId') postId: string,
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @Body() inputCommentModel: CreateCommentByPostIdModel,
     @Res() res: Response<ViewCommentOfPostModel>,
   ) {
@@ -139,7 +139,7 @@ export class PostsController {
   @Put(':postId/like-status')
   async updateLikeStatusOfPost(
     @Param('postId') postId: string,
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @Body() inputLikeStatusModel: UpdatePostLikeStatusModel,
     @Res() res: Response<string>,
   ) {

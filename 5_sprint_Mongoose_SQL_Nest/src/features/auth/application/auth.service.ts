@@ -6,16 +6,35 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../../users/domain/users.entity';
 import { UserModelType } from '../../users/domain/users.db.types';
+import { UsersPublicQueryRepository } from '../../users/public/infrastructure/query.repository/users-public.query.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name)
     private UserModel: UserModelType,
-    protected usersQueryRepository: UsersSAQueryRepository,
+    protected usersPublicQueryRepository: UsersPublicQueryRepository,
   ) {}
 
+  //SQL
   async validateUser(
+    loginOrEmail: string,
+    password: string,
+  ): Promise<any | false> {
+    //todo тип
+    const user =
+      await this.usersPublicQueryRepository.getUserPassEmailInfoByLoginOrEmail(
+        loginOrEmail,
+      );
+    if (!user || !user.isConfirmed) {
+      return false;
+    }
+
+    return (await bcrypt.compare(password, user.passwordHash)) ? user : false;
+  }
+
+  //MONGO
+  /*  async validateUser(
     loginOrEmail: string,
     password: string,
   ): Promise<UserDBServiceType | false> {
@@ -27,5 +46,5 @@ export class AuthService {
     }
 
     return (await bcrypt.compare(password, user.passwordHash)) ? user : false;
-  }
+  }*/
 }

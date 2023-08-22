@@ -21,11 +21,10 @@ export class JwtAccessStrategy extends PassportStrategy(
   }
 
   async validate(payload: any) {
-    const user = this.usersQueryRepository.getUserByUserId(payload.userId); //todo оставить потом только SQL
     const userInfo = this.usersPublicQueryRepository.getUserInfoById(
       payload.userId.toString(),
     );
-    if (!user && !userInfo) throw new UnauthorizedException();
+    if (!userInfo) throw new UnauthorizedException();
 
     return { id: payload.userId };
   }

@@ -27,7 +27,7 @@ import { PostsQueryRepository } from '../../../posts/infrastructure/query.reposi
 import { PostsService } from '../../../posts/application/posts.service';
 import { BlogsBloggerQueryRepository } from '../infrastructure/query.repository/blogs-blogger.query.repository';
 import { BlogsBloggerService } from '../application/blogs-blogger.service';
-import { CurrentUserId } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import { CurrentUserIdMongo } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 import { CreatePostByBlogIdModel } from '../../../posts/api/models/input/create-post.input.model';
 import { PostTypeWithId } from '../../../posts/infrastructure/repository/posts.types.repositories';
@@ -51,7 +51,7 @@ export class BlogsBloggerController {
   @Get()
   async getAllBlogs(
     @Query() query: QueryBlogInputModel,
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @Res() res: Response<ViewAllBlogsModel>,
   ) {
     const result = await this.blogsBloggerQueryRepository.getAllBlogs(
@@ -65,7 +65,7 @@ export class BlogsBloggerController {
   @Get(':blogId/posts')
   async getAllPostsOfBlog(
     @Param('blogId') blogId: string,
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @Query() query: QueryBlogInputModel,
     @Res() res: Response<ViewPostsOfBlogModel>,
   ) {
@@ -82,7 +82,7 @@ export class BlogsBloggerController {
   @UseGuards(JwtAccessGuard)
   @Get('comments')
   async getCommentsOfBlogger(
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @Query() query: QueryBlogInputModel,
   ) {
     const result = await this.commentsQueryRepository.getCommentsOfBlogger(
@@ -96,7 +96,7 @@ export class BlogsBloggerController {
   @Post()
   async createBlog(
     @Body() inputBlogModel: CreateBlogInputModel,
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @Res() res: Response<BlogOutputModel>,
   ) {
     const result = await this.blogsBloggerService.createBlog(
@@ -110,7 +110,7 @@ export class BlogsBloggerController {
   @Post(`/:blogId/posts`)
   async createPostByBlogId(
     @Param('blogId') blogId: string,
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @Body() inputPostModel: CreatePostByBlogIdModel,
     @Res() res: Response<PostTypeWithId>,
   ) {

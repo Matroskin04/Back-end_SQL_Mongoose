@@ -35,8 +35,39 @@ export class UsersPublicQueryRepository {
     `,
       [userId],
     );
-    console.log(result);
     return result;
+  }
+
+  async getUserPassEmailInfoByLoginOrEmail(
+    logOrEmail: string,
+  ): Promise<any | null> {
+    //todo тип
+    const userInfo = await this.dataSource.query(
+      `
+    SELECT u."id", u."login", u."email", u."passwordHash", ec."isConfirmed" 
+      FROM public."users" AS u
+      JOIN public."users_email_confirmation" AS ec 
+      ON u."id" = ec."userId"
+      WHERE u."login" = $1 OR u."email" = $1`,
+      [logOrEmail],
+    );
+    if (userInfo.length === 0) return null;
+    return userInfo[0];
+  }
+
+  async getUserBanlInfoByLoginOrEmail(logOrEmail: string): Promise<any | null> {
+    //todo тип
+    const userInfo = await this.dataSource.query(
+      `
+    SELECT u."id", u."login", u."email", bi."isBanned" 
+      FROM public."users" AS u
+      JOIN public."users_ban_info" AS bi
+      ON u."id" = bi."userId"
+      WHERE u."login" = $1 OR u."email" = $1`,
+      [logOrEmail],
+    );
+    if (userInfo.length === 0) return null;
+    return userInfo[0];
   }
 
   //MONGO

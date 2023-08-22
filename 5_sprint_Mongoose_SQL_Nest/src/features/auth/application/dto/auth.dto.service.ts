@@ -4,7 +4,7 @@ import { UserDBType } from '../../../users/domain/users.db.types';
 export type ARTokensAndUserIdType = {
   accessToken: string;
   refreshToken: string;
-  userId: ObjectId;
+  userId: string;
 };
 
 export type UserDBServiceType = {

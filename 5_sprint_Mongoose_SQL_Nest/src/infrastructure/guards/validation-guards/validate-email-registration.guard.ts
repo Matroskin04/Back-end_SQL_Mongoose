@@ -5,17 +5,21 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { UsersSAQueryRepository } from '../../../features/users/super-admin/infrastructure/query.repository/users-sa.query.repository';
+import { UsersPublicQueryRepository } from '../../../features/users/public/infrastructure/query.repository/users-public.query.repository';
 
 @Injectable()
 export class ValidateEmailRegistrationGuard implements CanActivate {
-  constructor(protected usersQueryRepository: UsersSAQueryRepository) {}
+  constructor(
+    protected usersPublicQueryRepository: UsersPublicQueryRepository,
+  ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const userByLogin = await this.usersQueryRepository.getUserByLoginOrEmail(
-      request.body.login,
-    );
-    if (userByLogin) {
+    const userInfoByLogin =
+      await this.usersPublicQueryRepository.getUserPassEmailInfoByLoginOrEmail(
+        request.body.login,
+      );
+    if (userInfoByLogin) {
       throw new BadRequestException([
         {
           message: `This ${request.body.login} is already exists, point out another`,
@@ -24,10 +28,11 @@ export class ValidateEmailRegistrationGuard implements CanActivate {
       ]);
     }
 
-    const userByEmail = await this.usersQueryRepository.getUserByLoginOrEmail(
-      request.body.email,
-    );
-    if (userByEmail) {
+    const userInfoByEmail =
+      await this.usersPublicQueryRepository.getUserPassEmailInfoByLoginOrEmail(
+        request.body.email,
+      );
+    if (userInfoByEmail) {
       throw new BadRequestException([
         {
           message: `This ${request.body.email} is already exists, point out another`,

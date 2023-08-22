@@ -7,7 +7,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { JwtRefreshGuard } from '../../../infrastructure/guards/authorization-guards/jwt-refresh.guard';
 import { RefreshToken } from '../../../infrastructure/decorators/auth/refresh-token-param.decorator';
 import { Response } from 'express';
-import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import { CurrentUserIdMongo } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 
 @SkipThrottle()
@@ -21,7 +21,7 @@ export class DevicesController {
   @UseGuards(JwtRefreshGuard)
   @Get()
   async getAllDevices(
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @RefreshToken() refreshToken: string,
     @Res() res: Response<DeviceOutputModel>,
   ) {
@@ -44,7 +44,7 @@ export class DevicesController {
   @UseGuards(JwtRefreshGuard)
   @Delete(':id')
   async deleteDeviceById(
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserIdMongo() userId: ObjectId,
     @Param('id') deviceId: string,
     @Res() res: Response<string>,
   ) {
