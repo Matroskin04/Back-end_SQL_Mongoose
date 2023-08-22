@@ -9,7 +9,7 @@ import { UserModelType } from '../../../users/domain/users.db.types';
 import { EmailConfirmationPublicRepository } from '../../../users/public/infrastructure/subrepositories/email-confirmation.public.repository';
 import { PasswordRecoveryPublicRepository } from '../../../users/public/infrastructure/subrepositories/password-recovery.public.repository';
 import { BanInfoPublicRepository } from '../../../users/public/infrastructure/subrepositories/ban-info.public.repository';
-import { UsersPublicRepositorySQL } from '../../../users/public/infrastructure/repository/users.public.repository-sql';
+import { UsersPublicRepository } from '../../../users/public/infrastructure/repository/users-public.repository';
 
 export class RegisterUserCommand {
   constructor(
@@ -28,7 +28,7 @@ export class RegisterUserUseCase
     private UserModel: UserModelType,
     protected cryptoAdapter: CryptoAdapter,
     protected emailManager: EmailManager,
-    protected usersPublicRepository: UsersPublicRepositorySQL,
+    protected usersPublicRepository: UsersPublicRepository,
     protected emailConfirmationPublicRepository: EmailConfirmationPublicRepository,
     protected passwordRecoveryPublicRepository: PasswordRecoveryPublicRepository,
     protected banInfoPublicRepository: BanInfoPublicRepository,
@@ -47,9 +47,10 @@ export class RegisterUserUseCase
       passwordHash,
     );
     const confirmationCode = uuidv4();
+
     await this.emailConfirmationPublicRepository.createEmailConfirmationInfo(
       confirmationCode,
-      add(new Date(), { hours: 5, seconds: 20 }),
+      '5 hours',
       false,
       userId,
     );

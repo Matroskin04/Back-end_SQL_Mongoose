@@ -5,32 +5,42 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { UsersSAQueryRepository } from '../../../features/users/super-admin/infrastructure/query.repository/users-sa.query.repository';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable() //todo validator Constraints
 export class ValidateConfirmationCodeGuard implements CanActivate {
-  constructor(protected usersQueryRepository: UsersSAQueryRepository) {}
+  constructor(
+    @InjectDataSource() protected dataSource: DataSource,
+    protected usersQueryRepository: UsersSAQueryRepository,
+  ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-
-    const user = await this.usersQueryRepository.getUserByCodeConfirmation(
-      request.body.code,
+    //todo отдельный метод
+    const emailConfirmationInfo = await this.dataSource.query(
+      `
+    SELECT "userId", "isConfirmed", "expirationDate" FROM public."users_email_confirmation"
+        WHERE "confirmationCode" = $1`,
+      [request.body.code],
     );
-    if (!user) {
+
+    if (!emailConfirmationInfo[0]) {
       throw new BadRequestException([
         { message: 'Code is incorrect', field: 'code' },
       ]); //Code is incorrect
     }
-    if (user.emailConfirmation.expirationDate < new Date()) {
+
+    if (emailConfirmationInfo[0].expirationDate < new Date().toISOString()) {
       throw new BadRequestException([
         { message: 'Code is already expired', field: 'code' },
       ]); //Code is already expired
     }
-    if (user.emailConfirmation.isConfirmed) {
+    if (emailConfirmationInfo[0].isConfirmed) {
       throw new BadRequestException([
         { message: 'Code is already been applied', field: 'code' },
       ]); //Code is already been applied
     }
-    request.userId = user._id;
+    request.userId = emailConfirmationInfo[0].userId;
 
     return true;
   }

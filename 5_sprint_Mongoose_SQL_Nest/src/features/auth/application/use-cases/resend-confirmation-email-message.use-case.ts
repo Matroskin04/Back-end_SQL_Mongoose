@@ -4,16 +4,17 @@ import { v4 as uuidv4 } from 'uuid';
 import add from 'date-fns/add';
 import { UsersSARepository } from '../../../users/super-admin/infrastructure/repository/users-sa.repository';
 import { EmailManager } from '../../../../infrastructure/managers/email-manager';
+import { EmailConfirmationPublicRepository } from '../../../users/public/infrastructure/subrepositories/email-confirmation.public.repository';
 
 export class ResendConfirmationEmailMessageCommand {
-  constructor(public userId: ObjectId, public email: string) {}
+  constructor(public userId: string, public email: string) {}
 }
 @CommandHandler(ResendConfirmationEmailMessageCommand)
 export class ResendConfirmationEmailMessageUseCase
   implements ICommandHandler<ResendConfirmationEmailMessageCommand>
 {
   constructor(
-    protected usersRepository: UsersSARepository,
+    protected emailConfirmationPublicRepository: EmailConfirmationPublicRepository,
     protected emailManager: EmailManager,
   ) {}
 
@@ -21,13 +22,12 @@ export class ResendConfirmationEmailMessageUseCase
     const { userId, email } = command;
 
     const newCode = uuidv4();
-    const newDate = add(new Date(), { hours: 5, seconds: 20 });
-
-    const result = await this.usersRepository.updateCodeConfirmation(
-      userId,
-      newCode,
-      newDate,
-    );
+    const result =
+      await this.emailConfirmationPublicRepository.updateConfirmationCode(
+        userId,
+        newCode,
+        '5 hours',
+      );
     if (!result) {
       throw new Error('Resending confirmation email message failed.');
     }
