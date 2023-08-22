@@ -20,4 +20,18 @@ export class PasswordRecoveryPublicRepository {
     );
     return;
   }
+
+  async updateCodePasswordRecovery(
+    userId: string,
+    newCode: string,
+    intervalForExpirationDate: string,
+  ): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    UPDATE public."users_password_recovery"
+      SET "confirmationCode" = $1, "expirationDate" = now() + ($2::interval)`,
+      [newCode, intervalForExpirationDate],
+    );
+    return result[1] === 1;
+  }
 }

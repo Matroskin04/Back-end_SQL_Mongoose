@@ -55,7 +55,7 @@ export class UsersPublicQueryRepository {
     return userInfo[0];
   }
 
-  async getUserBanlInfoByLoginOrEmail(logOrEmail: string): Promise<any | null> {
+  async getUserBanInfoByLoginOrEmail(logOrEmail: string): Promise<any | null> {
     //todo тип
     const userInfo = await this.dataSource.query(
       `

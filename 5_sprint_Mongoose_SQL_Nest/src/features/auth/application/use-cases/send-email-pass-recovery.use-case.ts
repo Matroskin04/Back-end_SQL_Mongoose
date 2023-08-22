@@ -5,6 +5,8 @@ import { UsersSARepository } from '../../../users/super-admin/infrastructure/rep
 import { UsersSAQueryRepository } from '../../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { EmailManager } from '../../../../infrastructure/managers/email-manager';
+import { UsersPublicQueryRepository } from '../../../users/public/infrastructure/query.repository/users-public.query.repository';
+import { PasswordRecoveryPublicRepository } from '../../../users/public/infrastructure/subrepositories/password-recovery.public.repository';
 
 export class SendEmailPassRecoveryCommand {
   constructor(public email: string) {}
@@ -15,25 +17,28 @@ export class SendEmailPassRecoveryUseCase
   implements ICommandHandler<SendEmailPassRecoveryCommand>
 {
   constructor(
-    protected usersRepository: UsersSARepository,
-    protected usersQueryRepository: UsersSAQueryRepository,
+    protected passwordRecoveryPublicRepository: PasswordRecoveryPublicRepository,
+    protected usersPublicQueryRepository: UsersPublicQueryRepository,
     protected emailManager: EmailManager,
   ) {}
 
   async execute(command: SendEmailPassRecoveryCommand): Promise<void> {
     const { email } = command;
-    const user: UserDBType | null =
-      await this.usersQueryRepository.getUserByLoginOrEmail(email);
+    const user =
+      await this.usersPublicQueryRepository.getUserPassEmailInfoByLoginOrEmail(
+        email,
+      );
     if (!user) return;
 
     const newCode = uuidv4();
-    const newDate = add(new Date(), { hours: 1 });
+    const result =
+      await this.passwordRecoveryPublicRepository.updateCodePasswordRecovery(
+        user.id,
+        newCode,
+        '1 hour',
+      );
+    if (!result) throw new Error('Updating password recovery code is failed');
 
-    await this.usersRepository.updateCodePasswordRecovery(
-      user._id,
-      newCode,
-      newDate,
-    );
     this.emailManager.sendEmailPasswordRecovery(email, newCode);
 
     return;

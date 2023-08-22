@@ -18,7 +18,7 @@ export class BlogOwnerByIdGuard implements CanActivate {
       throw new Error('Login must be passed');
 
     const user =
-      await this.usersPublicQueryRepository.getUserBanlInfoByLoginOrEmail(
+      await this.usersPublicQueryRepository.getUserBanInfoByLoginOrEmail(
         request.body.loginOrEmail,
       );
     if (!user) throw new UnauthorizedException('User is not found');
