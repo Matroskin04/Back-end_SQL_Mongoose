@@ -10,7 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAccessGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import { JwtAccessGuardMongo } from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { UpdateBanInfoOfUserInputModel } from './models/input/update-ban-info-of-user.input.model';
 import { UsersBloggerService } from '../application/users-blogger.service';
 import { UsersBloggerQueryRepository } from '../infrastructure/query.repository/users-blogger.query.repository';
@@ -25,7 +25,7 @@ export class UsersBloggerController {
     protected usersBloggerQueryRepository: UsersBloggerQueryRepository,
   ) {}
 
-  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuard)
   @Get('/blog/:blogId')
   async getBannedUsersOfBlog(
     @Query() query: QueryUsersBloggerInputModel,
@@ -39,7 +39,7 @@ export class UsersBloggerController {
     throw new NotFoundException('Info is not found');
   }
 
-  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuard)
   @HttpCode(204)
   @Put(':userId/ban')
   async updateBanInfoOfUser(

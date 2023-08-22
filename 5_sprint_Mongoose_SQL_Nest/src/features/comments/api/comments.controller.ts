@@ -13,7 +13,7 @@ import { CommentsQueryRepository } from '../infrastructure/query.repository/comm
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { Response } from 'express';
 import { CommentsService } from '../application/comments.service';
-import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import { JwtAccessGuardMongo } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import { CurrentUserIdMongo } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
@@ -46,7 +46,7 @@ export class CommentsController {
       : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
   }
 
-  @UseGuards(JwtAccessGuard) //todo addition guard 403
+  @UseGuards(JwtAccessGuardMongo) //todo addition guard 403
   @Put(':id')
   async updateComment(
     @Param('id') commentId: string,
@@ -64,7 +64,7 @@ export class CommentsController {
       : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
   }
 
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtAccessGuardMongo)
   @Put(':id/like-status')
   async updateLikeStatusOfComment(
     @Param('id') commentId: string,
@@ -85,7 +85,7 @@ export class CommentsController {
           .send("Comment with specified id doesn't exist");
   }
 
-  @UseGuards(JwtAccessGuard) //todo addition guard 403
+  @UseGuards(JwtAccessGuardMongo) //todo addition guard 403
   @Delete(':id')
   async deleteComment(
     @Param('id') commentId: string,

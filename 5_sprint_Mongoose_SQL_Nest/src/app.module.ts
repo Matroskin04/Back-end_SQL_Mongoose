@@ -31,9 +31,15 @@ import { CryptoAdapter } from './infrastructure/adapters/crypto.adapter';
 import { EmailManager } from './infrastructure/managers/email-manager';
 import { EmailAdapter } from './infrastructure/adapters/email.adapter';
 import { AuthController } from './features/auth/api/auth.controller';
-import { JwtRefreshStrategy } from './infrastructure/strategy/jwt-refresh.strategy';
+import {
+  JwtRefreshStrategy,
+  JwtRefreshStrategyMongo,
+} from './infrastructure/strategy/jwt-refresh.strategy';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtAccessStrategy } from './infrastructure/strategy/jwt-access.strategy';
+import {
+  JwtAccessStrategy,
+  JwtAccessStrategyMongo,
+} from './infrastructure/strategy/jwt-access.strategy';
 import { BasicStrategy } from './infrastructure/strategy/basic.strategy';
 import {
   CommentLikesInfo,
@@ -51,10 +57,9 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { DevicesController } from './features/devices/api/devices.controller';
 import { DevicesService } from './features/devices/application/devices.service';
-import { DevicesQueryRepositoryMongo } from './features/devices/infrastructure/query.repository/devices.query.repository';
+import { DevicesQueryRepository } from './features/devices/infrastructure/query.repository/devices.query.repository';
 import { DevicesRepository } from './features/devices/infrastructure/repository/devices.repository';
 import { Device, DeviceSchema } from './features/devices/domain/devices.entity';
-import { JwtQueryRepository } from './features/jwt/jwt.query.repository';
 import { JwtService } from './features/jwt/jwt.service';
 import { BlogsPublicController } from './features/blogs/public-blogs/api/blogs-public.controller';
 import { BlogsBloggerController } from './features/blogs/blogger-blogs/api/blogs-blogger.controller';
@@ -125,11 +130,10 @@ const queryRepositories = [
   BlogsSAQueryRepository,
   PostsQueryRepository,
   LikesInfoQueryRepository,
-  DevicesQueryRepositoryMongo,
+  DevicesQueryRepository,
   CommentsQueryRepository,
   BannedUsersQueryRepository,
   BannedUsersByBloggerQueryRepository,
-  JwtQueryRepository,
   UsersSAQueryRepository,
   UsersBloggerQueryRepository,
 ];
@@ -215,7 +219,9 @@ const handlers = [
     //Strategy
     LocalStrategy,
     JwtRefreshStrategy,
+    JwtRefreshStrategyMongo,
     JwtAccessStrategy,
+    JwtAccessStrategyMongo,
     BasicStrategy,
 
     //Managers && Adapters

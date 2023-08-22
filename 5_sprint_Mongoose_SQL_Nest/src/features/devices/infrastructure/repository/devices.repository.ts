@@ -26,17 +26,44 @@ export class DevicesRepository {
     await this.dataSource.query(
       `
     INSERT INTO public.devices(
-        "id", "ip", "title", "userId", "expirationDate")
-        VALUES ($1, $2, $3, $4, $5)`,
+        "id", "ip", "title", "userId", "lastActiveDate", "expirationDate")
+        VALUES ($1, $2, $3, $4, $5, $6)`,
       [
         payloadToken.deviceId,
         ip,
         title,
         userId,
+        new Date(payloadToken.iat! * 1000).toISOString(),
         payloadToken.exp! - payloadToken.iat!,
       ],
     );
   }
+
+  async deleteDeviceById(deviceId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    DELETE FROM public."devices"
+        WHERE "id" = $1`,
+      [deviceId],
+    );
+    return result[1] === 1;
+  }
+
+  async updateLastActiveDateByDeviceId(
+    deviceId: string,
+    iat: number,
+  ): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    UPDATE public."devices"
+      SET "lastActiveDate" = $1
+      WHERE "id" = $2`,
+      [new Date(iat * 1000).toISOString(), deviceId],
+    );
+    return result[1] === 1;
+  }
+
+  //MONGO
   async save(device: DeviceInstanceType): Promise<void> {
     await device.save();
     return;
@@ -58,10 +85,10 @@ export class DevicesRepository {
     return result.deletedCount > 0;
   }
 
-  async deleteDeviceById(deviceId: string): Promise<boolean> {
+  /*  async deleteDeviceById(deviceId: string): Promise<boolean> {
     const result = await this.DeviceModel.deleteOne({ deviceId });
     return result.deletedCount === 1;
-  }
+  }*/
 
   async deleteAllDevicesByUserId(userId: ObjectId): Promise<boolean> {
     const result = await this.DeviceModel.deleteMany({ userId });

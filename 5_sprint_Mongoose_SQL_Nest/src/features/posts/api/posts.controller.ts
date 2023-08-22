@@ -26,7 +26,7 @@ import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-statu
 import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import { CurrentUserIdMongo } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
-import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import { JwtAccessGuardMongo } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CreateCommentByPostIdModel } from '../../comments/api/models/input/create-comment.input.model';
 import { CommentsService } from '../../comments/application/comments.service';
 import { UpdatePostLikeStatusModel } from './models/input/update-like-status.input.model';
@@ -102,7 +102,7 @@ export class PostsController {
       : res.status(HTTP_STATUS_CODE.NOT_FOUND_404).json('Blog in not found');
   }*/
 
-  @UseGuards(JwtAccessGuard, IsUserBannedGuard)
+  @UseGuards(JwtAccessGuardMongo, IsUserBannedGuard)
   @Post(':postId/comments')
   async createCommentByPostId(
     @Param('postId') postId: string,
@@ -135,7 +135,7 @@ export class PostsController {
       : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
   }*/
 
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtAccessGuardMongo)
   @Put(':postId/like-status')
   async updateLikeStatusOfPost(
     @Param('postId') postId: string,
