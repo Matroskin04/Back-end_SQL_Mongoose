@@ -99,7 +99,6 @@ export class UsersSAQueryRepository {
       .skip((+paramsOfElems.pageNumber - 1) * +paramsOfElems.pageSize)
       .limit(+paramsOfElems.pageSize)
       .sort(paramsOfElems.paramSort);*/
-
     return {
       pagesCount: Math.ceil(+result[0].count / +pageSize),
       page: +pageNumber,
