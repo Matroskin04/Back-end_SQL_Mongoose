@@ -32,8 +32,8 @@ export async function variablesForReturn(
   const sortDirection = query?.sortDirection ?? 'desc';
   const searchLoginTerm: string | null = query?.searchLoginTerm ?? '';
   const searchEmailTerm: string | null = query?.searchEmailTerm ?? '';
-  let banStatus: '%%' | boolean;
-  if (!query?.banStatus || query?.banStatus === 'all') banStatus = '%%';
+  let banStatus;
+  if (!query?.banStatus || query?.banStatus === 'all') banStatus = null;
   else banStatus = query?.banStatus === 'banned';
 
   return {

@@ -24,7 +24,7 @@ export class DevicesService {
 
   //SQL
   async deleteAllDevicesByUserId(userId: string): Promise<boolean> {
-    const result = this.dataSource.query(
+    const result = await this.dataSource.query(
       `
     DELETE FROM public."devices"
         WHERE "userId" = $1 `,

@@ -57,19 +57,23 @@ export class UsersSAQueryRepository {
     const result = await this.dataSource.query(
       `
     SELECT u."id", u."login", u."email", u."createdAt", bi."isBanned", bi."banDate", bi."banReason",
-        (SELECT COUNT(*) FROM public."users") 
-    FROM public."users" AS u
-        JOIN public."users-ban_info" AS bi
+        (SELECT COUNT(*) 
+          FROM public."users" as u2
+            JOIN public."users_ban_info" as bi2
+            ON bi2."userId" = u2."id"
+          WHERE (u2."login" like $1 OR u2."email" like $2) AND (bi2."isBanned" = $3 OR $3 IS NULL))
+    FROM public."users" as u
+        JOIN public."users_ban_info" as bi
         ON bi."userId" = u."id"
-    WHERE (u."login" = %$1% OR u."email" = %$2%) AND bi."isBanned" like $3
-        ORDER BY $4 $5
-        LIMIT $6 OFFSET $7`,
+    WHERE (u."login" like $1 OR u."email" like $2) AND (bi."isBanned" = $3 OR $3 IS NULL)
+        ORDER BY "${sortBy}" ${sortDirection}
+        LIMIT $4 OFFSET $5`,
       [
-        searchLoginTerm,
-        searchEmailTerm,
+        '%' + searchLoginTerm + '%',
+        '%' + searchEmailTerm + '%',
         banStatus,
-        sortBy,
-        sortDirection,
+        // sortBy,
+        // sortDirection,
         +pageSize,
         (+pageNumber - 1) * +pageSize,
       ],
@@ -97,10 +101,10 @@ export class UsersSAQueryRepository {
       .sort(paramsOfElems.paramSort);*/
 
     return {
-      pagesCount: Math.ceil(result[0].count / +pageSize),
+      pagesCount: Math.ceil(+result[0].count / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: result[0].count,
+      totalCount: +result[0].count,
       items: result.map((p) => modifyUserIntoViewModel(p)),
     };
   }

@@ -187,6 +187,7 @@ const handlers = [
       database: 'BackEnd_course',
       autoLoadEntities: false,
       synchronize: false,
+      connectString: process.env.POSTGRES_URL,
     }),
     MongooseModule.forRoot(process.env.MONGO_URL!),
     MongooseModule.forFeature([
