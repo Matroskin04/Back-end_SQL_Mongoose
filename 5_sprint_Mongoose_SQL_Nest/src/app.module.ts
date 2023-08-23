@@ -180,7 +180,7 @@ const handlers = [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: process.env.POSTGRES_URL,
       port: 5432,
       username: 'It-Incubator',
       password: 'sa',
