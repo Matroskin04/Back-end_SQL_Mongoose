@@ -8,7 +8,7 @@ import {
 } from './posts.types.query.repository';
 import { ObjectId } from 'mongodb';
 import { QueryPostInputModel } from '../../api/models/input/query-post.input.model';
-import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
+import { variablesForReturnMongo } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import {
   modifyPostForAllDocs,
   modifyPostIntoViewModel,
@@ -38,7 +38,7 @@ export class PostsQueryRepository {
     userId: ObjectId | null,
   ): Promise<PostPaginationType> {
     const searchNameTerm: string | null = query?.searchNameTerm ?? null;
-    const paramsOfElems = await variablesForReturn(query);
+    const paramsOfElems = await variablesForReturnMongo(query);
     const allBannedBlogsId =
       await this.blogsPublicQueryRepository.getAllBannedBlogsId();
 
@@ -75,7 +75,7 @@ export class PostsQueryRepository {
     query: QueryBlogInputModel,
     userId: ObjectId | null,
   ): Promise<null | PostPaginationType> {
-    const paramsOfElems = await variablesForReturn(query);
+    const paramsOfElems = await variablesForReturnMongo(query);
     const countAllPostsSort = await this.PostModel.countDocuments({
       blogId: blogId,
     });

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog } from '../../../domain/blogs.entity';
 import { BlogModelType } from '../../../domain/blogs.db.types';
-import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
+import { variablesForReturnMongo } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
 import { QueryBlogInputModel } from '../../../blogger-blogs/api/models/input/query-blog.input.model';
 import {
   BlogSAOutputDBType,
@@ -18,7 +18,7 @@ export class BlogsSAQueryRepository {
   ) {}
   async getAllBlogs(query: QueryBlogInputModel): Promise<ViewAllBlogsModel> {
     const searchNameTerm: string | null = query?.searchNameTerm ?? null;
-    const paramsOfElems = await variablesForReturn(query);
+    const paramsOfElems = await variablesForReturnMongo(query);
 
     const countAllBlogsSort = await this.BlogModel.countDocuments({
       name: { $regex: searchNameTerm ?? '', $options: 'i' },

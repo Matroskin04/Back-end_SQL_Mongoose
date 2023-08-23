@@ -5,7 +5,7 @@ import { CommentViewType } from '../repository/comments.types.repositories';
 import { InjectModel } from '@nestjs/mongoose';
 import { CommentModelType } from '../../domain/comments.db.types';
 import { QueryPostInputModel } from '../../../posts/api/models/input/query-post.input.model';
-import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
+import { variablesForReturnMongo } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import {
   modifyComment,
   modifyCommentsOfBlogger,
@@ -73,7 +73,7 @@ export class CommentsQueryRepository {
       return null;
     }
 
-    const paramsOfElems = await variablesForReturn(query);
+    const paramsOfElems = await variablesForReturnMongo(query);
     const countAllCommentsOfPost = await this.CommentModel.countDocuments({
       postId: postId,
     });
@@ -105,7 +105,7 @@ export class CommentsQueryRepository {
     query: QueryPostInputModel,
     userId: ObjectId,
   ): Promise<CommentsOfBloggerPaginationType | null> {
-    const paramsOfElems = await variablesForReturn(query);
+    const paramsOfElems = await variablesForReturnMongo(query);
 
     const allBlogsIdOfBlogger =
       await this.blogsBloggerQueryRepository.getAllBlogsIdOfBlogger(

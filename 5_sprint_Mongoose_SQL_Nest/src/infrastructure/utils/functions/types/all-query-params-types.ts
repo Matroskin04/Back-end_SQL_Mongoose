@@ -1,5 +1,7 @@
-export type QueryBlogInputModel = {
+export type AllQueryParamsTypes = {
   searchNameTerm?: string;
+  searchLoginTerm?: string;
+  searchEmailTerm?: string;
   sortBy?: string;
   sortDirection?: string;
   pageNumber?: string | number;

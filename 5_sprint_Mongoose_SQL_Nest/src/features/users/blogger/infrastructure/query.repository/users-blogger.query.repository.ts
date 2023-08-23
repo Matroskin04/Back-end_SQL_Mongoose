@@ -4,7 +4,7 @@ import { BannedUsersByBlogger } from '../../../banned/banned-by-blogger-users/do
 import { BannedUsersByBloggerModelType } from '../../../banned/banned-by-blogger-users/domain/users-banned-by-blogger.db.types';
 import { BannedUsersOfBlogPaginationType } from './users-blogger.types.query.repository';
 import { ObjectId } from 'mongodb';
-import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
+import { variablesForReturnMongo } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
 import { User } from '../../../domain/users.entity';
 import { UserModelType } from '../../../domain/users.db.types';
 import { QueryUsersBloggerInputModel } from '../../api/models/input/query-users-blogger.input.model';
@@ -23,7 +23,7 @@ export class UsersBloggerQueryRepository {
     blogId: string,
   ): Promise<BannedUsersOfBlogPaginationType> {
     const searchLoginTerm: string | null = query?.searchLoginTerm ?? null;
-    const paramsOfElems = await variablesForReturn(query);
+    const paramsOfElems = await variablesForReturnMongo(query);
     const paramsOfSearchLogin = {
       $regex: searchLoginTerm ?? '',
       $options: 'i',
