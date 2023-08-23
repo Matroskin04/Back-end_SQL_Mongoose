@@ -23,7 +23,7 @@ export class SaveNewPassUseCase implements ICommandHandler<SaveNewPassCommand> {
       recoveryCode,
     );
 
-    if (!user || user.passwordRecovery.expirationDate < new Date())
+    if (!user || +new Date(user.expirationDate) < +new Date())
       throw new BadRequestException(
         createBodyErrorBadRequest(
           'RecoveryCode is incorrect or expired',
@@ -32,7 +32,11 @@ export class SaveNewPassUseCase implements ICommandHandler<SaveNewPassCommand> {
       );
 
     const passwordHash = await this.cryptoAdapter._generateHash(newPassword);
-    await this.usersPublicRepository.updatePassword(passwordHash, user._id);
+    const result = await this.usersPublicRepository.updatePassword(
+      passwordHash,
+      user.id,
+    );
+    if (!result) throw new Error('Updating password is failed');
 
     return;
   }

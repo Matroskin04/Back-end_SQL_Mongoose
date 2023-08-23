@@ -9,14 +9,34 @@ import { InjectModel } from '@nestjs/mongoose';
 import { UserDBType, UserModelType } from '../../../domain/users.db.types';
 import { ObjectId } from 'mongodb';
 import { User } from '../../../domain/users.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UsersSAQueryRepository {
   constructor(
+    @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(User.name)
     private UserModel: UserModelType,
   ) {}
 
+  //SQL
+
+  async getUserWithBanInfoById(userId: string): Promise<any> {
+    const userInfo = await this.dataSource.query(
+      `
+    SELECT u."id", u."login", u."email", u."createdAt", bi."isBanned", bi."banReason", bi."banDate"
+      FROM public."users" AS u
+        JOIN public."users_ban_info" AS bi
+        ON u."id" = bi."userId"
+      WHERE u."id" = $1`,
+      [userId],
+    );
+    if (userInfo.length === 0) return null;
+    return userInfo[0];
+  }
+
+  //MONGO
   async getAllUsers(query: QueryUserInputModel): Promise<UsersPaginationType> {
     //todo отдельное query
     const emailAndLoginTerm: EmailAndLoginTerm = [];
@@ -55,24 +75,10 @@ export class UsersSAQueryRepository {
     };
   }
 
-  async getUserByLoginOrEmail(logOrEmail: string): Promise<UserDBType | null> {
-    const user = await this.UserModel.findOne({
-      $or: [{ login: logOrEmail }, { email: logOrEmail }],
-    });
-
-    return user;
-  }
-
   async getUserByUserId(userId: ObjectId): Promise<UserDBType | null> {
     // todo отдельный логин
 
     const user = await this.UserModel.findOne({ _id: userId });
     return user;
-  }
-
-  async getUserByCodeConfirmation(code: string): Promise<UserDBType | null> {
-    return this.UserModel.findOne({
-      'emailConfirmation.confirmationCode': code,
-    });
   }
 }

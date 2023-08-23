@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UsersSARepository } from '../infrastructure/repository/users-sa.repository';
-import { BodyUserType } from '../infrastructure/repository/users-sa.types.repositories';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserViewType } from '../infrastructure/query.repository/users-sa.types.query.repository';
 import { CryptoAdapter } from '../../../../infrastructure/adapters/crypto.adapter';
@@ -46,48 +45,6 @@ export class UsersSaService {
     private bannedUsersQueryRepository: BannedUsersQueryRepository,
     protected bannedUsersRepository: BannedUsersRepository,
   ) {}
-
-  async createUser(inputBodyUser: BodyUserType): Promise<UserViewType> {
-    //Проверяем, есть ли пользователь с такими данными
-    const userByEmail = await this.usersQueryRepository.getUserByLoginOrEmail(
-      inputBodyUser.email,
-    );
-    if (userByEmail) {
-      throw new BadRequestException(
-        createBodyErrorBadRequest(
-          'User with such email already exists',
-          'email',
-        ),
-      );
-    }
-
-    const userByLogin = await this.usersQueryRepository.getUserByLoginOrEmail(
-      inputBodyUser.login,
-    );
-    if (userByLogin)
-      throw new BadRequestException(
-        createBodyErrorBadRequest(
-          'User with such email already exists',
-          'email',
-        ),
-      );
-
-    //создаем юзера
-    const passwordHash = await this.cryptoAdapter._generateHash(
-      inputBodyUser.password,
-    );
-
-    const userInfo = {
-      email: inputBodyUser.email,
-      login: inputBodyUser.login,
-      passwordHash,
-    };
-
-    const user = this.UserModel.createInstance(userInfo, this.UserModel);
-
-    await this.usersRepository.save(user);
-    return user.modifyIntoViewModel();
-  }
 
   async updateBanInfoOfUser(
     userId: string,

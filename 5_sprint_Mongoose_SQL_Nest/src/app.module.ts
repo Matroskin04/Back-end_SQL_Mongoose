@@ -110,6 +110,7 @@ import { PasswordRecoveryPublicRepository } from './features/users/public/infras
 import { BanInfoPublicRepository } from './features/users/public/infrastructure/subrepositories/ban-info.public.repository';
 import { EmailConfirmationPublicRepository } from './features/users/public/infrastructure/subrepositories/email-confirmation.public.repository';
 import { UsersPublicRepository } from './features/users/public/infrastructure/repository/users-public.repository';
+import { CreateUserUseCase } from './features/users/super-admin/application/use-cases/create-user.use-case';
 
 const services = [
   AuthService,
@@ -160,6 +161,7 @@ const handlers = [
   SaveNewPassUseCase,
   LoginUserUseCase,
   SendEmailPassRecoveryUseCase,
+  CreateUserUseCase,
 ];
 
 @Module({

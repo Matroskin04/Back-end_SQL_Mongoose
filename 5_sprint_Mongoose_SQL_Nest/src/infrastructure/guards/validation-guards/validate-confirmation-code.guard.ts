@@ -30,7 +30,7 @@ export class ValidateConfirmationCodeGuard implements CanActivate {
       ]); //Code is incorrect
     }
 
-    if (emailConfirmationInfo[0].expirationDate < new Date().toISOString()) {
+    if (+new Date(emailConfirmationInfo[0].expirationDate) < +new Date()) {
       throw new BadRequestException([
         { message: 'Code is already expired', field: 'code' },
       ]); //Code is already expired

@@ -33,8 +33,22 @@ export class UsersPublicRepository {
     return;
   }
 
-  //MONGO
   async updatePassword(
+    newPasswordHash: string,
+    userId: ObjectId,
+  ): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    UPDATE public."users"
+      SET "passwordHash" = $1
+      WHERE "id" = $2`,
+      [newPasswordHash, userId],
+    );
+    return result[1] === 1;
+  }
+
+  //MONGO
+  /*  async updatePassword(
     newPasswordHash: string,
     _id: ObjectId,
   ): Promise<boolean> {
@@ -43,7 +57,7 @@ export class UsersPublicRepository {
       { $set: { passwordHash: newPasswordHash } },
     );
     return result.modifiedCount === 1;
-  }
+  }*/
 
   async save(user: UserInstanceType): Promise<void> {
     await user.save();

@@ -70,6 +70,21 @@ export class UsersPublicQueryRepository {
     return userInfo[0];
   }
 
+  async getUserByRecoveryCode(recoveryCode: string): Promise<any> {
+    //todo тип
+    const result = await this.dataSource.query(
+      `
+    SELECT u."id", pc."expirationDate", pc."confirmationCode"
+      FROM public."users" AS u
+      JOIN public."users_password_recovery" AS pc
+        ON u."id" = pc."userId"
+        WHERE "confirmationCode" = $1`,
+      [recoveryCode],
+    );
+    if (!result[0]) return null;
+    return result[0];
+  }
+
   //MONGO
   /*  async getUserInfoById(userId: ObjectId): Promise<null | UsersInfoPublicType> {
     const user = await this.UserModel.findOne({ _id: userId });
@@ -82,11 +97,11 @@ export class UsersPublicQueryRepository {
     };
   }*/
 
-  async getUserByRecoveryCode(
+  /*  async getUserByRecoveryCode(
     recoveryCode: string,
   ): Promise<UserDBType | null> {
     return this.UserModel.findOne({
       'passwordRecovery.confirmationCode': recoveryCode,
     });
-  }
+  }*/
 }

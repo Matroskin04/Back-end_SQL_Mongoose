@@ -23,11 +23,14 @@ import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-st
 import { BasicAuthGuard } from '../../../../infrastructure/guards/authorization-guards/basic-auth.guard';
 import { SkipThrottle } from '@nestjs/throttler';
 import { UpdateBanInfoOfUserInputModel } from './models/input/update-ban-info-of-user.input.model';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateUserCommand } from '../application/use-cases/create-user.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/sa/users')
 export class UsersSaController {
   constructor(
+    protected commandBus: CommandBus,
     protected usersSAQueryRepository: UsersSAQueryRepository,
     protected usersService: UsersSaService,
   ) {}
@@ -48,7 +51,9 @@ export class UsersSaController {
     @Body() inputUserModel: CreateUserInputModel,
     @Res() res: Response<UserOutputModel>,
   ) {
-    const result = await this.usersService.createUser(inputUserModel);
+    const result = await this.commandBus.execute(
+      new CreateUserCommand(inputUserModel),
+    );
     res.status(HTTP_STATUS_CODE.CREATED_201).send(result);
   }
 

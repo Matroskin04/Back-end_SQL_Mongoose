@@ -35,7 +35,6 @@ export class SendEmailPassRecoveryUseCase
       await this.passwordRecoveryPublicRepository.updateCodePasswordRecovery(
         user.id,
         newCode,
-        '1 hour',
       );
     if (!result) throw new Error('Updating password recovery code is failed');
 
