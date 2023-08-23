@@ -1,4 +1,4 @@
-export type QueryUserInputModel = {
+export type QueryUsersSAInputModel = {
   searchLoginTerm?: string;
   searchEmailTerm?: string;
   sortBy?: string;

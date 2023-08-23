@@ -8,10 +8,13 @@ import { DeviceModelType } from '../domain/devices.db.types';
 import { ResponseTypeService } from '../../../infrastructure/utils/functions/types/create-responses-service.types.service';
 import { createResponseService } from '../../../infrastructure/utils/functions/create-response-service.function';
 import { JwtService } from '../../jwt/jwt.service';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class DevicesService {
   constructor(
+    @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(Device.name)
     private DeviceModel: DeviceModelType,
     protected jwtService: JwtService,
@@ -19,6 +22,19 @@ export class DevicesService {
     protected deviceRepository: DevicesRepository,
   ) {}
 
+  //SQL
+  async deleteAllDevicesByUserId(userId: string): Promise<boolean> {
+    const result = this.dataSource.query(
+      `
+    DELETE FROM public."devices"
+        WHERE "userId" = $1 `,
+      [userId],
+    );
+    console.log(result, 'delete');
+    return result[1] > 0;
+  }
+
+  //MONGO
   async createNewDevice(
     ip: string,
     title: string,
@@ -84,9 +100,5 @@ export class DevicesService {
     }
 
     return this.deviceRepository.deleteDeviceById(payloadToken.deviceId);
-  }
-
-  async deleteAllDevicesByUserId(userId: string): Promise<boolean> {
-    return this.deviceRepository.deleteAllDevicesByUserId(new ObjectId(userId));
   }
 }

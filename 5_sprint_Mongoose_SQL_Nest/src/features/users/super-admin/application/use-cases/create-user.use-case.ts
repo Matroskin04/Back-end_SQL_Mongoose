@@ -87,7 +87,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     if (!user) throw new Error('Created user is not found');
 
     return {
-      id: user.userId,
+      id: user.id,
       login: user.login,
       email: user.email,
       createdAt: user.createdAt,

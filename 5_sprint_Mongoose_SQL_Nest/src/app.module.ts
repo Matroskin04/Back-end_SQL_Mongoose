@@ -111,6 +111,8 @@ import { BanInfoPublicRepository } from './features/users/public/infrastructure/
 import { EmailConfirmationPublicRepository } from './features/users/public/infrastructure/subrepositories/email-confirmation.public.repository';
 import { UsersPublicRepository } from './features/users/public/infrastructure/repository/users-public.repository';
 import { CreateUserUseCase } from './features/users/super-admin/application/use-cases/create-user.use-case';
+import { DeleteUserUseCase } from './features/users/super-admin/application/use-cases/delete-user.use-case';
+import { UpdateBanInfoOfUserUseCase } from './features/users/super-admin/application/use-cases/update-ban-info-user.use-case';
 
 const services = [
   AuthService,
@@ -155,13 +157,17 @@ const repositories = [
   TestingRepository,
 ];
 const handlers = [
+  //auth
   RegisterUserUseCase,
   ConfirmEmailUseCase,
   ResendConfirmationEmailMessageUseCase,
   SaveNewPassUseCase,
   LoginUserUseCase,
   SendEmailPassRecoveryUseCase,
+  //users
   CreateUserUseCase,
+  UpdateBanInfoOfUserUseCase,
+  DeleteUserUseCase,
 ];
 
 @Module({

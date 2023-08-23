@@ -244,10 +244,6 @@ export class UsersSaService {
     return;
   }
 
-  async deleteSingleUser(id: string): Promise<boolean> {
-    return this.usersRepository.deleteSingleUser(id);
-  }
-
   async getUserIdByAccessToken(token: string): Promise<null | ObjectId> {
     try {
       const decode = jwt.verify(

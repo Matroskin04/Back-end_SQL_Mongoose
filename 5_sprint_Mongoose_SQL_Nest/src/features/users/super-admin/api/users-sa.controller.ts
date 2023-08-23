@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -10,7 +12,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { QueryUserInputModel } from './models/input/query-user.input.model';
+import { QueryUsersSAInputModel } from './models/input/query-users-sa.input.model';
 import {
   ViewAllUsersModels,
   UserOutputModel,
@@ -25,6 +27,8 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { UpdateBanInfoOfUserInputModel } from './models/input/update-ban-info-of-user.input.model';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../application/use-cases/create-user.use-case';
+import { DeleteUserCommand } from '../application/use-cases/delete-user.use-case';
+import { UpdateBanInfoOfUserCommand } from '../application/use-cases/update-ban-info-user.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/sa/users')
@@ -38,7 +42,7 @@ export class UsersSaController {
   @UseGuards(BasicAuthGuard)
   @Get()
   async getAllUsers(
-    @Query() query: QueryUserInputModel,
+    @Query() query: QueryUsersSAInputModel,
     @Res() res: Response<ViewAllUsersModels | string>,
   ) {
     const result = await this.usersSAQueryRepository.getAllUsers(query);
@@ -58,20 +62,24 @@ export class UsersSaController {
   }
 
   @UseGuards(BasicAuthGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':id/ban')
   async updateBanInfoOfUser(
     @Param('id') userId: string,
     @Body() inputBanInfo: UpdateBanInfoOfUserInputModel,
     @Res() res: Response<void>,
   ) {
-    await this.usersService.updateBanInfoOfUser(userId, inputBanInfo);
-    res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204);
+    const result = await this.commandBus.execute(
+      new UpdateBanInfoOfUserCommand(userId, inputBanInfo),
+    );
+    if (!result) throw new NotFoundException('User is not found');
+    return;
   }
 
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
   async deleteUser(@Param('id') userId: string, @Res() res: Response<void>) {
-    const result = await this.usersService.deleteSingleUser(userId);
+    const result = await this.commandBus.execute(new DeleteUserCommand(userId));
 
     result
       ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)

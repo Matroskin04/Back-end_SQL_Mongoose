@@ -5,9 +5,9 @@ import { BannedUsersByBloggerModelType } from '../../../banned/banned-by-blogger
 import { BannedUsersOfBlogPaginationType } from './users-blogger.types.query.repository';
 import { ObjectId } from 'mongodb';
 import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
-import { QueryUserInputModel } from '../../../super-admin/api/models/input/query-user.input.model';
 import { User } from '../../../domain/users.entity';
 import { UserModelType } from '../../../domain/users.db.types';
+import { QueryUsersBloggerInputModel } from '../../api/models/input/query-users-blogger.input.model';
 
 Injectable();
 export class UsersBloggerQueryRepository {
@@ -19,7 +19,7 @@ export class UsersBloggerQueryRepository {
   ) {}
 
   async getBannedUsersOfBlog(
-    query: QueryUserInputModel,
+    query: QueryUsersBloggerInputModel,
     blogId: string,
   ): Promise<BannedUsersOfBlogPaginationType> {
     const searchLoginTerm: string | null = query?.searchLoginTerm ?? null;
