@@ -5,7 +5,6 @@ export type VariablesForReturnMongoType = {
   sortDirection: number;
   paramSort: any;
 };
-
 export type VariablesForReturnType = {
   pageNumber: string | number;
   pageSize: string | number;
