@@ -180,14 +180,13 @@ const handlers = [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: process.env.POSTGRES_URL,
       port: 5432,
       username: 'It-Incubator',
       password: 'sa',
       database: 'BackEnd_course',
       autoLoadEntities: false,
       synchronize: false,
-      connectString: process.env.POSTGRES_URL,
     }),
     MongooseModule.forRoot(process.env.MONGO_URL!),
     MongooseModule.forFeature([
