@@ -61,11 +61,11 @@ export class UsersSAQueryRepository {
           FROM public."users" as u2
             JOIN public."users_ban_info" as bi2
             ON bi2."userId" = u2."id"
-          WHERE (u2."login" like $1 OR u2."email" like $2) AND (bi2."isBanned" = $3 OR $3 IS NULL))
+          WHERE (u2."login" ILIKE '$1' OR u2."email" ILIKE $2) AND (bi2."isBanned" = $3 OR $3 IS NULL))
     FROM public."users" as u
         JOIN public."users_ban_info" as bi
         ON bi."userId" = u."id"
-    WHERE (u."login" like $1 OR u."email" like $2) AND (bi."isBanned" = $3 OR $3 IS NULL) AND (u."isDeleted" = false)
+    WHERE (u."login" ILIKE $1 OR u."email" ILIKE $2) AND (bi."isBanned" = $3 OR $3 IS NULL) AND (u."isDeleted" = false)
         ORDER BY "${sortBy}" ${sortDirection}
         LIMIT $4 OFFSET $5`,
       [
