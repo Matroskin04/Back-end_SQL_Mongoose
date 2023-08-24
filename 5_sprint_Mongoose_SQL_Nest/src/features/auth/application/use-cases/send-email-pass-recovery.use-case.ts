@@ -38,7 +38,7 @@ export class SendEmailPassRecoveryUseCase
       );
     if (!result) throw new Error('Updating password recovery code is failed');
 
-    this.emailManager.sendEmailPasswordRecovery(email, newCode);
+    await this.emailManager.sendEmailPasswordRecovery(email, newCode);
 
     return;
   }
