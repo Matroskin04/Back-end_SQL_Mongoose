@@ -169,7 +169,9 @@ const handlers = [
   UpdateBanInfoOfUserUseCase,
   DeleteUserUseCase,
 ];
-
+// const pool = new Pool({
+//   connectionString: process.env.POSTGRES_URL + '?sslmode=require',
+// });
 @Module({
   imports: [
     CqrsModule,
@@ -180,13 +182,14 @@ const handlers = [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: process.env.POSTGRES_HOST,
       port: 5432,
-      username: 'It-Incubator',
-      password: 'sa',
-      database: 'BackEnd_course',
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: false,
       synchronize: false,
+      url: process.env.POSTGRES_URL,
     }),
     MongooseModule.forRoot(process.env.MONGO_URL!),
     MongooseModule.forFeature([
