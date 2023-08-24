@@ -61,7 +61,7 @@ export class UsersSAQueryRepository {
           FROM public."users" as u2
             JOIN public."users_ban_info" as bi2
             ON bi2."userId" = u2."id"
-          WHERE (u2."login" ILIKE '$1' OR u2."email" ILIKE $2) AND (bi2."isBanned" = $3 OR $3 IS NULL))
+          WHERE (u2."login" ILIKE $1 OR u2."email" ILIKE $2) AND (bi2."isBanned" = $3 OR $3 IS NULL))
     FROM public."users" as u
         JOIN public."users_ban_info" as bi
         ON bi."userId" = u."id"
