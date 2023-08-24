@@ -33,7 +33,7 @@ export class UsersSAQueryRepository {
       FROM public."users" AS u
         JOIN public."users_ban_info" AS bi
         ON u."id" = bi."userId"
-      WHERE u."id" = $1`,
+      WHERE u."id" = $1 AND u."isDeleted" = false`,
       [userId],
     );
     if (userInfo.length === 0) return null;
@@ -65,7 +65,7 @@ export class UsersSAQueryRepository {
     FROM public."users" as u
         JOIN public."users_ban_info" as bi
         ON bi."userId" = u."id"
-    WHERE (u."login" like $1 OR u."email" like $2) AND (bi."isBanned" = $3 OR $3 IS NULL)
+    WHERE (u."login" like $1 OR u."email" like $2) AND (bi."isBanned" = $3 OR $3 IS NULL) AND (u."isDeleted" = false)
         ORDER BY "${sortBy}" ${sortDirection}
         LIMIT $4 OFFSET $5`,
       [
