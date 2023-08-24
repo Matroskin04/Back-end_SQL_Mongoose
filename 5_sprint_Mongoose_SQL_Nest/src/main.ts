@@ -12,8 +12,9 @@ async function bootstrap() {
   appSettings(app);
 
   await app.listen(process.env.PORT || 5000);
-  const pool = new Pool({
-    connectionString: process.env.POSTGRES_URL + '?sslmode=require',
-  });
+  // const pool = new Pool({
+  //   connectionString: process.env.POSTGRES_URL + '?sslmode=require',
+  // });
+  // pool.connect();
 }
 bootstrap();
