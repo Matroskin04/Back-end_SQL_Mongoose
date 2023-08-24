@@ -17,6 +17,15 @@ export class ValidateConfirmationCodeGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     //todo отдельный метод
+    if (
+      !request.body.code.match(
+        /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/,
+      )
+    )
+      throw new BadRequestException([
+        { message: 'Code is incorrect', field: 'code' },
+      ]); //Code is incorrect form
+
     const emailConfirmationInfo = await this.dataSource.query(
       `
     SELECT "userId", "isConfirmed", "expirationDate" FROM public."users_email_confirmation"
