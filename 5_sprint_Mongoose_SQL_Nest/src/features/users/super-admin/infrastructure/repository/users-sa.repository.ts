@@ -36,9 +36,9 @@ export class UsersSARepository {
     const result = await this.dataSource.query(
       `
     UPDATE public."users_ban_info" 
-      SET "isBanned" = $1, "banReason" = $2, "banDate" = now()
+      SET "isBanned" = $1, "banReason" = $2, "banDate" = CASE WHEN $1 = true THEN now() ELSE NULL END
       WHERE "userId" = $3`,
-      [isBanned, banReason, userId],
+      [isBanned, isBanned ? banReason : null, userId],
     );
     return result[1] === 1;
   }
