@@ -32,7 +32,7 @@ export class ResendConfirmationEmailMessageUseCase
       throw new Error('Resending confirmation email message failed.');
     }
 
-    await this.emailManager.sendEmailConfirmationMessage(email, newCode);
+    this.emailManager.sendEmailConfirmationMessage(email, newCode);
     return;
   }
 }
