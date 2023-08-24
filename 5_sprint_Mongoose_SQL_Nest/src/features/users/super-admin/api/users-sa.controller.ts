@@ -58,7 +58,6 @@ export class UsersSaController {
     const result = await this.commandBus.execute(
       new CreateUserCommand(inputUserModel),
     );
-
     res.status(HTTP_STATUS_CODE.CREATED_201).send(result);
   }
 
