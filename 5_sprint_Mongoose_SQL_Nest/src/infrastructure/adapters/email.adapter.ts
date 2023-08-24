@@ -50,6 +50,7 @@ export class EmailAdapter {
         subject: subject, // Subject line
         html: message, // plain text body
       });
+
       return true;
     } catch (e) {
       console.log('emailAdapter => sendEmailConfirmation => error:', e);
