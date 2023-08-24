@@ -78,7 +78,6 @@ export class UsersSAQueryRepository {
         (+pageNumber - 1) * +pageSize,
       ],
     );
-    console.log(result);
     /*if (searchEmailTerm)
       emailAndLoginTerm.push({
         email: { $regex: searchEmailTerm ?? '', $options: 'i' }, //todo исправить
@@ -100,10 +99,10 @@ export class UsersSAQueryRepository {
       .limit(+paramsOfElems.pageSize)
       .sort(paramsOfElems.paramSort);*/
     return {
-      pagesCount: Math.ceil(+result[0].count / +pageSize),
+      pagesCount: Math.ceil(+result[0]?.count ?? 0 / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: +result[0].count,
+      totalCount: +result[0]?.count ?? 0,
       items: result.map((p) => modifyUserIntoViewModel(p)),
     };
   }
