@@ -20,10 +20,13 @@ import { BannedUserBySA } from '../../users/banned/banned-sa-users/domain/users-
 import { BannedUserModelType } from '../../users/banned/banned-sa-users/domain/users-banned.db.types';
 import { User } from '../../users/domain/users.entity';
 import { UserModelType } from '../../users/domain/users.db.types';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class TestingRepository {
   constructor(
+    @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(Post.name)
     private PostModel: PostModelType,
     @InjectModel(Blog.name)
@@ -51,6 +54,8 @@ export class TestingRepository {
       this.DeviceModel.deleteMany({}),
       this.CommentLikesInfoModel.deleteMany({}),
       this.PostLikesInfoModel.deleteMany({}),
+      this.dataSource.query(`
+      TRUNCATE public."users" CASCADE`),
     ]).then(
       (value) => {
         console.log('OK');
