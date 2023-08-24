@@ -113,6 +113,8 @@ import { UsersPublicRepository } from './features/users/public/infrastructure/re
 import { CreateUserUseCase } from './features/users/super-admin/application/use-cases/create-user.use-case';
 import { DeleteUserUseCase } from './features/users/super-admin/application/use-cases/delete-user.use-case';
 import { UpdateBanInfoOfUserUseCase } from './features/users/super-admin/application/use-cases/update-ban-info-user.use-case';
+import { DeleteDevicesExcludeCurrentUseCase } from './features/devices/application/use-cases/delete-devices-exclude-current.use-case';
+import { DeleteDeviceByIdUseCase } from './features/devices/application/use-cases/delete-device-by-id.use-case';
 
 const services = [
   AuthService,
@@ -168,10 +170,11 @@ const handlers = [
   CreateUserUseCase,
   UpdateBanInfoOfUserUseCase,
   DeleteUserUseCase,
+  //devices
+  DeleteDevicesExcludeCurrentUseCase,
+  DeleteDeviceByIdUseCase,
 ];
-// const pool = new Pool({
-//   connectionString: process.env.POSTGRES_URL + '?sslmode=require',
-// });
+
 @Module({
   imports: [
     CqrsModule,
