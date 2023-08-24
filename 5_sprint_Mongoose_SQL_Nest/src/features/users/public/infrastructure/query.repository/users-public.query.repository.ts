@@ -35,7 +35,7 @@ export class UsersPublicQueryRepository {
     `,
       [userId],
     );
-    return result;
+    return result[0];
   }
 
   async getUserPassEmailInfoByLoginOrEmail(
