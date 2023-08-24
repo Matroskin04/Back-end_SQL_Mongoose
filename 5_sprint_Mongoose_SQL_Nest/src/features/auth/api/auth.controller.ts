@@ -57,7 +57,7 @@ import { LoginUserCommand } from '../application/use-cases/login-user.use-case';
 import { SendEmailPassRecoveryCommand } from '../application/use-cases/send-email-pass-recovery.use-case';
 import { UsersPublicQueryRepository } from '../../users/public/infrastructure/query.repository/users-public.query.repository';
 
-@SkipThrottle()
+// @SkipThrottle()
 @Controller('/hometask-nest/auth')
 export class AuthController {
   constructor(

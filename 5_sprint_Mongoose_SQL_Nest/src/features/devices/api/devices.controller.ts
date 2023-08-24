@@ -4,10 +4,16 @@ import { DevicesService } from '../application/devices.service';
 import { DeviceOutputModel } from './models/output/device.output.model';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { SkipThrottle } from '@nestjs/throttler';
-import { JwtRefreshGuardMongo } from '../../../infrastructure/guards/authorization-guards/jwt-refresh.guard';
+import {
+  JwtRefreshGuard,
+  JwtRefreshGuardMongo,
+} from '../../../infrastructure/guards/authorization-guards/jwt-refresh.guard';
 import { RefreshToken } from '../../../infrastructure/decorators/auth/refresh-token-param.decorator';
 import { Response } from 'express';
-import { CurrentUserIdMongo } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import {
+  CurrentUserId,
+  CurrentUserIdMongo,
+} from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 
 @SkipThrottle()
@@ -18,17 +24,15 @@ export class DevicesController {
     protected devicesService: DevicesService,
   ) {}
 
-  @UseGuards(JwtRefreshGuardMongo)
+  @UseGuards(JwtRefreshGuard)
   @Get()
   async getAllDevices(
-    @CurrentUserIdMongo() userId: ObjectId,
-    @RefreshToken() refreshToken: string,
-    @Res() res: Response<DeviceOutputModel>,
-  ) {
+    @CurrentUserId() userId: string,
+  ): Promise<DeviceOutputModel> {
     const result = await this.devicesQueryRepository.getAllDevicesByUserId(
-      userId.toString(),
+      userId,
     );
-    res.status(HTTP_STATUS_CODE.OK_200).send(result);
+    return result;
   }
 
   @UseGuards(JwtRefreshGuardMongo)

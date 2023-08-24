@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as process from 'process';
+import process from 'process';
 import { appSettings } from './app.settings';
 
 async function bootstrap() {

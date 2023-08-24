@@ -28,14 +28,19 @@ export class DevicesQueryRepository {
     return result[0];
   }
 
-  //MONGO
-  async getAllDevicesByUserId(userId: string): Promise<DeviceViewType[]> {
-    return this.DeviceModel.find(
-      { userId },
-      { _id: 0, userId: 0, expirationDate: 0, __v: 0, expireAt: 0 },
-    ).lean();
+  async getAllDevicesByUserId(userId: string): Promise<DeviceViewType[] | []> {
+    const result = await this.dataSource.query(
+      `
+    SELECT "id" as "deviceId", "ip", "title", "lastActiveDate"
+        FROM public."devices"
+        WHERE "userId" = $1`,
+      [userId],
+    );
+    if (result.length === 0) return [];
+    return result;
   }
 
+  //MONGO
   async getDeviceByIdMongo(deviceId: string): Promise<DeviceDBType | null> {
     return this.DeviceModel.findOne({ deviceId });
   }
