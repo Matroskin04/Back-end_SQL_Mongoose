@@ -39,16 +39,6 @@ export class DevicesRepository {
     );
   }
 
-  async deleteDeviceById(deviceId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    DELETE FROM public."devices"
-        WHERE "id" = $1`,
-      [deviceId],
-    );
-    return result[1] === 1;
-  }
-
   async updateLastActiveDateByDeviceId(
     deviceId: string,
     iat: number,
@@ -63,32 +53,32 @@ export class DevicesRepository {
     return result[1] === 1;
   }
 
+  async deleteDeviceById(deviceId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    DELETE FROM public."devices"
+        WHERE "id" = $1`,
+      [deviceId],
+    );
+    return result[1] === 1;
+  }
+
+  async deleteDevicesExcludeCurrent(deviceId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    DELETE FROM public."devices" 
+        WHERE "id" != $1`,
+      [deviceId],
+    );
+    console.log(result);
+    return result[1] > 0;
+  }
+
   //MONGO
   async save(device: DeviceInstanceType): Promise<void> {
     await device.save();
     return;
   }
-
-  async getDeviceInstance(
-    deviceId: ObjectId,
-  ): Promise<null | DeviceInstanceType> {
-    const device = await this.DeviceModel.findOne({ deviceId });
-
-    if (!device) return null;
-    return device;
-  }
-
-  async deleteDevicesExcludeCurrent(deviceId: string): Promise<boolean> {
-    const result = await this.DeviceModel.deleteMany({
-      deviceId: { $ne: deviceId },
-    });
-    return result.deletedCount > 0;
-  }
-
-  /*  async deleteDeviceById(deviceId: string): Promise<boolean> {
-    const result = await this.DeviceModel.deleteOne({ deviceId });
-    return result.deletedCount === 1;
-  }*/
 
   async deleteAllDevicesByUserId(userId: ObjectId): Promise<boolean> {
     const result = await this.DeviceModel.deleteMany({ userId });
