@@ -1,8 +1,9 @@
 import { QueryBlogInputModel } from './models/input/query-blog.input.model';
 import {
   ViewAllBlogsModel,
-  BlogOutputModel,
+  BlogOutputModelMongo,
   ViewPostsOfBlogModel,
+  BlogOutputModel,
 } from './models/output/blog.output.model';
 import { CreateBlogInputModel } from './models/input/create-blog.input.model';
 import { UpdateBlogInputModel } from './models/input/update-blog.input.model';
@@ -12,6 +13,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -21,19 +25,24 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { SkipThrottle } from '@nestjs/throttler';
-import { JwtAccessGuardMongo } from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import {
+  JwtAccessGuard,
+  JwtAccessGuardMongo,
+} from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
 import { PostsService } from '../../../posts/application/posts.service';
 import { BlogsBloggerQueryRepository } from '../infrastructure/query.repository/blogs-blogger.query.repository';
 import { BlogsBloggerService } from '../application/blogs-blogger.service';
-import { CurrentUserIdMongo } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import {
+  CurrentUserId,
+  CurrentUserIdMongo,
+} from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 import { CreatePostByBlogIdModel } from '../../../posts/api/models/input/create-post.input.model';
 import { PostTypeWithId } from '../../../posts/infrastructure/repository/posts.types.repositories';
 import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
 import { UpdatePostByBlogIdInputModel } from './models/input/update-post-by-blog-id.input.model';
-import { CommentsService } from '../../../comments/application/comments.service';
 import { CommentsQueryRepository } from '../../../comments/infrastructure/query.repository/comments.query.repository';
 
 @SkipThrottle()
@@ -47,18 +56,17 @@ export class BlogsBloggerController {
     protected commentsQueryRepository: CommentsQueryRepository,
   ) {}
 
-  @UseGuards(JwtAccessGuardMongo)
+  @UseGuards(JwtAccessGuard)
   @Get()
   async getAllBlogs(
     @Query() query: QueryBlogInputModel,
-    @CurrentUserIdMongo() userId: ObjectId,
-    @Res() res: Response<ViewAllBlogsModel>,
-  ) {
-    const result = await this.blogsBloggerQueryRepository.getAllBlogs(
+    @CurrentUserId() userId: string,
+  ): Promise<ViewAllBlogsModel> {
+    const result = await this.blogsBloggerQueryRepository.getAllBlogsOfBlogger(
       query,
       userId.toString(),
     );
-    res.status(HTTP_STATUS_CODE.OK_200).send(result);
+    return result;
   }
 
   @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuard)
@@ -92,18 +100,18 @@ export class BlogsBloggerController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuardMongo)
+  @UseGuards(JwtAccessGuard)
+  @HttpCode(HTTP_STATUS_CODE.CREATED_201)
   @Post()
   async createBlog(
     @Body() inputBlogModel: CreateBlogInputModel,
-    @CurrentUserIdMongo() userId: ObjectId,
-    @Res() res: Response<BlogOutputModel>,
-  ) {
+    @CurrentUserId() userId: string,
+  ): Promise<BlogOutputModel> {
     const result = await this.blogsBloggerService.createBlog(
       inputBlogModel,
       userId,
     );
-    res.status(HTTP_STATUS_CODE.CREATED_201).send(result);
+    return result;
   }
 
   @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuard)
@@ -125,19 +133,18 @@ export class BlogsBloggerController {
   }
 
   @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':blogId')
   async updateBlog(
     @Param('blogId') blogId: string,
     @Body() inputBlogModel: UpdateBlogInputModel,
-    @Res() res: Response<void>,
-  ) {
+  ): Promise<void> {
     const result = await this.blogsBloggerService.updateBlog(
       blogId,
       inputBlogModel,
     );
-    result
-      ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException();
+    return;
   }
 
   @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuard)

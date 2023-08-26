@@ -9,46 +9,53 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog } from '../../../domain/blogs.entity';
 import { BlogModelType } from '../../../domain/blogs.db.types';
-import { variablesForReturnMongo } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
+import {
+  variablesForReturn,
+  variablesForReturnMongo,
+} from '../../../../../infrastructure/utils/functions/variables-for-return.function';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { modifyUserIntoViewModel } from '../../../../users/super-admin/infrastructure/helpers/modify-user-into-view-model.helper';
 
 @Injectable()
 export class BlogsBloggerQueryRepository {
   constructor(
+    @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(Blog.name)
     private BlogModel: BlogModelType,
   ) {}
-  async getAllBlogs(
+
+  //SQL
+  async getAllBlogsOfBlogger(
     query: QueryBlogInputModel,
     userId: string,
   ): Promise<BlogPaginationType> {
-    const searchNameTerm: string | null = query?.searchNameTerm ?? null;
-    const paramsOfElems = await variablesForReturnMongo(query);
+    const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
+      variablesForReturn(query);
 
-    const countAllBlogsSort = await this.BlogModel.countDocuments({
-      name: { $regex: searchNameTerm ?? '', $options: 'i' },
-      'blogOwnerInfo.userId': userId,
-    });
-
-    const allBlogsOnPages = await this.BlogModel.find(
-      {
-        name: { $regex: searchNameTerm ?? '', $options: 'i' },
-        'blogOwnerInfo.userId': userId,
-      },
-      { blogOwnerInfo: 0 },
-    )
-      .skip((+paramsOfElems.pageNumber - 1) * +paramsOfElems.pageSize)
-      .limit(+paramsOfElems.pageSize)
-      .sort(paramsOfElems.paramSort);
+    const result = await this.dataSource.query(
+      `
+    SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership",
+      (SELECT COUNT(*)
+        FROM public."blogs"
+        WHERE "name" ILIKE $1 AND "userId" = $2)
+    FROM public."blogs"
+        WHERE "name" ILIKE $1 AND "userId" = $2
+            ORDER BY "${sortBy}" ${sortDirection}
+            LIMIT $3 OFFSET $4`,
+      [`%${searchNameTerm}%`, userId, +pageSize, (+pageNumber - 1) * +pageSize],
+    );
 
     return {
-      pagesCount: Math.ceil(countAllBlogsSort / +paramsOfElems.pageSize),
-      page: +paramsOfElems.pageNumber,
-      pageSize: +paramsOfElems.pageSize,
-      totalCount: countAllBlogsSort,
-      items: allBlogsOnPages.map((p) => p.modifyIntoViewGeneralModel()),
+      pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +result[0]?.count || 0,
+      items: result,
     };
   }
 
+  //MONGO
   async getBlogById(id: ObjectId): Promise<null | BlogViewType> {
     const blog = await this.BlogModel.findOne(
       { _id: id },

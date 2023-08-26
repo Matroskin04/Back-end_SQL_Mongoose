@@ -44,7 +44,7 @@ export class Blog {
 
   modifyIntoViewGeneralModel(): BlogViewType {
     return {
-      id: this._id,
+      id: this._id.toString(),
       name: this.name,
       description: this.description,
       websiteUrl: this.websiteUrl,
