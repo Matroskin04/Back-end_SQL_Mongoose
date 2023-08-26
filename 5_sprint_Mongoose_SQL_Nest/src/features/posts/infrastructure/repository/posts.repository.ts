@@ -42,6 +42,19 @@ export class PostsRepository {
     return result[0];
   }
 
+  async updatePost(
+    postDTO: BodyPostByBlogIdType,
+    postId: string,
+  ): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    UPDATE public."posts"
+      SET "title" = $1, "shortDescription" = $2, "content" = $3
+        WHERE "id" = $4`,
+      [postDTO.title, postDTO.shortDescription, postDTO.content, postId],
+    );
+    return result[1] === 1;
+  }
   //MONGO
   async getPostById(postId: ObjectId): Promise<null | PostInstanceType> {
     const post = await this.PostModel.findOne({ _id: postId });

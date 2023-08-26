@@ -125,20 +125,12 @@ export class PostsService {
   async updatePostByBlogId(
     blogId: string,
     postId: string,
-    inputBodyPost: BodyForUpdatePostDto,
+    postDTO: BodyForUpdatePostDto,
   ) {
-    const blog = await this.blogsBloggerQueryRepository.getBlogByIdMongo(
-      new ObjectId(blogId),
-    );
+    const blog = await this.blogsBloggerQueryRepository.getBlogById(blogId);
     if (!blog) return false;
 
-    const post = await this.postsRepository.getPostById(new ObjectId(postId));
-    if (!post) return false;
-
-    post.updatePostInfo(post, inputBodyPost);
-    await this.postsRepository.save(post);
-
-    return true;
+    return this.postsRepository.updatePost(postDTO, postId);
   }
 
   async updateLikeStatusOfPost(

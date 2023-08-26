@@ -144,23 +144,22 @@ export class BlogsBloggerController {
     return;
   }
 
-  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuardMongo)
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':blogId/posts/:postId')
   async updatePostOfBlog(
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
     @Body() inputPostModel: UpdatePostByBlogIdInputModel,
-    @Res() res: Response<void>,
-  ) {
+  ): Promise<void> {
     const result = await this.postsService.updatePostByBlogId(
       blogId,
       postId,
       inputPostModel,
     );
 
-    result
-      ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException();
+    return;
   }
 
   @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
