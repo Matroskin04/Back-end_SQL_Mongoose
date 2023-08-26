@@ -8,3 +8,4 @@ export type QueryUsersSAInputModel = {
   banStatus?: 'all' | 'banned' | 'notBanned';
 };
 //todo вынести
+//todo validation also

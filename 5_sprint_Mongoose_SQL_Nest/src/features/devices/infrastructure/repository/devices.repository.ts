@@ -37,6 +37,7 @@ export class DevicesRepository {
         payloadToken.exp! - payloadToken.iat!,
       ],
     );
+    return;
   }
 
   async updateLastActiveDateByDeviceId(

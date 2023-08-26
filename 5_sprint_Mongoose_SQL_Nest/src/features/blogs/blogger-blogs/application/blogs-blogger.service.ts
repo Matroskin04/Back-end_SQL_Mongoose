@@ -18,24 +18,14 @@ export class BlogsBloggerService {
   ) {}
 
   async createBlog(
-    inputBodyBlog: BodyBlogType,
-    userId: ObjectId,
+    blogDTO: BodyBlogType,
+    userId: string,
   ): Promise<BlogViewType> {
-    const user = await this.usersQueryRepository.getUserByUserId(userId);
+    const user = await this.usersQueryRepository.getUserLoginByUserId(userId);
     if (!user) throw new Error('User is not found');
 
-    const blogInfo = {
-      ...inputBodyBlog,
-      blogOwnerInfo: {
-        userId: userId.toString(),
-        userLogin: user.login,
-      },
-    };
-
-    const blog = this.BlogModel.createInstance(blogInfo, this.BlogModel);
-    await this.blogsRepository.save(blog);
-
-    return blog.modifyIntoViewGeneralModel();
+    const result = await this.blogsRepository.createBlog(blogDTO, userId);
+    return result;
   }
 
   async updateBlog(id: string, inputBodyBlog: BodyBlogType): Promise<boolean> {

@@ -23,7 +23,7 @@ export class JwtRefreshStrategyMongo extends PassportStrategy(
   }
 
   async validate(payload: any) {
-    const user = this.usersQueryRepository.getUserByUserId(payload.userId);
+    const user = this.usersQueryRepository.getUserByUserIdMongo(payload.userId);
     if (!user) throw new UnauthorizedException();
 
     const device = await this.devicesQueryRepository.getDeviceByIdMongo(

@@ -47,7 +47,7 @@ export class JwtAccessStrategyMongo extends PassportStrategy(
   }
 
   async validate(payload: any) {
-    const user = this.usersQueryRepository.getUserByUserId(payload.userId); //todo оставить потом только SQL
+    const user = this.usersQueryRepository.getUserByUserIdMongo(payload.userId); //todo оставить потом только SQL
 
     if (!user) throw new UnauthorizedException();
 

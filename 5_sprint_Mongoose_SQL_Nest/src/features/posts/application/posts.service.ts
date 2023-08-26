@@ -186,7 +186,7 @@ export class PostsService {
         throw new Error('Incrementing number of likes failed');
       }
       //Создаем like info
-      const user = await this.usersQueryRepository.getUserByUserId(userId);
+      const user = await this.usersQueryRepository.getUserByUserIdMongo(userId);
       if (!user) {
         throw new Error('User with this userId is not found');
       }

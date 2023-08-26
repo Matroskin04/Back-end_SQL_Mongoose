@@ -21,7 +21,7 @@ export class Comment {
   @Prop({ required: true })
   content: string;
 
-  @Prop({ type: CommentatorInfoSchema, required: true }) //todo create addition schema?
+  @Prop({ type: CommentatorInfoSchema, required: true })
   commentatorInfo: CommentatorInfo;
 
   @Prop({ required: true, default: new Date().toISOString() })

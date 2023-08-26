@@ -13,5 +13,6 @@ export type VariablesForReturnType = {
   sortDirection: string;
   searchLoginTerm: string;
   searchEmailTerm: string;
+  searchNameTerm: string;
   banStatus: null | boolean;
 };

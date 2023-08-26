@@ -9,6 +9,7 @@ import { Response } from 'express';
 import { QueryBlogInputModel } from '../../blogger-blogs/api/models/input/query-blog.input.model';
 import {
   BlogOutputModel,
+  BlogOutputModelMongo,
   ViewAllBlogsModel,
   ViewPostsOfBlogModel,
 } from '../../blogger-blogs/api/models/output/blog.output.model';

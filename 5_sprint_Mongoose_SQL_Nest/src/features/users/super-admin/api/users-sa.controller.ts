@@ -36,7 +36,6 @@ export class UsersSaController {
   constructor(
     protected commandBus: CommandBus,
     protected usersSAQueryRepository: UsersSAQueryRepository,
-    protected usersService: UsersSaService,
   ) {}
 
   @UseGuards(BasicAuthGuard)

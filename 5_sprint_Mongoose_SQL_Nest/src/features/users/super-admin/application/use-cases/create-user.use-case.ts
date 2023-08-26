@@ -21,7 +21,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
   constructor(
     protected usersPublicQueryRepository: UsersPublicQueryRepository,
     protected cryptoAdapter: CryptoAdapter,
-    protected usersPublicRepository: UsersPublicRepository, //todo обращаться из flow SA в репо Public?
+    protected usersPublicRepository: UsersPublicRepository, //todo объединение
     protected usersSAQueryRepository: UsersSAQueryRepository,
     protected emailConfirmationPublicRepository: EmailConfirmationPublicRepository,
     protected passwordRecoveryPublicRepository: PasswordRecoveryPublicRepository,

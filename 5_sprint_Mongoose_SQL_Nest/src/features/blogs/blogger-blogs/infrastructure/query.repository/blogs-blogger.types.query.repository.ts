@@ -1,5 +1,5 @@
-import { BlogOutputModel } from '../../api/models/output/blog.output.model';
 import { ObjectId } from 'mongodb';
+import { BlogOutputType } from '../repository/blogs-blogger.types.repositories';
 
 export type BlogPaginationType = {
   pagesCount: number;
@@ -8,6 +8,6 @@ export type BlogPaginationType = {
   totalCount: number;
   items: Array<BlogViewType>;
 };
-export type BlogViewType = BlogOutputModel;
+export type BlogViewType = BlogOutputType;
 
 export type BlogsIdType = Array<{ _id: ObjectId }>;

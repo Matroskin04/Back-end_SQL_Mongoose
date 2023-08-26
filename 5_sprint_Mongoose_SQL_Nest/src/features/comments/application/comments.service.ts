@@ -61,7 +61,7 @@ export class CommentsService {
     userId: ObjectId,
     postId: string,
   ): Promise<null | CommentViewType> {
-    const user = await this.usersQueryRepository.getUserByUserId(userId);
+    const user = await this.usersQueryRepository.getUserByUserIdMongo(userId);
     if (!user) {
       return null;
     }

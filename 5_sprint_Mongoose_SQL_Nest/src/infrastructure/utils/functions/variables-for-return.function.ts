@@ -23,15 +23,18 @@ export async function variablesForReturnMongo(
   };
 }
 
-export async function variablesForReturn(
+export function variablesForReturn(
   query: AllQueryParamsTypes,
-): Promise<VariablesForReturnType> {
+): VariablesForReturnType {
   const pageNumber = query?.pageNumber ?? 1;
   const pageSize = query?.pageSize ?? 10;
   const sortBy = query?.sortBy ?? 'createdAt';
   const sortDirection = query?.sortDirection ?? 'desc';
-  const searchLoginTerm: string | null = query?.searchLoginTerm ?? '';
-  const searchEmailTerm: string | null = query?.searchEmailTerm ?? '';
+
+  const searchLoginTerm: string = query?.searchLoginTerm ?? '';
+  const searchEmailTerm: string = query?.searchEmailTerm ?? '';
+  const searchNameTerm: string = query?.searchNameTerm ?? '';
+
   let banStatus;
   if (!query?.banStatus || query?.banStatus === 'all') banStatus = null;
   else banStatus = query?.banStatus === 'banned';
@@ -43,6 +46,7 @@ export async function variablesForReturn(
     sortDirection,
     searchLoginTerm,
     searchEmailTerm,
+    searchNameTerm,
     banStatus,
   };
 }

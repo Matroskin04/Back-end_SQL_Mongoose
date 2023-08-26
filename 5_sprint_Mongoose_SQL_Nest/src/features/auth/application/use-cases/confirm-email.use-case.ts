@@ -18,7 +18,6 @@ export class ConfirmEmailUseCase
 
   async execute(command: ConfirmEmailCommand): Promise<void> {
     const { confirmationCode } = command;
-    //todo надо ли проверять, что основная таблица юзера существует
     const userId =
       await this.usersPublicQueryRepository.getUserIdByConfirmationCode(
         confirmationCode,
