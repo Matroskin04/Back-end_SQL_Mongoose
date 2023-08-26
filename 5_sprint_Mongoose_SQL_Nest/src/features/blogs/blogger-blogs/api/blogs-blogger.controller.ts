@@ -45,7 +45,6 @@ import {
 } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
 import { UpdatePostByBlogIdInputModel } from './models/input/update-post-by-blog-id.input.model';
 import { CommentsQueryRepository } from '../../../comments/infrastructure/query.repository/comments.query.repository';
-import { IsUserBanGuard } from '../../../../infrastructure/guards/is-user-ban.guard';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogger/blogs')
@@ -116,22 +115,20 @@ export class BlogsBloggerController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuardMongo)
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
   @Post(`/:blogId/posts`)
   async createPostByBlogId(
     @Param('blogId') blogId: string,
-    @CurrentUserIdMongo() userId: ObjectId,
+    @CurrentUserId() userId: string,
     @Body() inputPostModel: CreatePostByBlogIdModel,
-    @Res() res: Response<PostTypeWithId>,
-  ) {
+  ): Promise<PostTypeWithId> {
     const result = await this.postsService.createPostByBlogId(
       blogId,
       userId,
       inputPostModel,
     );
-    result
-      ? res.status(HTTP_STATUS_CODE.CREATED_201).send(result)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException();
+    return result;
   }
 
   @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)

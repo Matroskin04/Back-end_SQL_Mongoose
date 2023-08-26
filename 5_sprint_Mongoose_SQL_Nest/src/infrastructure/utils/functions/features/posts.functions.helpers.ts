@@ -1,12 +1,15 @@
-import { NewestLikesType } from '../../../../features/posts/infrastructure/repository/posts.types.repositories';
-import { PostDBType } from '../../../../features/posts/domain/posts.db.types';
+import {
+  NewestLikesType,
+  PostDBType,
+} from '../../../../features/posts/infrastructure/repository/posts.types.repositories';
+import { PostDBTypeMongo } from '../../../../features/posts/domain/posts.db.types';
 import { PostViewType } from '../../../../features/posts/infrastructure/query.repository/posts.types.query.repository';
 import { ObjectId } from 'mongodb';
 import { LikesInfoQueryRepository } from '../../../../features/likes-info/infrastructure/query.repository/likes-info.query.repository';
 import { reformNewestLikes } from './likes-info.functions.helpers';
 
-export function modifyPostIntoViewModel(
-  post: PostDBType,
+export function modifyPostIntoViewModelMongo(
+  post: PostDBTypeMongo,
   newestLikes: NewestLikesType,
   myStatus: 'None' | 'Like' | 'Dislike',
 ): PostViewType {
@@ -27,8 +30,31 @@ export function modifyPostIntoViewModel(
   };
 }
 
-export async function modifyPostForAllDocs( //todo in repo
+export function modifyPostIntoViewModel(
   post: PostDBType,
+  blogName: string,
+  newestLikes: NewestLikesType,
+  myStatus: 'None' | 'Like' | 'Dislike',
+): PostViewType {
+  return {
+    id: post.id,
+    title: post.title,
+    shortDescription: post.shortDescription,
+    content: post.content,
+    blogId: post.blogId,
+    blogName: blogName,
+    createdAt: post.createdAt,
+    extendedLikesInfo: {
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus,
+      newestLikes,
+    },
+  };
+}
+
+export async function modifyPostForAllDocs( //todo in repo
+  post: PostDBTypeMongo,
   userId: ObjectId | null,
   likesInfoQueryRepository: LikesInfoQueryRepository,
 ): Promise<PostViewType> {

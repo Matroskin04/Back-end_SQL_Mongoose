@@ -4,7 +4,7 @@ import {
   CommentsLikesInfoDBType,
   PostsLikesInfoDBType,
 } from '../../../../likes-info/domain/likes-info.db.types';
-import { PostDBType } from '../../../../posts/domain/posts.db.types';
+import { PostDBTypeMongo } from '../../../../posts/domain/posts.db.types';
 import { PostSchema } from '../../../../posts/domain/posts.entity';
 import {
   CommentsLikesInfoSchema,
@@ -26,7 +26,7 @@ export class BannedUserBySA {
   comments: CommentDBType[] | null;
 
   @Prop({ type: [PostSchema] || null })
-  posts: PostDBType[] | null;
+  posts: PostDBTypeMongo[] | null;
 
   @Prop({ type: [CommentsLikesInfoSchema] || null })
   commentsLikesInfo: CommentsLikesInfoDBType[] | null;

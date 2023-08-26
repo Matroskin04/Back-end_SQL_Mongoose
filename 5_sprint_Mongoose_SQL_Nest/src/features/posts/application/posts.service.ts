@@ -5,7 +5,10 @@ import {
 } from '../infrastructure/repository/posts.types.repositories';
 import { PostsRepository } from '../infrastructure/repository/posts.repository';
 import { ObjectId } from 'mongodb';
-import { modifyPostIntoViewModel } from '../../../infrastructure/utils/functions/features/posts.functions.helpers';
+import {
+  modifyPostIntoViewModel,
+  modifyPostIntoViewModelMongo,
+} from '../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { PostModelType } from '../domain/posts.db.types';
 import { Post } from '../domain/posts.entity';
 import { InjectModel } from '@nestjs/mongoose';
@@ -72,42 +75,25 @@ export class PostsService {
 
   async createPostByBlogId(
     blogId: string,
-    userId: ObjectId,
-    inputBodyPost: BodyPostByBlogIdType,
+    userId: string,
+    postDTO: BodyPostByBlogIdType,
   ): Promise<null | PostTypeWithId> {
     //checking the existence of a blog
-    const blog = await this.blogsRepository.getBlogInstance(
-      new ObjectId(blogId),
-    );
+    const blog = await this.blogsBloggerQueryRepository.getBlogById(blogId);
     if (!blog) {
       return null;
     }
 
-    const bodyPostWithBlogId: BodyPostType = {
-      ...inputBodyPost,
-      userId: userId.toString(),
-      blogId: blog.id,
-    };
-
-    const post = this.PostModel.createInstance(
-      bodyPostWithBlogId,
-      blog.name,
-      this.PostModel,
-    );
-    await this.postsRepository.save(post);
+    const post = await this.postsRepository.createPost(postDTO, blogId, userId);
 
     //find last 3 Likes
-    const newestLikes =
-      await this.likesInfoQueryRepository.getNewestLikesOfPost(
-        post._id.toString(),
-      );
-    const reformedNewestLikes = reformNewestLikes(newestLikes);
+    // const newestLikes =
+    //   await this.likesInfoQueryRepository.getNewestLikesOfPost(
+    //     post._id.toString(),
+    //   );
+    // const reformedNewestLikes = reformNewestLikes(newestLikes);
 
-    const postMapped = modifyPostIntoViewModel(
-      post,
-      reformedNewestLikes,
-      'None',
-    );
+    const postMapped = modifyPostIntoViewModel(post, blog.name, [], 'None');
 
     return postMapped;
   }

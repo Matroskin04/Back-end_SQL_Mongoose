@@ -2,7 +2,7 @@ import {
   NewestLikesType,
   PostTypeWithId,
 } from '../repository/posts.types.repositories';
-import { PostDBType } from '../../domain/posts.db.types';
+import { PostDBTypeMongo } from '../../domain/posts.db.types';
 import { ObjectId } from 'mongodb';
 
 export type PostPaginationType = {
@@ -29,7 +29,7 @@ export type PostMainInfoType = {
   blogName: 'string';
 };
 
-export type PostsDBType = Array<PostDBType>;
+export type PostsDBType = Array<PostDBTypeMongo>;
 
 export type BlogsIdInputType = Array<{ _id: ObjectId }>;
 

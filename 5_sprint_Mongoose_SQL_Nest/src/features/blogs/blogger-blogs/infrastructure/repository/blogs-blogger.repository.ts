@@ -26,7 +26,7 @@ export class BlogsBloggerRepository {
   ): Promise<BlogOutputType> {
     const result = await this.dataSource.query(
       `
-    INSERT INTO public.blogs(
+    INSERT INTO public."blogs"(
         "name", "description", "websiteUrl", "isMembership", "userId")
         VALUES ($1, $2, $3, $4, $5)
     RETURNING "id", "name", "description", "websiteUrl", "createdAt", "isMembership"`,

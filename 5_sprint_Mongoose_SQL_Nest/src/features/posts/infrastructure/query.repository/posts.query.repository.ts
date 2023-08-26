@@ -11,7 +11,7 @@ import { QueryPostInputModel } from '../../api/models/input/query-post.input.mod
 import { variablesForReturnMongo } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import {
   modifyPostForAllDocs,
-  modifyPostIntoViewModel,
+  modifyPostIntoViewModelMongo,
 } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { StatusOfLike } from '../../../comments/infrastructure/query.repository/comments.types.query.repository';
 import { Injectable } from '@nestjs/common';
@@ -142,7 +142,7 @@ export class PostsQueryRepository {
       );
     const reformedNewestLikes = reformNewestLikes(newestLikes);
 
-    return modifyPostIntoViewModel(post, reformedNewestLikes, myStatus);
+    return modifyPostIntoViewModelMongo(post, reformedNewestLikes, myStatus);
   }
 
   async getPostsByUserId(userId: string): Promise<PostsDBType | null> {

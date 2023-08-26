@@ -1,5 +1,5 @@
 import { CommentDBType } from '../../../../comments/domain/comments.db.types';
-import { PostDBType } from '../../../../posts/domain/posts.db.types';
+import { PostDBTypeMongo } from '../../../../posts/domain/posts.db.types';
 import {
   CommentsLikesInfoDBType,
   PostsLikesInfoDBType,
@@ -10,7 +10,7 @@ import { BannedUserBySA } from './users-banned.entity';
 export type BannedUserDTOType = {
   userId: string;
   comments: CommentDBType[] | null;
-  posts: PostDBType[] | null;
+  posts: PostDBTypeMongo[] | null;
   commentsLikesInfo: CommentsLikesInfoDBType[] | null;
   postsLikesInfo: PostsLikesInfoDBType[] | null;
 };
