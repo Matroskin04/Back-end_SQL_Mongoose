@@ -24,6 +24,7 @@ export type BlogOutputType = {
   description: string;
   websiteUrl: string;
   userId: string;
+  isBanned: boolean;
 };
 
 type BlogBodyType = {

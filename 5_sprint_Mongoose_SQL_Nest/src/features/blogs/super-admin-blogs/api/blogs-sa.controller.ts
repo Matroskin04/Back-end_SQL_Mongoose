@@ -55,12 +55,12 @@ export class BlogsSAController {
   async updateBanInfoOfBlog(
     @Param('id') blogId: string,
     @Body() inputBanInfoModel: BanInfoInputModel,
-    @Res() res: Response<void>,
-  ) {
-    await this.blogsSAService.updateBanInfoOfBlog(
+  ): Promise<void> {
+    const result = await this.blogsSAService.updateBanInfoOfBlog(
       blogId,
       inputBanInfoModel.isBanned,
     );
+    if (!result) throw new NotFoundException();
     return;
   }
 

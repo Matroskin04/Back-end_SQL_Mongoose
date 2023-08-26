@@ -9,6 +9,7 @@ import {
 import { BlogsSARepository } from '../infrastructure/repository/blogs-sa.repository';
 import { ObjectId } from 'mongodb';
 import { UsersSAQueryRepository } from '../../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';
+import { BlogsBloggerQueryRepository } from '../../blogger-blogs/infrastructure/query.repository/blogs-blogger.query.repository';
 
 @Injectable()
 export class BlogsSAService {
@@ -16,6 +17,7 @@ export class BlogsSAService {
     @InjectModel(Blog.name)
     private BlogModel: BlogModelType,
     protected blogsSARepository: BlogsSARepository,
+    protected blogsBloggerQueryRepository: BlogsBloggerQueryRepository,
     protected usersQueryRepository: UsersSAQueryRepository,
   ) {}
 
@@ -32,26 +34,26 @@ export class BlogsSAService {
     return isUpdate;
   }
 
-  async updateBanInfoOfBlog(blogId: string, banInfo: boolean): Promise<void> {
-    const blog = await this.blogsSARepository.getBlogInstance(
-      new ObjectId(blogId),
-    );
+  async updateBanInfoOfBlog(
+    blogId: string,
+    banStatus: boolean,
+  ): Promise<boolean> {
+    const blog = await this.blogsBloggerQueryRepository.getBlogById(blogId);
     if (!blog) throw new NotFoundException('Blog is not found');
 
-    if (blog.isBanned === banInfo)
+    if (blog.isBanned === banStatus)
       throw new BadRequestException([
         {
-          message: `This blog is already ${banInfo ? 'banned' : 'unbanned'}`,
+          message: `This blog is already ${banStatus ? 'banned' : 'unbanned'}`,
           field: 'isBanned',
         },
       ]);
 
-    //If new banInfo is different - than update
-    blog.isBanned = banInfo;
-    console.log(blog);
-    await this.blogsSARepository.save(blog);
-
-    return;
+    const isUpdate = await this.blogsSARepository.updateBanInfo(
+      blogId,
+      banStatus,
+    );
+    return isUpdate;
   }
   /* async createBlog(inputBodyBlog: BodyBlogType): Promise<BlogViewType> {
     const blog = this.BlogModel.createInstance(inputBodyBlog, this.BlogModel);

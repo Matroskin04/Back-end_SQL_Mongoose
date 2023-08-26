@@ -62,7 +62,7 @@ export class BlogsBloggerQueryRepository {
   async getBlogById(blogId: string): Promise<BlogOutputType | null> {
     const result = await this.dataSource.query(
       `
-    SELECT "id", "userId", "name", "description", "websiteUrl"
+    SELECT "id", "userId", "name", "description", "websiteUrl", "isBanned"
       FROM public."blogs"
         WHERE "id" = $1`,
       [blogId],
