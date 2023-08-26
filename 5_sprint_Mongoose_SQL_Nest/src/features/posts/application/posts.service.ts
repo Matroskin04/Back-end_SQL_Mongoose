@@ -135,7 +135,7 @@ export class PostsService {
     userId: ObjectId,
     likeStatus: LikeStatus,
   ) {
-    const post = await this.postsQueryRepository.getPostById(
+    const post = await this.postsQueryRepository.getPostByIdMongo(
       new ObjectId(postId),
       userId,
     );

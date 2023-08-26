@@ -65,7 +65,7 @@ export class CommentsQueryRepository {
     query: QueryPostInputModel,
     userId: ObjectId | null,
   ): Promise<CommentOfPostPaginationType | null> {
-    const post = await this.postsQueryRepository.getPostById(
+    const post = await this.postsQueryRepository.getPostByIdMongo(
       new ObjectId(postId),
       userId,
     );

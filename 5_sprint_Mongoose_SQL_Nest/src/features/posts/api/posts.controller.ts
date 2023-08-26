@@ -13,6 +13,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -27,7 +28,10 @@ import {
   JwtAccessNotStrictGuard,
   JwtAccessNotStrictGuardMongo,
 } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
-import { CurrentUserIdMongo } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import {
+  CurrentUserId,
+  CurrentUserIdMongo,
+} from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 import { JwtAccessGuardMongo } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CreateCommentByPostIdModel } from '../../comments/api/models/input/create-comment.input.model';
@@ -50,28 +54,21 @@ export class PostsController {
   @Get()
   async getAllPosts(
     @Query() query: QueryPostInputModel,
-    @CurrentUserIdMongo() userId: ObjectId | null,
-    @Res() res: Response<ViewAllPostsModel>,
-  ) {
+    @CurrentUserId() userId: string | null,
+  ): Promise<ViewAllPostsModel> {
     const result = await this.postsQueryRepository.getAllPosts(query, userId);
-    res.status(HTTP_STATUS_CODE.OK_200).send(result);
+    return result;
   }
 
-  @UseGuards(JwtAccessNotStrictGuardMongo)
+  @UseGuards(JwtAccessNotStrictGuard)
   @Get(':id')
   async getPostById(
     @Param('id') postId: string,
-    @CurrentUserIdMongo() userId: ObjectId | null,
-    @Res() res: Response<PostOutputModel>,
-  ) {
-    const result = await this.postsQueryRepository.getPostById(
-      new ObjectId(postId),
-      userId,
-    );
-
-    result
-      ? res.status(HTTP_STATUS_CODE.OK_200).send(result)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    @CurrentUserId() userId: string | null,
+  ): Promise<PostOutputModel> {
+    const result = await this.postsQueryRepository.getPostById(postId, userId);
+    if (!result) throw new NotFoundException();
+    return result;
   }
 
   @UseGuards(JwtAccessNotStrictGuardMongo)

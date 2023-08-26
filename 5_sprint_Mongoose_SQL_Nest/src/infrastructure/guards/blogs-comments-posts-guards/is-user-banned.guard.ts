@@ -20,7 +20,7 @@ export class IsUserBannedGuard implements CanActivate {
     if (!request.params.postId)
       throw new Error('Post Id in params is not found');
 
-    const post = await this.postsQueryRepository.getPostById(
+    const post = await this.postsQueryRepository.getPostByIdMongo(
       new ObjectId(request.params.postId),
       null,
     );

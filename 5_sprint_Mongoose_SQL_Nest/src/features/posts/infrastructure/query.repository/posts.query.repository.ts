@@ -15,6 +15,7 @@ import {
 import {
   modifyPostForAllDocs,
   modifyPostForAllDocsMongo,
+  modifyPostIntoViewModel,
   modifyPostIntoViewModelMongo,
 } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { StatusOfLike } from '../../../comments/infrastructure/query.repository/comments.types.query.repository';
@@ -84,7 +85,7 @@ export class PostsQueryRepository {
 
   async getAllPosts(
     query: QueryPostInputModel,
-    userId: ObjectId | null,
+    userId: string | null,
   ): Promise<PostPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(query);
@@ -120,8 +121,54 @@ export class PostsQueryRepository {
     };
   }
 
-  //MONGO
   async getPostById(
+    postId: string,
+    userId: string | null,
+  ): Promise<null | PostViewType> {
+    const result = await this.dataSource.query(
+      `
+    SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."createdAt", b."name" as "blogName",
+      (SELECT COUNT(*)
+        FROM public."posts" as p2
+            JOIN public."blogs" as b2 
+            ON b2."id" = p2."blogId"
+        WHERE p."id" = $1)
+    FROM public."posts" as p
+        JOIN public."blogs" as b
+        ON b."id" = p."blogId"
+    WHERE p."id" = $1`,
+      [postId],
+    );
+
+    if (!result[0]) return null;
+
+    //set StatusLike
+    const myStatus: StatusOfLike = 'None';
+
+    // if (userId) {
+    //   const likeInfo =
+    //     await this.likesInfoQueryRepository.getLikesInfoByPostAndUser(
+    //       postId.toString(),
+    //       userId.toString(),
+    //     );
+    //
+    //   if (likeInfo) {
+    //     myStatus = likeInfo.statusLike;
+    //   }
+    // }
+
+    //find last 3 Likes
+    // const newestLikes =
+    //   await this.likesInfoQueryRepository.getNewestLikesOfPost(
+    //     postId.toString(),
+    //   );
+    // const reformedNewestLikes = reformNewestLikes(newestLikes);
+
+    return modifyPostIntoViewModel(result[0], result[0].blogName, [], myStatus);
+  }
+
+  //MONGO
+  async getPostByIdMongo(
     postId: ObjectId,
     userId: ObjectId | null,
   ): Promise<null | PostViewType> {
