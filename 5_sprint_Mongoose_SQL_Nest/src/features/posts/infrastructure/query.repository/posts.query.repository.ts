@@ -8,9 +8,13 @@ import {
 } from './posts.types.query.repository';
 import { ObjectId } from 'mongodb';
 import { QueryPostInputModel } from '../../api/models/input/query-post.input.model';
-import { variablesForReturnMongo } from '../../../../infrastructure/utils/functions/variables-for-return.function';
+import {
+  variablesForReturn,
+  variablesForReturnMongo,
+} from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import {
   modifyPostForAllDocs,
+  modifyPostForAllDocsMongo,
   modifyPostIntoViewModelMongo,
 } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { StatusOfLike } from '../../../comments/infrastructure/query.repository/comments.types.query.repository';
@@ -23,16 +27,62 @@ import { reformNewestLikes } from '../../../../infrastructure/utils/functions/fe
 import { QueryBlogInputModel } from '../../../blogs/blogger-blogs/api/models/input/query-blog.input.model';
 import { BlogsIdType } from '../../../blogs/blogger-blogs/infrastructure/query.repository/blogs-blogger.types.query.repository';
 import { BlogsPublicQueryRepository } from '../../../blogs/public-blogs/infrastructure/query.repository/blogs-public.query.repository';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class PostsQueryRepository {
   constructor(
+    @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(Post.name)
     private PostModel: PostModelType,
     protected likesInfoQueryRepository: LikesInfoQueryRepository,
     protected blogsPublicQueryRepository: BlogsPublicQueryRepository,
   ) {}
 
+  //SQL
+  async getAllPostsOfBlog(
+    blogId: string,
+    query: QueryBlogInputModel,
+    userId: string | null,
+  ): Promise<null | PostPaginationType> {
+    const { pageNumber, pageSize, sortBy, sortDirection } =
+      variablesForReturn(query);
+
+    const result = await this.dataSource.query(
+      `
+    SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."createdAt", b."name" as "blogName",
+      (SELECT COUNT(*)
+        FROM public."posts" as p2
+            JOIN public."blogs" as b2 
+            ON b2."id" = p2."blogId"
+        WHERE p2."blogId" = $1)
+    FROM public."posts" as p
+        JOIN public."blogs" as b
+        ON b."id" = p."blogId"
+    WHERE p."blogId" = $1
+        ORDER BY "${sortBy}" ${sortDirection}
+        LIMIT $2 OFFSET $3`,
+      [blogId, +pageSize, (+pageNumber - 1) * +pageSize],
+    );
+
+    // const allPostsOfBlog = await Promise.all(
+    //   allPostsOnPages.map(async (p) =>
+    //     modifyPostForAllDocsMongo(p, userId, this.likesInfoQueryRepository),
+    //   ), //2 parameter = userId
+    // );s
+    const allPostsOfBlog = result.map((post) => modifyPostForAllDocs(post));
+
+    return {
+      pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +result[0]?.count || 0,
+      items: allPostsOfBlog,
+    };
+  }
+
+  //MONGO
   async getAllPosts(
     query: QueryPostInputModel,
     userId: ObjectId | null,
@@ -57,7 +107,7 @@ export class PostsQueryRepository {
 
     const allPosts = await Promise.all(
       allPostsOnPages.map(async (p) =>
-        modifyPostForAllDocs(p, userId, this.likesInfoQueryRepository),
+        modifyPostForAllDocsMongo(p, userId, this.likesInfoQueryRepository),
       ), //todo методы
     );
 
@@ -90,7 +140,7 @@ export class PostsQueryRepository {
 
     const allPostsOfBlog = await Promise.all(
       allPostsOnPages.map(async (p) =>
-        modifyPostForAllDocs(p, userId, this.likesInfoQueryRepository),
+        modifyPostForAllDocsMongo(p, userId, this.likesInfoQueryRepository),
       ), //2 parameter = userId
     );
 

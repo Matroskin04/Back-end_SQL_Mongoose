@@ -70,22 +70,20 @@ export class BlogsBloggerController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuardMongo)
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
   @Get(':blogId/posts')
   async getAllPostsOfBlog(
     @Param('blogId') blogId: string,
-    @CurrentUserIdMongo() userId: ObjectId,
+    @CurrentUserId() userId: string,
     @Query() query: QueryBlogInputModel,
-    @Res() res: Response<ViewPostsOfBlogModel>,
-  ) {
-    const result = await this.postsQueryRepository.getPostsOfBlog(
+  ): Promise<ViewPostsOfBlogModel> {
+    const result = await this.postsQueryRepository.getAllPostsOfBlog(
       blogId,
       query,
       userId,
     );
-    result
-      ? res.status(HTTP_STATUS_CODE.OK_200).send(result)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException();
+    return result;
   }
 
   @UseGuards(JwtAccessGuardMongo)

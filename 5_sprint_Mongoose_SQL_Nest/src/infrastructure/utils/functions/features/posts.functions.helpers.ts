@@ -53,7 +53,7 @@ export function modifyPostIntoViewModel(
   };
 }
 
-export async function modifyPostForAllDocs( //todo in repo
+export async function modifyPostForAllDocsMongo( //todo in repo
   post: PostDBTypeMongo,
   userId: ObjectId | null,
   likesInfoQueryRepository: LikesInfoQueryRepository,
@@ -92,3 +92,53 @@ export async function modifyPostForAllDocs( //todo in repo
     },
   };
 }
+
+export function modifyPostForAllDocs( //todo in repo
+  post: InputInfoPostType,
+  // userId: ObjectId | null,
+  // likesInfoQueryRepository: LikesInfoQueryRepository,
+) /*Promise<PostViewType>*/ {
+  const myStatus: 'Like' | 'Dislike' | 'None' = 'None';
+
+  // if (userId) {
+  //   const likeInfo = await likesInfoQueryRepository.getLikesInfoByPostAndUser(
+  //     post._id.toString(),
+  //     userId.toString(),
+  //   );
+  //   if (likeInfo) {
+  //     myStatus = likeInfo.statusLike;
+  //   }
+  // }
+
+  // find last 3 Likes
+  // const newestLikes = await likesInfoQueryRepository.getNewestLikesOfPost(
+  //   post._id.toString(),
+  // );
+  // const reformedNewestLikes = reformNewestLikes(newestLikes);
+
+  return {
+    id: post.id,
+    title: post.title,
+    shortDescription: post.shortDescription,
+    content: post.content,
+    blogId: post.blogId,
+    blogName: post.blogName,
+    createdAt: post.createdAt,
+    extendedLikesInfo: {
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus: myStatus,
+      newestLikes: [],
+    },
+  };
+}
+
+type InputInfoPostType = {
+  id: string;
+  title: string;
+  shortDescription: string;
+  content: string;
+  blogId: string;
+  blogName: string;
+  createdAt: string;
+};
