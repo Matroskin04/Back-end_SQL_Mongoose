@@ -82,44 +82,45 @@ export class PostsQueryRepository {
     };
   }
 
-  //MONGO
   async getAllPosts(
     query: QueryPostInputModel,
     userId: ObjectId | null,
   ): Promise<PostPaginationType> {
-    const searchNameTerm: string | null = query?.searchNameTerm ?? null;
-    const paramsOfElems = await variablesForReturnMongo(query);
-    const allBannedBlogsId =
-      await this.blogsPublicQueryRepository.getAllBannedBlogsId();
+    const { pageNumber, pageSize, sortBy, sortDirection } =
+      variablesForReturn(query);
 
-    const countAllPostsSort = await this.PostModel.countDocuments({
-      title: { $regex: searchNameTerm ?? '', $options: 'i' },
-    });
-
-    const allPostsOnPages = await this.PostModel.find({
-      title: { $regex: searchNameTerm ?? '', $options: 'i' },
-      blogId: { $not: { $in: allBannedBlogsId } },
-    })
-      .skip((+paramsOfElems.pageNumber - 1) * +paramsOfElems.pageSize)
-      .limit(+paramsOfElems.pageSize)
-      .sort(paramsOfElems.paramSort)
-      .lean();
-
-    const allPosts = await Promise.all(
-      allPostsOnPages.map(async (p) =>
-        modifyPostForAllDocsMongo(p, userId, this.likesInfoQueryRepository),
-      ), //todo методы
+    const result = await this.dataSource.query(
+      `
+    SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."createdAt", b."name" as "blogName",
+      (SELECT COUNT(*)
+        FROM public."posts" as p2
+            JOIN public."blogs" as b2 
+            ON b2."id" = p2."blogId")
+    FROM public."posts" as p
+        JOIN public."blogs" as b
+        ON b."id" = p."blogId"
+            ORDER BY "${sortBy}" ${sortDirection}
+            LIMIT $1 OFFSET $2`,
+      [+pageSize, (+pageNumber - 1) * +pageSize],
     );
 
+    // const allPostsOfBlog = await Promise.all(
+    //   allPostsOnPages.map(async (p) =>
+    //     modifyPostForAllDocsMongo(p, userId, this.likesInfoQueryRepository),
+    //   ), //2 parameter = userId
+    // );s
+    const allPostsOfBlog = result.map((post) => modifyPostForAllDocs(post));
+
     return {
-      pagesCount: Math.ceil(countAllPostsSort / +paramsOfElems.pageSize),
-      page: +paramsOfElems.pageNumber,
-      pageSize: +paramsOfElems.pageSize,
-      totalCount: countAllPostsSort,
-      items: allPosts,
+      pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +result[0]?.count || 0,
+      items: allPostsOfBlog,
     };
   }
 
+  //MONGO
   async getPostById(
     postId: ObjectId,
     userId: ObjectId | null,
