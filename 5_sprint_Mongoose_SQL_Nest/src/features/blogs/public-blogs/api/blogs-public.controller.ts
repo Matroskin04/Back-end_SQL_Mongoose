@@ -10,7 +10,10 @@ import {
 import { SkipThrottle } from '@nestjs/throttler';
 import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
-import { JwtAccessNotStrictGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
+import {
+  JwtAccessNotStrictGuard,
+  JwtAccessNotStrictGuardMongo,
+} from '../../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import {
   CurrentUserId,
   CurrentUserIdMongo,
@@ -43,23 +46,20 @@ export class BlogsPublicController {
   }
 
   @Get(':id')
-  async getBlogById(
-    @Param('id') blogId: string,
-    @Res() res: Response<BlogOutputModel>,
-  ) {
+  async getBlogById(@Param('id') blogId: string): Promise<BlogOutputModel> {
     const result = await this.blogsPublicQueryRepository.getBlogById(blogId);
     if (!result) throw new NotFoundException();
-    return;
+    return result;
   }
 
   @UseGuards(JwtAccessNotStrictGuard)
   @Get(':blogId/posts')
   async getAllPostsOfBlog(
     @Param('blogId') blogId: string,
-    @CurrentUserId() userId: ObjectId,
+    @CurrentUserId() userId: string,
     @Query() query: QueryBlogInputModel,
   ): Promise<ViewPostsOfBlogModel> {
-    const result = await this.postsQueryRepository.getPostsOfBlog(
+    const result = await this.postsQueryRepository.getAllPostsOfBlog(
       blogId,
       query,
       userId,

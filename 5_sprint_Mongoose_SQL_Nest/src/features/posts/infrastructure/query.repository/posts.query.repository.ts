@@ -120,39 +120,6 @@ export class PostsQueryRepository {
     };
   }
 
-  async getPostsOfBlog(
-    blogId: string,
-    query: QueryBlogInputModel,
-    userId: ObjectId | null,
-  ): Promise<null | PostPaginationType> {
-    const paramsOfElems = await variablesForReturnMongo(query);
-    const countAllPostsSort = await this.PostModel.countDocuments({
-      blogId: blogId,
-    });
-
-    const allPostsOnPages = await this.PostModel.find({ blogId: blogId })
-      .skip((+paramsOfElems.pageNumber - 1) * +paramsOfElems.pageSize)
-      .limit(+paramsOfElems.pageSize)
-      .sort(paramsOfElems.paramSort)
-      .lean();
-
-    if (allPostsOnPages.length === 0) return null;
-
-    const allPostsOfBlog = await Promise.all(
-      allPostsOnPages.map(async (p) =>
-        modifyPostForAllDocsMongo(p, userId, this.likesInfoQueryRepository),
-      ), //2 parameter = userId
-    );
-
-    return {
-      pagesCount: Math.ceil(countAllPostsSort / +paramsOfElems.pageSize),
-      page: +paramsOfElems.pageNumber,
-      pageSize: +paramsOfElems.pageSize,
-      totalCount: countAllPostsSort,
-      items: allPostsOfBlog,
-    };
-  }
-
   async getPostById(
     postId: ObjectId,
     userId: ObjectId | null,

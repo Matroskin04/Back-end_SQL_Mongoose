@@ -1,7 +1,7 @@
 import { BlogDTOType, BlogDocument, BlogModelType } from './blogs.db.types';
 import { ObjectId } from 'mongodb';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { BlogViewType } from '../public-blogs/infrastructure/query.repository/blogs-public.types.query.repository';
+import { BlogOutputType } from '../public-blogs/infrastructure/query.repository/blogs-public.types.query.repository';
 import { BlogSAOutputType } from '../super-admin-blogs/infrastructure/query.repository/blogs-sa.types.query.repository';
 
 @Schema()
@@ -42,7 +42,7 @@ export class Blog {
     return new BlogModel(blogDTO);
   }
 
-  modifyIntoViewGeneralModel(): BlogViewType {
+  modifyIntoViewGeneralModel(): BlogOutputType {
     return {
       id: this._id.toString(),
       name: this.name,

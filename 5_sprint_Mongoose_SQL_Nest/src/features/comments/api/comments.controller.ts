@@ -14,7 +14,7 @@ import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-statu
 import { Response } from 'express';
 import { CommentsService } from '../application/comments.service';
 import { JwtAccessGuardMongo } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
-import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
+import { JwtAccessNotStrictGuardMongo } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import { CurrentUserIdMongo } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 import { UpdateCommentInputModel } from './models/input/update-comment.input.model';
@@ -29,7 +29,7 @@ export class CommentsController {
     protected commentsService: CommentsService,
   ) {}
 
-  @UseGuards(JwtAccessNotStrictGuard)
+  @UseGuards(JwtAccessNotStrictGuardMongo)
   @Get(':id')
   async getCommentById(
     @Param('id') commentId: string,

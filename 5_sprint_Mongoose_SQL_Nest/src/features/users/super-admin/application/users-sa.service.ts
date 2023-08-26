@@ -32,7 +32,6 @@ export class UsersSaService {
     private UserModel: UserModelType,
     @InjectModel(BannedUserBySA.name)
     private BannedUserModel: BannedUserModelType,
-    protected cryptoAdapter: CryptoAdapter,
     protected usersRepository: UsersSARepository,
     protected usersQueryRepository: UsersSAQueryRepository,
     protected devicesService: DevicesService,
@@ -45,6 +44,23 @@ export class UsersSaService {
     private bannedUsersQueryRepository: BannedUsersQueryRepository,
     protected bannedUsersRepository: BannedUsersRepository,
   ) {}
+  //SQL
+
+  async getUserIdByAccessToken(token: string): Promise<null | string> {
+    try {
+      const decode = jwt.verify(
+        token,
+        process.env.PRIVATE_KEY_ACCESS_TOKEN!,
+      ) as {
+        userId: string;
+      };
+      return decode.userId;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  //MONGO
 
   async updateBanInfoOfUser(
     userId: string,
@@ -244,7 +260,7 @@ export class UsersSaService {
     return;
   }
 
-  async getUserIdByAccessToken(token: string): Promise<null | ObjectId> {
+  async getUserIdByAccessTokenMongo(token: string): Promise<null | ObjectId> {
     try {
       const decode = jwt.verify(
         token,

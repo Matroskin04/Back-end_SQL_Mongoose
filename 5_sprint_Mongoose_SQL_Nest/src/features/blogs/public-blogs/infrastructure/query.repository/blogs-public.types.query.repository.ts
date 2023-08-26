@@ -9,10 +9,10 @@ export type BlogPaginationType = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: Array<BlogViewType>;
+  items: Array<BlogOutputType>;
 };
 
-export type BlogViewType = BlogOutputModel;
+export type BlogOutputType = BlogOutputModel;
 
 export type BannedBlogsIdType = Array<{
   _id: ObjectId;

@@ -1,7 +1,7 @@
 import {
   BannedBlogsIdType,
   BlogPaginationType,
-  BlogViewType,
+  BlogOutputType,
 } from './blogs-public.types.query.repository';
 import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
@@ -23,6 +23,7 @@ export class BlogsPublicQueryRepository {
     @InjectModel(Blog.name)
     private BlogModel: BlogModelType,
   ) {}
+
   async getAllBlogs(query: QueryBlogInputModel): Promise<BlogPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
       variablesForReturn(query);
@@ -49,18 +50,19 @@ export class BlogsPublicQueryRepository {
     };
   }
 
-  async getBlogById(id: string): Promise<null | BlogViewType> {
-    const blog = await this.BlogModel.findOne({
-      _id: new ObjectId(id),
-      isBanned: false,
-    });
-
-    if (blog) {
-      return blog.modifyIntoViewGeneralModel();
-    }
-    return null;
+  async getBlogById(blogId: string): Promise<null | BlogOutputType> {
+    const result = await this.dataSource.query(
+      `
+    SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership"
+      FROM public."blogs"
+        WHERE "id" = $1`,
+      [blogId],
+    );
+    if (!result[0]) return null;
+    return result[0];
   }
 
+  //MONGO
   async getAllBannedBlogsId(): Promise<null | BannedBlogsIdType> {
     const result = await this.BlogModel.find(
       {

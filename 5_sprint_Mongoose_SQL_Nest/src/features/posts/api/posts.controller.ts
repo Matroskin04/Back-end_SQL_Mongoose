@@ -23,7 +23,10 @@ import {
 import { CommentsQueryRepository } from '../../comments/infrastructure/query.repository/comments.query.repository';
 import { Response } from 'express';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
-import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
+import {
+  JwtAccessNotStrictGuard,
+  JwtAccessNotStrictGuardMongo,
+} from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import { CurrentUserIdMongo } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 import { JwtAccessGuardMongo } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
@@ -54,7 +57,7 @@ export class PostsController {
     res.status(HTTP_STATUS_CODE.OK_200).send(result);
   }
 
-  @UseGuards(JwtAccessNotStrictGuard)
+  @UseGuards(JwtAccessNotStrictGuardMongo)
   @Get(':id')
   async getPostById(
     @Param('id') postId: string,
@@ -71,7 +74,7 @@ export class PostsController {
       : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
   }
 
-  @UseGuards(JwtAccessNotStrictGuard)
+  @UseGuards(JwtAccessNotStrictGuardMongo)
   @Get(':postId/comments')
   async getAllCommentsOfPost(
     @Param('postId') postId: string,
