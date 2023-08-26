@@ -1,9 +1,20 @@
-import { Controller, Get, Param, Query, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { JwtAccessNotStrictGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
-import { CurrentUserIdMongo } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import {
+  CurrentUserId,
+  CurrentUserIdMongo,
+} from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 import { Response } from 'express';
 import { QueryBlogInputModel } from '../../blogger-blogs/api/models/input/query-blog.input.model';
@@ -26,10 +37,9 @@ export class BlogsPublicController {
   @Get()
   async getAllBlogs(
     @Query() query: QueryBlogInputModel,
-    @Res() res: Response<ViewAllBlogsModel>,
-  ) {
+  ): Promise<ViewAllBlogsModel> {
     const result = await this.blogsPublicQueryRepository.getAllBlogs(query);
-    res.status(HTTP_STATUS_CODE.OK_200).send(result);
+    return result;
   }
 
   @Get(':id')
@@ -38,26 +48,23 @@ export class BlogsPublicController {
     @Res() res: Response<BlogOutputModel>,
   ) {
     const result = await this.blogsPublicQueryRepository.getBlogById(blogId);
-    result
-      ? res.status(HTTP_STATUS_CODE.OK_200).send(result)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException();
+    return;
   }
 
   @UseGuards(JwtAccessNotStrictGuard)
   @Get(':blogId/posts')
   async getAllPostsOfBlog(
     @Param('blogId') blogId: string,
-    @CurrentUserIdMongo() userId: ObjectId,
+    @CurrentUserId() userId: ObjectId,
     @Query() query: QueryBlogInputModel,
-    @Res() res: Response<ViewPostsOfBlogModel>,
-  ) {
+  ): Promise<ViewPostsOfBlogModel> {
     const result = await this.postsQueryRepository.getPostsOfBlog(
       blogId,
       query,
       userId,
     );
-    result
-      ? res.status(HTTP_STATUS_CODE.OK_200).send(result)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException();
+    return result;
   }
 }

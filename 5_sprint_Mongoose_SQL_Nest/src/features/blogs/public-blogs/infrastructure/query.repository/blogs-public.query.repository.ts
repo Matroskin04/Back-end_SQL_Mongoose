@@ -9,37 +9,43 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Blog } from '../../../domain/blogs.entity';
 import { BlogModelType } from '../../../domain/blogs.db.types';
 import { QueryBlogInputModel } from '../../../blogger-blogs/api/models/input/query-blog.input.model';
-import { variablesForReturnMongo } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
+import {
+  variablesForReturn,
+  variablesForReturnMongo,
+} from '../../../../../infrastructure/utils/functions/variables-for-return.function';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class BlogsPublicQueryRepository {
   constructor(
+    @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(Blog.name)
     private BlogModel: BlogModelType,
   ) {}
   async getAllBlogs(query: QueryBlogInputModel): Promise<BlogPaginationType> {
-    const searchNameTerm: string | null = query?.searchNameTerm ?? null;
-    const paramsOfElems = await variablesForReturnMongo(query);
-
-    const countAllBlogsSort = await this.BlogModel.countDocuments({
-      name: { $regex: searchNameTerm ?? '', $options: 'i' },
-      isBanned: false,
-    });
-
-    const allBlogsOnPages = await this.BlogModel.find({
-      name: { $regex: searchNameTerm ?? '', $options: 'i' },
-      isBanned: false,
-    })
-      .skip((+paramsOfElems.pageNumber - 1) * +paramsOfElems.pageSize)
-      .limit(+paramsOfElems.pageSize)
-      .sort(paramsOfElems.paramSort);
+    const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
+      variablesForReturn(query);
+    //isBanned
+    const result = await this.dataSource.query(
+      `
+    SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership",
+      (SELECT COUNT(*)
+        FROM public."blogs"
+        WHERE "name" ILIKE $1 AND "isBanned" = false)
+    FROM public."blogs"
+        WHERE "name" ILIKE $1 AND "isBanned" = false
+            ORDER BY "${sortBy}" ${sortDirection}
+            LIMIT $2 OFFSET $3`,
+      [`%${searchNameTerm}%`, +pageSize, (+pageNumber - 1) * +pageSize],
+    );
 
     return {
-      pagesCount: Math.ceil(countAllBlogsSort / +paramsOfElems.pageSize),
-      page: +paramsOfElems.pageNumber,
-      pageSize: +paramsOfElems.pageSize,
-      totalCount: countAllBlogsSort,
-      items: allBlogsOnPages.map((p) => p.modifyIntoViewGeneralModel()),
+      pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +result[0]?.count || 0,
+      items: result,
     };
   }
 
