@@ -1,7 +1,6 @@
 import { QueryBlogInputModel } from './models/input/query-blog.input.model';
 import {
   ViewAllBlogsModel,
-  BlogOutputModelMongo,
   ViewPostsOfBlogModel,
   BlogOutputModel,
 } from './models/output/blog.output.model';
@@ -14,7 +13,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpStatus,
   NotFoundException,
   Param,
   Post,
@@ -41,9 +39,13 @@ import {
 import { ObjectId } from 'mongodb';
 import { CreatePostByBlogIdModel } from '../../../posts/api/models/input/create-post.input.model';
 import { PostTypeWithId } from '../../../posts/infrastructure/repository/posts.types.repositories';
-import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
+import {
+  BlogOwnerByIdGuard,
+  BlogOwnerByIdGuardMongo,
+} from '../../../../infrastructure/guards/blog-owner-by-id.guard';
 import { UpdatePostByBlogIdInputModel } from './models/input/update-post-by-blog-id.input.model';
 import { CommentsQueryRepository } from '../../../comments/infrastructure/query.repository/comments.query.repository';
+import { IsUserBanGuard } from '../../../../infrastructure/guards/is-user-ban.guard';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogger/blogs')
@@ -69,7 +71,7 @@ export class BlogsBloggerController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuard)
+  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuardMongo)
   @Get(':blogId/posts')
   async getAllPostsOfBlog(
     @Param('blogId') blogId: string,
@@ -114,7 +116,7 @@ export class BlogsBloggerController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuard)
+  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuardMongo)
   @Post(`/:blogId/posts`)
   async createPostByBlogId(
     @Param('blogId') blogId: string,
@@ -132,7 +134,7 @@ export class BlogsBloggerController {
       : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
   }
 
-  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuard)
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':blogId')
   async updateBlog(
@@ -147,7 +149,7 @@ export class BlogsBloggerController {
     return;
   }
 
-  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuard)
+  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuardMongo)
   @Put(':blogId/posts/:postId')
   async updatePostOfBlog(
     @Param('blogId') blogId: string,
@@ -166,19 +168,16 @@ export class BlogsBloggerController {
       : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
   }
 
-  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuard)
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':blogId')
-  async deleteBlog(
-    @Param('blogId') blogId: string,
-    @Res() res: Response<void>,
-  ) {
+  async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
     const result = await this.blogsBloggerService.deleteSingleBlog(blogId);
-    result
-      ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException();
+    return;
   }
 
-  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuard)
+  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuardMongo)
   @Delete(':blogId/posts/:postId')
   async deletePostOfBlog(
     @Param('blogId') blogId: string,

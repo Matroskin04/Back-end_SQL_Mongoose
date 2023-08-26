@@ -18,6 +18,14 @@ export type BlogSAOutputDBType = {
   isBanned: boolean;
 } & BlogBodyType;
 
+export type BlogOutputType = {
+  id: string;
+  name: string;
+  description: string;
+  websiteUrl: string;
+  userId: string;
+};
+
 type BlogBodyType = {
   name: string;
 

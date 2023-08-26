@@ -35,23 +35,30 @@ export class BlogsBloggerRepository {
     return result[0];
   }
 
+  async updateBlog(blogDTO: BodyBlogType, blogId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    UPDATE public."blogs"
+      SET "name" = $1, "description" = $2, "websiteUrl" = $3
+        WHERE "id" = $4`,
+      [blogDTO.name, blogDTO.description, blogDTO.websiteUrl, blogId],
+    );
+    return result[1] === 1;
+  }
+
+  async deleteSingleBlog(blogId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    DELETE FROM public."blogs"
+      WHERE "id" = $1`,
+      [blogId],
+    );
+    return result[1] === 1;
+  }
+
   //MONGO
   async save(blog: BlogInstanceType): Promise<void> {
     await blog.save();
     return;
-  }
-
-  async deleteSingleBlog(blogId: ObjectId): Promise<boolean> {
-    const result = await this.BlogModel.deleteOne({ _id: blogId });
-    return result.deletedCount === 1;
-  }
-
-  async getBlogInstance(blogId: ObjectId): Promise<null | BlogInstanceType> {
-    const blog = await this.BlogModel.findOne({ _id: blogId });
-
-    if (blog) {
-      return blog;
-    }
-    return null;
   }
 }

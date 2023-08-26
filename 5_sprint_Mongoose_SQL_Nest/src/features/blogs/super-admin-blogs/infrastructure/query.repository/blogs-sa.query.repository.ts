@@ -44,11 +44,4 @@ export class BlogsSAQueryRepository {
     const blog = this.BlogModel.findOne({ _id: blogId }).lean();
     return blog;
   }
-
-  async getBlogByUserId(userId: ObjectId): Promise<BlogSAOutputDBType | null> {
-    const blog = this.BlogModel.findOne({
-      'blogOwnerInfo.userId': userId,
-    }).lean();
-    return blog;
-  }
 }

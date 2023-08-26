@@ -141,7 +141,7 @@ export class PostsService {
     postId: string,
     inputBodyPost: BodyForUpdatePostDto,
   ) {
-    const blog = await this.blogsBloggerQueryRepository.getBlogById(
+    const blog = await this.blogsBloggerQueryRepository.getBlogByIdMongo(
       new ObjectId(blogId),
     );
     if (!blog) return false;

@@ -16,6 +16,10 @@ import {
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { modifyUserIntoViewModel } from '../../../../users/super-admin/infrastructure/helpers/modify-user-into-view-model.helper';
+import {
+  BlogOutputType,
+  BlogSAOutputDBType,
+} from '../../../super-admin-blogs/infrastructure/query.repository/blogs-sa.types.query.repository';
 
 @Injectable()
 export class BlogsBloggerQueryRepository {
@@ -55,8 +59,20 @@ export class BlogsBloggerQueryRepository {
     };
   }
 
+  async getBlogById(blogId: string): Promise<BlogOutputType | null> {
+    const result = await this.dataSource.query(
+      `
+    SELECT "id", "userId", "name", "description", "websiteUrl"
+      FROM public."blogs"
+        WHERE "id" = $1`,
+      [blogId],
+    );
+    if (!result[0]) return null;
+    return result[0];
+  }
+
   //MONGO
-  async getBlogById(id: ObjectId): Promise<null | BlogViewType> {
+  async getBlogByIdMongo(id: ObjectId): Promise<null | BlogViewType> {
     const blog = await this.BlogModel.findOne(
       { _id: id },
       { blogOwnerInfo: 0 },

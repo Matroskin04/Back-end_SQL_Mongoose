@@ -28,19 +28,11 @@ export class BlogsBloggerService {
     return result;
   }
 
-  async updateBlog(id: string, inputBodyBlog: BodyBlogType): Promise<boolean> {
-    const blog = await this.blogsRepository.getBlogInstance(new ObjectId(id));
-    if (!blog) {
-      return false;
-    }
-
-    blog.updateBlogInfo(blog, inputBodyBlog);
-    await this.blogsRepository.save(blog);
-
-    return true;
+  async updateBlog(id: string, blogDTO: BodyBlogType): Promise<boolean> {
+    return this.blogsRepository.updateBlog(blogDTO, id);
   }
 
   async deleteSingleBlog(id: string): Promise<boolean> {
-    return this.blogsRepository.deleteSingleBlog(new ObjectId(id));
+    return this.blogsRepository.deleteSingleBlog(id);
   }
 }

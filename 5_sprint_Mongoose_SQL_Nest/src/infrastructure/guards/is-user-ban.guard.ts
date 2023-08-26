@@ -8,7 +8,7 @@ import { UsersSAQueryRepository } from '../../features/users/super-admin/infrast
 import { UsersPublicQueryRepository } from '../../features/users/public/infrastructure/query.repository/users-public.query.repository';
 
 @Injectable()
-export class BlogOwnerByIdGuard implements CanActivate {
+export class IsUserBanGuard implements CanActivate {
   constructor(
     protected usersPublicQueryRepository: UsersPublicQueryRepository,
   ) {}
