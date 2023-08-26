@@ -55,6 +55,17 @@ export class PostsRepository {
     );
     return result[1] === 1;
   }
+
+  async deleteSinglePost(postId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    DELETE FROM public."posts"
+      WHERE "id" = $1`,
+      [postId],
+    );
+    return result[1] === 1;
+  }
+
   //MONGO
   async getPostById(postId: ObjectId): Promise<null | PostInstanceType> {
     const post = await this.PostModel.findOne({ _id: postId });
@@ -70,15 +81,6 @@ export class PostsRepository {
     await this.PostModel.insertMany(posts);
     return;
   } //todo типизация
-
-  async deleteSinglePost(postId: ObjectId, blogId: string): Promise<boolean> {
-    const result = await this.PostModel.deleteOne({
-      _id: postId,
-      blogId: blogId,
-    });
-
-    return result.deletedCount === 1;
-  }
 
   async deletePostsByUserId(userId: string): Promise<boolean> {
     const result = await this.PostModel.deleteMany({ userId });

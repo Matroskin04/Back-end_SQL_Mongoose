@@ -127,9 +127,6 @@ export class PostsService {
     postId: string,
     postDTO: BodyForUpdatePostDto,
   ) {
-    const blog = await this.blogsBloggerQueryRepository.getBlogById(blogId);
-    if (!blog) return false;
-
     return this.postsRepository.updatePost(postDTO, postId);
   }
 
@@ -211,7 +208,7 @@ export class PostsService {
     return true;
   }
 
-  async deleteSinglePost(postId: string, blogId: string): Promise<boolean> {
-    return this.postsRepository.deleteSinglePost(new ObjectId(postId), blogId);
+  async deleteSinglePost(postId: string): Promise<boolean> {
+    return this.postsRepository.deleteSinglePost(postId);
   }
 }

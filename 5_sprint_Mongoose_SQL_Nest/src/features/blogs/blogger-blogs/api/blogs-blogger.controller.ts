@@ -171,16 +171,15 @@ export class BlogsBloggerController {
     return;
   }
 
-  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuardMongo)
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':blogId/posts/:postId')
   async deletePostOfBlog(
-    @Param('blogId') blogId: string,
+    // @Param('blogId') blogId: string,
     @Param('postId') postId: string,
-    @Res() res: Response<void>,
-  ) {
-    const result = await this.postsService.deleteSinglePost(postId, blogId);
-    result
-      ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+  ): Promise<void> {
+    const result = await this.postsService.deleteSinglePost(postId);
+    if (!result) throw new NotFoundException();
+    return;
   }
 }
