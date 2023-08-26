@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  NotFoundException,
   Param,
   Put,
   Query,
@@ -31,23 +32,21 @@ export class BlogsSAController {
   @Get()
   async getAllBlogs(
     @Query() query: QueryBlogInputModel,
-    @Res() res: Response<ViewAllBlogsModel>,
-  ) {
-    const result = await this.blogsSAQueryRepository.getAllBlogs(query);
-    res.status(HTTP_STATUS_CODE.OK_200).send(result);
+  ): Promise<ViewAllBlogsModel> {
+    const result = await this.blogsSAQueryRepository.getAllBlogsMongo(query);
+    return result;
   }
 
   @UseGuards(BasicAuthGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':id/bind-with-user/:userId')
   async bindBlogWithUser(
     @Param('id') blogId: string,
     @Param('userId') userId: string,
-    @Res() res: Response<ViewAllBlogsModel>,
   ) {
     const result = await this.blogsSAService.bindBlogWithUser(blogId, userId);
-    result
-      ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException();
+    return;
   }
 
   @UseGuards(BasicAuthGuard)

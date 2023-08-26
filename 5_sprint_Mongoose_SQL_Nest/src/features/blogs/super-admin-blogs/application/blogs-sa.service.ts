@@ -20,26 +20,16 @@ export class BlogsSAService {
   ) {}
 
   async bindBlogWithUser(blogId: string, userId: string): Promise<boolean> {
-    const user = await this.usersQueryRepository.getUserByUserIdMongo(
-      new ObjectId(userId),
-    );
-
+    const user = await this.usersQueryRepository.getUserLoginByUserId(userId);
     if (!user) {
       return false;
     }
 
-    const blog = await this.blogsSARepository.getBlogInstance(
-      new ObjectId(blogId),
-    );
-    if (!blog || blog.blogOwnerInfo) return false; //Если нет блога или юзер уже привязан
-
-    blog.blogOwnerInfo = {
+    const isUpdate = await this.blogsSARepository.updateUserInfoOfBlog(
+      blogId,
       userId,
-      userLogin: user.login,
-    };
-    await this.blogsSARepository.save(blog);
-
-    return true;
+    );
+    return isUpdate;
   }
 
   async updateBanInfoOfBlog(blogId: string, banInfo: boolean): Promise<void> {
