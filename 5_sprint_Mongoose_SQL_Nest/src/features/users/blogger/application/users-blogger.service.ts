@@ -51,10 +51,10 @@ export class UsersBloggerService {
           userId,
           banInfo.blogId,
         );
-      if (!result)
-        throw new NotFoundException(
-          'Info about ban is not found. Probably, this user is already unbanned',
-        );
+      // if (!result)
+      //   throw new NotFoundException(
+      //     'Info about ban is not found. Probably, this user is already unbanned',
+      //   );
     }
     return;
   }
