@@ -55,7 +55,7 @@ export class BlogsPublicQueryRepository {
       `
     SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership"
       FROM public."blogs"
-        WHERE "id" = $1`,
+        WHERE "id" = $1 AND "isBanned" = false`,
       [blogId],
     );
     if (!result[0]) return null;
