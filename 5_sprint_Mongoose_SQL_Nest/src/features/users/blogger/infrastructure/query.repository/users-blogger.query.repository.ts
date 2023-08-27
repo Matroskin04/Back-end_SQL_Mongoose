@@ -42,16 +42,16 @@ export class UsersBloggerQueryRepository {
             FROM public."banned_users_of_blog" as bi2
                 JOIN public."users" as u2
                 ON u2."id" = bi2."userId"
-        WHERE u2."login" ILIKE $1 AND bi2."blogId" = $1 AND u."isDeleted" = false)
+        WHERE u2."login" ILIKE $1 AND bi2."blogId" = $2 AND u."isDeleted" = false)
     FROM public."banned_users_of_blog" as bi
         JOIN public."users" as u
         ON u."id" = bi."userId"
-    WHERE u."login" ILIKE $2 AND bi."blogId" = $1 AND u."isDeleted" = false
+    WHERE u."login" ILIKE $1 AND bi."blogId" = $2 AND u."isDeleted" = false
         ORDER BY "${sortBy}" ${sortDirection}
         LIMIT $3 OFFSET $4;`,
       [
-        blogId,
         `%${searchLoginTerm}%`,
+        blogId,
         +pageSize,
         (+pageNumber - 1) * +pageSize,
       ],
