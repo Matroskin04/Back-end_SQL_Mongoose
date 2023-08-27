@@ -51,6 +51,7 @@ export class UsersBloggerQueryRepository {
         LIMIT $2 OFFSET $3;`,
       [`%${searchLoginTerm}%`, +pageSize, (+pageNumber - 1) * +pageSize],
     );
+    console.log(result);
 
     return {
       pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
