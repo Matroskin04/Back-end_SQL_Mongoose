@@ -32,8 +32,9 @@ export class UsersBloggerService {
     );
     if (!userLogin) throw new NotFoundException('User login is not found');
 
-    console.log(userLogin);
     console.log(banInfo.isBanned);
+    console.log(userId, banInfo.blogId);
+
     if (banInfo.isBanned) {
       //if isBanned = true
       //insert info about banned user of blog
@@ -45,10 +46,15 @@ export class UsersBloggerService {
       );
     } else {
       //delete info
-      await this.usersBloggerRepository.deleteInfoBannedUserOfBlog(
-        userId,
-        banInfo.blogId,
-      );
+      const result =
+        await this.usersBloggerRepository.deleteInfoBannedUserOfBlog(
+          userId,
+          banInfo.blogId,
+        );
+      if (!result)
+        throw new NotFoundException(
+          'Info about ban is not found. Probably, this user is already unbanned',
+        );
     }
     return;
   }

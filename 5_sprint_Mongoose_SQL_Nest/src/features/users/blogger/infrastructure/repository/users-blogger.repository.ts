@@ -35,7 +35,6 @@ export class UsersBloggerRepository {
     userId: string,
     blogId: string,
   ): Promise<boolean> {
-    console.log(userId, blogId);
     const result = await this.dataSource.query(
       `
     DELETE FROM public."banned_users_of_blog" 
