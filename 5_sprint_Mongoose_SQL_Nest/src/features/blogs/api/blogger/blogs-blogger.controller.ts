@@ -30,8 +30,7 @@ import {
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
 import { PostsService } from '../../../posts/application/posts.service';
-import { BlogsBloggerQueryRepository } from '../infrastructure/query.repository/blogs-blogger.query.repository';
-import { BlogsBloggerService } from '../application/blogs-blogger.service';
+import { BlogsBloggerService } from '../../application/blogger/blogs-blogger.service';
 import {
   CurrentUserId,
   CurrentUserIdMongo,
@@ -45,12 +44,13 @@ import {
 } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
 import { UpdatePostByBlogIdInputModel } from './models/input/update-post-by-blog-id.input.model';
 import { CommentsQueryRepository } from '../../../comments/infrastructure/query.repository/comments.query.repository';
+import { BlogsQueryRepository } from '../../public-blogs/infrastructure/query.repository/blogs.query.repository';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogger/blogs')
 export class BlogsBloggerController {
   constructor(
-    protected blogsBloggerQueryRepository: BlogsBloggerQueryRepository,
+    protected blogsQueryRepository: BlogsQueryRepository,
     protected postsQueryRepository: PostsQueryRepository,
     protected blogsBloggerService: BlogsBloggerService,
     protected postsService: PostsService,
@@ -63,7 +63,7 @@ export class BlogsBloggerController {
     @Query() query: QueryBlogInputModel,
     @CurrentUserId() userId: string,
   ): Promise<ViewAllBlogsModel> {
-    const result = await this.blogsBloggerQueryRepository.getAllBlogsOfBlogger(
+    const result = await this.blogsQueryRepository.getAllBlogsOfBlogger(
       query,
       userId.toString(),
     );

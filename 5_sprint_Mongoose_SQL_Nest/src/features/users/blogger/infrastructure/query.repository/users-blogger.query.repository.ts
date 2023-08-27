@@ -56,7 +56,6 @@ export class UsersBloggerQueryRepository {
         (+pageNumber - 1) * +pageSize,
       ],
     );
-    console.log(result);
 
     return {
       pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),

@@ -32,9 +32,6 @@ export class UsersBloggerService {
     );
     if (!userLogin) throw new NotFoundException('User login is not found');
 
-    console.log(banInfo.isBanned);
-    console.log(userId, banInfo.blogId);
-
     if (banInfo.isBanned) {
       //if isBanned = true
       //insert info about banned user of blog

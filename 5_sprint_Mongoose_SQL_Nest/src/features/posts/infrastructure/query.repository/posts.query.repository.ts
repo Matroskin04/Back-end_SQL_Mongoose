@@ -25,9 +25,9 @@ import { Post } from '../../domain/posts.entity';
 import { PostModelType } from '../../domain/posts.db.types';
 import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/query.repository/likes-info.query.repository';
 import { reformNewestLikes } from '../../../../infrastructure/utils/functions/features/likes-info.functions.helpers';
-import { QueryBlogInputModel } from '../../../blogs/blogger-blogs/api/models/input/query-blog.input.model';
+import { QueryBlogInputModel } from '../../../blogs/api/blogger/models/input/query-blog.input.model';
 import { BlogsIdType } from '../../../blogs/blogger-blogs/infrastructure/query.repository/blogs-blogger.types.query.repository';
-import { BlogsPublicQueryRepository } from '../../../blogs/public-blogs/infrastructure/query.repository/blogs-public.query.repository';
+import { BlogsQueryRepository } from '../../../blogs/public-blogs/infrastructure/query.repository/blogs.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -38,7 +38,7 @@ export class PostsQueryRepository {
     @InjectModel(Post.name)
     private PostModel: PostModelType,
     protected likesInfoQueryRepository: LikesInfoQueryRepository,
-    protected blogsPublicQueryRepository: BlogsPublicQueryRepository,
+    protected blogsPublicQueryRepository: BlogsQueryRepository,
   ) {}
 
   //SQL

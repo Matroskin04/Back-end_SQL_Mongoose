@@ -1,7 +1,7 @@
 import {
   BlogOutputModel,
   BlogOutputModelMongo,
-} from '../../../blogger-blogs/api/models/output/blog.output.model';
+} from '../../../api/blogger/models/output/blog.output.model';
 import { ObjectId } from 'mongodb';
 
 export type BlogPaginationType = {
@@ -9,10 +9,27 @@ export type BlogPaginationType = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: Array<BlogOutputType>;
+  items: Array<BlogOutputModel>;
 };
 
-export type BlogOutputType = BlogOutputModel;
+export type BlogOutputType = {
+  id: string;
+  name: string;
+  description: string;
+  websiteUrl: string;
+  createdAt: string;
+  isMembership: boolean;
+};
+
+export type BlogAllInfoOutputType = {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  websiteUrl: string;
+  isMembership: boolean;
+  isBanned: boolean;
+};
 
 export type BannedBlogsIdType = Array<{
   _id: ObjectId;

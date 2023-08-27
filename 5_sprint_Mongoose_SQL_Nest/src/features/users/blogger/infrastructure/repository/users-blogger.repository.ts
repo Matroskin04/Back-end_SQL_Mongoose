@@ -41,7 +41,6 @@ export class UsersBloggerRepository {
         WHERE "userId" = $1 AND "blogId" = $2;`,
       [userId, blogId],
     );
-    console.log(result);
     return result[1] === 1;
   }
 

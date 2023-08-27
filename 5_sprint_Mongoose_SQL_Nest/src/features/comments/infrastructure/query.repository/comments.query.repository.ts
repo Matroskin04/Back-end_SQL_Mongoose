@@ -19,9 +19,7 @@ import {
 } from './comments.types.query.repository';
 import { Comment } from '../../domain/comments.entity';
 import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/query.repository/likes-info.query.repository';
-import { BlogsBloggerQueryRepository } from '../../../blogs/blogger-blogs/infrastructure/query.repository/blogs-blogger.query.repository';
-import { Post } from '../../../posts/domain/posts.entity';
-import { PostModelType } from '../../../posts/domain/posts.db.types';
+import { BlogsQueryRepository } from '../../../blogs/public-blogs/infrastructure/query.repository/blogs.query.repository';
 
 @Injectable()
 export class CommentsQueryRepository {
@@ -30,7 +28,7 @@ export class CommentsQueryRepository {
     private CommentModel: CommentModelType,
     protected postsQueryRepository: PostsQueryRepository,
     protected likesInfoQueryRepository: LikesInfoQueryRepository,
-    protected blogsBloggerQueryRepository: BlogsBloggerQueryRepository,
+    protected blogsPublicQueryRepository: BlogsQueryRepository,
   ) {}
 
   async getCommentById(
@@ -108,7 +106,7 @@ export class CommentsQueryRepository {
     const paramsOfElems = await variablesForReturnMongo(query);
 
     const allBlogsIdOfBlogger =
-      await this.blogsBloggerQueryRepository.getAllBlogsIdOfBlogger(
+      await this.blogsPublicQueryRepository.getAllBlogsIdOfBlogger(
         userId.toString(),
       );
 

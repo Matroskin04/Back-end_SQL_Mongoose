@@ -5,24 +5,19 @@ import {
 } from '../infrastructure/repository/posts.types.repositories';
 import { PostsRepository } from '../infrastructure/repository/posts.repository';
 import { ObjectId } from 'mongodb';
-import {
-  modifyPostIntoViewModel,
-  modifyPostIntoViewModelMongo,
-} from '../../../infrastructure/utils/functions/features/posts.functions.helpers';
+import { modifyPostIntoViewModel } from '../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { PostModelType } from '../domain/posts.db.types';
 import { Post } from '../domain/posts.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { LikesInfoQueryRepository } from '../../likes-info/infrastructure/query.repository/likes-info.query.repository';
-import { reformNewestLikes } from '../../../infrastructure/utils/functions/features/likes-info.functions.helpers';
 import { LikeStatus } from '../../../infrastructure/utils/enums/like-status';
 import { UsersSAQueryRepository } from '../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';
 import { LikesInfoService } from '../../likes-info/application/likes-info.service';
 import { PostsQueryRepository } from '../infrastructure/query.repository/posts.query.repository';
 import { LikesInfoRepository } from '../../likes-info/infrastructure/repository/likes-info.repository';
-import { BlogsSARepository } from '../../blogs/super-admin-blogs/infrastructure/repository/blogs-sa.repository';
-import { BlogsBloggerQueryRepository } from '../../blogs/blogger-blogs/infrastructure/query.repository/blogs-blogger.query.repository';
 import { BodyForUpdatePostDto } from './dto/body-for-update-post.dto';
 import { Injectable } from '@nestjs/common';
+import { BlogsQueryRepository } from '../../blogs/public-blogs/infrastructure/query.repository/blogs.query.repository';
 
 @Injectable()
 export class PostsService {
@@ -31,47 +26,12 @@ export class PostsService {
     private PostModel: PostModelType,
     protected postsRepository: PostsRepository,
     protected postsQueryRepository: PostsQueryRepository,
-    protected blogsBloggerQueryRepository: BlogsBloggerQueryRepository,
-    protected blogsRepository: BlogsSARepository,
+    protected blogsPublicQueryRepository: BlogsQueryRepository,
     protected usersQueryRepository: UsersSAQueryRepository,
     protected likesInfoQueryRepository: LikesInfoQueryRepository,
     protected likesInfoRepository: LikesInfoRepository,
     protected likesInfoService: LikesInfoService,
   ) {}
-
-  /* async createPost(inputBodyPost: BodyPostType): Promise<PostViewType> {
-    const blog = await this.blogsBloggerQueryRepository.getBlogById(
-      inputBodyPost.blogId,
-    );
-    if (!blog) {
-      throw new BadRequestException([
-        {
-          message: 'Such blogId is not found',
-          field: 'blogId',
-        },
-      ]);
-    }
-
-    const post = this.PostModel.createInstance(
-      inputBodyPost,
-      blog.name,
-      this.PostModel,
-    );
-    await this.postsRepository.save(post);
-
-    //find last 3 Likes
-    const newestLikes =
-      await this.likesInfoQueryRepository.getNewestLikesOfPost(post._id);
-    const reformedNewestLikes = reformNewestLikes(newestLikes);
-
-    const postMapped = modifyPostIntoViewModel(
-      post,
-      reformedNewestLikes,
-      'None',
-    );
-
-    return postMapped;
-  }*/
 
   async createPostByBlogId(
     blogId: string,
@@ -79,7 +39,9 @@ export class PostsService {
     postDTO: BodyPostByBlogIdType,
   ): Promise<null | PostTypeWithId> {
     //checking the existence of a blog
-    const blog = await this.blogsBloggerQueryRepository.getBlogById(blogId);
+    const blog = await this.blogsPublicQueryRepository.getBlogAllInfoById(
+      blogId,
+    );
     if (!blog) {
       return null;
     }

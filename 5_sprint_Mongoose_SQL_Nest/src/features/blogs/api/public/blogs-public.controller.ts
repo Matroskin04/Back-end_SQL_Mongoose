@@ -14,40 +14,34 @@ import {
   JwtAccessNotStrictGuard,
   JwtAccessNotStrictGuardMongo,
 } from '../../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
-import {
-  CurrentUserId,
-  CurrentUserIdMongo,
-} from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
-import { ObjectId } from 'mongodb';
-import { Response } from 'express';
-import { QueryBlogInputModel } from '../../blogger-blogs/api/models/input/query-blog.input.model';
+import { CurrentUserId } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import { QueryBlogInputModel } from '../blogger/models/input/query-blog.input.model';
 import {
   BlogOutputModel,
-  BlogOutputModelMongo,
   ViewAllBlogsModel,
   ViewPostsOfBlogModel,
-} from '../../blogger-blogs/api/models/output/blog.output.model';
-import { BlogsPublicQueryRepository } from '../infrastructure/query.repository/blogs-public.query.repository';
+} from '../blogger/models/output/blog.output.model';
+import { BlogsQueryRepository } from '../../public-blogs/infrastructure/query.repository/blogs.query.repository';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogs')
 export class BlogsPublicController {
   constructor(
     protected postsQueryRepository: PostsQueryRepository,
-    protected blogsPublicQueryRepository: BlogsPublicQueryRepository,
+    protected blogsQueryRepository: BlogsQueryRepository,
   ) {}
 
   @Get()
   async getAllBlogs(
     @Query() query: QueryBlogInputModel,
   ): Promise<ViewAllBlogsModel> {
-    const result = await this.blogsPublicQueryRepository.getAllBlogs(query);
+    const result = await this.blogsQueryRepository.getAllBlogsPublic(query);
     return result;
   }
 
   @Get(':id')
   async getBlogById(@Param('id') blogId: string): Promise<BlogOutputModel> {
-    const result = await this.blogsPublicQueryRepository.getBlogById(blogId);
+    const result = await this.blogsQueryRepository.getBlogByIdPublic(blogId);
     if (!result) throw new NotFoundException();
     return result;
   }

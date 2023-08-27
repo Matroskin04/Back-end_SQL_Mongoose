@@ -6,10 +6,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BlogsSARepository } from '../infrastructure/repository/blogs-sa.repository';
+import { BlogsSARepository } from '../../super-admin-blogs/infrastructure/repository/blogs-sa.repository';
 import { ObjectId } from 'mongodb';
 import { UsersSAQueryRepository } from '../../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';
-import { BlogsBloggerQueryRepository } from '../../blogger-blogs/infrastructure/query.repository/blogs-blogger.query.repository';
+import { BlogsQueryRepository } from '../../public-blogs/infrastructure/query.repository/blogs.query.repository';
 
 @Injectable()
 export class BlogsSAService {
@@ -17,7 +17,7 @@ export class BlogsSAService {
     @InjectModel(Blog.name)
     private BlogModel: BlogModelType,
     protected blogsSARepository: BlogsSARepository,
-    protected blogsBloggerQueryRepository: BlogsBloggerQueryRepository,
+    protected blogsPublicQueryRepository: BlogsQueryRepository,
     protected usersQueryRepository: UsersSAQueryRepository,
   ) {}
 
@@ -38,7 +38,9 @@ export class BlogsSAService {
     blogId: string,
     banStatus: boolean,
   ): Promise<boolean> {
-    const blog = await this.blogsBloggerQueryRepository.getBlogById(blogId);
+    const blog = await this.blogsPublicQueryRepository.getBlogAllInfoById(
+      blogId,
+    );
     if (!blog) throw new NotFoundException('Blog is not found');
 
     if (blog.isBanned === banStatus)

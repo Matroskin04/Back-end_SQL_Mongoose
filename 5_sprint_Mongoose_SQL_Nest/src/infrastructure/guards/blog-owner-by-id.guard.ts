@@ -4,20 +4,18 @@ import {
   ExecutionContext,
   NotFoundException,
 } from '@nestjs/common';
-import { NotFoundError } from 'rxjs';
-import { BlogsSAQueryRepository } from '../../features/blogs/super-admin-blogs/infrastructure/query.repository/blogs-sa.query.repository';
 import { ObjectId } from 'mongodb';
-import { BlogsBloggerQueryRepository } from '../../features/blogs/blogger-blogs/infrastructure/query.repository/blogs-blogger.query.repository';
+import { BlogsQueryRepository } from '../../features/blogs/public-blogs/infrastructure/query.repository/blogs.query.repository';
 
 @Injectable()
 export class BlogOwnerByIdGuardMongo implements CanActivate {
-  constructor(protected blogsSAQueryRepository: BlogsSAQueryRepository) {}
+  constructor(protected blogsPublicQueryRepository: BlogsQueryRepository) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
     if (!request.user?.id) throw new Error('userId is not found');
 
-    const blog = await this.blogsSAQueryRepository.getBlogById(
+    const blog = await this.blogsPublicQueryRepository.getBlogByIdMongo(
       new ObjectId(request.params.blogId ?? request.body.blogId),
     );
     if (!blog) throw new NotFoundException('This blog is not found');
@@ -28,13 +26,13 @@ export class BlogOwnerByIdGuardMongo implements CanActivate {
 
 @Injectable()
 export class BlogOwnerByIdGuard implements CanActivate {
-  constructor(protected blogsQueryRepository: BlogsBloggerQueryRepository) {}
+  constructor(protected blogsPublicQueryRepository: BlogsQueryRepository) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
     if (!request.user?.id) throw new Error('userId is not found');
 
-    const blog = await this.blogsQueryRepository.getBlogById(
+    const blog = await this.blogsPublicQueryRepository.getBlogAllInfoById(
       request.params.blogId ?? request.body.blogId,
     );
     if (!blog) throw new NotFoundException('This blog is not found');

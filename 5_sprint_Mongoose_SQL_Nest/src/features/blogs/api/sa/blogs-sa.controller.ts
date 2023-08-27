@@ -7,24 +7,22 @@ import {
   Param,
   Put,
   Query,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
-import { BlogsSAQueryRepository } from '../infrastructure/query.repository/blogs-sa.query.repository';
 import { QueryBlogInputModel } from './models/input/query-blog.input.model';
 import { ViewAllBlogsModel } from './models/output/blog.output.model';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
-import { Response } from 'express';
 import { BasicAuthGuard } from '../../../../infrastructure/guards/authorization-guards/basic-auth.guard';
-import { BlogsSAService } from '../application/blogs-sa.service';
+import { BlogsSAService } from '../../application/sa/blogs-sa.service';
 import { BanInfoInputModel } from './models/input/ban-info.input.model';
+import { BlogsQueryRepository } from '../../public-blogs/infrastructure/query.repository/blogs.query.repository';
 
 @SkipThrottle()
 @Controller('/hometask-nest/sa/blogs')
 export class BlogsSAController {
   constructor(
-    protected blogsSAQueryRepository: BlogsSAQueryRepository,
+    protected blogsPublicQueryRepository: BlogsQueryRepository,
     protected blogsSAService: BlogsSAService,
   ) {}
 
@@ -33,7 +31,7 @@ export class BlogsSAController {
   async getAllBlogs(
     @Query() query: QueryBlogInputModel,
   ): Promise<ViewAllBlogsModel> {
-    const result = await this.blogsSAQueryRepository.getAllBlogs(query);
+    const result = await this.blogsPublicQueryRepository.getAllBlogsSA(query);
     return result;
   }
 

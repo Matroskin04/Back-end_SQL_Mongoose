@@ -85,7 +85,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
       userId,
     );
     if (!user) throw new Error('Created user is not found');
-    console.log('userId', user.id);
+
     return {
       id: user.id,
       login: user.login,
