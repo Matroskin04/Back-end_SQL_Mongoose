@@ -38,7 +38,7 @@ export class UsersBloggerQueryRepository {
     const result = await this.dataSource.query(
       `
     SELECT bi."blogId", u."login", bi."isBanned", bi."banReason", bi."banDate",
-        (SELECT bi2."blogId", u2."login", bi2."isBanned", bi2."banReason", bi2."banDate",
+        (SELECT bi2."blogId", u2."login", bi2."isBanned", bi2."banReason", bi2."banDate"
             FROM public."banned_users_of_blog" as bi2
                 JOIN public."users" as u2
                 ON u2."id" = bi2."userId"
