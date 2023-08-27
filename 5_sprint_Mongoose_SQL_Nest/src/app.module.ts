@@ -192,7 +192,7 @@ const handlers = [
       database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: false,
       synchronize: false,
-      //url: process.env.POSTGRES_URL + '?sslmode=require',
+      url: process.env.POSTGRES_URL + '?sslmode=require',
     }),
     MongooseModule.forRoot(process.env.MONGO_URL!),
     MongooseModule.forFeature([
