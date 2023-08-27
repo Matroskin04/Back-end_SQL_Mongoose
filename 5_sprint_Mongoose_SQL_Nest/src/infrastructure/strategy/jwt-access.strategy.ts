@@ -22,7 +22,7 @@ export class JwtAccessStrategy extends PassportStrategy(
 
   async validate(payload: any) {
     const userInfo = this.usersPublicQueryRepository.getUserInfoById(
-      payload.userId.toString(),
+      payload.userId,
     );
     if (!userInfo) throw new UnauthorizedException();
 

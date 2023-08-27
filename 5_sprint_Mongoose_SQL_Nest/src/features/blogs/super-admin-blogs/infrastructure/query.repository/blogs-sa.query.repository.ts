@@ -31,7 +31,7 @@ export class BlogsSAQueryRepository {
     const result = await this.dataSource.query(
       `
     SELECT b."id", b."name", b."description", b."websiteUrl", b."createdAt", b."isMembership",
-           b."userId", b."isBanned", b."banDate", u."login" as userLogin,
+           b."userId", b."isBanned", b."banDate", u."login" as "userLogin",
       (SELECT COUNT(*)
         FROM public."blogs"
         WHERE "name" ILIKE $1)

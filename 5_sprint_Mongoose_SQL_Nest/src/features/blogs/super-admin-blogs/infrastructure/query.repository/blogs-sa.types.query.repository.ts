@@ -9,7 +9,7 @@ export type ViewAllBlogsModel = {
 };
 
 export type BlogSAOutputType = {
-  id: ObjectId;
+  id: string;
   banInfo: { isBanned: boolean; banDate: null | string };
 } & BlogBodyType;
 
