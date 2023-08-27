@@ -37,7 +37,7 @@ export class UsersBloggerQueryRepository {
     //todo validate input data, bi2 - нужна 2?
     const result = await this.dataSource.query(
       `
-    SELECT bi."blogId", u."login", bi."isBanned", bi."banReason", bi."banDate",
+    SELECT u."id", u."login", bi."isBanned", bi."banReason", bi."banDate",
         (SELECT COUNT(*)
             FROM public."banned_users_of_blog" as bi2
                 JOIN public."users" as u2

@@ -22,7 +22,7 @@ export function modifyBannedUserOfBlogIntoViewModel(
   userInfo,
 ): BannedUserOfBlogType {
   return {
-    id: userInfo.blogId,
+    id: userInfo.id,
     login: userInfo.login,
     banInfo: {
       isBanned: userInfo.isBanned,
