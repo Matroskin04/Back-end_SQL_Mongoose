@@ -43,12 +43,10 @@ export class UsersBloggerService {
       );
     } else {
       //delete info
-      const result =
-        await this.usersBloggerRepository.deleteInfoBannedUserOfBlog(
-          userId,
-          banInfo.blogId,
-        );
-      if (!result) throw new NotFoundException('Blog is not found');
+      await this.usersBloggerRepository.deleteInfoBannedUserOfBlog(
+        userId,
+        banInfo.blogId,
+      );
     }
     return;
   }
