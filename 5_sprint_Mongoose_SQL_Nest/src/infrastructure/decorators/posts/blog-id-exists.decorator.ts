@@ -3,8 +3,6 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { ObjectId } from 'mongodb';
-import { BlogsSARepository } from '../../../features/blogs/super-admin-blogs/infrastructure/repository/blogs-sa.repository';
 import { Injectable } from '@nestjs/common';
 import { BlogsQueryRepository } from '../../../features/blogs/public-blogs/infrastructure/query.repository/blogs.query.repository';
 

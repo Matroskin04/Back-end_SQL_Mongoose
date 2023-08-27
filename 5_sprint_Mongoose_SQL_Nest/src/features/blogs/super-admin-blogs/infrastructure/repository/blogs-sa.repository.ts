@@ -42,18 +42,4 @@ export class BlogsSARepository {
     await blog.save();
     return;
   }
-
-  /*  async deleteSingleBlog(blogId: ObjectId): Promise<boolean> {
-    const result = await this.BlogModel.deleteOne({ _id: blogId });
-    return result.deletedCount === 1;
-  }*/
-
-  async getBlogInstance(blogId: ObjectId): Promise<null | BlogInstanceType> {
-    const blog = await this.BlogModel.findOne({ _id: blogId });
-
-    if (blog) {
-      return blog;
-    }
-    return null;
-  }
 }

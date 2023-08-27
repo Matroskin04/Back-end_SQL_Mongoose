@@ -54,23 +54,19 @@ import { CommentsService } from './features/comments/application/comments.servic
 import { CommentsRepository } from './features/comments/infrastructure/repository/comments.repository';
 import { IsBlogByIdExistsConstraint } from './infrastructure/decorators/posts/blog-id-exists.decorator';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 import { DevicesController } from './features/devices/api/devices.controller';
 import { DevicesService } from './features/devices/application/devices.service';
 import { DevicesQueryRepository } from './features/devices/infrastructure/query.repository/devices.query.repository';
 import { DevicesRepository } from './features/devices/infrastructure/repository/devices.repository';
 import { Device, DeviceSchema } from './features/devices/domain/devices.entity';
 import { JwtService } from './features/jwt/jwt.service';
-import { BlogsPublicController } from './features/blogs/public-blogs/api/blogs-public.controller';
-import { BlogsBloggerController } from './features/blogs/blogger-blogs/api/blogs-blogger.controller';
-import { BlogsSAController } from './features/blogs/super-admin-blogs/api/blogs-sa.controller';
-import { BlogsBloggerService } from './features/blogs/blogger-blogs/application/blogs-blogger.service';
-import { BlogsSAService } from './features/blogs/super-admin-blogs/application/blogs-sa.service';
-import { BlogsPublicQueryRepository } from './features/blogs/public-blogs/infrastructure/query.repository/blogs-public.query.repository';
-import { BlogsBloggerQueryRepository } from './features/blogs/blogger-blogs/infrastructure/query.repository/blogs-blogger.query.repository';
-import { BlogsSAQueryRepository } from './features/blogs/super-admin-blogs/infrastructure/query.repository/blogs-sa.query.repository';
-import { BlogsBloggerRepository } from './features/blogs/blogger-blogs/infrastructure/repository/blogs-blogger.repository';
-import { BlogsSARepository } from './features/blogs/super-admin-blogs/infrastructure/repository/blogs-sa.repository';
+import { BlogsPublicController } from './features/blogs/api/public/blogs-public.controller';
+import { BlogsBloggerController } from './features/blogs/api/blogger/blogs-blogger.controller';
+import { BlogsSAController } from './features/blogs/api/sa/blogs-sa.controller';
+import { BlogsBloggerService } from './features/blogs/application/blogger/blogs-blogger.service';
+import { BlogsSAService } from './features/blogs/application/sa/blogs-sa.service';
+import { BlogsQueryRepository } from './features/blogs/public-blogs/infrastructure/query.repository/blogs.query.repository';
+import { BlogsRepository } from './features/blogs/blogger-blogs/infrastructure/repository/blogs.repository';
 import {
   BannedUserBySA,
   BannedUserBySASchema,
@@ -130,9 +126,7 @@ const services = [
 ];
 const queryRepositories = [
   UsersPublicQueryRepository,
-  BlogsPublicQueryRepository,
-  BlogsBloggerQueryRepository,
-  BlogsSAQueryRepository,
+  BlogsQueryRepository,
   PostsQueryRepository,
   LikesInfoQueryRepository,
   DevicesQueryRepository,
@@ -146,8 +140,7 @@ const repositories = [
   PasswordRecoveryPublicRepository,
   BanInfoPublicRepository,
   EmailConfirmationPublicRepository,
-  BlogsBloggerRepository,
-  BlogsSARepository,
+  BlogsRepository,
   CommentsRepository,
   DevicesRepository,
   LikesInfoRepository,

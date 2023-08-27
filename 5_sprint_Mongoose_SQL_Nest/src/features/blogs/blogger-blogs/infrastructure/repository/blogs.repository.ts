@@ -12,7 +12,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
-export class BlogsBloggerRepository {
+export class BlogsRepository {
   constructor(
     @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(Blog.name)
@@ -42,6 +42,28 @@ export class BlogsBloggerRepository {
       SET "name" = $1, "description" = $2, "websiteUrl" = $3
         WHERE "id" = $4`,
       [blogDTO.name, blogDTO.description, blogDTO.websiteUrl, blogId],
+    );
+    return result[1] === 1;
+  }
+
+  async updateBanInfo(blogId: string, banStatus: boolean): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    UPDATE public."blogs"
+      SET "isBanned" = $1, "banDate" = now()
+        WHERE "id" = $2`,
+      [banStatus, blogId],
+    );
+    return result[1] === 1;
+  }
+
+  async updateUserInfoOfBlog(blogId: string, userId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    UPDATE public."blogs"
+      SET "userId" = $1
+        WHERE "id" = $2`,
+      [userId, blogId],
     );
     return result[1] === 1;
   }

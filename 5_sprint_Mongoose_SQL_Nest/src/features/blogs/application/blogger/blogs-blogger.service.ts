@@ -2,7 +2,7 @@ import { BodyBlogType } from '../../blogger-blogs/infrastructure/repository/blog
 import { ObjectId } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
-import { BlogsBloggerRepository } from '../../blogger-blogs/infrastructure/repository/blogs-blogger.repository';
+import { BlogsRepository } from '../../blogger-blogs/infrastructure/repository/blogs.repository';
 import { BlogModelType } from '../../domain/blogs.db.types';
 import { Blog } from '../../domain/blogs.entity';
 import { UsersSAQueryRepository } from '../../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';
@@ -13,7 +13,7 @@ export class BlogsBloggerService {
   constructor(
     @InjectModel(Blog.name)
     private BlogModel: BlogModelType,
-    protected blogsRepository: BlogsBloggerRepository,
+    protected blogsRepository: BlogsRepository,
     protected usersQueryRepository: UsersSAQueryRepository,
   ) {}
 

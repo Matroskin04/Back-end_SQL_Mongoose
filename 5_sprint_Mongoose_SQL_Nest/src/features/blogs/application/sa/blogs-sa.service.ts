@@ -6,17 +6,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BlogsSARepository } from '../../super-admin-blogs/infrastructure/repository/blogs-sa.repository';
-import { ObjectId } from 'mongodb';
 import { UsersSAQueryRepository } from '../../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';
 import { BlogsQueryRepository } from '../../public-blogs/infrastructure/query.repository/blogs.query.repository';
+import { BlogsRepository } from '../../blogger-blogs/infrastructure/repository/blogs.repository';
 
 @Injectable()
 export class BlogsSAService {
   constructor(
     @InjectModel(Blog.name)
     private BlogModel: BlogModelType,
-    protected blogsSARepository: BlogsSARepository,
+    protected blogsRepository: BlogsRepository,
     protected blogsPublicQueryRepository: BlogsQueryRepository,
     protected usersQueryRepository: UsersSAQueryRepository,
   ) {}
@@ -27,7 +26,7 @@ export class BlogsSAService {
       return false;
     }
 
-    const isUpdate = await this.blogsSARepository.updateUserInfoOfBlog(
+    const isUpdate = await this.blogsRepository.updateUserInfoOfBlog(
       blogId,
       userId,
     );
@@ -51,7 +50,7 @@ export class BlogsSAService {
         },
       ]);
 
-    const isUpdate = await this.blogsSARepository.updateBanInfo(
+    const isUpdate = await this.blogsRepository.updateBanInfo(
       blogId,
       banStatus,
     );
