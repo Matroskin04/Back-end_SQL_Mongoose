@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { UserDBType } from '../../../users/domain/users.db.types';
+import { UserDBTypeMongo } from '../../../users/domain/users.db.types';
 
 export type ARTokensAndUserIdType = {
   accessToken: string;

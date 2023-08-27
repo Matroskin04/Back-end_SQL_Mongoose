@@ -3,7 +3,7 @@ import { QueryUsersSAInputModel } from '../../api/models/input/query-users-sa.in
 import { UsersPaginationType } from './users-sa.types.query.repository';
 import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserDBType, UserModelType } from '../../../domain/users.db.types';
+import { UserDBTypeMongo, UserModelType } from '../../../domain/users.db.types';
 import { ObjectId } from 'mongodb';
 import { User } from '../../../domain/users.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -80,12 +80,12 @@ export class UsersSAQueryRepository {
     };
   }
 
-  async getUserLoginByUserId(userId: string): Promise<UserDBType | null> {
+  async getUserLoginByUserId(userId: string): Promise<string | null> {
     const login = await this.dataSource.query(
       `
     SELECT "login"
       FROM public."users"
-      WHERE "id" = $1 AND "isDeleted" = false`,
+        WHERE "id" = $1 AND "isDeleted" = false`,
       [userId],
     );
     if (login.length === 0) return null;
@@ -93,7 +93,9 @@ export class UsersSAQueryRepository {
   }
 
   //MONGO
-  async getUserByUserIdMongo(userId: ObjectId): Promise<UserDBType | null> {
+  async getUserByUserIdMongo(
+    userId: ObjectId,
+  ): Promise<UserDBTypeMongo | null> {
     // todo отдельный логин
 
     const user = await this.UserModel.findOne({ _id: userId });

@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UserDBType } from '../../../users/domain/users.db.types';
+import { UserDBTypeMongo } from '../../../users/domain/users.db.types';
 import add from 'date-fns/add';
 import { UsersSARepository } from '../../../users/super-admin/infrastructure/repository/users-sa.repository';
 import { UsersSAQueryRepository } from '../../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';

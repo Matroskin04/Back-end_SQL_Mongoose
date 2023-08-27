@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { UserDBType, UserModelType } from '../../../domain/users.db.types';
+import { UserDBTypeMongo, UserModelType } from '../../../domain/users.db.types';
 import { InjectModel } from '@nestjs/mongoose';
 import { UsersInfoPublicType } from './users-public.types.query.repository';
 import { Injectable } from '@nestjs/common';

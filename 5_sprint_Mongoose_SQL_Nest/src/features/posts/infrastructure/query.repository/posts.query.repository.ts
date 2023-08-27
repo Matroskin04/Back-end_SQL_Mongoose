@@ -134,11 +134,11 @@ export class PostsQueryRepository {
         FROM public."posts" as p2
             JOIN public."blogs" as b2 
             ON b2."id" = p2."blogId"
-        WHERE p."id" = $1 AND b2."isBanned" = false)
+        WHERE p2."id" = $1 AND b2."isBanned" = false)
     FROM public."posts" as p
         JOIN public."blogs" as b
         ON b."id" = p."blogId"
-    WHERE p."id" = $1 AND b2."isBanned" = false`,
+    WHERE p."id" = $1 AND b."isBanned" = false`,
       [postId],
     );
 

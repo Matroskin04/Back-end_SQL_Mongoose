@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { HydratedDocument, Model } from 'mongoose';
 import { User } from './users.entity';
 
-export type UserDBType = {
+export type UserDBTypeMongo = {
   _id: ObjectId;
   login: string;
   email: string;
