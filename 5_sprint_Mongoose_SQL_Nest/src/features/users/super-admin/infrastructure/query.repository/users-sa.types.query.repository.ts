@@ -18,7 +18,12 @@ export type UserViewType = {
   };
 };
 
-export type EmailAndLoginTerm = Array<{
-  email?: { $regex: string; $options: string };
-  login?: { $regex: string; $options: string };
-}>;
+export type BannedUserOfBlogType = {
+  id: string;
+  login: string;
+  banInfo: {
+    isBanned: boolean;
+    banDate: string;
+    banReason: string;
+  };
+};

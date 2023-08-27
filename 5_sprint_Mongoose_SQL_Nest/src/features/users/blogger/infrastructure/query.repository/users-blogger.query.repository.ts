@@ -4,14 +4,24 @@ import { BannedUsersByBlogger } from '../../../banned/banned-by-blogger-users/do
 import { BannedUsersByBloggerModelType } from '../../../banned/banned-by-blogger-users/domain/users-banned-by-blogger.db.types';
 import { BannedUsersOfBlogPaginationType } from './users-blogger.types.query.repository';
 import { ObjectId } from 'mongodb';
-import { variablesForReturnMongo } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
+import {
+  variablesForReturn,
+  variablesForReturnMongo,
+} from '../../../../../infrastructure/utils/functions/variables-for-return.function';
 import { User } from '../../../domain/users.entity';
 import { UserModelType } from '../../../domain/users.db.types';
 import { QueryUsersBloggerInputModel } from '../../api/models/input/query-users-blogger.input.model';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import {
+  modifyBannedUserOfBlogIntoViewModel,
+  modifyUserIntoViewModel,
+} from '../../../super-admin/infrastructure/helpers/modify-user-into-view-model.helper';
 
 Injectable();
 export class UsersBloggerQueryRepository {
   constructor(
+    @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(User.name)
     private UserModel: UserModelType,
     @InjectModel(BannedUsersByBlogger.name)
@@ -22,44 +32,32 @@ export class UsersBloggerQueryRepository {
     query: QueryUsersBloggerInputModel,
     blogId: string,
   ): Promise<BannedUsersOfBlogPaginationType> {
-    const searchLoginTerm: string | null = query?.searchLoginTerm ?? null;
-    const paramsOfElems = await variablesForReturnMongo(query);
-    const paramsOfSearchLogin = {
-      $regex: searchLoginTerm ?? '',
-      $options: 'i',
-    };
-
-    const countAllBannedUsersSort =
-      await this.BannedUsersByBloggerModel.countDocuments({
-        blogId,
-        login: paramsOfSearchLogin, //todo проверка
-      });
-
-    const allBannedUsersOnPages = await this.BannedUsersByBloggerModel.find({
-      blogId,
-      login: paramsOfSearchLogin,
-    })
-      .skip((+paramsOfElems.pageNumber - 1) * +paramsOfElems.pageSize)
-      .limit(+paramsOfElems.pageSize)
-      .sort(paramsOfElems.paramSort);
+    const { pageNumber, pageSize, sortBy, sortDirection, searchLoginTerm } =
+      variablesForReturn(query);
+    //todo validate input data, bi2 - нужна 2?
+    const result = await this.dataSource.query(
+      `
+    SELECT bi."blogId", u."login", bi."isBanned", bi."banReason", bi."banDate",
+        (SELECT bi2."blogId", u2."login", bi2."isBanned", bi2."banReason", bi2."banDate",
+            FROM public."banned_users_of_blog" as bi2
+                JOIN public."users" as u2
+                ON u2."id" = bi2."userId"
+        WHERE u2."login" ILIKE $1 AND bi2."isBanned" = true)
+    FROM public."banned_users_of_blog" as bi
+        JOIN public."users" as u
+        ON u."id" = bi."userId"
+    WHERE u."login" ILIKE $1 AND bi."isBanned" = true
+        ORDER BY "${sortBy}" ${sortDirection}
+        LIMIT $2 OFFSET $3;`,
+      [`%${searchLoginTerm}%`, +pageSize, (+pageNumber - 1) * +pageSize],
+    );
 
     return {
-      pagesCount: Math.ceil(countAllBannedUsersSort / +paramsOfElems.pageSize),
-      page: +paramsOfElems.pageNumber,
-      pageSize: +paramsOfElems.pageSize,
-      totalCount: countAllBannedUsersSort,
-      items: allBannedUsersOnPages.map((p) => p.modifyIntoViewModel()),
+      pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +result[0]?.count || 0,
+      items: result.map((p) => modifyBannedUserOfBlogIntoViewModel(p)),
     };
-  }
-
-  async getUserLoginById(userId: ObjectId): Promise<string | undefined> {
-    const userLogin = await this.UserModel.findOne(
-      { _id: userId },
-      {
-        login: 1,
-        _id: 0,
-      },
-    ).lean();
-    return userLogin?.login;
   }
 }

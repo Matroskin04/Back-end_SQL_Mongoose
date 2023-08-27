@@ -10,12 +10,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAccessGuardMongo } from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import { JwtAccessGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { UpdateBanInfoOfUserInputModel } from './models/input/update-ban-info-of-user.input.model';
 import { UsersBloggerService } from '../application/users-blogger.service';
 import { UsersBloggerQueryRepository } from '../infrastructure/query.repository/users-blogger.query.repository';
 import { QueryUsersBloggerInputModel } from './models/input/query-users-blogger.input.model';
-import { BlogOwnerByIdGuardMongo } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
+import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogger/users')
@@ -25,7 +25,7 @@ export class UsersBloggerController {
     protected usersBloggerQueryRepository: UsersBloggerQueryRepository,
   ) {}
 
-  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuardMongo)
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
   @Get('/blog/:blogId')
   async getBannedUsersOfBlog(
     @Query() query: QueryUsersBloggerInputModel,
@@ -35,11 +35,11 @@ export class UsersBloggerController {
       query,
       blogId,
     );
-    if (result) return result;
-    throw new NotFoundException('Info is not found');
+    if (!result) throw new NotFoundException('Info is not found');
+    return result;
   }
 
-  @UseGuards(JwtAccessGuardMongo, BlogOwnerByIdGuardMongo)
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
   @HttpCode(204)
   @Put(':userId/ban')
   async updateBanInfoOfUser(

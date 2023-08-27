@@ -14,6 +14,7 @@ import {
 } from './blogs-sa.types.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { modifyBlogIntoSaOutputModel } from '../../../helpers/modify-blog-into-sa-output-model';
 
 @Injectable()
 export class BlogsSAQueryRepository {
@@ -23,31 +24,34 @@ export class BlogsSAQueryRepository {
     private BlogModel: BlogModelType,
   ) {}
   //SQL
-  // async getAllBlogs(query: QueryBlogInputModel): Promise<ViewAllBlogsModel> {
-  //   const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
-  //     variablesForReturn(query);
-  //
-  //   const result = await this.dataSource.query(
-  //     `
-  //   SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership",
-  //     (SELECT COUNT(*)
-  //       FROM public."blogs"
-  //       WHERE "name" ILIKE $1 AND "userId" = $2)
-  //   FROM public."blogs"
-  //       WHERE "name" ILIKE $1 AND "userId" = $2
-  //           ORDER BY "${sortBy}" ${sortDirection}
-  //           LIMIT $3 OFFSET $4`,
-  //     [`%${searchNameTerm}%`, userId, +pageSize, (+pageNumber - 1) * +pageSize],
-  //   );
-  //
-  //   return {
-  //     pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
-  //     page: +pageNumber,
-  //     pageSize: +pageSize,
-  //     totalCount: +result[0]?.count || 0,
-  //     items: allBlogsOnPages.map((p) => p.modifyIntoViewSAModel()),
-  //   };
-  // }
+  async getAllBlogs(query: QueryBlogInputModel): Promise<ViewAllBlogsModel> {
+    const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
+      variablesForReturn(query);
+
+    const result = await this.dataSource.query(
+      `
+    SELECT b."id", b."name", b."description", b."websiteUrl", b."createdAt", b."isMembership",
+           b."userId", b."isBanned", b."banDate", u."login" as userLogin,
+      (SELECT COUNT(*)
+        FROM public."blogs"
+        WHERE "name" ILIKE $1)
+    FROM public."blogs" as b
+        JOIN public."users" as u
+        ON u."id" = b."userId"
+    WHERE "name" ILIKE $1
+        ORDER BY "${sortBy}" ${sortDirection}
+        LIMIT $2 OFFSET $3`,
+      [`%${searchNameTerm}%`, +pageSize, (+pageNumber - 1) * +pageSize],
+    );
+
+    return {
+      pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +result[0]?.count || 0,
+      items: result.map((blog) => modifyBlogIntoSaOutputModel(blog)),
+    };
+  }
 
   //MONGO
   async getAllBlogsMongo(

@@ -33,7 +33,7 @@ export class BlogsSAController {
   async getAllBlogs(
     @Query() query: QueryBlogInputModel,
   ): Promise<ViewAllBlogsModel> {
-    const result = await this.blogsSAQueryRepository.getAllBlogsMongo(query);
+    const result = await this.blogsSAQueryRepository.getAllBlogs(query);
     return result;
   }
 
