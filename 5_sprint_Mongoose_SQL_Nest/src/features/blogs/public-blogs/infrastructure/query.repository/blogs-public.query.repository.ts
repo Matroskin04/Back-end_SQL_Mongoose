@@ -46,7 +46,10 @@ export class BlogsPublicQueryRepository {
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,
-      items: result,
+      items: result.map((e) => {
+        delete e.count;
+        return e;
+      }),
     };
   }
 
