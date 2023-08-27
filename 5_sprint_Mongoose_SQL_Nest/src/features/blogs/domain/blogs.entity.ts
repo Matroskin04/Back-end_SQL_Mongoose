@@ -1,8 +1,8 @@
 import { BlogDTOType, BlogDocument, BlogModelType } from './blogs.db.types';
 import { ObjectId } from 'mongodb';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { BlogOutputType } from '../public-blogs/infrastructure/query.repository/blogs-public.types.query.repository';
-import { BlogSAOutputType } from '../super-admin-blogs/infrastructure/query.repository/blogs-sa.types.query.repository';
+import { BlogOutputType } from '../infrastructure/query.repository/blogs-public.types.query.repository';
+import { BlogSAOutputType } from '../infrastructure/query.repository/blogs-sa.types.query.repository';
 
 @Schema()
 export class Blog {

@@ -19,7 +19,7 @@ import {
 } from './comments.types.query.repository';
 import { Comment } from '../../domain/comments.entity';
 import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/query.repository/likes-info.query.repository';
-import { BlogsQueryRepository } from '../../../blogs/public-blogs/infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../../blogs/infrastructure/query.repository/blogs.query.repository';
 
 @Injectable()
 export class CommentsQueryRepository {

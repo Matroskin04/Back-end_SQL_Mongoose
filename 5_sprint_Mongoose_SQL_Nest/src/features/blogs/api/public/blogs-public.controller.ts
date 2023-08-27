@@ -16,7 +16,7 @@ import {
   ViewAllBlogsModel,
   ViewPostsOfBlogModel,
 } from '../blogger/models/output/blog.output.model';
-import { BlogsQueryRepository } from '../../public-blogs/infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogs')

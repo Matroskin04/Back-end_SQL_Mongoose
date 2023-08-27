@@ -65,8 +65,8 @@ import { BlogsBloggerController } from './features/blogs/api/blogger/blogs-blogg
 import { BlogsSAController } from './features/blogs/api/sa/blogs-sa.controller';
 import { BlogsBloggerService } from './features/blogs/application/blogger/blogs-blogger.service';
 import { BlogsSAService } from './features/blogs/application/sa/blogs-sa.service';
-import { BlogsQueryRepository } from './features/blogs/public-blogs/infrastructure/query.repository/blogs.query.repository';
-import { BlogsRepository } from './features/blogs/blogger-blogs/infrastructure/repository/blogs.repository';
+import { BlogsQueryRepository } from './features/blogs/infrastructure/query.repository/blogs.query.repository';
+import { BlogsRepository } from './features/blogs/infrastructure/repository/blogs.repository';
 import {
   BannedUserBySA,
   BannedUserBySASchema,

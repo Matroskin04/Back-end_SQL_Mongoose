@@ -1,4 +1,4 @@
-import { BlogDocument } from '../../../domain/blogs.db.types';
+import { BlogDocument } from '../../domain/blogs.db.types';
 
 export type BlogType = {
   name: string;

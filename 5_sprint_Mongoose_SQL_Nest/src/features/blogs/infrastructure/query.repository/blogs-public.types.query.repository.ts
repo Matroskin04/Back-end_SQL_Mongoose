@@ -1,7 +1,7 @@
 import {
   BlogOutputModel,
   BlogOutputModelMongo,
-} from '../../../api/blogger/models/output/blog.output.model';
+} from '../../api/blogger/models/output/blog.output.model';
 import { ObjectId } from 'mongodb';
 
 export type BlogPaginationType = {

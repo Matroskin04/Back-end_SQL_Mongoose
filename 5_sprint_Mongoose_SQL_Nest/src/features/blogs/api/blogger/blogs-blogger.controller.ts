@@ -44,7 +44,7 @@ import {
 } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
 import { UpdatePostByBlogIdInputModel } from './models/input/update-post-by-blog-id.input.model';
 import { CommentsQueryRepository } from '../../../comments/infrastructure/query.repository/comments.query.repository';
-import { BlogsQueryRepository } from '../../public-blogs/infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogger/blogs')

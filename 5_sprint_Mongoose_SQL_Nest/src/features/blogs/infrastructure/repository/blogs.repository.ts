@@ -6,8 +6,8 @@ import {
 } from './blogs-blogger.types.repositories';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
-import { Blog } from '../../../domain/blogs.entity';
-import { BlogModelType } from '../../../domain/blogs.db.types';
+import { Blog } from '../../domain/blogs.entity';
+import { BlogModelType } from '../../domain/blogs.db.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 

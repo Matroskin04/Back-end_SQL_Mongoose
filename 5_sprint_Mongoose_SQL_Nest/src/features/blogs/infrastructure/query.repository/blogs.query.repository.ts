@@ -7,18 +7,18 @@ import {
 import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog } from '../../../domain/blogs.entity';
-import { BlogModelType } from '../../../domain/blogs.db.types';
-import { QueryBlogInputModel } from '../../../api/blogger/models/input/query-blog.input.model';
-import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
+import { Blog } from '../../domain/blogs.entity';
+import { BlogModelType } from '../../domain/blogs.db.types';
+import { QueryBlogInputModel } from '../../api/blogger/models/input/query-blog.input.model';
+import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import {
   BlogSAOutputDBType,
   ViewAllBlogsModel,
-} from '../../../super-admin-blogs/infrastructure/query.repository/blogs-sa.types.query.repository';
-import { modifyBlogIntoSaOutputModel } from '../../../helpers/modify-blog-into-sa-output-model';
-import { BlogsIdType } from '../../../blogger-blogs/infrastructure/query.repository/blogs-blogger.types.query.repository';
+} from './blogs-sa.types.query.repository';
+import { modifyBlogIntoSaOutputModel } from '../../helpers/modify-blog-into-sa-output-model';
+import { BlogsIdType } from './blogs-blogger.types.query.repository';
 
 @Injectable()
 export class BlogsQueryRepository {

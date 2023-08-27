@@ -1,12 +1,12 @@
-import { BodyBlogType } from '../../blogger-blogs/infrastructure/repository/blogs-blogger.types.repositories';
+import { BodyBlogType } from '../../infrastructure/repository/blogs-blogger.types.repositories';
 import { ObjectId } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
-import { BlogsRepository } from '../../blogger-blogs/infrastructure/repository/blogs.repository';
+import { BlogsRepository } from '../../infrastructure/repository/blogs.repository';
 import { BlogModelType } from '../../domain/blogs.db.types';
 import { Blog } from '../../domain/blogs.entity';
 import { UsersSAQueryRepository } from '../../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';
-import { BlogViewType } from '../../blogger-blogs/infrastructure/query.repository/blogs-blogger.types.query.repository';
+import { BlogViewType } from '../../infrastructure/query.repository/blogs-blogger.types.query.repository';
 
 @Injectable()
 export class BlogsBloggerService {

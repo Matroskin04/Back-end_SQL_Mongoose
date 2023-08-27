@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
-import { BlogsQueryRepository } from '../../features/blogs/public-blogs/infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../features/blogs/infrastructure/query.repository/blogs.query.repository';
 
 @Injectable()
 export class BlogOwnerByIdGuardMongo implements CanActivate {

@@ -17,7 +17,7 @@ import { PostsQueryRepository } from '../infrastructure/query.repository/posts.q
 import { LikesInfoRepository } from '../../likes-info/infrastructure/repository/likes-info.repository';
 import { BodyForUpdatePostDto } from './dto/body-for-update-post.dto';
 import { Injectable } from '@nestjs/common';
-import { BlogsQueryRepository } from '../../blogs/public-blogs/infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../blogs/infrastructure/query.repository/blogs.query.repository';
 
 @Injectable()
 export class PostsService {

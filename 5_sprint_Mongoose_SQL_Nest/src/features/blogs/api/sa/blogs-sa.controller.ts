@@ -16,7 +16,7 @@ import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-st
 import { BasicAuthGuard } from '../../../../infrastructure/guards/authorization-guards/basic-auth.guard';
 import { BlogsSAService } from '../../application/sa/blogs-sa.service';
 import { BanInfoInputModel } from './models/input/ban-info.input.model';
-import { BlogsQueryRepository } from '../../public-blogs/infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
 
 @SkipThrottle()
 @Controller('/hometask-nest/sa/blogs')

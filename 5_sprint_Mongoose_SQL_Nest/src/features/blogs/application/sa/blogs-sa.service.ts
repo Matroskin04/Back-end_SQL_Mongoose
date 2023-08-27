@@ -7,8 +7,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UsersSAQueryRepository } from '../../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';
-import { BlogsQueryRepository } from '../../public-blogs/infrastructure/query.repository/blogs.query.repository';
-import { BlogsRepository } from '../../blogger-blogs/infrastructure/repository/blogs.repository';
+import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
+import { BlogsRepository } from '../../infrastructure/repository/blogs.repository';
 
 @Injectable()
 export class BlogsSAService {
