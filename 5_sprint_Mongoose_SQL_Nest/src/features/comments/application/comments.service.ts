@@ -10,7 +10,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Post } from '../../posts/domain/posts.entity';
 import { PostModelType } from '../../posts/domain/posts.db.types';
 import { modifyComment } from '../../../infrastructure/utils/functions/features/comments.functions.helpers';
-import { AllLikeStatusEnum } from '../../../infrastructure/utils/enums/like-status';
+import {
+  AllLikeStatusEnum,
+  AllLikeStatusType,
+  LikeDislikeStatusType,
+} from '../../../infrastructure/utils/enums/like-status';
 import { Comment } from '../domain/comments.entity';
 import { CommentModelType } from '../domain/comments.db.types';
 import { LikesInfoRepository } from '../../likes-info/infrastructure/repository/likes-info.repository';
@@ -86,7 +90,7 @@ export class CommentsService {
   async updateLikeStatusOfComment(
     commentId: string,
     userId: ObjectId,
-    likeStatus: AllLikeStatusEnum,
+    likeStatus: AllLikeStatusType,
   ): Promise<boolean> {
     const comment = await this.commentsQueryRepository.getCommentById(
       commentId,

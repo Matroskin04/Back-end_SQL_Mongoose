@@ -137,7 +137,7 @@ export class BlogsQueryRepository {
   ): Promise<null | BlogAllInfoOutputType> {
     const result = await this.dataSource.query(
       `
-    SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership", "isBanned"
+    SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership", "isBanned", "userId"
       FROM public."blogs"
         WHERE "id" = $1 AND "isBanned" = false`,
       [blogId],

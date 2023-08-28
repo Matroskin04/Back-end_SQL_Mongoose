@@ -27,6 +27,7 @@ export type BlogAllInfoOutputType = {
   description: string;
   createdAt: string;
   websiteUrl: string;
+  userId: string;
   isMembership: boolean;
   isBanned: boolean;
 };
