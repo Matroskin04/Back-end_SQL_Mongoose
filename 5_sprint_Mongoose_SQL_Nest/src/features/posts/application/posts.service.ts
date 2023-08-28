@@ -5,7 +5,7 @@ import {
 } from '../infrastructure/repository/posts.types.repositories';
 import { PostsRepository } from '../infrastructure/repository/posts.repository';
 import { ObjectId } from 'mongodb';
-import { modifyPostIntoViewModel } from '../../../infrastructure/utils/functions/features/posts.functions.helpers';
+import { modifyPostIntoViewModelFirst } from '../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { PostModelType } from '../domain/posts.db.types';
 import { Post } from '../domain/posts.entity';
 import { InjectModel } from '@nestjs/mongoose';
@@ -58,7 +58,12 @@ export class PostsService {
     //   );
     // const reformedNewestLikes = reformNewestLikes(newestLikes);
 
-    const postMapped = modifyPostIntoViewModel(post, blog.name, [], 'None');
+    const postMapped = modifyPostIntoViewModelFirst(
+      post,
+      blog.name,
+      [],
+      'None',
+    );
 
     return postMapped;
   }
@@ -119,10 +124,7 @@ export class PostsService {
         likeStatus,
       );
     } else {
-      //Если существует likeInfo, то:
-      if (likeStatus === likeInfo) return true; //Если статусы совпадают, то ничего не делаем;
-
-      //В ином случае меняем статус лайка
+      //меняем статус лайка
       const isUpdate = await this.likesInfoRepository.updatePostLikeInfo(
         userId,
         postId,

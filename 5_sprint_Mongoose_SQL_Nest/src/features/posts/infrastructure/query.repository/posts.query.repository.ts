@@ -8,14 +8,10 @@ import {
 } from './posts.types.query.repository';
 import { ObjectId } from 'mongodb';
 import { QueryPostInputModel } from '../../api/models/input/query-post.input.model';
-import {
-  variablesForReturn,
-  variablesForReturnMongo,
-} from '../../../../infrastructure/utils/functions/variables-for-return.function';
+import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import {
   modifyPostForAllDocs,
-  modifyPostForAllDocsMongo,
-  modifyPostIntoViewModel,
+  modifyPostIntoViewModelFirst,
   modifyPostIntoViewModelMongo,
 } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { StatusOfLike } from '../../../comments/infrastructure/query.repository/comments.types.query.repository';
@@ -26,10 +22,10 @@ import { PostModelType } from '../../domain/posts.db.types';
 import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/query.repository/likes-info.query.repository';
 import { reformNewestLikes } from '../../../../infrastructure/utils/functions/features/likes-info.functions.helpers';
 import { QueryBlogInputModel } from '../../../blogs/api/blogger/models/input/query-blog.input.model';
-import { BlogsIdType } from '../../../blogs/infrastructure/query.repository/blogs-blogger.types.query.repository';
 import { BlogsQueryRepository } from '../../../blogs/infrastructure/query.repository/blogs.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { AllLikeStatusEnum } from '../../../../infrastructure/utils/enums/like-status';
 
 @Injectable()
 export class PostsQueryRepository {
@@ -89,7 +85,7 @@ export class PostsQueryRepository {
   ): Promise<PostPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(query);
-
+    //todo all in one query - normal?
     const result = await this.dataSource.query(
       `
     SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."createdAt", b."name" as "blogName",
@@ -97,29 +93,49 @@ export class PostsQueryRepository {
         FROM public."posts" as p2
             JOIN public."blogs" as b2 
             ON b2."id" = p2."blogId"
-        WHERE b2."isBanned" = false)
+        WHERE b2."isBanned" = false),
+        
+      (SELECT COUNT(*) as likesCount
+        FROM public."posts-likes_info"
+            WHERE "likeStatus" = $1 AND "postId" = p."id"),
+            
+      (SELECT COUNT(*) as dislikesCount
+        FROM public."posts-likes_info"
+            WHERE "likeStatus" = $2 AND "postId" = p."id"),
+            
+      (SELECT "likeStatus" as myStatus
+        FROM public."posts-likes_info"
+            WHERE "userId" = $3 AND "postId" = p."id"),
+            
+      (SELECT json_agg(to_jsonb(threeLikes)) as newestLikes
+        FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts-likes_info" as li
+            JOIN public."users" as u
+            ON u."id" = li."userId"
+        GROUP BY u."login", li."addedAt", li."userId"
+             ORDER BY "addedAt" DESC
+             LIMIT 3) as threeLikes )
+            
     FROM public."posts" as p
         JOIN public."blogs" as b
         ON b."id" = p."blogId"
-    WHERE b2."isBanned" = false
+    WHERE b."isBanned" = false
         ORDER BY "${sortBy}" ${sortDirection}
-        LIMIT $1 OFFSET $2`,
-      [+pageSize, (+pageNumber - 1) * +pageSize],
+        LIMIT $4 OFFSET $5`,
+      [
+        AllLikeStatusEnum.Like,
+        AllLikeStatusEnum.Dislike,
+        userId,
+        +pageSize,
+        (+pageNumber - 1) * +pageSize,
+      ],
     );
-
-    // const allPostsOfBlog = await Promise.all(
-    //   allPostsOnPages.map(async (p) =>
-    //     modifyPostForAllDocsMongo(p, userId, this.likesInfoQueryRepository),
-    //   ), //2 parameter = userId
-    // );s
-    const allPostsOfBlog = result.map((post) => modifyPostForAllDocs(post));
 
     return {
       pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,
-      items: allPostsOfBlog,
+      items: result,
     };
   }
 
@@ -127,12 +143,14 @@ export class PostsQueryRepository {
     const result = await this.dataSource.query(
       `
     SELECT COUNT(*)
-    FROM public."posts" 
-        WHERE p."id" = $1 AND b."isBanned" = false`,
+    FROM public."posts" as p
+        JOIN public."blogs" as b
+        ON b."id" = p."blogId"
+    WHERE p."id" = $1 AND b."isBanned" = false`,
       [postId],
     );
-    console.log('doesPostExist', result);
-    return result[0].count === 1;
+
+    return +result[0].count === 1;
   }
 
   async getPostByIdView(
@@ -178,7 +196,12 @@ export class PostsQueryRepository {
     //   );
     // const reformedNewestLikes = reformNewestLikes(newestLikes);
 
-    return modifyPostIntoViewModel(result[0], result[0].blogName, [], myStatus);
+    return modifyPostIntoViewModelFirst(
+      result[0],
+      result[0].blogName,
+      [],
+      myStatus,
+    );
   }
 
   //MONGO

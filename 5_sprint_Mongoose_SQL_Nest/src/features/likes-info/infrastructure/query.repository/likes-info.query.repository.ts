@@ -32,10 +32,14 @@ export class LikesInfoQueryRepository {
     postId: string,
     userId: string,
   ): Promise<string | null> {
-    const result = await this.dataSource.query(`
-    SELECT "statusLike"
-        FROM public."posts-likes_info";`);
-    console.log(result[0], '= string');
+    const result = await this.dataSource.query(
+      `
+    SELECT "likeStatus"
+        FROM public."posts-likes_info"
+    WHERE "postId" = $1 AND "userId" = $2;`,
+      [postId, userId],
+    );
+
     if (!result[0]) return null;
     return result[0];
   }
