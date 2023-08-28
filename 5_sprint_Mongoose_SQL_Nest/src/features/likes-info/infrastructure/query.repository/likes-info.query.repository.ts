@@ -14,15 +14,33 @@ import {
   CommentsLikesInfoOfUserType,
   PostsLikesInfoOfUserType,
 } from './likes-info.types.query.repository';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class LikesInfoQueryRepository {
   constructor(
+    @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(CommentLikesInfo.name)
     private CommentsLikesInfoModel,
     @InjectModel(PostLikesInfo.name)
     private PostsLikesInfoModel,
   ) {}
+
+  //SQL
+  async getLikesInfoPost(
+    postId: string,
+    userId: string,
+  ): Promise<string | null> {
+    const result = await this.dataSource.query(`
+    SELECT "statusLike"
+        FROM public."posts-likes_info";`);
+    console.log(result[0], '= string');
+    if (!result[0]) return null;
+    return result[0];
+  }
+
+  //MONGO
   async getLikesInfoByCommentAndUser(
     commentId: string,
     userId: string,
@@ -30,7 +48,7 @@ export class LikesInfoQueryRepository {
     return this.CommentsLikesInfoModel.findOne({ commentId, userId });
   }
 
-  async getLikesInfoByPostAndUser(
+  async getLikesInfoByPostAndUserMongo(
     postId: string,
     userId: string,
   ): Promise<PostsLikesInfoDBType | null> {

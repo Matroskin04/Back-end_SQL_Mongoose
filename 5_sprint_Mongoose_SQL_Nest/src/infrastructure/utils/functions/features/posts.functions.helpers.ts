@@ -61,10 +61,11 @@ export async function modifyPostForAllDocsMongo( //todo in repo
   let myStatus: 'Like' | 'Dislike' | 'None' = 'None';
 
   if (userId) {
-    const likeInfo = await likesInfoQueryRepository.getLikesInfoByPostAndUser(
-      post._id.toString(),
-      userId.toString(),
-    );
+    const likeInfo =
+      await likesInfoQueryRepository.getLikesInfoByPostAndUserMongo(
+        post._id.toString(),
+        userId.toString(),
+      );
     if (likeInfo) {
       myStatus = likeInfo.statusLike;
     }

@@ -9,6 +9,7 @@ import {
 } from '../domain/likes-info.db.types';
 import { InjectModel } from '@nestjs/mongoose';
 import { CommentLikesInfo, PostLikesInfo } from '../domain/likes-info.entity';
+import { LikeDislikeStatusEnum } from '../../../infrastructure/utils/enums/like-status';
 
 @Injectable()
 export class LikesInfoService {
@@ -37,22 +38,6 @@ export class LikesInfoService {
     await this.likesInfoRepository.save(commentLikesInfo);
     return;
   }
-
-  async createLikeInfoPost(
-    userId: string,
-    postId: string,
-    login: string,
-    statusLike: 'Like' | 'Dislike',
-  ): Promise<void> {
-    const postLikesInfo = this.PostsLikesInfoModel.createInstance(
-      { postId, userId, login, addedAt: new Date().toISOString(), statusLike },
-      this.PostsLikesInfoModel,
-    );
-
-    await this.likesInfoRepository.save(postLikesInfo);
-    return;
-  }
-
   async updateCommentLikeInfo(
     userId: string,
     commentId: string,
@@ -70,24 +55,6 @@ export class LikesInfoService {
     await this.likesInfoRepository.save(commentLikeInfo);
     return true;
   }
-
-  async updatePostLikeInfo(
-    userId: string,
-    postId: string,
-    statusLike: 'Like' | 'Dislike' | 'None',
-  ): Promise<boolean> {
-    const postLikeInfo = await this.likesInfoRepository.getPostLikeInfoInstance(
-      postId,
-      userId,
-    );
-
-    if (!postLikeInfo) return false;
-
-    postLikeInfo.statusLike = statusLike;
-    await this.likesInfoRepository.save(postLikeInfo);
-    return true;
-  }
-
   async deleteLikeInfoComment(
     userId: string,
     commentId: string,

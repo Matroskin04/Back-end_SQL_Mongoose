@@ -19,7 +19,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config src/test/jest-e2e.json",
     "test:e2e_watch": "jest --config src/test/jest-e2e.json --watch",
-    "clear_jest": "jest --clearCache"
+    "clear_jest": "jest --clearCache",
+    "example_run": "node ./dist/tests.js",
+    "example_build": "tsc ./src/tests.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

@@ -10,7 +10,10 @@ import { PostModelType } from '../domain/posts.db.types';
 import { Post } from '../domain/posts.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { LikesInfoQueryRepository } from '../../likes-info/infrastructure/query.repository/likes-info.query.repository';
-import { LikeStatus } from '../../../infrastructure/utils/enums/like-status';
+import {
+  AllLikeStatusEnum,
+  AllLikeStatusType,
+} from '../../../infrastructure/utils/enums/like-status';
 import { UsersSAQueryRepository } from '../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';
 import { LikesInfoService } from '../../likes-info/application/likes-info.service';
 import { PostsQueryRepository } from '../infrastructure/query.repository/posts.query.repository';
@@ -94,79 +97,42 @@ export class PostsService {
 
   async updateLikeStatusOfPost(
     postId: string,
-    userId: ObjectId,
-    likeStatus: LikeStatus,
+    userId: string,
+    likeStatus: AllLikeStatusType,
   ) {
-    const post = await this.postsQueryRepository.getPostByIdMongo(
-      new ObjectId(postId),
-      userId,
-    );
+    const post = await this.postsQueryRepository.doesPostExist(postId);
     if (!post) {
       return false;
     }
     //check of existing LikeInfo
-    const likeInfo =
-      await this.likesInfoQueryRepository.getLikesInfoByPostAndUser(
-        postId,
-        userId.toString(),
-      );
-    //если не существует, то у пользователя 'None'
+    const likeInfo = await this.likesInfoQueryRepository.getLikesInfoPost(
+      postId,
+      userId,
+    );
+    //если не существует likeInfo, то у пользователя 'None'
     if (!likeInfo) {
       if (likeStatus === 'None') return true; //Если статусы совпадают, то ничего не делаем
-      //Иначе увеличиваем количество лайков/дизлайков
-      const result =
-        await this.likesInfoRepository.incrementNumberOfLikesOfPost(
-          postId,
-          likeStatus,
-        );
-      if (!result) {
-        throw new Error('Incrementing number of likes failed');
-      }
-      //Создаем like info
-      const user = await this.usersQueryRepository.getUserByUserIdMongo(userId);
-      if (!user) {
-        throw new Error('User with this userId is not found');
-      }
-
-      await this.likesInfoService.createLikeInfoPost(
-        userId.toString(),
+      //Иначе create like info
+      await this.likesInfoRepository.createLikeInfoOfPost(
+        userId,
         postId,
-        user.login,
         likeStatus,
       );
+    } else {
+      //Если существует likeInfo, то:
+      if (likeStatus === likeInfo) return true; //Если статусы совпадают, то ничего не делаем;
 
-      return true;
+      //В ином случае меняем статус лайка
+      const isUpdate = await this.likesInfoRepository.updatePostLikeInfo(
+        userId,
+        postId,
+        likeStatus,
+      );
+      if (!isUpdate) {
+        //todo имеет ли смысл в проверки
+        throw new Error('Like status of the post is not updated');
+      }
     }
-
-    //Если существует likeInfo, то:
-    if (likeStatus === likeInfo.statusLike) return true; //Если статусы совпадают, то ничего не делаем;
-
-    //В ином случае меняем статус лайка
-    const isUpdate = await this.likesInfoService.updatePostLikeInfo(
-      userId.toString(),
-      postId,
-      likeStatus,
-    );
-    if (!isUpdate) {
-      throw new Error('Like status of the post is not updated');
-    }
-
-    const result1 = await this.likesInfoRepository.incrementNumberOfLikesOfPost(
-      postId,
-      likeStatus,
-    );
-    if (!result1) {
-      throw new Error('Incrementing number of likes failed');
-    }
-    //уменьшаю на 1 то что убрали
-    const result2 = await this.likesInfoRepository.decrementNumberOfLikesOfPost(
-      postId,
-      likeInfo.statusLike,
-    );
-    if (!result2) {
-      throw new Error('Decrementing number of likes failed');
-    }
-
     return true;
   }
 

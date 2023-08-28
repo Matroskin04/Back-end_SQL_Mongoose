@@ -123,7 +123,19 @@ export class PostsQueryRepository {
     };
   }
 
-  async getPostById(
+  async doesPostExist(postId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    SELECT COUNT(*)
+    FROM public."posts" 
+        WHERE p."id" = $1 AND b."isBanned" = false`,
+      [postId],
+    );
+    console.log('doesPostExist', result);
+    return result[0].count === 1;
+  }
+
+  async getPostByIdView(
     postId: string,
     userId: string | null,
   ): Promise<null | PostViewType> {
@@ -192,7 +204,7 @@ export class PostsQueryRepository {
 
     if (userId) {
       const likeInfo =
-        await this.likesInfoQueryRepository.getLikesInfoByPostAndUser(
+        await this.likesInfoQueryRepository.getLikesInfoByPostAndUserMongo(
           postId.toString(),
           userId.toString(),
         );

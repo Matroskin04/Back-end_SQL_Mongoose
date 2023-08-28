@@ -13,6 +13,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   Post,
@@ -33,7 +34,10 @@ import {
   CurrentUserIdMongo,
 } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
-import { JwtAccessGuardMongo } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import {
+  JwtAccessGuard,
+  JwtAccessGuardMongo,
+} from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CreateCommentByPostIdModel } from '../../comments/api/models/input/create-comment.input.model';
 import { CommentsService } from '../../comments/application/comments.service';
 import { UpdatePostLikeStatusModel } from './models/input/update-like-status.input.model';
@@ -66,7 +70,10 @@ export class PostsController {
     @Param('id') postId: string,
     @CurrentUserId() userId: string | null,
   ): Promise<PostOutputModel> {
-    const result = await this.postsQueryRepository.getPostById(postId, userId);
+    const result = await this.postsQueryRepository.getPostByIdView(
+      postId,
+      userId,
+    );
     if (!result) throw new NotFoundException();
     return result;
   }
@@ -89,19 +96,6 @@ export class PostsController {
       : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
   }
 
-  /*@UseGuards(BasicAuthGuard)
-  @Post()
-  async createPost(
-    @Body() inputPostModel: CreatePostInputModel,
-    @Res() res: Response<PostOutputModel | string>,
-  ) {
-    const result = await this.postsService.createPost(inputPostModel);
-
-    result
-      ? res.status(HTTP_STATUS_CODE.CREATED_201).send(result)
-      : res.status(HTTP_STATUS_CODE.NOT_FOUND_404).json('Blog in not found');
-  }*/
-
   @UseGuards(JwtAccessGuardMongo, IsUserBannedGuard)
   @Post(':postId/comments')
   async createCommentByPostId(
@@ -121,27 +115,13 @@ export class PostsController {
       : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
   }
 
-  /*@UseGuards(BasicAuthGuard)
-  @Put(':id')
-  async updatePost(
-    @Param('id') postId: string,
-    @Body() inputPostModel: UpdatePostInputModel,
-    @Res() res: Response<void>,
-  ) {
-    const result = await this.postsService.updatePost(postId, inputPostModel);
-
-    result
-      ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
-  }*/
-
-  @UseGuards(JwtAccessGuardMongo)
+  @UseGuards(JwtAccessGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':postId/like-status')
   async updateLikeStatusOfPost(
     @Param('postId') postId: string,
-    @CurrentUserIdMongo() userId: ObjectId,
+    @CurrentUserId() userId: string,
     @Body() inputLikeStatusModel: UpdatePostLikeStatusModel,
-    @Res() res: Response<string>,
   ) {
     const result = await this.postsService.updateLikeStatusOfPost(
       postId.toString(),
@@ -149,11 +129,9 @@ export class PostsController {
       inputLikeStatusModel.likeStatus,
     );
 
-    result
-      ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
-      : res
-          .status(HTTP_STATUS_CODE.NOT_FOUND_404)
-          .send("Post with specified id doesn't exist");
+    if (!result)
+      throw new NotFoundException("Post with specified id doesn't exist");
+    return result;
   }
 
   /*@UseGuards(BasicAuthGuard)
@@ -164,5 +142,32 @@ export class PostsController {
     result
       ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
       : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
-  }*/
+  }
+
+  @UseGuards(BasicAuthGuard)
+@Put(':id')
+async updatePost(
+  @Param('id') postId: string,
+  @Body() inputPostModel: UpdatePostInputModel,
+  @Res() res: Response<void>,
+) {
+  const result = await this.postsService.updatePost(postId, inputPostModel);
+
+  result
+    ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
+    : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+}
+
+  @UseGuards(BasicAuthGuard)
+@Post()
+async createPost(
+  @Body() inputPostModel: CreatePostInputModel,
+  @Res() res: Response<PostOutputModel | string>,
+) {
+  const result = await this.postsService.createPost(inputPostModel);
+
+  result
+    ? res.status(HTTP_STATUS_CODE.CREATED_201).send(result)
+    : res.status(HTTP_STATUS_CODE.NOT_FOUND_404).json('Blog in not found');
+}*/
 }

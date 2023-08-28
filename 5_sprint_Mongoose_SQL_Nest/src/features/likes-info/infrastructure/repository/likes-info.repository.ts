@@ -18,10 +18,19 @@ import { Comment } from '../../../comments/domain/comments.entity';
 import { CommentModelType } from '../../../comments/domain/comments.db.types';
 import { Post } from '../../../posts/domain/posts.entity';
 import { PostModelType } from '../../../posts/domain/posts.db.types';
+import {
+  LikeDislikeStatusEnum,
+  AllLikeStatusEnum,
+  LikeDislikeStatusType,
+  AllLikeStatusType,
+} from '../../../../infrastructure/utils/enums/like-status';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class LikesInfoRepository {
   constructor(
+    @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(Post.name)
     private PostModel: PostModelType,
     @InjectModel(Comment.name)
@@ -32,6 +41,38 @@ export class LikesInfoRepository {
     private PostsLikesInfoModel: PostLikesInfoModelType,
   ) {}
 
+  //SQL
+  async createLikeInfoOfPost(
+    userId: string,
+    postId: string,
+    likeStatus: LikeDislikeStatusType,
+  ): Promise<void> {
+    const result = await this.dataSource.query(
+      `
+    INSERT INTO public."posts-likes_info"(
+        "userId", "postId", "likeStatus")
+        VALUES ($1, $2, $3);`,
+      [userId, postId, AllLikeStatusEnum[likeStatus]],
+    );
+    return;
+  }
+
+  async updatePostLikeInfo(
+    userId: string,
+    postId: string,
+    likeStatus: AllLikeStatusType,
+  ): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    UPDATE public."posts-likes_info"
+        SET "likeStatus" = $1 
+            WHERE "userId" = $2 AND "postId" = $3;`,
+      [AllLikeStatusEnum[likeStatus], userId, postId],
+    );
+    return result[1] === 1;
+  }
+
+  //MONGO
   async getCommentLikeInfoInstance(
     commentId: string,
     userId: string,
