@@ -11,6 +11,7 @@ import { QueryPostInputModel } from '../../api/models/input/query-post.input.mod
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import {
   modifyPostForAllDocs,
+  modifyPostIntoViewModel,
   modifyPostIntoViewModelFirst,
   modifyPostIntoViewModelMongo,
 } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
@@ -95,25 +96,25 @@ export class PostsQueryRepository {
             ON b2."id" = p2."blogId"
         WHERE b2."isBanned" = false),
         
-      (SELECT COUNT(*) as likesCount
+      (SELECT COUNT(*) as "likesCount"
         FROM public."posts-likes_info"
             WHERE "likeStatus" = $1 AND "postId" = p."id"),
             
-      (SELECT COUNT(*) as dislikesCount
+      (SELECT COUNT(*) as "dislikesCount"
         FROM public."posts-likes_info"
             WHERE "likeStatus" = $2 AND "postId" = p."id"),
             
-      (SELECT "likeStatus" as myStatus
+      (SELECT "likeStatus" as "myStatus"
         FROM public."posts-likes_info"
             WHERE "userId" = $3 AND "postId" = p."id"),
             
-      (SELECT json_agg(to_jsonb(threeLikes)) as newestLikes
+      (SELECT json_agg(to_jsonb("threeLikes")) as "newestLikes"
         FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts-likes_info" as li
             JOIN public."users" as u
             ON u."id" = li."userId"
         GROUP BY u."login", li."addedAt", li."userId"
              ORDER BY "addedAt" DESC
-             LIMIT 3) as threeLikes )
+             LIMIT 3) as "threeLikes" )
             
     FROM public."posts" as p
         JOIN public."blogs" as b
@@ -129,13 +130,13 @@ export class PostsQueryRepository {
         (+pageNumber - 1) * +pageSize,
       ],
     );
-
+    //todo get likes in json normal?
     return {
       pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,
-      items: result,
+      items: result.map((post) => modifyPostIntoViewModel(post)),
     };
   }
 

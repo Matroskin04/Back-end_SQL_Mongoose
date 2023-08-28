@@ -10,7 +10,7 @@ export type PostPaginationType = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: Array<PostTypeWithId>;
+  items: Array<PostViewType>;
 };
 
 export type PostViewType = PostTypeWithId & {
