@@ -25,10 +25,7 @@ import {
 import { CommentsQueryRepository } from '../../comments/infrastructure/query.repository/comments.query.repository';
 import { Response } from 'express';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
-import {
-  JwtAccessNotStrictGuard,
-  JwtAccessNotStrictGuardMongo,
-} from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
+import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import {
   CurrentUserId,
   CurrentUserIdMongo,
@@ -78,7 +75,7 @@ export class PostsController {
     return result;
   }
 
-  @UseGuards(JwtAccessNotStrictGuardMongo)
+  @UseGuards(JwtAccessNotStrictGuard)
   @Get(':postId/comments')
   async getAllCommentsOfPost(
     @Param('postId') postId: string,

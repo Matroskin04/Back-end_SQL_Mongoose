@@ -10,9 +10,7 @@ import { ObjectId } from 'mongodb';
 import { QueryPostInputModel } from '../../api/models/input/query-post.input.model';
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import {
-  modifyPostForAllDocs,
   modifyPostIntoViewModel,
-  modifyPostIntoViewModelFirst,
   modifyPostIntoViewModelMongo,
 } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { StatusOfLike } from '../../../comments/infrastructure/query.repository/comments.types.query.repository';
@@ -54,29 +52,50 @@ export class PostsQueryRepository {
         FROM public."posts" as p2
             JOIN public."blogs" as b2 
             ON b2."id" = p2."blogId"
-        WHERE p2."blogId" = $1 AND b2."isBanned" = false)
+        WHERE b2."isBanned" = false AND b2."id" = $4),
+        
+      (SELECT COUNT(*) as "likesCount"
+        FROM public."posts-likes_info"
+            WHERE "likeStatus" = $1 AND "postId" = p."id"),
+            
+      (SELECT COUNT(*) as "dislikesCount"
+        FROM public."posts-likes_info"
+            WHERE "likeStatus" = $2 AND "postId" = p."id"),
+            
+      (SELECT "likeStatus" as "myStatus"
+        FROM public."posts-likes_info"
+            WHERE "userId" = $3 AND "postId" = p."id"),
+            
+      (SELECT json_agg(to_jsonb("threeLikes")) as "newestLikes"
+        FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts-likes_info" as li
+            JOIN public."users" as u
+            ON u."id" = li."userId"
+        GROUP BY u."login", li."addedAt", li."userId"
+             ORDER BY "addedAt" DESC
+             LIMIT 3) as "threeLikes" )
+            
     FROM public."posts" as p
         JOIN public."blogs" as b
         ON b."id" = p."blogId"
-    WHERE p."blogId" = $1 AND b."isBanned" = false
+    WHERE b."isBanned" = false AND b."id" = $4
         ORDER BY "${sortBy}" ${sortDirection}
-        LIMIT $2 OFFSET $3`,
-      [blogId, +pageSize, (+pageNumber - 1) * +pageSize],
+        LIMIT $5 OFFSET $6`,
+      [
+        AllLikeStatusEnum.Like,
+        AllLikeStatusEnum.Dislike,
+        userId,
+        blogId,
+        +pageSize,
+        (+pageNumber - 1) * +pageSize,
+      ],
     );
-
-    // const allPostsOfBlog = await Promise.all(
-    //   allPostsOnPages.map(async (p) =>
-    //     modifyPostForAllDocsMongo(p, userId, this.likesInfoQueryRepository),
-    //   ), //2 parameter = userId
-    // );s
-    const allPostsOfBlog = result.map((post) => modifyPostForAllDocs(post));
-
+    //todo get likes in json normal?
     return {
       pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,
-      items: allPostsOfBlog,
+      items: result.map((post) => modifyPostIntoViewModel(post)),
     };
   }
 
@@ -160,49 +179,38 @@ export class PostsQueryRepository {
   ): Promise<null | PostViewType> {
     const result = await this.dataSource.query(
       `
-    SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."createdAt", b."name" as "blogName",
-      (SELECT COUNT(*)
-        FROM public."posts" as p2
-            JOIN public."blogs" as b2 
-            ON b2."id" = p2."blogId"
-        WHERE p2."id" = $1 AND b2."isBanned" = false)
+     SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."createdAt", b."name" as "blogName",
+        
+      (SELECT COUNT(*) as "likesCount"
+        FROM public."posts-likes_info"
+            WHERE "likeStatus" = $1 AND "postId" = p."id"),
+            
+      (SELECT COUNT(*) as "dislikesCount"
+        FROM public."posts-likes_info"
+            WHERE "likeStatus" = $2 AND "postId" = p."id"),
+            
+      (SELECT "likeStatus" as "myStatus"
+        FROM public."posts-likes_info"
+            WHERE "userId" = $3 AND "postId" = p."id"),
+            
+      (SELECT json_agg(to_jsonb("threeLikes")) as "newestLikes"
+        FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts-likes_info" as li
+            JOIN public."users" as u
+            ON u."id" = li."userId"
+        GROUP BY u."login", li."addedAt", li."userId"
+             ORDER BY "addedAt" DESC
+             LIMIT 3) as "threeLikes" )
+            
     FROM public."posts" as p
         JOIN public."blogs" as b
         ON b."id" = p."blogId"
-    WHERE p."id" = $1 AND b."isBanned" = false`,
-      [postId],
+    WHERE b."isBanned" = false AND p."id" = $4`,
+      [AllLikeStatusEnum.Like, AllLikeStatusEnum.Dislike, userId, postId],
     );
 
     if (!result[0]) return null;
 
-    //set StatusLike
-    const myStatus: StatusOfLike = 'None';
-
-    // if (userId) {
-    //   const likeInfo =
-    //     await this.likesInfoQueryRepository.getLikesInfoByPostAndUser(
-    //       postId.toString(),
-    //       userId.toString(),
-    //     );
-    //
-    //   if (likeInfo) {
-    //     myStatus = likeInfo.statusLike;
-    //   }
-    // }
-
-    //find last 3 Likes
-    // const newestLikes =
-    //   await this.likesInfoQueryRepository.getNewestLikesOfPost(
-    //     postId.toString(),
-    //   );
-    // const reformedNewestLikes = reformNewestLikes(newestLikes);
-
-    return modifyPostIntoViewModelFirst(
-      result[0],
-      result[0].blogName,
-      [],
-      myStatus,
-    );
+    return modifyPostIntoViewModel(result[0]);
   }
 
   //MONGO
@@ -215,8 +223,8 @@ export class PostsQueryRepository {
       return null;
     }
 
-    const allBannedBlogsId =
-      await this.blogsPublicQueryRepository.getAllBannedBlogsId();
+    const allBannedBlogsId: any = [];
+    //await this.blogsPublicQueryRepository.getAllBannedBlogsId();
     if (
       //if this post belongs to a blog, return null
       allBannedBlogsId &&

@@ -7,7 +7,6 @@ import {
 import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog } from '../../domain/blogs.entity';
 import { BlogModelType } from '../../domain/blogs.db.types';
 import { QueryBlogInputModel } from '../../api/blogger/models/input/query-blog.input.model';
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
@@ -22,11 +21,7 @@ import { BlogsIdType } from './blogs-blogger.types.query.repository';
 
 @Injectable()
 export class BlogsQueryRepository {
-  constructor(
-    @InjectDataSource() protected dataSource: DataSource,
-    @InjectModel(Blog.name)
-    private BlogModel: BlogModelType,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   async getAllBlogsOfBlogger(
     query: QueryBlogInputModel,
@@ -144,31 +139,5 @@ export class BlogsQueryRepository {
     );
     if (!result[0]) return null;
     return result[0];
-  }
-
-  //MONGO
-  async getAllBannedBlogsId(): Promise<null | BannedBlogsIdType> {
-    const result = await this.BlogModel.find(
-      {
-        isBanned: true,
-      },
-      { _id: 1 },
-    ).lean();
-    return result;
-  }
-
-  async getBlogByIdMongo(blogId: ObjectId): Promise<BlogSAOutputDBType | null> {
-    const blog = this.BlogModel.findOne({ _id: blogId }).lean();
-    return blog;
-  }
-
-  async getAllBlogsIdOfBlogger(userId: string): Promise<BlogsIdType> {
-    const allBlogsId = await this.BlogModel.find(
-      {
-        'blogOwnerInfo.userId': userId,
-      },
-      { _id: 1 },
-    ).lean();
-    return allBlogsId;
   }
 }

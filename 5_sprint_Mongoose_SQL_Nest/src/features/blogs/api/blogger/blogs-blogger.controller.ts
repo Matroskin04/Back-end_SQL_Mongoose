@@ -38,10 +38,7 @@ import {
 import { ObjectId } from 'mongodb';
 import { CreatePostByBlogIdModel } from '../../../posts/api/models/input/create-post.input.model';
 import { PostTypeWithId } from '../../../posts/infrastructure/repository/posts.types.repositories';
-import {
-  BlogOwnerByIdGuard,
-  BlogOwnerByIdGuardMongo,
-} from '../../../../infrastructure/guards/blog-owner-by-id.guard';
+import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
 import { UpdatePostByBlogIdInputModel } from './models/input/update-post-by-blog-id.input.model';
 import { CommentsQueryRepository } from '../../../comments/infrastructure/query.repository/comments.query.repository';
 import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
@@ -152,7 +149,7 @@ export class BlogsBloggerController {
     @Param('postId') postId: string,
     @Body() inputPostModel: UpdatePostByBlogIdInputModel,
   ): Promise<void> {
-    const result = await this.postsService.updatePostByBlogId(
+    const result = await this.postsService.updatePost(
       blogId,
       postId,
       inputPostModel,
