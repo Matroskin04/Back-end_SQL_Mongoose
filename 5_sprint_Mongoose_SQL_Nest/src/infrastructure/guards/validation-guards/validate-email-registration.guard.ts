@@ -4,19 +4,16 @@ import {
   ExecutionContext,
   BadRequestException,
 } from '@nestjs/common';
-import { UsersSAQueryRepository } from '../../../features/users/super-admin/infrastructure/query.repository/users-sa.query.repository';
-import { UsersPublicQueryRepository } from '../../../features/users/public/infrastructure/query.repository/users-public.query.repository';
+import { UsersQueryRepository } from '../../../features/users/infrastructure/query.repository/users.query.repository';
 
 @Injectable()
 export class ValidateEmailRegistrationGuard implements CanActivate {
-  constructor(
-    protected usersPublicQueryRepository: UsersPublicQueryRepository,
-  ) {}
+  constructor(protected usersQueryRepository: UsersQueryRepository) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
     const userInfoByLogin =
-      await this.usersPublicQueryRepository.getUserPassEmailInfoByLoginOrEmail(
+      await this.usersQueryRepository.getUserBanInfoByLoginOrEmail(
         request.body.login,
       );
     if (userInfoByLogin) {
@@ -27,9 +24,9 @@ export class ValidateEmailRegistrationGuard implements CanActivate {
         },
       ]);
     }
-
+    //todo создавать отдельный метод без banInfo (есть еще с pass/email), лишний join
     const userInfoByEmail =
-      await this.usersPublicQueryRepository.getUserPassEmailInfoByLoginOrEmail(
+      await this.usersQueryRepository.getUserBanInfoByLoginOrEmail(
         request.body.email,
       );
     if (userInfoByEmail) {

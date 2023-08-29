@@ -4,7 +4,7 @@ import {
   ExecutionContext,
   BadRequestException,
 } from '@nestjs/common';
-import { UsersSAQueryRepository } from '../../../features/users/super-admin/infrastructure/query.repository/users-sa.query.repository';
+import { UsersQueryRepository } from '../../../features/users/infrastructure/query.repository/users.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -12,7 +12,7 @@ import { DataSource } from 'typeorm';
 export class ValidateEmailResendingGuard implements CanActivate {
   constructor(
     @InjectDataSource() protected dataSource: DataSource,
-    protected usersQueryRepository: UsersSAQueryRepository,
+    protected usersQueryRepository: UsersQueryRepository,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();

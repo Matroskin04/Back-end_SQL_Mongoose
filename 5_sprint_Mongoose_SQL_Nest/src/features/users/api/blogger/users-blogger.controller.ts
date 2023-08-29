@@ -12,17 +12,17 @@ import {
 } from '@nestjs/common';
 import { JwtAccessGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { UpdateBanInfoOfUserInputModel } from './models/input/update-ban-info-of-user.input.model';
-import { UsersBloggerService } from '../application/users-blogger.service';
-import { UsersBloggerQueryRepository } from '../infrastructure/query.repository/users-blogger.query.repository';
+import { UsersBloggerService } from '../../application/blogger/users-blogger.service';
 import { QueryUsersBloggerInputModel } from './models/input/query-users-blogger.input.model';
 import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
+import { UsersQueryRepository } from '../../infrastructure/query.repository/users.query.repository';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogger/users')
 export class UsersBloggerController {
   constructor(
     protected usersBloggerService: UsersBloggerService,
-    protected usersBloggerQueryRepository: UsersBloggerQueryRepository,
+    protected usersQueryRepository: UsersQueryRepository,
   ) {}
 
   @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
@@ -31,7 +31,7 @@ export class UsersBloggerController {
     @Query() query: QueryUsersBloggerInputModel,
     @Param('blogId') blogId: string,
   ) {
-    const result = await this.usersBloggerQueryRepository.getBannedUsersOfBlog(
+    const result = await this.usersQueryRepository.getBannedUsersOfBlog(
       query,
       blogId,
     );

@@ -18,24 +18,24 @@ import {
   UserOutputModel,
 } from './models/output/user.output.model';
 import { CreateUserInputModel } from './models/input/create-user.input.model';
-import { UsersSAQueryRepository } from '../infrastructure/query.repository/users-sa.query.repository';
-import { UsersSaService } from '../application/users-sa.service';
+import { UsersQueryRepository } from '../../infrastructure/query.repository/users.query.repository';
+import { UsersSaService } from '../../application/sa/users-sa.service';
 import { Response } from 'express';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { BasicAuthGuard } from '../../../../infrastructure/guards/authorization-guards/basic-auth.guard';
 import { SkipThrottle } from '@nestjs/throttler';
 import { UpdateBanInfoOfUserInputModel } from './models/input/update-ban-info-of-user.input.model';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateUserCommand } from '../application/use-cases/create-user.use-case';
-import { DeleteUserCommand } from '../application/use-cases/delete-user.use-case';
-import { UpdateBanInfoOfUserCommand } from '../application/use-cases/update-ban-info-user.use-case';
+import { CreateUserCommand } from '../../application/sa/use-cases/create-user.use-case';
+import { DeleteUserCommand } from '../../application/sa/use-cases/delete-user.use-case';
+import { UpdateBanInfoOfUserCommand } from '../../application/sa/use-cases/update-ban-info-user.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/sa/users')
 export class UsersSaController {
   constructor(
     protected commandBus: CommandBus,
-    protected usersSAQueryRepository: UsersSAQueryRepository,
+    protected usersSAQueryRepository: UsersQueryRepository,
   ) {}
 
   @UseGuards(BasicAuthGuard)
