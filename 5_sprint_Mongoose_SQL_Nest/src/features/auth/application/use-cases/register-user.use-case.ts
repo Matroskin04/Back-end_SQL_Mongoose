@@ -6,9 +6,9 @@ import { EmailManager } from '../../../../infrastructure/managers/email-manager'
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../../../users/domain/users.entity';
 import { UserModelType } from '../../../users/domain/users.db.types';
-import { EmailConfirmationPublicRepository } from '../../../users/public/infrastructure/subrepositories/email-confirmation.public.repository';
-import { PasswordRecoveryPublicRepository } from '../../../users/public/infrastructure/subrepositories/password-recovery.public.repository';
-import { BanInfoPublicRepository } from '../../../users/public/infrastructure/subrepositories/ban-info.public.repository';
+import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/subrepository/email-confirmation.public.repository';
+import { PasswordRecoveryPublicRepository } from '../../../users/infrastructure/subrepository/password-recovery.public.repository';
+import { BanInfoPublicRepository } from '../../../users/infrastructure/subrepository/ban-info.public.repository';
 import { UsersPublicRepository } from '../../../users/public/infrastructure/repository/users-public.repository';
 
 export class RegisterUserCommand {

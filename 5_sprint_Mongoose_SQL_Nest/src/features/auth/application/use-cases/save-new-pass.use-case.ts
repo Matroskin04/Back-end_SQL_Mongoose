@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException } from '@nestjs/common';
 import { CryptoAdapter } from '../../../../infrastructure/adapters/crypto.adapter';
-import { UsersPublicQueryRepository } from '../../../users/public/infrastructure/query.repository/users-public.query.repository';
 import { createBodyErrorBadRequest } from '../../../../infrastructure/utils/functions/create-error-bad-request.function';
 import { UsersPublicRepository } from '../../../users/public/infrastructure/repository/users-public.repository';
+import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
 
 export class SaveNewPassCommand {
   constructor(public newPassword: string, public recoveryCode: string) {}
@@ -14,12 +14,12 @@ export class SaveNewPassUseCase implements ICommandHandler<SaveNewPassCommand> {
   constructor(
     protected cryptoAdapter: CryptoAdapter,
     protected usersPublicRepository: UsersPublicRepository,
-    protected usersPublicQueryRepository: UsersPublicQueryRepository,
+    protected usersQueryRepository: UsersQueryRepository,
   ) {}
 
   async execute(command: SaveNewPassCommand): Promise<void> {
     const { newPassword, recoveryCode } = command;
-    const user = await this.usersPublicQueryRepository.getUserByRecoveryCode(
+    const user = await this.usersQueryRepository.getUserByRecoveryCode(
       recoveryCode,
     );
 

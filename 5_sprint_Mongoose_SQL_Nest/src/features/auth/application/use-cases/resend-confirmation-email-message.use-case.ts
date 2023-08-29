@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import add from 'date-fns/add';
 import { UsersSARepository } from '../../../users/super-admin/infrastructure/repository/users-sa.repository';
 import { EmailManager } from '../../../../infrastructure/managers/email-manager';
-import { EmailConfirmationPublicRepository } from '../../../users/public/infrastructure/subrepositories/email-confirmation.public.repository';
+import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/subrepository/email-confirmation.public.repository';
 
 export class ResendConfirmationEmailMessageCommand {
   constructor(public userId: string, public email: string) {}
