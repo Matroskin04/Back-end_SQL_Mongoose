@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BanInfoSAType } from '../dto/ban-info.dto';
-import { UsersSARepository } from '../../../super-admin/infrastructure/repository/users-sa.repository';
 import { DevicesService } from '../../../../devices/application/devices.service';
+import { UsersRepository } from '../../../public/infrastructure/repository/users.repository';
 
 export class UpdateBanInfoOfUserCommand {
   constructor(public userId: string, public banInfo: BanInfoSAType) {}
@@ -12,14 +12,14 @@ export class UpdateBanInfoOfUserUseCase
   implements ICommandHandler<UpdateBanInfoOfUserCommand>
 {
   constructor(
-    protected usersSARepository: UsersSARepository,
+    protected usersRepository: UsersRepository,
     protected devicesService: DevicesService,
   ) {}
 
   async execute(command: UpdateBanInfoOfUserCommand): Promise<boolean> {
     const { userId, banInfo } = command;
 
-    const isUpdated = await this.usersSARepository.updateBanInfoOfUser(
+    const isUpdated = await this.usersRepository.updateBanInfoOfUser(
       userId,
       banInfo.isBanned,
       banInfo.banReason,

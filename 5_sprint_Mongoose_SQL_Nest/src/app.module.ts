@@ -19,7 +19,6 @@ import { CommentsController } from './features/comments/api/comments.controller'
 import { UsersSaController } from './features/users/api/sa/users-sa.controller';
 import { CommentsQueryRepository } from './features/comments/infrastructure/query.repository/comments.query.repository';
 import { UsersSaService } from './features/users/application/sa/users-sa.service';
-import { UsersSARepository } from './features/users/super-admin/infrastructure/repository/users-sa.repository';
 import { TestingController } from './features/testing/api/testing.controller';
 import { TestingRepository } from './features/testing/repository/testing.repository';
 import { LocalStrategy } from './infrastructure/strategy/local.strategy';
@@ -58,7 +57,6 @@ import { BlogsBloggerService } from './features/blogs/application/blogger/blogs-
 import { BlogsSAService } from './features/blogs/application/sa/blogs-sa.service';
 import { BlogsQueryRepository } from './features/blogs/infrastructure/query.repository/blogs.query.repository';
 import { BlogsRepository } from './features/blogs/infrastructure/repository/blogs.repository';
-import { UsersBloggerRepository } from './features/users/blogger/infrastructure/repository/users-blogger.repository';
 import { UsersBloggerService } from './features/users/application/blogger/users-blogger.service';
 import { UsersBloggerController } from './features/users/api/blogger/users-blogger.controller';
 import { BannedUsersByBloggerQueryRepository } from './features/users/banned/banned-by-blogger-users/infrastructure/banned-users-by-blogger-query.repository';
@@ -75,7 +73,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordRecoveryPublicRepository } from './features/users/infrastructure/subrepository/password-recovery.public.repository';
 import { BanInfoPublicRepository } from './features/users/infrastructure/subrepository/ban-info.public.repository';
 import { EmailConfirmationPublicRepository } from './features/users/infrastructure/subrepository/email-confirmation.public.repository';
-import { UsersPublicRepository } from './features/users/public/infrastructure/repository/users-public.repository';
+import { UsersRepository } from './features/users/public/infrastructure/repository/users.repository';
 import { CreateUserUseCase } from './features/users/application/sa/use-cases/create-user.use-case';
 import { DeleteUserUseCase } from './features/users/application/sa/use-cases/delete-user.use-case';
 import { UpdateBanInfoOfUserUseCase } from './features/users/application/sa/use-cases/update-ban-info-user.use-case';
@@ -112,9 +110,7 @@ const repositories = [
   DevicesRepository,
   LikesInfoRepository,
   PostsRepository,
-  UsersBloggerRepository,
-  UsersPublicRepository,
-  UsersSARepository,
+  UsersRepository,
   TestingRepository,
 ];
 const handlers = [

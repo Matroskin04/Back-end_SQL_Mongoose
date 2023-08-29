@@ -35,7 +35,7 @@ import { UpdateBanInfoOfUserCommand } from '../../application/sa/use-cases/updat
 export class UsersSaController {
   constructor(
     protected commandBus: CommandBus,
-    protected usersSAQueryRepository: UsersQueryRepository,
+    protected usersQueryRepository: UsersQueryRepository,
   ) {}
 
   @UseGuards(BasicAuthGuard)
@@ -44,7 +44,7 @@ export class UsersSaController {
     @Query() query: QueryUsersSAInputModel,
     @Res() res: Response<ViewAllUsersModels | string>,
   ) {
-    const result = await this.usersSAQueryRepository.getAllUsers(query);
+    const result = await this.usersQueryRepository.getAllUsers(query);
     res.status(HTTP_STATUS_CODE.OK_200).send(result);
   }
 

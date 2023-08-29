@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersSARepository } from '../../../super-admin/infrastructure/repository/users-sa.repository';
+import { UsersRepository } from '../../../public/infrastructure/repository/users.repository';
 
 export class DeleteUserCommand {
   constructor(public userId: string) {}
@@ -7,10 +7,10 @@ export class DeleteUserCommand {
 
 @CommandHandler(DeleteUserCommand)
 export class DeleteUserUseCase implements ICommandHandler<DeleteUserCommand> {
-  constructor(protected usersSARepository: UsersSARepository) {}
+  constructor(protected usersRepository: UsersRepository) {}
 
   execute(command: DeleteUserCommand): Promise<boolean> {
     const { userId } = command;
-    return this.usersSARepository.deleteUserById(userId);
+    return this.usersRepository.deleteUserById(userId);
   }
 }

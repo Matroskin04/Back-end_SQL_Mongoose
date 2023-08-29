@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException } from '@nestjs/common';
 import { CryptoAdapter } from '../../../../infrastructure/adapters/crypto.adapter';
 import { createBodyErrorBadRequest } from '../../../../infrastructure/utils/functions/create-error-bad-request.function';
-import { UsersPublicRepository } from '../../../users/public/infrastructure/repository/users-public.repository';
+import { UsersRepository } from '../../../users/public/infrastructure/repository/users.repository';
 import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
 
 export class SaveNewPassCommand {
@@ -13,7 +13,7 @@ export class SaveNewPassCommand {
 export class SaveNewPassUseCase implements ICommandHandler<SaveNewPassCommand> {
   constructor(
     protected cryptoAdapter: CryptoAdapter,
-    protected usersPublicRepository: UsersPublicRepository,
+    protected usersRepository: UsersRepository,
     protected usersQueryRepository: UsersQueryRepository,
   ) {}
 
@@ -32,7 +32,7 @@ export class SaveNewPassUseCase implements ICommandHandler<SaveNewPassCommand> {
       );
 
     const passwordHash = await this.cryptoAdapter._generateHash(newPassword);
-    const result = await this.usersPublicRepository.updatePassword(
+    const result = await this.usersRepository.updatePassword(
       passwordHash,
       user.id,
     );

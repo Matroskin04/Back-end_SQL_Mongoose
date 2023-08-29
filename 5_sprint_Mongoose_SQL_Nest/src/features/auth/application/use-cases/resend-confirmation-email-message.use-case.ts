@@ -2,7 +2,6 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ObjectId } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
 import add from 'date-fns/add';
-import { UsersSARepository } from '../../../users/super-admin/infrastructure/repository/users-sa.repository';
 import { EmailManager } from '../../../../infrastructure/managers/email-manager';
 import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/subrepository/email-confirmation.public.repository';
 

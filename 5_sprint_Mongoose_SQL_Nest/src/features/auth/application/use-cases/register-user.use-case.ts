@@ -9,7 +9,7 @@ import { UserModelType } from '../../../users/domain/users.db.types';
 import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/subrepository/email-confirmation.public.repository';
 import { PasswordRecoveryPublicRepository } from '../../../users/infrastructure/subrepository/password-recovery.public.repository';
 import { BanInfoPublicRepository } from '../../../users/infrastructure/subrepository/ban-info.public.repository';
-import { UsersPublicRepository } from '../../../users/public/infrastructure/repository/users-public.repository';
+import { UsersRepository } from '../../../users/public/infrastructure/repository/users.repository';
 
 export class RegisterUserCommand {
   constructor(
@@ -28,7 +28,7 @@ export class RegisterUserUseCase
     private UserModel: UserModelType,
     protected cryptoAdapter: CryptoAdapter,
     protected emailManager: EmailManager,
-    protected usersPublicRepository: UsersPublicRepository,
+    protected usersRepository: UsersRepository,
     protected emailConfirmationPublicRepository: EmailConfirmationPublicRepository,
     protected passwordRecoveryPublicRepository: PasswordRecoveryPublicRepository,
     protected banInfoPublicRepository: BanInfoPublicRepository,
@@ -40,12 +40,7 @@ export class RegisterUserUseCase
     const passwordHash = await this.cryptoAdapter._generateHash(password);
 
     const userId = uuidv4();
-    await this.usersPublicRepository.createUser(
-      userId,
-      login,
-      email,
-      passwordHash,
-    );
+    await this.usersRepository.createUser(userId, login, email, passwordHash);
     const confirmationCode = uuidv4();
 
     await this.emailConfirmationPublicRepository.createEmailConfirmationInfo(
