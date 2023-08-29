@@ -1,18 +1,14 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersSAQueryRepository } from '../../features/users/super-admin/infrastructure/query.repository/users-sa.query.repository';
-import { UsersPublicQueryRepository } from '../../features/users/public/infrastructure/query.repository/users-public.query.repository';
+import { UsersQueryRepository } from '../../features/users/infrastructure/query.repository/users.query.repository';
 
 @Injectable()
 export class JwtAccessStrategy extends PassportStrategy(
   Strategy,
   'jwt-access',
 ) {
-  constructor(
-    protected usersQueryRepository: UsersSAQueryRepository,
-    protected usersPublicQueryRepository: UsersPublicQueryRepository,
-  ) {
+  constructor(protected usersQueryRepository: UsersQueryRepository) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -21,9 +17,7 @@ export class JwtAccessStrategy extends PassportStrategy(
   }
 
   async validate(payload: any) {
-    const userInfo = this.usersPublicQueryRepository.getUserInfoById(
-      payload.userId,
-    );
+    const userInfo = this.usersQueryRepository.getUserInfoById(payload.userId);
     if (!userInfo) throw new UnauthorizedException();
 
     return { id: payload.userId };
@@ -35,10 +29,7 @@ export class JwtAccessStrategyMongo extends PassportStrategy(
   Strategy,
   'jwt-access-mongo',
 ) {
-  constructor(
-    protected usersQueryRepository: UsersSAQueryRepository,
-    protected usersPublicQueryRepository: UsersPublicQueryRepository,
-  ) {
+  constructor(protected usersQueryRepository: UsersQueryRepository) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,

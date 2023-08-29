@@ -4,23 +4,19 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersSAQueryRepository } from '../../features/users/super-admin/infrastructure/query.repository/users-sa.query.repository';
-import { UsersPublicQueryRepository } from '../../features/users/public/infrastructure/query.repository/users-public.query.repository';
+import { UsersQueryRepository } from '../../features/users/infrastructure/query.repository/users.query.repository';
 
 @Injectable()
 export class IsUserBanGuard implements CanActivate {
-  constructor(
-    protected usersPublicQueryRepository: UsersPublicQueryRepository,
-  ) {}
+  constructor(protected usersQueryRepository: UsersQueryRepository) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     if (!request.body || !request.body.loginOrEmail)
       throw new Error('Login must be passed');
 
-    const user =
-      await this.usersPublicQueryRepository.getUserBanInfoByLoginOrEmail(
-        request.body.loginOrEmail,
-      );
+    const user = await this.usersQueryRepository.getUserBanInfoByLoginOrEmail(
+      request.body.loginOrEmail,
+    );
     if (!user) throw new UnauthorizedException('User is not found');
     if (user.isBanned) throw new UnauthorizedException('User is banned'); //Если забанен - то Unauthorized
 

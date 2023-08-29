@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException } from '@nestjs/common';
-import { EmailConfirmationPublicRepository } from '../../../users/public/infrastructure/subrepositories/email-confirmation.public.repository';
-import { UsersPublicQueryRepository } from '../../../users/public/infrastructure/query.repository/users-public.query.repository';
+import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/subrepository/email-confirmation.public.repository';
+import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
 
 export class ConfirmEmailCommand {
   constructor(public confirmationCode: string) {}
@@ -12,16 +12,15 @@ export class ConfirmEmailUseCase
   implements ICommandHandler<ConfirmEmailCommand>
 {
   constructor(
-    protected usersPublicQueryRepository: UsersPublicQueryRepository,
+    protected usersQueryRepository: UsersQueryRepository,
     protected emailConfirmationPublicRepository: EmailConfirmationPublicRepository,
   ) {}
 
   async execute(command: ConfirmEmailCommand): Promise<void> {
     const { confirmationCode } = command;
-    const userId =
-      await this.usersPublicQueryRepository.getUserIdByConfirmationCode(
-        confirmationCode,
-      );
+    const userId = await this.usersQueryRepository.getUserIdByConfirmationCode(
+      confirmationCode,
+    );
     if (!userId) {
       throw new BadRequestException([
         { message: 'Code is incorrect', field: 'code' },

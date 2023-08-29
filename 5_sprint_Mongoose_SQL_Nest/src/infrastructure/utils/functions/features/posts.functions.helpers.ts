@@ -32,7 +32,7 @@ export function modifyPostIntoViewModelMongo(
   };
 }
 
-export function modifyPostIntoViewModelFirst(
+export function modifyCreatingPostIntoViewModel(
   post: PostDBType,
   blogName: string,
   newestLikes: NewestLikesType,
@@ -56,7 +56,6 @@ export function modifyPostIntoViewModelFirst(
 }
 
 export function modifyPostIntoViewModel(postInfo: PostRawType): PostViewType {
-  console.log(postInfo.likesCount);
   return {
     id: postInfo.id,
     title: postInfo.title,
@@ -91,95 +90,4 @@ type PostRawType = {
     userId: string;
     addedAt: string;
   }>;
-};
-
-export async function modifyPostForAllDocsMongo( //todo in repo
-  post: PostDBTypeMongo,
-  userId: ObjectId | null,
-  likesInfoQueryRepository: LikesInfoQueryRepository,
-): Promise<PostViewType> {
-  let myStatus: 'Like' | 'Dislike' | 'None' = 'None';
-
-  if (userId) {
-    const likeInfo =
-      await likesInfoQueryRepository.getLikesInfoByPostAndUserMongo(
-        post._id.toString(),
-        userId.toString(),
-      );
-    if (likeInfo) {
-      myStatus = likeInfo.statusLike;
-    }
-  }
-
-  // find last 3 Likes
-  const newestLikes = await likesInfoQueryRepository.getNewestLikesOfPost(
-    post._id.toString(),
-  );
-  const reformedNewestLikes = reformNewestLikes(newestLikes);
-
-  return {
-    id: post._id.toString(),
-    title: post.title,
-    shortDescription: post.shortDescription,
-    content: post.content,
-    blogId: post.blogId,
-    blogName: post.blogName,
-    createdAt: post.createdAt,
-    extendedLikesInfo: {
-      likesCount: post.likesInfo.likesCount,
-      dislikesCount: post.likesInfo.dislikesCount,
-      myStatus: myStatus,
-      newestLikes: reformedNewestLikes,
-    },
-  };
-}
-
-export function modifyPostForAllDocs( //todo in repo
-  post: InputInfoPostType,
-  // userId: ObjectId | null,
-  // likesInfoQueryRepository: LikesInfoQueryRepository,
-) /*Promise<PostViewType>*/ {
-  const myStatus: 'Like' | 'Dislike' | 'None' = 'None';
-
-  // if (userId) {
-  //   const likeInfo = await likesInfoQueryRepository.getLikesInfoByPostAndUser(
-  //     post._id.toString(),
-  //     userId.toString(),
-  //   );
-  //   if (likeInfo) {
-  //     myStatus = likeInfo.statusLike;
-  //   }
-  // }
-
-  // find last 3 Likes
-  // const newestLikes = await likesInfoQueryRepository.getNewestLikesOfPost(
-  //   post._id.toString(),
-  // );
-  // const reformedNewestLikes = reformNewestLikes(newestLikes);
-
-  return {
-    id: post.id,
-    title: post.title,
-    shortDescription: post.shortDescription,
-    content: post.content,
-    blogId: post.blogId,
-    blogName: post.blogName,
-    createdAt: post.createdAt,
-    extendedLikesInfo: {
-      likesCount: 0,
-      dislikesCount: 0,
-      myStatus: myStatus,
-      newestLikes: [],
-    },
-  };
-}
-
-type InputInfoPostType = {
-  id: string;
-  title: string;
-  shortDescription: string;
-  content: string;
-  blogId: string;
-  blogName: string;
-  createdAt: string;
 };

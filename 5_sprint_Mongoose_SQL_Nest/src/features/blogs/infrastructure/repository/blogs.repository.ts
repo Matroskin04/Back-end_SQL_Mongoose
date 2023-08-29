@@ -1,25 +1,15 @@
-import { ObjectId } from 'mongodb';
 import {
-  BlogInstanceType,
   BlogOutputType,
   BodyBlogType,
 } from './blogs-blogger.types.repositories';
-import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
-import { Blog } from '../../domain/blogs.entity';
-import { BlogModelType } from '../../domain/blogs.db.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class BlogsRepository {
-  constructor(
-    @InjectDataSource() protected dataSource: DataSource,
-    @InjectModel(Blog.name)
-    private BlogModel: BlogModelType,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  //SQL
   async createBlog(
     blogDTO: BodyBlogType,
     userId: string,
@@ -76,11 +66,5 @@ export class BlogsRepository {
       [blogId],
     );
     return result[1] === 1;
-  }
-
-  //MONGO
-  async save(blog: BlogInstanceType): Promise<void> {
-    await blog.save();
-    return;
   }
 }

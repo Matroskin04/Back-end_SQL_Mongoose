@@ -1,16 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UserViewType } from '../../infrastructure/query.repository/users-sa.types.query.repository';
+import { UserViewType } from '../../../infrastructure/query.repository/users-sa.types.query.repository';
 import { BadRequestException } from '@nestjs/common';
 import { createBodyErrorBadRequest } from '../../../../../infrastructure/utils/functions/create-error-bad-request.function';
 import { UserInfoType } from '../dto/user-info.dto';
-import { UsersPublicQueryRepository } from '../../../public/infrastructure/query.repository/users-public.query.repository';
 import { CryptoAdapter } from '../../../../../infrastructure/adapters/crypto.adapter';
 import { UsersPublicRepository } from '../../../public/infrastructure/repository/users-public.repository';
 import { v4 as uuidv4 } from 'uuid';
-import { UsersSAQueryRepository } from '../../infrastructure/query.repository/users-sa.query.repository';
-import { EmailConfirmationPublicRepository } from '../../../public/infrastructure/subrepositories/email-confirmation.public.repository';
-import { PasswordRecoveryPublicRepository } from '../../../public/infrastructure/subrepositories/password-recovery.public.repository';
-import { BanInfoPublicRepository } from '../../../public/infrastructure/subrepositories/ban-info.public.repository';
+import { UsersQueryRepository } from '../../../infrastructure/query.repository/users.query.repository';
+import { EmailConfirmationPublicRepository } from '../../../infrastructure/subrepository/email-confirmation.public.repository';
+import { PasswordRecoveryPublicRepository } from '../../../infrastructure/subrepository/password-recovery.public.repository';
+import { BanInfoPublicRepository } from '../../../infrastructure/subrepository/ban-info.public.repository';
 
 export class CreateUserCommand {
   constructor(public inputUserDTO: UserInfoType) {}
@@ -19,10 +18,10 @@ export class CreateUserCommand {
 @CommandHandler(CreateUserCommand)
 export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
   constructor(
-    protected usersPublicQueryRepository: UsersPublicQueryRepository,
+    protected usersQueryRepository: UsersQueryRepository,
     protected cryptoAdapter: CryptoAdapter,
     protected usersPublicRepository: UsersPublicRepository, //todo объединение
-    protected usersSAQueryRepository: UsersSAQueryRepository,
+    protected usersSAQueryRepository: UsersQueryRepository,
     protected emailConfirmationPublicRepository: EmailConfirmationPublicRepository,
     protected passwordRecoveryPublicRepository: PasswordRecoveryPublicRepository,
     protected banInfoPublicRepository: BanInfoPublicRepository,
@@ -32,7 +31,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
 
     //Проверяем, есть ли пользователь с такими данными
     const userByEmail =
-      await this.usersPublicQueryRepository.getUserPassEmailInfoByLoginOrEmail(
+      await this.usersQueryRepository.getUserPassEmailInfoByLoginOrEmail(
         //todo вынести проверку по логину и емаилу в отдельную фукнцию
         email,
       );
@@ -46,9 +45,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     }
 
     const userByLogin =
-      await this.usersPublicQueryRepository.getUserPassEmailInfoByLoginOrEmail(
-        login,
-      );
+      await this.usersQueryRepository.getUserPassEmailInfoByLoginOrEmail(login);
     if (userByLogin)
       throw new BadRequestException(
         createBodyErrorBadRequest(

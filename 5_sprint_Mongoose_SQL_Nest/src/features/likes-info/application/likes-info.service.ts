@@ -1,23 +1,14 @@
-import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { LikesInfoRepository } from '../infrastructure/repository/likes-info.repository';
-import {
-  CommentsLikesInfoDBType,
-  CommentLikesInfoModelType,
-  PostsLikesInfoDBType,
-  PostLikesInfoModelType,
-} from '../domain/likes-info.db.types';
+import { CommentLikesInfoModelType } from '../domain/likes-info.db.types';
 import { InjectModel } from '@nestjs/mongoose';
-import { CommentLikesInfo, PostLikesInfo } from '../domain/likes-info.entity';
-import { LikeDislikeStatusEnum } from '../../../infrastructure/utils/enums/like-status';
+import { CommentLikesInfo } from '../domain/likes-info.entity';
 
 @Injectable()
 export class LikesInfoService {
   constructor(
     @InjectModel(CommentLikesInfo.name)
     private CommentsLikesInfoModel: CommentLikesInfoModelType,
-    @InjectModel(PostLikesInfo.name)
-    private PostsLikesInfoModel: PostLikesInfoModelType,
     protected likesInfoRepository: LikesInfoRepository,
   ) {}
 
@@ -60,9 +51,5 @@ export class LikesInfoService {
     commentId: string,
   ): Promise<boolean> {
     return this.likesInfoRepository.deleteLikeInfoComment(userId, commentId);
-  }
-
-  async deleteLikeInfoPost(userId: string, postId: string): Promise<boolean> {
-    return this.likesInfoRepository.deleteLikeInfoComment(userId, postId);
   }
 }

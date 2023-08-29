@@ -1,9 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ARTokensAndUserIdType } from '../dto/auth.dto.service';
 import { ObjectId } from 'mongodb';
-import { UsersSAQueryRepository } from '../../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';
+import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
 import { JwtService } from '../../../jwt/jwt.service';
-import { UsersPublicQueryRepository } from '../../../users/public/infrastructure/query.repository/users-public.query.repository';
 
 export class LoginUserCommand {
   constructor(public userId: string) {}
@@ -13,13 +12,13 @@ export class LoginUserCommand {
 export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
   constructor(
     protected jwtService: JwtService,
-    protected usersPublicQueryRepository: UsersPublicQueryRepository,
+    protected usersQueryRepository: UsersQueryRepository,
   ) {}
   async execute(
     command: LoginUserCommand,
   ): Promise<ARTokensAndUserIdType | null> {
     const { userId } = command;
-    const user = await this.usersPublicQueryRepository.getUserInfoById(userId);
+    const user = await this.usersQueryRepository.getUserInfoById(userId);
     if (!user) {
       //Если user не существует, значит payload неверный
       return null;

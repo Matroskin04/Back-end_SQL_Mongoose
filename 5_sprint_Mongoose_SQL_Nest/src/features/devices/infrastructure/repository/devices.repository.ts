@@ -1,8 +1,3 @@
-import { DeviceInstanceType } from './devices.types.repository';
-import { ObjectId } from 'mongodb';
-import { InjectModel } from '@nestjs/mongoose';
-import { Device } from '../../domain/devices.entity';
-import { DeviceModelType } from '../../domain/devices.db.types';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -10,13 +5,8 @@ import { JwtPayload } from 'jsonwebtoken';
 
 @Injectable()
 export class DevicesRepository {
-  constructor(
-    @InjectDataSource() protected dataSource: DataSource,
-    @InjectModel(Device.name)
-    private DeviceModel: DeviceModelType,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  //SQL
   async createDevice(
     ip: string,
     title: string,
@@ -73,16 +63,5 @@ export class DevicesRepository {
     );
     console.log(result);
     return result[1] > 0;
-  }
-
-  //MONGO
-  async save(device: DeviceInstanceType): Promise<void> {
-    await device.save();
-    return;
-  }
-
-  async deleteAllDevicesByUserId(userId: ObjectId): Promise<boolean> {
-    const result = await this.DeviceModel.deleteMany({ userId });
-    return result.deletedCount > 0;
   }
 }

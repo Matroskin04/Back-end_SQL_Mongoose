@@ -1,19 +1,18 @@
 import * as bcrypt from 'bcryptjs';
-import { UsersSAQueryRepository } from '../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';
+import { UsersQueryRepository } from '../../users/infrastructure/query.repository/users.query.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserDBServiceType } from './dto/auth.dto.service';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../../users/domain/users.entity';
 import { UserModelType } from '../../users/domain/users.db.types';
-import { UsersPublicQueryRepository } from '../../users/public/infrastructure/query.repository/users-public.query.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name)
     private UserModel: UserModelType,
-    protected usersPublicQueryRepository: UsersPublicQueryRepository,
+    protected usersQueryRepository: UsersQueryRepository,
   ) {}
 
   //SQL
@@ -23,7 +22,7 @@ export class AuthService {
   ): Promise<any | false> {
     //todo тип
     const user =
-      await this.usersPublicQueryRepository.getUserPassEmailInfoByLoginOrEmail(
+      await this.usersQueryRepository.getUserPassEmailInfoByLoginOrEmail(
         loginOrEmail,
       );
     if (!user || !user.isConfirmed) {

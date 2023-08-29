@@ -1,20 +1,14 @@
 import { BodyBlogType } from '../../infrastructure/repository/blogs-blogger.types.repositories';
-import { ObjectId } from 'mongodb';
-import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { BlogsRepository } from '../../infrastructure/repository/blogs.repository';
-import { BlogModelType } from '../../domain/blogs.db.types';
-import { Blog } from '../../domain/blogs.entity';
-import { UsersSAQueryRepository } from '../../../users/super-admin/infrastructure/query.repository/users-sa.query.repository';
+import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
 import { BlogViewType } from '../../infrastructure/query.repository/blogs-blogger.types.query.repository';
 
 @Injectable()
 export class BlogsBloggerService {
   constructor(
-    @InjectModel(Blog.name)
-    private BlogModel: BlogModelType,
     protected blogsRepository: BlogsRepository,
-    protected usersQueryRepository: UsersSAQueryRepository,
+    protected usersQueryRepository: UsersQueryRepository,
   ) {}
 
   async createBlog(

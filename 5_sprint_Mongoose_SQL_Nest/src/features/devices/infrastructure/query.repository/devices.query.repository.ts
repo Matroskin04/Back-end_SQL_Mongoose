@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Device } from '../../domain/devices.entity';
 import { DeviceDBType, DeviceModelType } from '../../domain/devices.db.types';
 import { DeviceViewType } from './devices.types.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -8,11 +7,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class DevicesQueryRepository {
-  constructor(
-    @InjectDataSource() protected dataSource: DataSource,
-    @InjectModel(Device.name)
-    private DeviceModel: DeviceModelType,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   //SQL
   async getDeviceById(deviceId: string): Promise<any | null> {
@@ -38,10 +33,5 @@ export class DevicesQueryRepository {
     );
     if (result.length === 0) return [];
     return result;
-  }
-
-  //MONGO
-  async getDeviceByIdMongo(deviceId: string): Promise<DeviceDBType | null> {
-    return this.DeviceModel.findOne({ deviceId });
   }
 }

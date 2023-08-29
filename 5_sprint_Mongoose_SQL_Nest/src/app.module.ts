@@ -1,12 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { Blog, BlogSchema } from './features/blogs/domain/blogs.entity';
 import {
   LikesInfo,
   LikesInfoSchema,
-  Post,
-  PostSchema,
 } from './features/posts/domain/posts.entity';
 import {
   Comment,
@@ -19,9 +16,9 @@ import { PostsService } from './features/posts/application/posts.service';
 import { PostsQueryRepository } from './features/posts/infrastructure/query.repository/posts.query.repository';
 import { PostsRepository } from './features/posts/infrastructure/repository/posts.repository';
 import { CommentsController } from './features/comments/api/comments.controller';
-import { UsersSaController } from './features/users/super-admin/api/users-sa.controller';
+import { UsersSaController } from './features/users/api/sa/users-sa.controller';
 import { CommentsQueryRepository } from './features/comments/infrastructure/query.repository/comments.query.repository';
-import { UsersSaService } from './features/users/super-admin/application/users-sa.service';
+import { UsersSaService } from './features/users/application/sa/users-sa.service';
 import { UsersSARepository } from './features/users/super-admin/infrastructure/repository/users-sa.repository';
 import { TestingController } from './features/testing/api/testing.controller';
 import { TestingRepository } from './features/testing/repository/testing.repository';
@@ -31,10 +28,7 @@ import { CryptoAdapter } from './infrastructure/adapters/crypto.adapter';
 import { EmailManager } from './infrastructure/managers/email-manager';
 import { EmailAdapter } from './infrastructure/adapters/email.adapter';
 import { AuthController } from './features/auth/api/auth.controller';
-import {
-  JwtRefreshStrategy,
-  JwtRefreshStrategyMongo,
-} from './infrastructure/strategy/jwt-refresh.strategy';
+import { JwtRefreshStrategy } from './infrastructure/strategy/jwt-refresh.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import {
   JwtAccessStrategy,
@@ -44,8 +38,6 @@ import { BasicStrategy } from './infrastructure/strategy/basic.strategy';
 import {
   CommentLikesInfo,
   CommentsLikesInfoSchema,
-  PostLikesInfo,
-  PostsLikesInfoSchema,
 } from './features/likes-info/domain/likes-info.entity';
 import { LikesInfoService } from './features/likes-info/application/likes-info.service';
 import { LikesInfoQueryRepository } from './features/likes-info/infrastructure/query.repository/likes-info.query.repository';
@@ -58,7 +50,6 @@ import { DevicesController } from './features/devices/api/devices.controller';
 import { DevicesService } from './features/devices/application/devices.service';
 import { DevicesQueryRepository } from './features/devices/infrastructure/query.repository/devices.query.repository';
 import { DevicesRepository } from './features/devices/infrastructure/repository/devices.repository';
-import { Device, DeviceSchema } from './features/devices/domain/devices.entity';
 import { JwtService } from './features/jwt/jwt.service';
 import { BlogsPublicController } from './features/blogs/api/public/blogs-public.controller';
 import { BlogsBloggerController } from './features/blogs/api/blogger/blogs-blogger.controller';
@@ -67,48 +58,27 @@ import { BlogsBloggerService } from './features/blogs/application/blogger/blogs-
 import { BlogsSAService } from './features/blogs/application/sa/blogs-sa.service';
 import { BlogsQueryRepository } from './features/blogs/infrastructure/query.repository/blogs.query.repository';
 import { BlogsRepository } from './features/blogs/infrastructure/repository/blogs.repository';
-import {
-  BannedUserBySA,
-  BannedUserBySASchema,
-} from './features/users/banned/banned-sa-users/domain/users-banned.entity';
-import { BannedUsersQueryRepository } from './features/users/banned/banned-sa-users/infrastructure/banned-users.query.repository';
-import { BannedUsersRepository } from './features/users/banned/banned-sa-users/infrastructure/banned-users.repository';
 import { UsersBloggerRepository } from './features/users/blogger/infrastructure/repository/users-blogger.repository';
-import { UsersBloggerService } from './features/users/blogger/application/users-blogger.service';
-import { UsersBloggerController } from './features/users/blogger/api/users-blogger.controller';
-import {
-  BannedUsersByBlogger,
-  BannedUsersByBloggerSchema,
-} from './features/users/banned/banned-by-blogger-users/domain/users-banned-by-blogger.entity';
+import { UsersBloggerService } from './features/users/application/blogger/users-blogger.service';
+import { UsersBloggerController } from './features/users/api/blogger/users-blogger.controller';
 import { BannedUsersByBloggerQueryRepository } from './features/users/banned/banned-by-blogger-users/infrastructure/banned-users-by-blogger-query.repository';
-import { UsersBloggerQueryRepository } from './features/users/blogger/infrastructure/query.repository/users-blogger.query.repository';
 import { RegisterUserUseCase } from './features/auth/application/use-cases/register-user.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ConfirmEmailUseCase } from './features/auth/application/use-cases/confirm-email.use-case';
 import { ResendConfirmationEmailMessageUseCase } from './features/auth/application/use-cases/resend-confirmation-email-message.use-case';
-import { UsersPublicQueryRepository } from './features/users/public/infrastructure/query.repository/users-public.query.repository';
 import { SaveNewPassUseCase } from './features/auth/application/use-cases/save-new-pass.use-case';
 import { LoginUserUseCase } from './features/auth/application/use-cases/login-user.use-case';
 import process from 'process';
-import { UsersSAQueryRepository } from './features/users/super-admin/infrastructure/query.repository/users-sa.query.repository';
-import { User, User2Schema } from './features/users/domain/users.entity';
-import {
-  BanInfo,
-  BanInfoSchema,
-  EmailConfirmation,
-  EmailConfirmationSchema,
-  PasswordRecovery,
-  PasswordRecoverySchema,
-} from './features/users/domain/users.subschemas';
+import { UsersQueryRepository } from './features/users/infrastructure/query.repository/users.query.repository';
 import { SendEmailPassRecoveryUseCase } from './features/auth/application/use-cases/send-email-pass-recovery.use-case';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PasswordRecoveryPublicRepository } from './features/users/public/infrastructure/subrepositories/password-recovery.public.repository';
-import { BanInfoPublicRepository } from './features/users/public/infrastructure/subrepositories/ban-info.public.repository';
-import { EmailConfirmationPublicRepository } from './features/users/public/infrastructure/subrepositories/email-confirmation.public.repository';
+import { PasswordRecoveryPublicRepository } from './features/users/infrastructure/subrepository/password-recovery.public.repository';
+import { BanInfoPublicRepository } from './features/users/infrastructure/subrepository/ban-info.public.repository';
+import { EmailConfirmationPublicRepository } from './features/users/infrastructure/subrepository/email-confirmation.public.repository';
 import { UsersPublicRepository } from './features/users/public/infrastructure/repository/users-public.repository';
-import { CreateUserUseCase } from './features/users/super-admin/application/use-cases/create-user.use-case';
-import { DeleteUserUseCase } from './features/users/super-admin/application/use-cases/delete-user.use-case';
-import { UpdateBanInfoOfUserUseCase } from './features/users/super-admin/application/use-cases/update-ban-info-user.use-case';
+import { CreateUserUseCase } from './features/users/application/sa/use-cases/create-user.use-case';
+import { DeleteUserUseCase } from './features/users/application/sa/use-cases/delete-user.use-case';
+import { UpdateBanInfoOfUserUseCase } from './features/users/application/sa/use-cases/update-ban-info-user.use-case';
 import { DeleteDevicesExcludeCurrentUseCase } from './features/devices/application/use-cases/delete-devices-exclude-current.use-case';
 import { DeleteDeviceByIdUseCase } from './features/devices/application/use-cases/delete-device-by-id.use-case';
 
@@ -125,16 +95,13 @@ const services = [
   PostsService,
 ];
 const queryRepositories = [
-  UsersPublicQueryRepository,
   BlogsQueryRepository,
   PostsQueryRepository,
   LikesInfoQueryRepository,
   DevicesQueryRepository,
   CommentsQueryRepository,
-  BannedUsersQueryRepository,
   BannedUsersByBloggerQueryRepository,
-  UsersSAQueryRepository,
-  UsersBloggerQueryRepository,
+  UsersQueryRepository,
 ];
 const repositories = [
   PasswordRecoveryPublicRepository,
@@ -146,7 +113,6 @@ const repositories = [
   LikesInfoRepository,
   PostsRepository,
   UsersBloggerRepository,
-  BannedUsersRepository,
   UsersPublicRepository,
   UsersSARepository,
   TestingRepository,
@@ -189,20 +155,10 @@ const handlers = [
     }),
     MongooseModule.forRoot(process.env.MONGO_URL!),
     MongooseModule.forFeature([
-      { name: Blog.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
       { name: LikesInfo.name, schema: LikesInfoSchema },
       { name: Comment.name, schema: CommentsSchema },
       { name: CommentatorInfo.name, schema: CommentatorInfoSchema },
       { name: CommentLikesInfo.name, schema: CommentsLikesInfoSchema },
-      { name: PostLikesInfo.name, schema: PostsLikesInfoSchema },
-      { name: Device.name, schema: DeviceSchema },
-      { name: BannedUserBySA.name, schema: BannedUserBySASchema },
-      { name: BannedUsersByBlogger.name, schema: BannedUsersByBloggerSchema },
-      { name: User.name, schema: User2Schema },
-      { name: EmailConfirmation.name, schema: EmailConfirmationSchema },
-      { name: BanInfo.name, schema: BanInfoSchema },
-      { name: PasswordRecovery.name, schema: PasswordRecoverySchema },
     ]),
     JwtModule.register({}),
   ],
@@ -226,7 +182,6 @@ const handlers = [
     //Strategy
     LocalStrategy,
     JwtRefreshStrategy,
-    JwtRefreshStrategyMongo,
     JwtAccessStrategy,
     JwtAccessStrategyMongo,
     BasicStrategy,

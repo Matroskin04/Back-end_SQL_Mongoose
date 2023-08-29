@@ -3,7 +3,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { DevicesQueryRepository } from '../infrastructure/query.repository/devices.query.repository';
 import { DevicesRepository } from '../infrastructure/repository/devices.repository';
 import { InjectModel } from '@nestjs/mongoose';
-import { Device } from '../domain/devices.entity';
 import { DeviceModelType } from '../domain/devices.db.types';
 import { JwtService } from '../../jwt/jwt.service';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -13,8 +12,6 @@ import { DataSource } from 'typeorm';
 export class DevicesService {
   constructor(
     @InjectDataSource() protected dataSource: DataSource,
-    @InjectModel(Device.name)
-    private DeviceModel: DeviceModelType,
     protected jwtService: JwtService,
     protected devicesQueryRepository: DevicesQueryRepository,
     protected deviceRepository: DevicesRepository,

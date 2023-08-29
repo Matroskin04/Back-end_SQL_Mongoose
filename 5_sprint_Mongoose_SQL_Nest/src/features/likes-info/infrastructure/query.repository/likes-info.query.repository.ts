@@ -5,10 +5,7 @@ import {
   PostsLikesInfoDBType,
 } from '../../domain/likes-info.db.types';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  CommentLikesInfo,
-  PostLikesInfo,
-} from '../../domain/likes-info.entity';
+import { CommentLikesInfo } from '../../domain/likes-info.entity';
 import { NewestLikesType } from '../../../posts/infrastructure/repository/posts.types.repositories';
 import {
   CommentsLikesInfoOfUserType,
@@ -23,8 +20,6 @@ export class LikesInfoQueryRepository {
     @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(CommentLikesInfo.name)
     private CommentsLikesInfoModel,
-    @InjectModel(PostLikesInfo.name)
-    private PostsLikesInfoModel,
   ) {}
 
   //SQL
@@ -56,31 +51,14 @@ export class LikesInfoQueryRepository {
     postId: string,
     userId: string,
   ): Promise<PostsLikesInfoDBType | null> {
-    return this.PostsLikesInfoModel.findOne({ postId, userId });
+    return null; /*this.PostsLikesInfoModel.findOne({ postId, userId });*/
   }
 
   async getNewestLikesOfPost(postId: string): Promise<NewestLikesType> {
-    return this.PostsLikesInfoModel.find({ postId, statusLike: 'Like' })
+    return []; /*this.PostsLikesInfoModel.find({ postId, statusLike: 'Like' })
       .sort({ addedAt: -1 })
       .limit(3)
       .lean();
-  }
-
-  async getPostsLikesInfoByUserId(
-    userId: string,
-  ): Promise<PostsLikesInfoOfUserType> {
-    const postsLikesInfo = await this.PostsLikesInfoModel.find({
-      userId,
-    }).lean();
-    return postsLikesInfo.length ? postsLikesInfo : null; //if length === 0 -> return null
-  }
-
-  async getCommentsLikesInfoByUserId(
-    userId: string,
-  ): Promise<CommentsLikesInfoOfUserType> {
-    const commentLikesInfo = await this.CommentsLikesInfoModel.find({
-      userId,
-    }).lean();
-    return commentLikesInfo.length ? commentLikesInfo : null; //if length === 0 -> return null
+  }*/
   }
 }

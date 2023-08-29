@@ -86,19 +86,6 @@ export class LikesInfoRepository {
     return commentLikeInfo;
   }
 
-  async getPostLikeInfoInstance(
-    postId: string,
-    userId: string,
-  ): Promise<PostLikeInfoInstanceType | null> {
-    const postLikeInfo = await this.PostsLikesInfoModel.findOne({
-      postId,
-      userId,
-    });
-
-    if (!postLikeInfo) return null;
-    return postLikeInfo;
-  }
-
   async save(
     likeInfo: PostLikeInfoInstanceType | CommentLikeInfoInstanceType,
   ): Promise<void> {
@@ -106,18 +93,6 @@ export class LikesInfoRepository {
 
     return;
   }
-
-  async createPostsLikesInfo(
-    postsLikesInfo: PostsLikesInfoDBType[],
-  ): Promise<void> {
-    await this.PostsLikesInfoModel.insertMany(postsLikesInfo);
-    return;
-  } //todo типизация
-
-  async createCommentsLikesInfo(commentsLikesInfo): Promise<void> {
-    await this.CommentsLikesInfoModel.insertMany(commentsLikesInfo);
-    return;
-  } //todo типизация
 
   async incrementNumberOfLikesOfComment(
     commentId: string,
@@ -156,49 +131,6 @@ export class LikesInfoRepository {
       return result.modifiedCount === 1;
     }
   }
-
-  async incrementNumberOfLikesOfPost(
-    postId: string,
-    incrementValue: 'Like' | 'Dislike' | 'None',
-  ): Promise<boolean> {
-    if (incrementValue === 'Like') {
-      const result = await this.PostModel.updateOne(
-        { _id: postId },
-        { $inc: { 'likesInfo.likesCount': 1 } },
-      );
-      return result.modifiedCount === 1;
-    }
-    if (incrementValue === 'Dislike') {
-      const result = await this.PostModel.updateOne(
-        { _id: postId },
-        { $inc: { 'likesInfo.dislikesCount': 1 } },
-      );
-      return result.modifiedCount === 1;
-    }
-    return true;
-  }
-
-  async decrementNumberOfLikesOfPost(
-    postId: string,
-    decrementValue: 'Like' | 'Dislike' | 'None',
-  ): Promise<boolean> {
-    if (decrementValue === 'Like') {
-      const result = await this.PostModel.updateOne(
-        { _id: postId },
-        { $inc: { 'likesInfo.likesCount': -1 } },
-      );
-      return result.modifiedCount === 1;
-    }
-    if (decrementValue === 'Dislike') {
-      const result = await this.PostModel.updateOne(
-        { _id: postId },
-        { $inc: { 'likesInfo.dislikesCount': -1 } },
-      );
-      return result.modifiedCount === 1;
-    }
-    return true;
-  }
-
   async deleteLikeInfoComment(
     userId: string,
     commentId: string,
@@ -208,15 +140,5 @@ export class LikesInfoRepository {
       commentId,
     });
     return result.deletedCount === 1;
-  }
-
-  async deleteLikesInfoPostsByUserId(userId: string): Promise<boolean> {
-    const result = await this.PostsLikesInfoModel.deleteMany({ userId });
-    return result.deletedCount > 0;
-  }
-
-  async deleteLikesInfoCommentsByUserId(userId: string): Promise<boolean> {
-    const result = await this.CommentsLikesInfoModel.deleteMany({ userId });
-    return result.deletedCount > 0;
   }
 }
