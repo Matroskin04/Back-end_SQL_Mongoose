@@ -55,19 +55,19 @@ export class PostsQueryRepository {
         WHERE b2."isBanned" = false AND b2."id" = $4),
         
       (SELECT COUNT(*) as "likesCount"
-        FROM public."posts-likes_info"
+        FROM public."posts_likes_info"
             WHERE "likeStatus" = $1 AND "postId" = p."id"),
             
       (SELECT COUNT(*) as "dislikesCount"
-        FROM public."posts-likes_info"
+        FROM public."posts_likes_info"
             WHERE "likeStatus" = $2 AND "postId" = p."id"),
             
       (SELECT "likeStatus" as "myStatus"
-        FROM public."posts-likes_info"
+        FROM public."posts_likes_info"
             WHERE "userId" = $3 AND "postId" = p."id"),
             
       (SELECT json_agg(to_jsonb("threeLikes")) as "newestLikes"
-        FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts-likes_info" as li
+        FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
             JOIN public."users" as u
             ON u."id" = li."userId"
         GROUP BY u."login", li."addedAt", li."userId"
@@ -116,19 +116,19 @@ export class PostsQueryRepository {
         WHERE b2."isBanned" = false),
         
       (SELECT COUNT(*) as "likesCount"
-        FROM public."posts-likes_info"
+        FROM public."posts_likes_info"
             WHERE "likeStatus" = $1 AND "postId" = p."id"),
             
       (SELECT COUNT(*) as "dislikesCount"
-        FROM public."posts-likes_info"
+        FROM public."posts_likes_info"
             WHERE "likeStatus" = $2 AND "postId" = p."id"),
             
       (SELECT "likeStatus" as "myStatus"
-        FROM public."posts-likes_info"
+        FROM public."posts_likes_info"
             WHERE "userId" = $3 AND "postId" = p."id"),
             
       (SELECT json_agg(to_jsonb("threeLikes")) as "newestLikes"
-        FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts-likes_info" as li
+        FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
             JOIN public."users" as u
             ON u."id" = li."userId"
         GROUP BY u."login", li."addedAt", li."userId"
@@ -182,19 +182,19 @@ export class PostsQueryRepository {
      SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."createdAt", b."name" as "blogName",
         
       (SELECT COUNT(*) as "likesCount"
-        FROM public."posts-likes_info"
+        FROM public."posts_likes_info"
             WHERE "likeStatus" = $1 AND "postId" = p."id"),
             
       (SELECT COUNT(*) as "dislikesCount"
-        FROM public."posts-likes_info"
+        FROM public."posts_likes_info"
             WHERE "likeStatus" = $2 AND "postId" = p."id"),
             
       (SELECT "likeStatus" as "myStatus"
-        FROM public."posts-likes_info"
+        FROM public."posts_likes_info"
             WHERE "userId" = $3 AND "postId" = p."id"),
             
       (SELECT json_agg(to_jsonb("threeLikes")) as "newestLikes"
-        FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts-likes_info" as li
+        FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
             JOIN public."users" as u
             ON u."id" = li."userId"
         GROUP BY u."login", li."addedAt", li."userId"
@@ -211,6 +211,18 @@ export class PostsQueryRepository {
     if (!result[0]) return null;
 
     return modifyPostIntoViewModel(result[0]);
+  }
+
+  async getPostDBInfoById(postId: string): Promise<any> {
+    const result = await this.dataSource.query(
+      `
+    SELECT "blogId", "userId", "title", "shortDescription", "content", "createdAt"
+      FROM public."posts"
+        WHERE "id" = $1`,
+      [postId],
+    );
+    if (!result[0]) return null;
+    return result[0];
   }
 
   //MONGO
@@ -254,11 +266,6 @@ export class PostsQueryRepository {
     const reformedNewestLikes = reformNewestLikes(newestLikes);
 
     return modifyPostIntoViewModelMongo(post, reformedNewestLikes, myStatus);
-  }
-
-  async getPostsByUserId(userId: string): Promise<PostsDBType | null> {
-    const posts = await this.PostModel.find({ userId }).lean();
-    return posts.length ? posts : null; //if length === 0 -> return null
   }
 
   async getAllPostsIdOfBlogger(

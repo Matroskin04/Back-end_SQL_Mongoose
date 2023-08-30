@@ -9,7 +9,7 @@ import { UserModelType } from '../../../users/domain/users.db.types';
 import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/subrepository/email-confirmation.public.repository';
 import { PasswordRecoveryPublicRepository } from '../../../users/infrastructure/subrepository/password-recovery.public.repository';
 import { BanInfoPublicRepository } from '../../../users/infrastructure/subrepository/ban-info.public.repository';
-import { UsersRepository } from '../../../users/public/infrastructure/repository/users.repository';
+import { UsersRepository } from '../../../users/infrastructure/repository/users.repository';
 
 export class RegisterUserCommand {
   constructor(

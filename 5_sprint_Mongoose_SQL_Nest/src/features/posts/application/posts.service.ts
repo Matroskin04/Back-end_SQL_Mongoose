@@ -3,7 +3,7 @@ import {
   PostTypeWithId,
 } from '../infrastructure/repository/posts.types.repositories';
 import { PostsRepository } from '../infrastructure/repository/posts.repository';
-import { modifyCreatingPostIntoViewModel } from '../../../infrastructure/utils/functions/features/posts.functions.helpers';
+import { modifyPostIntoInitialViewModel } from '../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { PostModelType } from '../domain/posts.db.types';
 import { Post } from '../domain/posts.entity';
 import { InjectModel } from '@nestjs/mongoose';
@@ -44,7 +44,7 @@ export class PostsService {
 
     const post = await this.postsRepository.createPost(postDTO, blogId, userId);
 
-    const postMapped = modifyCreatingPostIntoViewModel(
+    const postMapped = modifyPostIntoInitialViewModel(
       post,
       blog.name,
       [],

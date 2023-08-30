@@ -11,7 +11,7 @@ import { DataSource } from 'typeorm';
 import {
   modifyBannedUserOfBlogIntoViewModel,
   modifyUserIntoViewModel,
-} from '../../super-admin/infrastructure/helpers/modify-user-into-view-model.helper';
+} from '../helpers/modify-user-into-view-model.helper';
 import { QueryUsersBloggerInputModel } from '../../api/blogger/models/input/query-users-blogger.input.model';
 import { BannedUsersOfBlogPaginationType } from './users-blogger.types.query.repository';
 import { UsersInfoPublicType } from './users-public.types.query.repository';
@@ -59,8 +59,8 @@ export class UsersQueryRepository {
       `
     SELECT u."id", u."login", u."email", bi."isBanned" 
       FROM public."users" AS u
-      JOIN public."users_ban_info" AS bi
-      ON u."id" = bi."userId"
+        JOIN public."users_ban_info" AS bi
+        ON u."id" = bi."userId"
       WHERE u."login" = $1 OR u."email" = $1`,
       [logOrEmail],
     );

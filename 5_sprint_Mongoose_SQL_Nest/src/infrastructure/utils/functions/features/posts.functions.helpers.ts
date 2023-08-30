@@ -32,7 +32,7 @@ export function modifyPostIntoViewModelMongo(
   };
 }
 
-export function modifyCreatingPostIntoViewModel(
+export function modifyPostIntoInitialViewModel(
   post: PostDBType,
   blogName: string,
   newestLikes: NewestLikesType,

@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BanInfoSAType } from '../dto/ban-info.dto';
 import { DevicesService } from '../../../../devices/application/devices.service';
-import { UsersRepository } from '../../../public/infrastructure/repository/users.repository';
+import { UsersRepository } from '../../../infrastructure/repository/users.repository';
 
 export class UpdateBanInfoOfUserCommand {
   constructor(public userId: string, public banInfo: BanInfoSAType) {}

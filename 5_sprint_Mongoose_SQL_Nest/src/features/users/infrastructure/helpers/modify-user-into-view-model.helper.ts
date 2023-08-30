@@ -1,7 +1,7 @@
 import {
   BannedUserOfBlogType,
   UserViewType,
-} from '../../../infrastructure/query.repository/users-sa.types.query.repository';
+} from '../query.repository/users-sa.types.query.repository';
 //todo type
 export function modifyUserIntoViewModel(userInfo): UserViewType {
   return {

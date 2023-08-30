@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException } from '@nestjs/common';
 import { CryptoAdapter } from '../../../../infrastructure/adapters/crypto.adapter';
 import { createBodyErrorBadRequest } from '../../../../infrastructure/utils/functions/create-error-bad-request.function';
-import { UsersRepository } from '../../../users/public/infrastructure/repository/users.repository';
+import { UsersRepository } from '../../../users/infrastructure/repository/users.repository';
 import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
 
 export class SaveNewPassCommand {

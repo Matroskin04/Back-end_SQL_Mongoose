@@ -9,7 +9,11 @@ import { CommentsRepository } from '../infrastructure/repository/comments.reposi
 import { InjectModel } from '@nestjs/mongoose';
 import { Post } from '../../posts/domain/posts.entity';
 import { PostModelType } from '../../posts/domain/posts.db.types';
-import { modifyComment } from '../../../infrastructure/utils/functions/features/comments.functions.helpers';
+import {
+  modifyCommentIntoViewModel,
+  modifyCommentMongo,
+  modifyCommentIntoInitialViewModel,
+} from '../../../infrastructure/utils/functions/features/comments.functions.helpers';
 import {
   AllLikeStatusEnum,
   AllLikeStatusType,
@@ -19,6 +23,7 @@ import { Comment } from '../domain/comments.entity';
 import { CommentModelType } from '../domain/comments.db.types';
 import { LikesInfoRepository } from '../../likes-info/infrastructure/repository/likes-info.repository';
 import { PostsRepository } from '../../posts/infrastructure/repository/posts.repository';
+import { PostsQueryRepository } from '../../posts/infrastructure/query.repository/posts.query.repository';
 
 @Injectable()
 export class CommentsService {
@@ -28,7 +33,7 @@ export class CommentsService {
     @InjectModel(Comment.name)
     private CommentModel: CommentModelType,
     protected commentsRepository: CommentsRepository,
-    protected postsRepository: PostsRepository,
+    protected postsQueryRepository: PostsQueryRepository,
     protected usersQueryRepository: UsersQueryRepository,
     protected commentsQueryRepository: CommentsQueryRepository,
     protected likesInfoService: LikesInfoService,
@@ -62,29 +67,28 @@ export class CommentsService {
 
   async createCommentByPostId(
     content: string,
-    userId: ObjectId,
+    userId: string,
     postId: string,
   ): Promise<null | CommentViewType> {
-    const user = await this.usersQueryRepository.getUserByUserIdMongo(userId);
-    if (!user) {
+    //todo нужно ли проверять, нужно ли прикрепляться к userId, postId
+    const userLogin = await this.usersQueryRepository.getUserLoginByUserId(
+      userId,
+    );
+    if (!userLogin) {
       return null;
     }
 
-    const post = await this.postsRepository.getPostById(new ObjectId(postId));
+    const post = await this.postsQueryRepository.doesPostExist(postId);
     if (!post) {
       return null;
     }
 
-    const comment = this.CommentModel.createInstance(
+    const comment = await this.commentsRepository.createComment(
       content,
-      userId.toString(),
-      user.login,
+      userId,
       postId,
-      this.CommentModel,
     );
-
-    await this.commentsRepository.save(comment);
-    return modifyComment(comment, 'None');
+    return modifyCommentIntoInitialViewModel(comment, userLogin, 'None');
   }
 
   async updateLikeStatusOfComment(
@@ -92,9 +96,9 @@ export class CommentsService {
     userId: ObjectId,
     likeStatus: AllLikeStatusType,
   ): Promise<boolean> {
-    const comment = await this.commentsQueryRepository.getCommentById(
+    const comment = await this.commentsQueryRepository.getCommentByIdMongo(
       commentId,
-      userId,
+      userId.toString(),
     );
     if (!comment) {
       return false;

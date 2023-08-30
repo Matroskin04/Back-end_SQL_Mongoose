@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
-import { User } from '../../../domain/users.entity';
-import { UserModelType } from '../../../domain/users.db.types';
+import { User } from '../../domain/users.entity';
+import { UserModelType } from '../../domain/users.db.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 

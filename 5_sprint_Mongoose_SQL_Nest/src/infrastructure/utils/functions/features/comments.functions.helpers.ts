@@ -1,5 +1,8 @@
 import { CommentViewType } from '../../../../features/comments/infrastructure/repository/comments.types.repositories';
-import { CommentDBType } from '../../../../features/comments/domain/comments.db.types';
+import {
+  CommentDBType,
+  CommentDBTypeMongo,
+} from '../../../../features/comments/domain/comments.db.types';
 import { ObjectId } from 'mongodb';
 import { LikesInfoQueryRepository } from '../../../../features/likes-info/infrastructure/query.repository/likes-info.query.repository';
 import { StatusOfLike } from '../../../../features/comments/infrastructure/query.repository/comments.types.query.repository';
@@ -8,7 +11,7 @@ import { PostModelType } from '../../../../features/posts/domain/posts.db.types'
 import { PostsQueryRepository } from '../../../../features/posts/infrastructure/query.repository/posts.query.repository';
 import { NotFoundException } from '@nestjs/common';
 
-export function modifyComment(
+export function modifyCommentMongo(
   comment: any,
   myStatus: StatusOfLike,
 ): CommentViewType {
@@ -28,8 +31,49 @@ export function modifyComment(
   };
 }
 
-export async function modifyCommentsOfPost(
+export function modifyCommentIntoViewModel(
+  comment: any,
+  myStatus: StatusOfLike,
+): CommentViewType {
+  return {
+    id: comment._id,
+    content: comment.content,
+    commentatorInfo: {
+      userId: comment.commentatorInfo.userId,
+      userLogin: comment.commentatorInfo.userLogin,
+    },
+    createdAt: comment.createdAt,
+    likesInfo: {
+      likesCount: comment.likesInfo.likesCount,
+      dislikesCount: comment.likesInfo.dislikesCount,
+      myStatus,
+    },
+  };
+}
+
+export function modifyCommentIntoInitialViewModel(
   comment: CommentDBType,
+  userLogin: string,
+  myStatus: StatusOfLike,
+): CommentViewType {
+  return {
+    id: comment.id,
+    content: comment.content,
+    commentatorInfo: {
+      userId: comment.userId,
+      userLogin,
+    },
+    createdAt: comment.createdAt,
+    likesInfo: {
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus,
+    },
+  };
+}
+
+export async function modifyCommentsOfPost(
+  comment: CommentDBTypeMongo,
   userId: ObjectId | null,
   likesInfoQueryRepository: LikesInfoQueryRepository,
 ): Promise<CommentViewType> {
@@ -63,7 +107,7 @@ export async function modifyCommentsOfPost(
 }
 
 export async function modifyCommentsOfBlogger(
-  comment: CommentDBType,
+  comment: CommentDBTypeMongo,
   userId: ObjectId | null,
   likesInfoQueryRepository: LikesInfoQueryRepository,
   postsQueryRepository: PostsQueryRepository, //todo конкретную фукнцию

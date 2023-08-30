@@ -67,7 +67,7 @@ export class PostsRepository {
   }
 
   //MONGO
-  async getPostById(postId: ObjectId): Promise<null | PostInstanceType> {
+  async getPostByIdMongo(postId: ObjectId): Promise<null | PostInstanceType> {
     const post = await this.PostModel.findOne({ _id: postId });
     return post;
   }

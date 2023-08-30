@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { BannedUsersByBlogger } from '../../banned/banned-by-blogger-users/domain/users-banned-by-blogger.entity';
 import { BannedUsersByBloggerModelType } from '../../banned/banned-by-blogger-users/domain/users-banned-by-blogger.db.types';
 import { UsersQueryRepository } from '../../infrastructure/query.repository/users.query.repository';
-import { UsersRepository } from '../../public/infrastructure/repository/users.repository';
+import { UsersRepository } from '../../infrastructure/repository/users.repository';
 
 @Injectable()
 @SkipThrottle()

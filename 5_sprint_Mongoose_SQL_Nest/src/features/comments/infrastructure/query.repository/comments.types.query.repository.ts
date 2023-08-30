@@ -1,9 +1,9 @@
-import { CommentDBType } from '../../domain/comments.db.types';
+import { CommentDBTypeMongo } from '../../domain/comments.db.types';
 import { CommentViewType } from '../repository/comments.types.repositories';
 
 export type StatusOfLike = 'Like' | 'Dislike' | 'None';
 
-export type CommentsDBType = Array<CommentDBType>;
+export type CommentsDBType = Array<CommentDBTypeMongo>;
 
 export type CommentOfPostPaginationType = {
   pagesCount: number;

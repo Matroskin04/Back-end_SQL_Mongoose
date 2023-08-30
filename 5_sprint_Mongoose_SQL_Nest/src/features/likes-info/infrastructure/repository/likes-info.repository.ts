@@ -49,7 +49,7 @@ export class LikesInfoRepository {
   ): Promise<void> {
     const result = await this.dataSource.query(
       `
-    INSERT INTO public."posts-likes_info"(
+    INSERT INTO public."posts_likes_info"(
         "userId", "postId", "likeStatus")
         VALUES ($1, $2, $3);`,
       [userId, postId, AllLikeStatusEnum[likeStatus]],
@@ -64,7 +64,7 @@ export class LikesInfoRepository {
   ): Promise<boolean> {
     const result = await this.dataSource.query(
       `
-    UPDATE public."posts-likes_info"
+    UPDATE public."posts_likes_info"
         SET "likeStatus" = $1 
             WHERE "userId" = $2 AND "postId" = $3;`,
       [AllLikeStatusEnum[likeStatus], userId, postId],

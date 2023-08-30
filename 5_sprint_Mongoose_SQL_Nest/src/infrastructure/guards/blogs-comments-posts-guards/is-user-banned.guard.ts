@@ -8,11 +8,12 @@ import { BannedUsersByBloggerQueryRepository } from '../../../features/users/ban
 import { BlogsQueryRepository } from '../../../features/blogs/infrastructure/query.repository/blogs.query.repository';
 import { PostsQueryRepository } from '../../../features/posts/infrastructure/query.repository/posts.query.repository';
 import { ObjectId } from 'mongodb';
+import { UsersQueryRepository } from '../../../features/users/infrastructure/query.repository/users.query.repository';
 
 @Injectable()
 export class IsUserBannedGuard implements CanActivate {
   constructor(
-    protected bannedUsersByBloggerQueryRepository: BannedUsersByBloggerQueryRepository,
+    protected blogsQueryRepository: BlogsQueryRepository,
     protected postsQueryRepository: PostsQueryRepository,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -20,18 +21,17 @@ export class IsUserBannedGuard implements CanActivate {
     if (!request.params.postId)
       throw new Error('Post Id in params is not found');
 
-    const post = await this.postsQueryRepository.getPostByIdMongo(
-      new ObjectId(request.params.postId),
-      null,
+    const post = await this.postsQueryRepository.getPostDBInfoById(
+      request.params.postId,
     );
     if (!post) throw new NotFoundException('Post is not found');
 
     if (!request.user?.id) throw new Error('User Id is not found');
-    const bannedUser =
-      await this.bannedUsersByBloggerQueryRepository.getBannedUserByBlogger(
-        request.user.id.toString(),
-        post.blogId,
-      );
-    return !bannedUser;
+
+    const isUserBanned = await this.blogsQueryRepository.isUserBannedForBlog(
+      request.user.id,
+      post.blogId,
+    );
+    return !isUserBanned;
   }
 }

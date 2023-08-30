@@ -69,13 +69,13 @@ export class User {
     return;
   }
 }
-export const User2Schema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User);
 
-User2Schema.statics = {
+UserSchema.statics = {
   createInstance: User.createInstance,
 };
 
-User2Schema.methods = {
+UserSchema.methods = {
   modifyIntoViewModel: User.prototype.modifyIntoViewModel,
   updateBanInfo: User.prototype.updateBanInfo,
 };

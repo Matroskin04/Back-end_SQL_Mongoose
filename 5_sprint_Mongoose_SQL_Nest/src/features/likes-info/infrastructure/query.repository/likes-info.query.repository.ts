@@ -30,7 +30,7 @@ export class LikesInfoQueryRepository {
     const result = await this.dataSource.query(
       `
     SELECT "likeStatus"
-        FROM public."posts-likes_info"
+        FROM public."posts_likes_info"
     WHERE "postId" = $1 AND "userId" = $2;`,
       [postId, userId],
     );

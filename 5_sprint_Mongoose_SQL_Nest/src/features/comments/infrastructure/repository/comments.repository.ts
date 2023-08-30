@@ -1,16 +1,42 @@
 import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
-import { CommentModelType } from '../../domain/comments.db.types';
+import {
+  CommentDBType,
+  CommentModelType,
+} from '../../domain/comments.db.types';
 import { InjectModel } from '@nestjs/mongoose';
 import { CommentInstanceType } from './comments.types.repositories';
 import { Comment, CommentatorInfo } from '../../domain/comments.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CommentsRepository {
   constructor(
+    @InjectDataSource() protected dataSource: DataSource,
     @InjectModel(Comment.name)
     private CommentModel: CommentModelType,
   ) {}
+
+  //SQL
+
+  async createComment(
+    content: string,
+    userId: string,
+    postId: string,
+  ): Promise<CommentDBType> {
+    const result = await this.dataSource.query(
+      `
+    INSERT INTO public."comments"(
+        "content", "userId", "postId")
+        VALUES ($1, $2, $3)
+    RETURNING "id", "content", "userId", "postId"`,
+      [content, userId, postId],
+    );
+    console.log(result);
+    return result[0];
+  }
+  //MONGO
 
   async getCommentInstance(
     commentId: ObjectId,

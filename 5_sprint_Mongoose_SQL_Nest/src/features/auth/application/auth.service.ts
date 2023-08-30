@@ -1,9 +1,7 @@
 import * as bcrypt from 'bcryptjs';
 import { UsersQueryRepository } from '../../users/infrastructure/query.repository/users.query.repository';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserDBServiceType } from './dto/auth.dto.service';
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { User } from '../../users/domain/users.entity';
 import { UserModelType } from '../../users/domain/users.db.types';
 

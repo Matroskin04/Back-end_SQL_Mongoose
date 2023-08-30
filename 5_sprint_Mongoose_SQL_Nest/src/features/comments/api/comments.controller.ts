@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Put,
   Res,
@@ -14,7 +15,10 @@ import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-statu
 import { Response } from 'express';
 import { CommentsService } from '../application/comments.service';
 import { JwtAccessGuardMongo } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
-import { CurrentUserIdMongo } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import {
+  CurrentUserId,
+  CurrentUserIdMongo,
+} from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 import { UpdateCommentInputModel } from './models/input/update-comment.input.model';
 import { UpdateCommentLikeStatusInputModel } from './models/input/update-comment-like-status.input.model';
@@ -33,17 +37,15 @@ export class CommentsController {
   @Get(':id')
   async getCommentById(
     @Param('id') commentId: string,
-    @CurrentUserIdMongo() userId: ObjectId | null,
-    @Res() res: Response<CommentOutputModel>,
-  ) {
-    const result = await this.commentsQueryRepository.getCommentById(
+    @CurrentUserId() userId: string | null,
+  ): Promise<CommentOutputModel> {
+    const result = await this.commentsQueryRepository.getCommentByIdMongo(
       commentId,
       userId,
     );
 
-    result
-      ? res.status(HTTP_STATUS_CODE.OK_200).send(result)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException();
+    return result;
   }
 
   @UseGuards(JwtAccessGuardMongo) //todo addition guard 403

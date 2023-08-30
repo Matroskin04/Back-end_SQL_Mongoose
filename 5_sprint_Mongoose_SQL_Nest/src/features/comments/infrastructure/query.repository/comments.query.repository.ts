@@ -7,7 +7,7 @@ import { CommentModelType } from '../../domain/comments.db.types';
 import { QueryPostInputModel } from '../../../posts/api/models/input/query-post.input.model';
 import { variablesForReturnMongo } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import {
-  modifyComment,
+  modifyCommentMongo,
   modifyCommentsOfBlogger,
   modifyCommentsOfPost,
 } from '../../../../infrastructure/utils/functions/features/comments.functions.helpers';
@@ -31,9 +31,10 @@ export class CommentsQueryRepository {
     protected blogsPublicQueryRepository: BlogsQueryRepository,
   ) {}
 
+  //SQL
   async getCommentById(
     commentId: string,
-    userId: ObjectId | null,
+    userId: string | null,
   ): Promise<CommentViewType | null> {
     const comment = await this.CommentModel.findOne({
       _id: new ObjectId(commentId),
@@ -55,7 +56,35 @@ export class CommentsQueryRepository {
       }
     }
 
-    return modifyComment(comment, myStatus);
+    return modifyCommentMongo(comment, myStatus);
+  }
+
+  //MONGO
+  async getCommentByIdMongo(
+    commentId: string,
+    userId: string | null,
+  ): Promise<CommentViewType | null> {
+    const comment = await this.CommentModel.findOne({
+      _id: new ObjectId(commentId),
+    });
+    if (!comment) {
+      return null;
+    }
+
+    let myStatus: StatusOfLike = 'None';
+    if (userId) {
+      const likeInfo =
+        await this.likesInfoQueryRepository.getLikesInfoByCommentAndUser(
+          commentId,
+          userId.toString(),
+        );
+
+      if (likeInfo) {
+        myStatus = likeInfo.statusLike;
+      }
+    }
+
+    return modifyCommentMongo(comment, myStatus);
   }
 
   async getCommentsOfPost(
@@ -105,10 +134,10 @@ export class CommentsQueryRepository {
   ): Promise<CommentsOfBloggerPaginationType | null> {
     const paramsOfElems = await variablesForReturnMongo(query);
 
-    const allBlogsIdOfBlogger =
-      await this.blogsPublicQueryRepository.getAllBlogsIdOfBlogger(
-        userId.toString(),
-      );
+    const allBlogsIdOfBlogger = [];
+    // await this.blogsPublicQueryRepository.getAllBlogsIdOfBlogger(
+    //   userId.toString(),
+    // );
 
     const allPostsIdOfBlogger =
       await this.postsQueryRepository.getAllPostsIdOfBlogger(

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import jwt from 'jsonwebtoken';
 import { UsersQueryRepository } from '../../infrastructure/query.repository/users.query.repository';
-import { BannedUserModelType } from '../../banned/banned-sa-users/domain/users-banned.db.types';
 import { User } from '../../domain/users.entity';
 import { UserModelType } from '../../domain/users.db.types';
 @Injectable()

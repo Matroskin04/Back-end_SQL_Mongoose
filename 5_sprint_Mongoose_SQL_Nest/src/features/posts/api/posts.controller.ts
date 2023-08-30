@@ -93,23 +93,21 @@ export class PostsController {
       : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
   }
 
-  @UseGuards(JwtAccessGuardMongo, IsUserBannedGuard)
+  @UseGuards(JwtAccessGuard, IsUserBannedGuard)
   @Post(':postId/comments')
   async createCommentByPostId(
     @Param('postId') postId: string,
-    @CurrentUserIdMongo() userId: ObjectId,
+    @CurrentUserId() userId: string,
     @Body() inputCommentModel: CreateCommentByPostIdModel,
-    @Res() res: Response<ViewCommentOfPostModel>,
-  ) {
+  ): Promise<ViewCommentOfPostModel> {
     const result = await this.commentsService.createCommentByPostId(
       inputCommentModel.content,
       userId,
       postId,
     );
 
-    result
-      ? res.status(HTTP_STATUS_CODE.CREATED_201).send(result)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException();
+    return result;
   }
 
   @UseGuards(JwtAccessGuard)

@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { HydratedDocument, Model } from 'mongoose';
 import { Comment } from './comments.entity';
 
-export type CommentDBType = {
+export type CommentDBTypeMongo = {
   _id: ObjectId;
   content: string;
   commentatorInfo: {
@@ -15,6 +15,14 @@ export type CommentDBType = {
     likesCount: number;
     dislikesCount: number;
   };
+};
+
+export type CommentDBType = {
+  id: string;
+  content: string;
+  createdAt: string;
+  postId: string;
+  userId: string;
 };
 
 export type CommentDocument = HydratedDocument<Comment>;

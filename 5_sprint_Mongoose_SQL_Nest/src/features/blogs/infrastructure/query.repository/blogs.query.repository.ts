@@ -1,23 +1,15 @@
 import {
-  BannedBlogsIdType,
   BlogPaginationType,
   BlogOutputType,
   BlogAllInfoOutputType,
 } from './blogs-public.types.query.repository';
-import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { BlogModelType } from '../../domain/blogs.db.types';
 import { QueryBlogInputModel } from '../../api/blogger/models/input/query-blog.input.model';
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import {
-  BlogSAOutputDBType,
-  ViewAllBlogsModel,
-} from './blogs-sa.types.query.repository';
+import { ViewAllBlogsModel } from './blogs-sa.types.query.repository';
 import { modifyBlogIntoSaOutputModel } from '../../helpers/modify-blog-into-sa-output-model';
-import { BlogsIdType } from './blogs-blogger.types.query.repository';
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -139,5 +131,11 @@ export class BlogsQueryRepository {
     );
     if (!result[0]) return null;
     return result[0];
+  }
+
+  async isUserBannedForBlog(userId: string, blogId: string): Promise<boolean> {
+    const result = await this.dataSource.query(`
+    SELECT "isBanned" FROM public."banned_users_of_blog"`);
+    return !!result[0]?.isBanned;
   }
 }
