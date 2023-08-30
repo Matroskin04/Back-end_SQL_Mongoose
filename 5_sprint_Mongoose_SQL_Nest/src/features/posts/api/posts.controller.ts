@@ -79,6 +79,7 @@ export class PostsController {
       query,
       userId,
     );
+
     if (!result) throw new NotFoundException();
     return result;
   }
