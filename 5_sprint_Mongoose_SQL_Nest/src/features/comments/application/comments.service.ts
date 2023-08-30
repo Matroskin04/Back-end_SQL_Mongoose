@@ -69,14 +69,13 @@ export class CommentsService {
     return true;
   }
 
-  //MONGO
-
   async createCommentByPostId(
     content: string,
     userId: string,
     postId: string,
   ): Promise<null | CommentViewType> {
     //todo нужно ли проверять, нужно ли прикрепляться к userId, postId
+
     const userLogin = await this.usersQueryRepository.getUserLoginByUserId(
       userId,
     );

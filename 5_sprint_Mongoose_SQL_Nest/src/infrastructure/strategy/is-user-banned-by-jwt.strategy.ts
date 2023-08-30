@@ -28,5 +28,6 @@ export class IsUserBannedByJWTStrategy extends PassportStrategy(
     if (!userInfo) throw new UnauthorizedException();
     if (userInfo.isBanned)
       throw new ForbiddenException("You can't do this, because you are baned");
+    return { id: payload.userId };
   }
 }

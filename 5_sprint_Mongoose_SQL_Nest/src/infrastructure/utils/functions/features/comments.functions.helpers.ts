@@ -85,48 +85,28 @@ type CommentRawInfoType = {
   dislikesCount: string;
   myStatus: string;
 };
-export async function modifyCommentsOfBlogger(
-  comment: CommentDBTypeMongo,
-  userId: ObjectId | null,
-  likesInfoQueryRepository: LikesInfoQueryRepository,
-  postsQueryRepository: PostsQueryRepository, //todo конкретную фукнцию
-): Promise<CommentOfBloggerFuncType> {
-  let myStatus: StatusOfLike = 'None';
-
-  if (userId) {
-    const likeInfo =
-      await likesInfoQueryRepository.getLikesInfoByCommentAndUser(
-        comment._id.toString(),
-        userId.toString(),
-      );
-    if (likeInfo) {
-      myStatus = likeInfo.statusLike;
-    }
-  }
-
-  const post = await postsQueryRepository.getPostMainInfoById(
-    new ObjectId(comment.postId),
-  );
-  if (!post) throw new NotFoundException('Post of the comment is not found');
-
+export function modifyCommentsOfBlogger(
+  allInfo: any,
+): CommentOfBloggerFuncType {
   return {
-    id: comment._id.toString(),
-    content: comment.content,
+    id: allInfo.id,
+    content: allInfo.content,
     commentatorInfo: {
-      userId: comment.commentatorInfo.userId,
-      userLogin: comment.commentatorInfo.userLogin,
+      userId: allInfo.userId,
+      userLogin: allInfo.userLogin,
     },
-    createdAt: comment.createdAt,
+    createdAt: allInfo.createdAt,
     likesInfo: {
-      likesCount: comment.likesInfo.likesCount,
-      dislikesCount: comment.likesInfo.dislikesCount,
-      myStatus: myStatus,
+      likesCount: +allInfo.likesCount,
+      dislikesCount: +allInfo.dislikesCount,
+      myStatus:
+        (AllLikeStatusEnum[allInfo.myStatus] as AllLikeStatusType) ?? 'None',
     },
     postInfo: {
-      id: post._id.toString(),
-      title: post.title,
-      blogId: post.blogId,
-      blogName: post.blogName,
+      id: allInfo.postId,
+      title: allInfo.title,
+      blogId: allInfo.blogId,
+      blogName: allInfo.blogName,
     },
   };
 }

@@ -135,90 +135,58 @@ export class CommentsQueryRepository {
     return commentInfo[0];
   }
 
-  //MONGO
-  async getCommentByIdMongo(
-    commentId: string,
-    userId: string | null,
-  ): Promise<CommentViewType | null> {
-    const comment = await this.CommentModel.findOne({
-      _id: new ObjectId(commentId),
-    });
-    if (!comment) {
-      return null;
-    }
-
-    let myStatus: StatusOfLike = 'None';
-    if (userId) {
-      const likeInfo =
-        await this.likesInfoQueryRepository.getLikesInfoByCommentAndUser(
-          commentId,
-          userId.toString(),
-        );
-
-      if (likeInfo) {
-        myStatus = likeInfo.statusLike;
-      }
-    }
-
-    return modifyCommentMongo(comment, myStatus);
-  }
-
   async getCommentsOfBlogger(
     query: QueryPostInputModel,
-    userId: ObjectId,
+    userId: string,
   ): Promise<CommentsOfBloggerPaginationType | null> {
-    const paramsOfElems = await variablesForReturnMongo(query);
+    const { pageNumber, pageSize, sortBy, sortDirection } =
+      variablesForReturn(query);
 
-    const allBlogsIdOfBlogger = [];
-    // await this.blogsPublicQueryRepository.getAllBlogsIdOfBlogger(
-    //   userId.toString(),
-    // );
-
-    const allPostsIdOfBlogger =
-      await this.postsQueryRepository.getAllPostsIdOfBlogger(
-        allBlogsIdOfBlogger,
-      );
-
-    const countAllCommentsOfBlogger = await this.CommentModel.countDocuments({
-      postId: { $in: allPostsIdOfBlogger.map((e) => e._id.toString()) },
-    });
-
-    const allCommentsOfBloggerOnPages = await this.CommentModel.find({
-      postId: { $in: allPostsIdOfBlogger.map((e) => e._id.toString()) },
-    })
-      .skip((+paramsOfElems.pageNumber - 1) * +paramsOfElems.pageSize)
-      .limit(+paramsOfElems.pageSize)
-      .sort(paramsOfElems.paramSort)
-      .lean();
-
-    const allCommentsOfBlogger = await Promise.all(
-      allCommentsOfBloggerOnPages.map(async (p) =>
-        modifyCommentsOfBlogger(
-          p,
-          userId,
-          this.likesInfoQueryRepository,
-          this.postsQueryRepository,
-        ),
-      ),
+    const commentInfo = await this.dataSource.query(
+      `
+    SELECT c."id", c."userId", c."content", c."createdAt", u."login" as "userLogin", 
+           p."id" as "postId", p."title", p."blogId", b."name" as "blogName",
+      (SELECT COUNT(*)
+        FROM public."comments"
+            WHERE "userId" = $1),
+        
+      (SELECT COUNT(*) as "likesCount"
+        FROM public."comments_likes_info"
+            WHERE "likeStatus" = $2 AND "commentId" = c."id"),
+            
+      (SELECT COUNT(*) as "dislikesCount"
+        FROM public."comments_likes_info"
+            WHERE "likeStatus" = $3 AND "commentId" = c."id"),
+            
+      (SELECT "likeStatus" as "myStatus"
+        FROM public."comments_likes_info"
+            WHERE "userId" = $1 AND "commentId" = c."id")
+            
+    FROM public."comments" as c
+        JOIN public."users" as u
+            ON u."id" = c."userId"
+        JOIN public."posts" as p
+            ON p."id" = c."postId"
+        JOIN public."blogs" as b
+            ON b."id" = p."blogId"
+    WHERE c."userId" = $1
+        ORDER BY "${sortBy}" ${sortDirection}
+        LIMIT $4 OFFSET $5`,
+      [
+        userId,
+        AllLikeStatusEnum.Like,
+        AllLikeStatusEnum.Dislike,
+        +pageSize,
+        (+pageNumber - 1) * +pageSize,
+      ],
     );
 
     return {
-      pagesCount: Math.ceil(
-        countAllCommentsOfBlogger / +paramsOfElems.pageSize,
-      ),
-      page: +paramsOfElems.pageNumber,
-      pageSize: +paramsOfElems.pageSize,
-      totalCount: countAllCommentsOfBlogger,
-      items: allCommentsOfBlogger,
+      pagesCount: Math.ceil((+commentInfo[0]?.count || 0) / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +commentInfo[0]?.count || 0,
+      items: commentInfo.map((comment) => modifyCommentsOfBlogger(comment)),
     };
-  }
-
-  async getCommentsOfUserDBFormat(
-    userId: ObjectId,
-  ): Promise<CommentsDBType | null> {
-    const comments = await this.CommentModel.find({
-      'commentatorInfo.userId': userId,
-    }).lean();
-    return comments.length ? comments : null; //if length === 0 -> return null
   }
 }

@@ -81,10 +81,10 @@ export class BlogsBloggerController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuardMongo)
+  @UseGuards(JwtAccessGuard)
   @Get('comments')
   async getCommentsOfBlogger(
-    @CurrentUserIdMongo() userId: ObjectId,
+    @CurrentUserId() userId: string,
     @Query() query: QueryBlogInputModel,
   ) {
     const result = await this.commentsQueryRepository.getCommentsOfBlogger(
