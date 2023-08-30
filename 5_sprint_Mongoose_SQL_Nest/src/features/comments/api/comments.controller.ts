@@ -94,6 +94,7 @@ export class CommentsController {
   }
 
   @UseGuards(JwtAccessGuard) //todo add guard 403
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':id')
   async deleteComment(
     @Param('id') commentId: string,

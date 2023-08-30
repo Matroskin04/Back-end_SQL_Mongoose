@@ -7,7 +7,7 @@ export type CommentViewType = {
     userId: string;
     userLogin: string;
   };
-  createdAt: string;
+  //createdAt: string;
   likesInfo: {
     likesCount: number;
     dislikesCount: number;

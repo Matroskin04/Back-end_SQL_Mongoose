@@ -23,7 +23,7 @@ export function modifyCommentMongo(
       userId: comment.commentatorInfo.userId,
       userLogin: comment.commentatorInfo.userLogin,
     },
-    createdAt: comment.createdAt,
+    //  createdAt: comment.createdAt,
     likesInfo: {
       likesCount: comment.likesInfo.likesCount,
       dislikesCount: comment.likesInfo.dislikesCount,
@@ -44,7 +44,7 @@ export function modifyCommentIntoInitialViewModel(
       userId: comment.userId,
       userLogin,
     },
-    createdAt: comment.createdAt,
+    // createdAt: comment.createdAt,
     likesInfo: {
       likesCount: 0,
       dislikesCount: 0,
@@ -63,7 +63,7 @@ export function modifyCommentIntoViewModel(
       userId: commentInfo.userId,
       userLogin: commentInfo.userLogin,
     },
-    createdAt: commentInfo.createdAt,
+    // createdAt: commentInfo.createdAt,
     likesInfo: {
       likesCount: +commentInfo.likesCount,
       dislikesCount: +commentInfo.dislikesCount,
