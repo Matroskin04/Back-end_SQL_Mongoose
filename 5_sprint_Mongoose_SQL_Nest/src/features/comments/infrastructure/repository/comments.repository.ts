@@ -35,6 +35,17 @@ export class CommentsRepository {
     );
     return result[0];
   }
+
+  async updateComment(content: string, commentId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    UPDATE public."comments" 
+      SET "content" = $1
+        WHERE "id" = $2`,
+      [content, commentId],
+    );
+    return result[1] === 1;
+  }
   //MONGO
 
   async getCommentInstance(

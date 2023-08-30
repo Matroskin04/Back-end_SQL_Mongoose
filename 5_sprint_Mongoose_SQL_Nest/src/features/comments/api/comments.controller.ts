@@ -14,7 +14,10 @@ import { CommentsQueryRepository } from '../infrastructure/query.repository/comm
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { Response } from 'express';
 import { CommentsService } from '../application/comments.service';
-import { JwtAccessGuardMongo } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import {
+  JwtAccessGuard,
+  JwtAccessGuardMongo,
+} from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import {
   CurrentUserId,
   CurrentUserIdMongo,
@@ -39,7 +42,7 @@ export class CommentsController {
     @Param('id') commentId: string,
     @CurrentUserId() userId: string | null,
   ): Promise<CommentOutputModel> {
-    const result = await this.commentsQueryRepository.getCommentById(
+    const result = await this.commentsQueryRepository.getCommentByIdViewModel(
       commentId,
       userId,
     );
@@ -48,22 +51,20 @@ export class CommentsController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuardMongo) //todo addition guard 403
+  @UseGuards(JwtAccessGuard) //todo addition guard 403
   @Put(':id')
   async updateComment(
     @Param('id') commentId: string,
-    @CurrentUserIdMongo() userId: ObjectId,
+    @CurrentUserId() userId: string,
     @Body() inputCommentModel: UpdateCommentInputModel,
-    @Res() res: Response<void>,
-  ) {
+  ): Promise<void> {
     const result = await this.commentsService.updateComment(
-      new ObjectId(commentId),
-      userId.toString(),
+      commentId,
+      userId,
       inputCommentModel.content,
     );
-    result
-      ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException();
+    return;
   }
 
   @UseGuards(JwtAccessGuardMongo)

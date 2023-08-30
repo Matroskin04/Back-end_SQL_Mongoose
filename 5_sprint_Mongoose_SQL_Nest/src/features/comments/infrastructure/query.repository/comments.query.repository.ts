@@ -91,7 +91,7 @@ export class CommentsQueryRepository {
     };
   }
 
-  async getCommentById(
+  async getCommentByIdViewModel(
     commentId: string,
     userId: string | null,
   ): Promise<CommentViewType | null> {
@@ -120,6 +120,18 @@ export class CommentsQueryRepository {
 
     if (!commentInfo[0]) return null;
     return modifyCommentIntoViewModel(commentInfo[0]);
+  }
+
+  async getCommentDBInfoById(commentId: string): Promise<any | null> {
+    const commentInfo = await this.dataSource.query(
+      `
+    SELECT "id", "userId", "postId", "content", "createdAt"
+        FROM public."comments" as c
+            WHERE "id" = $1`,
+      [commentId],
+    );
+    if (!commentInfo[0]) return null;
+    return commentInfo[0];
   }
 
   //MONGO

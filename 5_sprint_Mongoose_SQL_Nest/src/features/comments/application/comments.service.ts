@@ -32,22 +32,29 @@ export class CommentsService {
     protected likesInfoQueryRepository: LikesInfoQueryRepository,
   ) {}
 
+  //SQL
   async updateComment(
-    commentId: ObjectId,
+    commentId: string,
     userId: string,
     content: string,
   ): Promise<boolean> {
-    const comment = await this.commentsRepository.getCommentInstance(commentId);
-    if (!comment) return false;
-    if (comment.commentatorInfo.userId !== userId)
-      throw new ForbiddenException();
+    const comment = await this.commentsQueryRepository.getCommentDBInfoById(
+      commentId,
+    );
 
-    comment.content = content;
-    await this.commentsRepository.save(comment);
+    if (!comment) return false;
+    if (comment.userId !== userId) throw new ForbiddenException();
+
+    const isUpdate = await this.commentsRepository.updateComment(
+      content,
+      commentId,
+    );
+    if (!isUpdate) throw new Error('Updating failed');
 
     return true;
   }
 
+  //MONGO
   async deleteComment(commentId: ObjectId, userId: string): Promise<boolean> {
     const comment = await this.CommentModel.findOne({ _id: commentId });
     if (!comment) return false;
