@@ -48,9 +48,10 @@ export class CommentsRepository {
   }
 
   async deleteComment(commentId: string): Promise<boolean> {
+    //todo not comments - comments likes info
     const result = await this.dataSource.query(
       `
-    DELETE FROM public."comments" //todo not comments - comments likes info
+    DELETE FROM public."comments" 
         WHERE "id" = $1`,
       [commentId],
     );

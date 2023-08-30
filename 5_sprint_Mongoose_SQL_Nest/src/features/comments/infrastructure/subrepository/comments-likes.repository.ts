@@ -7,9 +7,10 @@ export class CommentsLikesRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   async deleteAllLikesInfoOfComment(commentId: string): Promise<void> {
+    //todo not comments - comments likes info
     const result = await this.dataSource.query(
       `
-    DELETE FROM public."comments_likes_info" //todo not comments - comments likes info
+    DELETE FROM public."comments_likes_info"
         WHERE "commentId" = $1`,
       [commentId],
     );

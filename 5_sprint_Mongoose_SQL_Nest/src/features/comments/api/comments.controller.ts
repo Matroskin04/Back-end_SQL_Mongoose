@@ -58,6 +58,7 @@ export class CommentsController {
   }
 
   @UseGuards(JwtAccessGuard) //todo addition guard 403
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':id')
   async updateComment(
     @Param('id') commentId: string,

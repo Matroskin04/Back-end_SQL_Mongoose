@@ -184,15 +184,15 @@ export class UsersQueryRepository {
   }
 
   async getUserLoginByUserId(userId: string): Promise<string | null> {
-    const login = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
     SELECT "login"
       FROM public."users"
         WHERE "id" = $1 AND "isDeleted" = false`,
       [userId],
     );
-    if (login.length === 0) return null;
-    return login[0];
+    if (!result[0]) return null;
+    return result[0].login;
   }
 
   async getUserIdByConfirmationCode(confirmationCode: string): Promise<string> {
