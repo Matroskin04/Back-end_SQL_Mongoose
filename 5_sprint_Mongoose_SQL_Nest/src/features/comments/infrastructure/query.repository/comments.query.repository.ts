@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
 import { CommentViewType } from '../repository/comments.types.repositories';
 import { InjectModel } from '@nestjs/mongoose';
@@ -44,6 +44,9 @@ export class CommentsQueryRepository {
     query: QueryPostInputModel,
     userId: string | null,
   ): Promise<CommentOfPostPaginationType | null> {
+    const post = await this.postsQueryRepository.doesPostExist(postId);
+    if (!post) throw new NotFoundException('Post is not found');
+
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(query);
 
