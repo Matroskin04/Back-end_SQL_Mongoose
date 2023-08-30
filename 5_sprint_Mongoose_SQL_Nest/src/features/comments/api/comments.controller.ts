@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   Put,
@@ -73,6 +74,7 @@ export class CommentsController {
   }
 
   @UseGuards(JwtAccessGuard, IsUserBannedByJWTGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':id/like-status')
   async updateLikeStatusOfComment(
     @Param('id') commentId: string,
