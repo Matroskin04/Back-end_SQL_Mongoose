@@ -88,19 +88,14 @@ export class CommentsController {
           .send("Comment with specified id doesn't exist");
   }
 
-  @UseGuards(JwtAccessGuardMongo) //todo addition guard 403
+  @UseGuards(JwtAccessGuard) //todo addition guard 403
   @Delete(':id')
   async deleteComment(
     @Param('id') commentId: string,
-    @CurrentUserIdMongo() userId: ObjectId,
-    @Res() res: Response<void>,
-  ) {
-    const result = await this.commentsService.deleteComment(
-      new ObjectId(commentId),
-      userId.toString(),
-    );
-    result
-      ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    @CurrentUserId() userId: string,
+  ): Promise<void> {
+    const result = await this.commentsService.deleteComment(commentId, userId);
+    if (!result) throw new NotFoundException();
+    return;
   }
 }

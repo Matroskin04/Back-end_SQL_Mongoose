@@ -15,6 +15,7 @@ import { Comment } from '../domain/comments.entity';
 import { CommentModelType } from '../domain/comments.db.types';
 import { LikesInfoRepository } from '../../likes-info/infrastructure/repository/likes-info.repository';
 import { PostsQueryRepository } from '../../posts/infrastructure/query.repository/posts.query.repository';
+import { CommentsLikesRepository } from '../infrastructure/subrepository/comments-likes.repository';
 
 @Injectable()
 export class CommentsService {
@@ -23,6 +24,7 @@ export class CommentsService {
     private PostModel: PostModelType,
     @InjectModel(Comment.name)
     private CommentModel: CommentModelType,
+    protected commentsLikesRepository: CommentsLikesRepository,
     protected commentsRepository: CommentsRepository,
     protected postsQueryRepository: PostsQueryRepository,
     protected usersQueryRepository: UsersQueryRepository,
@@ -54,14 +56,20 @@ export class CommentsService {
     return true;
   }
 
-  //MONGO
-  async deleteComment(commentId: ObjectId, userId: string): Promise<boolean> {
-    const comment = await this.CommentModel.findOne({ _id: commentId });
+  async deleteComment(commentId: string, userId: string): Promise<boolean> {
+    const comment = await this.commentsQueryRepository.getCommentDBInfoById(
+      commentId,
+    );
+
     if (!comment) return false;
-    if (comment.commentatorInfo.userId !== userId)
-      throw new ForbiddenException();
-    return this.commentsRepository.deleteComment(commentId);
+    if (comment.userId !== userId) throw new ForbiddenException();
+
+    await this.commentsLikesRepository.deleteAllLikesInfoOfComment(commentId);
+    await this.commentsRepository.deleteComment(commentId);
+    return true;
   }
+
+  //MONGO
 
   async createCommentByPostId(
     content: string,

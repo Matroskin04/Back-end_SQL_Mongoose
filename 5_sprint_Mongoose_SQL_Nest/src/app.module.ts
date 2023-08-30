@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import {
   LikesInfo,
   LikesInfoSchema,
+  Post,
+  PostSchema,
 } from './features/posts/domain/posts.entity';
 import {
   Comment,
@@ -37,6 +39,8 @@ import { BasicStrategy } from './infrastructure/strategy/basic.strategy';
 import {
   CommentLikesInfo,
   CommentsLikesInfoSchema,
+  PostLikesInfo,
+  PostsLikesInfoSchema,
 } from './features/likes-info/domain/likes-info.entity';
 import { LikesInfoService } from './features/likes-info/application/likes-info.service';
 import { LikesInfoQueryRepository } from './features/likes-info/infrastructure/query.repository/likes-info.query.repository';
@@ -67,18 +71,24 @@ import { ResendConfirmationEmailMessageUseCase } from './features/auth/applicati
 import { SaveNewPassUseCase } from './features/auth/application/use-cases/save-new-pass.use-case';
 import { LoginUserUseCase } from './features/auth/application/use-cases/login-user.use-case';
 import process from 'process';
-import { UsersQueryRepository } from './features/users/infrastructure/query.repository/users.query.repository';
 import { SendEmailPassRecoveryUseCase } from './features/auth/application/use-cases/send-email-pass-recovery.use-case';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordRecoveryPublicRepository } from './features/users/infrastructure/subrepository/password-recovery.public.repository';
 import { BanInfoPublicRepository } from './features/users/infrastructure/subrepository/ban-info.public.repository';
 import { EmailConfirmationPublicRepository } from './features/users/infrastructure/subrepository/email-confirmation.public.repository';
-import { UsersRepository } from './features/users/public/infrastructure/repository/users.repository';
+import { UsersRepository } from './features/users/infrastructure/repository/users.repository';
 import { CreateUserUseCase } from './features/users/application/sa/use-cases/create-user.use-case';
 import { DeleteUserUseCase } from './features/users/application/sa/use-cases/delete-user.use-case';
 import { UpdateBanInfoOfUserUseCase } from './features/users/application/sa/use-cases/update-ban-info-user.use-case';
 import { DeleteDevicesExcludeCurrentUseCase } from './features/devices/application/use-cases/delete-devices-exclude-current.use-case';
 import { DeleteDeviceByIdUseCase } from './features/devices/application/use-cases/delete-device-by-id.use-case';
+import { UsersQueryRepository } from './features/users/infrastructure/query.repository/users.query.repository';
+import { User, UserSchema } from './features/users/domain/users.entity';
+import {
+  BannedUsersByBlogger,
+  BannedUsersByBloggerSchema,
+} from './features/users/banned/banned-by-blogger-users/domain/users-banned-by-blogger.entity';
+import { CommentsLikesRepository } from './features/comments/infrastructure/subrepository/comments-likes.repository';
 
 const services = [
   AuthService,
@@ -107,6 +117,7 @@ const repositories = [
   EmailConfirmationPublicRepository,
   BlogsRepository,
   CommentsRepository,
+  CommentsLikesRepository,
   DevicesRepository,
   LikesInfoRepository,
   PostsRepository,
@@ -151,7 +162,11 @@ const handlers = [
     }),
     MongooseModule.forRoot(process.env.MONGO_URL!),
     MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Post.name, schema: PostSchema },
+      { name: BannedUsersByBlogger.name, schema: BannedUsersByBloggerSchema },
       { name: LikesInfo.name, schema: LikesInfoSchema },
+      { name: PostLikesInfo.name, schema: PostsLikesInfoSchema },
       { name: Comment.name, schema: CommentsSchema },
       { name: CommentatorInfo.name, schema: CommentatorInfoSchema },
       { name: CommentLikesInfo.name, schema: CommentsLikesInfoSchema },

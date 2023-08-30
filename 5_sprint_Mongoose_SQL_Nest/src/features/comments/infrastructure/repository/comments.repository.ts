@@ -46,34 +46,21 @@ export class CommentsRepository {
     );
     return result[1] === 1;
   }
-  //MONGO
 
-  async getCommentInstance(
-    commentId: ObjectId,
-  ): Promise<CommentInstanceType | null> {
-    const comment = await this.CommentModel.findOne({ _id: commentId });
-    return comment;
+  async deleteComment(commentId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    DELETE FROM public."comments" //todo not comments - comments likes info
+        WHERE "id" = $1`,
+      [commentId],
+    );
+    return result[1] === 1;
   }
+
+  //MONGO
 
   async save(comment: CommentInstanceType): Promise<void> {
     await comment.save();
     return;
-  }
-
-  async createComments(comments): Promise<void> {
-    await this.CommentModel.insertMany(comments);
-    return;
-  } //todo типизация
-
-  async deleteComment(id: ObjectId): Promise<boolean> {
-    const result = await this.CommentModel.deleteOne({ _id: id });
-    return result.deletedCount === 1;
-  }
-
-  async deleteCommentsByUserId(userId: string): Promise<boolean> {
-    const result = await this.CommentModel.deleteMany({
-      'commentatorInfo.userId': userId,
-    });
-    return result.deletedCount > 0;
   }
 }
