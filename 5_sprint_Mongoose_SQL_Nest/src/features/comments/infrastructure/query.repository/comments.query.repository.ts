@@ -119,7 +119,7 @@ export class CommentsQueryRepository {
     );
 
     if (!commentInfo[0]) return null;
-    return modifyCommentIntoViewModel(commentInfo);
+    return modifyCommentIntoViewModel(commentInfo[0]);
   }
 
   //MONGO
