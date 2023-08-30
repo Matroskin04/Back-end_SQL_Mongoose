@@ -11,7 +11,7 @@ import { ObjectId } from 'mongodb';
 import { UsersQueryRepository } from '../../../features/users/infrastructure/query.repository/users.query.repository';
 
 @Injectable()
-export class IsUserBannedGuard implements CanActivate {
+export class IsUserBannedForBlogGuard implements CanActivate {
   constructor(
     protected blogsQueryRepository: BlogsQueryRepository,
     protected postsQueryRepository: PostsQueryRepository,

@@ -89,6 +89,7 @@ import {
   BannedUsersByBloggerSchema,
 } from './features/users/banned/banned-by-blogger-users/domain/users-banned-by-blogger.entity';
 import { CommentsLikesRepository } from './features/comments/infrastructure/subrepository/comments-likes.repository';
+import { IsUserBannedByJWTStrategy } from './infrastructure/strategy/is-user-banned-by-jwt.strategy';
 
 const services = [
   AuthService,
@@ -196,6 +197,7 @@ const handlers = [
     JwtAccessStrategy,
     JwtAccessStrategyMongo,
     BasicStrategy,
+    IsUserBannedByJWTStrategy,
 
     //Managers && Adapters
     EmailManager,

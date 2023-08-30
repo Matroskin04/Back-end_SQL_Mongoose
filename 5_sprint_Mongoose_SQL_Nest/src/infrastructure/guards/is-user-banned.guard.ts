@@ -5,9 +5,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsersQueryRepository } from '../../features/users/infrastructure/query.repository/users.query.repository';
+import { JwtService } from '../../features/jwt/jwt.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class IsUserBanGuard implements CanActivate {
+export class IsUserBannedByLoginOrEmailGuard implements CanActivate {
   constructor(protected usersQueryRepository: UsersQueryRepository) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -23,3 +25,8 @@ export class IsUserBanGuard implements CanActivate {
     return true;
   }
 }
+
+@Injectable()
+export class IsUserBannedByJWTGuard extends AuthGuard(
+  'is-user-banned-by-jwt',
+) {}

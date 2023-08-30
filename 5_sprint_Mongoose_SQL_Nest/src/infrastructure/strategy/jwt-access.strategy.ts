@@ -17,7 +17,9 @@ export class JwtAccessStrategy extends PassportStrategy(
   }
 
   async validate(payload: any) {
-    const userInfo = this.usersQueryRepository.getUserInfoById(payload.userId);
+    const userInfo = await this.usersQueryRepository.getUserInfoById(
+      payload.userId,
+    );
     if (!userInfo) throw new UnauthorizedException();
 
     return { id: payload.userId };
@@ -38,7 +40,9 @@ export class JwtAccessStrategyMongo extends PassportStrategy(
   }
 
   async validate(payload: any) {
-    const user = this.usersQueryRepository.getUserByUserIdMongo(payload.userId); //todo оставить потом только SQL
+    const user = await this.usersQueryRepository.getUserByUserIdMongo(
+      payload.userId,
+    ); //todo оставить потом только SQL
 
     if (!user) throw new UnauthorizedException();
 
