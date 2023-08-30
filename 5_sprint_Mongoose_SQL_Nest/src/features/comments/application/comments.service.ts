@@ -9,20 +9,11 @@ import { CommentsRepository } from '../infrastructure/repository/comments.reposi
 import { InjectModel } from '@nestjs/mongoose';
 import { Post } from '../../posts/domain/posts.entity';
 import { PostModelType } from '../../posts/domain/posts.db.types';
-import {
-  modifyCommentIntoViewModel,
-  modifyCommentMongo,
-  modifyCommentIntoInitialViewModel,
-} from '../../../infrastructure/utils/functions/features/comments.functions.helpers';
-import {
-  AllLikeStatusEnum,
-  AllLikeStatusType,
-  LikeDislikeStatusType,
-} from '../../../infrastructure/utils/enums/like-status';
+import { modifyCommentIntoInitialViewModel } from '../../../infrastructure/utils/functions/features/comments.functions.helpers';
+import { AllLikeStatusType } from '../../../infrastructure/utils/enums/like-status';
 import { Comment } from '../domain/comments.entity';
 import { CommentModelType } from '../domain/comments.db.types';
 import { LikesInfoRepository } from '../../likes-info/infrastructure/repository/likes-info.repository';
-import { PostsRepository } from '../../posts/infrastructure/repository/posts.repository';
 import { PostsQueryRepository } from '../../posts/infrastructure/query.repository/posts.query.repository';
 
 @Injectable()

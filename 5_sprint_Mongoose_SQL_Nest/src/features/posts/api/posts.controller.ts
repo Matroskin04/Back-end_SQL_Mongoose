@@ -31,10 +31,7 @@ import {
   CurrentUserIdMongo,
 } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
-import {
-  JwtAccessGuard,
-  JwtAccessGuardMongo,
-} from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CreateCommentByPostIdModel } from '../../comments/api/models/input/create-comment.input.model';
 import { CommentsService } from '../../comments/application/comments.service';
 import { UpdatePostLikeStatusModel } from './models/input/update-like-status.input.model';
@@ -79,18 +76,16 @@ export class PostsController {
   @Get(':postId/comments')
   async getAllCommentsOfPost(
     @Param('postId') postId: string,
-    @CurrentUserIdMongo() userId: ObjectId | null,
+    @CurrentUserId() userId: string | null,
     @Query() query: QueryPostInputModel,
-    @Res() res: Response<ViewAllCommentsOfPostModel>,
-  ) {
+  ): Promise<ViewAllCommentsOfPostModel> {
     const result = await this.commentsQueryRepository.getCommentsOfPost(
       postId,
       query,
       userId,
     );
-    result
-      ? res.status(HTTP_STATUS_CODE.OK_200).send(result)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException();
+    return result;
   }
 
   @UseGuards(JwtAccessGuard, IsUserBannedGuard)

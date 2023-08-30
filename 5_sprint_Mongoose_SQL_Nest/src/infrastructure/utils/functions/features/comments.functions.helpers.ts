@@ -10,28 +10,9 @@ import { CommentOfBloggerFuncType } from '../types/comments-functions-types';
 import { PostModelType } from '../../../../features/posts/domain/posts.db.types';
 import { PostsQueryRepository } from '../../../../features/posts/infrastructure/query.repository/posts.query.repository';
 import { NotFoundException } from '@nestjs/common';
+import { AllLikeStatusEnum, AllLikeStatusType } from '../../enums/like-status';
 
 export function modifyCommentMongo(
-  comment: any,
-  myStatus: StatusOfLike,
-): CommentViewType {
-  return {
-    id: comment._id,
-    content: comment.content,
-    commentatorInfo: {
-      userId: comment.commentatorInfo.userId,
-      userLogin: comment.commentatorInfo.userLogin,
-    },
-    createdAt: comment.createdAt,
-    likesInfo: {
-      likesCount: comment.likesInfo.likesCount,
-      dislikesCount: comment.likesInfo.dislikesCount,
-      myStatus,
-    },
-  };
-}
-
-export function modifyCommentIntoViewModel(
   comment: any,
   myStatus: StatusOfLike,
 ): CommentViewType {
@@ -72,40 +53,36 @@ export function modifyCommentIntoInitialViewModel(
   };
 }
 
-export async function modifyCommentsOfPost(
-  comment: CommentDBTypeMongo,
-  userId: ObjectId | null,
-  likesInfoQueryRepository: LikesInfoQueryRepository,
-): Promise<CommentViewType> {
-  let myStatus: StatusOfLike = 'None';
-
-  if (userId) {
-    const likeInfo =
-      await likesInfoQueryRepository.getLikesInfoByCommentAndUser(
-        comment._id.toString(),
-        userId.toString(),
-      );
-    if (likeInfo) {
-      myStatus = likeInfo.statusLike;
-    }
-  }
-
+export function modifyCommentIntoViewModel(
+  commentInfo: CommentRawInfoType,
+): CommentViewType {
   return {
-    id: comment._id.toString(),
-    content: comment.content,
+    id: commentInfo.id,
+    content: commentInfo.content,
     commentatorInfo: {
-      userId: comment.commentatorInfo.userId,
-      userLogin: comment.commentatorInfo.userLogin,
+      userId: commentInfo.userId,
+      userLogin: commentInfo.userLogin,
     },
-    createdAt: comment.createdAt,
+    createdAt: commentInfo.createdAt,
     likesInfo: {
-      likesCount: comment.likesInfo.likesCount,
-      dislikesCount: comment.likesInfo.dislikesCount,
-      myStatus: myStatus,
+      likesCount: +commentInfo.likesCount,
+      dislikesCount: +commentInfo.dislikesCount,
+      myStatus: AllLikeStatusEnum[commentInfo.myStatus] as AllLikeStatusType,
     },
   };
 }
 
+//todo type export
+type CommentRawInfoType = {
+  id: string;
+  content: string;
+  userId: string;
+  userLogin: string;
+  createdAt: string;
+  likesCount: string;
+  dislikesCount: string;
+  myStatus: string;
+};
 export async function modifyCommentsOfBlogger(
   comment: CommentDBTypeMongo,
   userId: ObjectId | null,

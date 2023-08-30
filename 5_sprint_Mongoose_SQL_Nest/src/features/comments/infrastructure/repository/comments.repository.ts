@@ -33,7 +33,6 @@ export class CommentsRepository {
     RETURNING "id", "content", "userId", "postId"`,
       [content, userId, postId],
     );
-    console.log(result);
     return result[0];
   }
   //MONGO

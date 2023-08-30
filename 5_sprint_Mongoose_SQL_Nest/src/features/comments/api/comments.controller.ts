@@ -39,7 +39,7 @@ export class CommentsController {
     @Param('id') commentId: string,
     @CurrentUserId() userId: string | null,
   ): Promise<CommentOutputModel> {
-    const result = await this.commentsQueryRepository.getCommentByIdMongo(
+    const result = await this.commentsQueryRepository.getCommentById(
       commentId,
       userId,
     );
