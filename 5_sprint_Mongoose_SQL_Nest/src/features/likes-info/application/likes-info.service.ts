@@ -50,6 +50,9 @@ export class LikesInfoService {
     userId: string,
     commentId: string,
   ): Promise<boolean> {
-    return this.likesInfoRepository.deleteLikeInfoComment(userId, commentId);
+    return this.likesInfoRepository.deleteLikeInfoCommentMongo(
+      userId,
+      commentId,
+    );
   }
 }

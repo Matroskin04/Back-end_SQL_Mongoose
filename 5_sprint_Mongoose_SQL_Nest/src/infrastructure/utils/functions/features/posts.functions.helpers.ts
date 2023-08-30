@@ -67,7 +67,8 @@ export function modifyPostIntoViewModel(postInfo: PostRawType): PostViewType {
     extendedLikesInfo: {
       likesCount: +postInfo.likesCount,
       dislikesCount: +postInfo.dislikesCount,
-      myStatus: AllLikeStatusEnum[postInfo.myStatus] as AllLikeStatusType,
+      myStatus:
+        (AllLikeStatusEnum[postInfo.myStatus] as AllLikeStatusType) ?? 'None',
       newestLikes: postInfo.newestLikes,
     },
   };

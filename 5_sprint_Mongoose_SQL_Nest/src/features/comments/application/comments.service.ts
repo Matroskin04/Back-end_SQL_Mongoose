@@ -99,100 +99,54 @@ export class CommentsService {
 
   async updateLikeStatusOfComment(
     commentId: string,
-    userId: ObjectId,
+    userId: string,
     likeStatus: AllLikeStatusType,
   ): Promise<boolean> {
-    const comment = await this.commentsQueryRepository.getCommentByIdMongo(
+    const comment = await this.commentsQueryRepository.getCommentDBInfoById(
       commentId,
-      userId.toString(),
     );
     if (!comment) {
       return false;
     }
 
-    const likeInfo =
-      await this.likesInfoQueryRepository.getLikesInfoByCommentAndUser(
-        commentId,
-        userId.toString(),
-      );
-    //если не существует, то у пользователя 'None'
-    if (!likeInfo) {
-      if (likeStatus === 'None') return true; //Если статусы совпадают, то ничего не делаем
-      //Иначе увеличиваем количество лайков/дизлайков
-      const result =
-        await this.likesInfoRepository.incrementNumberOfLikesOfComment(
-          commentId,
-          likeStatus,
-        );
-      if (!result) {
-        throw new Error('Incrementing number of likes failed');
-      }
-      //Создаю like info
-      await this.likesInfoService.createLikeInfoComment(
-        userId.toString(),
-        commentId,
-        likeStatus,
-      );
-      return true;
-    }
-
-    //Если существует likeInfo, то:
-    if (likeStatus === likeInfo.statusLike) {
-      //Если статусы совпадают, то ничего не делаем;
-      return true;
-    }
-    //Если пришел статус None, то:
-    if (likeStatus === 'None') {
-      //уменьшаю на 1 то, что убрали
-      const result =
-        await this.likesInfoRepository.decrementNumberOfLikesOfComment(
-          commentId,
-          likeInfo.statusLike,
-        );
-      if (!result) {
-        throw new Error('Decrementing number of likes failed');
-      }
-      //И удаляю информацию
-      const isDeleted = await this.likesInfoService.deleteLikeInfoComment(
-        userId.toString(),
-        commentId,
-      );
-      if (!isDeleted) {
-        throw new Error('Deleting like info of comment failed');
-      }
-
-      return true;
-    }
-
-    //Если пришел like/dislike, то
-    //обновляю информацию
-    const isUpdate = await this.likesInfoService.updateCommentLikeInfo(
-      userId.toString(),
+    //check of existing LikeInfo
+    const likeInfo = await this.likesInfoQueryRepository.getLikesInfoComment(
       commentId,
-      likeStatus,
+      userId,
     );
-    if (!isUpdate) {
-      throw new Error('Like status of the comment is not updated');
-    }
-    //увеличиваю на 1 то, что пришло
-    const result1 =
-      await this.likesInfoRepository.incrementNumberOfLikesOfComment(
+    //if likeInfo doesn't exist, then user has like status 'None'
+    if (!likeInfo) {
+      if (likeStatus === 'None') return true; //If statuses are the same, then just return true
+      //Otherwise create like info
+      await this.likesInfoRepository.createLikeInfoOfComment(
+        userId,
         commentId,
         likeStatus,
       );
-    if (!result1) {
-      throw new Error('Incrementing number of likes failed');
-    }
-    //уменьшаю на 1 то, что убрали
-    const result2 =
-      await this.likesInfoRepository.decrementNumberOfLikesOfComment(
+    } else {
+      //if new like status = 'None' - then delete info
+      if (likeStatus === 'None') {
+        const isDeleted = await this.likesInfoRepository.deleteLikeInfoComment(
+          userId,
+          commentId,
+        );
+        if (!isDeleted) {
+          //todo имеет ли смысл в проверки
+          throw new Error('Like status of the comment is not deleted');
+        }
+        return true;
+      }
+      //if not "None", then change like status
+      const isUpdate = await this.likesInfoRepository.updateCommentLikeInfo(
+        userId,
         commentId,
-        likeInfo.statusLike,
+        likeStatus,
       );
-    if (!result2) {
-      throw new Error('Decrementing number of likes failed');
+      if (!isUpdate) {
+        //todo имеет ли смысл в проверки
+        throw new Error('Like status of the post is not updated');
+      }
     }
-
     return true;
   }
 }

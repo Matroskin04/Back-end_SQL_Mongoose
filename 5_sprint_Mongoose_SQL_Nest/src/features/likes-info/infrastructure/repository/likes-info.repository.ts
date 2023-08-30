@@ -72,6 +72,49 @@ export class LikesInfoRepository {
     return result[1] === 1;
   }
 
+  async createLikeInfoOfComment(
+    userId: string,
+    commentId: string,
+    likeStatus: LikeDislikeStatusType,
+  ): Promise<void> {
+    const result = await this.dataSource.query(
+      `
+    INSERT INTO public."comments_likes_info"(
+        "userId", "commentId", "likeStatus")
+        VALUES ($1, $2, $3);`,
+      [userId, commentId, AllLikeStatusEnum[likeStatus]],
+    );
+    return;
+  }
+
+  async updateCommentLikeInfo(
+    userId: string,
+    commentId: string,
+    likeStatus: AllLikeStatusType,
+  ): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    UPDATE public."comments_likes_info"
+        SET "likeStatus" = $1 
+            WHERE "userId" = $2 AND "commentId" = $3;`,
+      [AllLikeStatusEnum[likeStatus], userId, commentId],
+    );
+    return result[1] === 1;
+  }
+
+  async deleteLikeInfoComment(
+    userId: string,
+    commentId: string,
+  ): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    DELETE FROM public."comments_likes_info"
+        WHERE "userId" = $1 AND "commentId" = $2`,
+      [userId, commentId],
+    );
+    return result[1] === 1;
+  }
+
   //MONGO
   async getCommentLikeInfoInstance(
     commentId: string,
@@ -94,44 +137,7 @@ export class LikesInfoRepository {
     return;
   }
 
-  async incrementNumberOfLikesOfComment(
-    commentId: string,
-    incrementValue: 'Like' | 'Dislike',
-  ): Promise<boolean> {
-    if (incrementValue === 'Like') {
-      const result = await this.CommentModel.updateOne(
-        { _id: commentId },
-        { $inc: { 'likesInfo.likesCount': 1 } },
-      );
-      return result.modifiedCount === 1;
-    } else {
-      const result = await this.CommentModel.updateOne(
-        { _id: commentId },
-        { $inc: { 'likesInfo.dislikesCount': 1 } },
-      );
-      return result.modifiedCount === 1;
-    }
-  }
-
-  async decrementNumberOfLikesOfComment(
-    commentId: string,
-    decrementValue: 'Like' | 'Dislike',
-  ): Promise<boolean> {
-    if (decrementValue === 'Like') {
-      const result = await this.CommentModel.updateOne(
-        { _id: commentId },
-        { $inc: { 'likesInfo.likesCount': -1 } },
-      );
-      return result.modifiedCount === 1;
-    } else {
-      const result = await this.CommentModel.updateOne(
-        { _id: commentId },
-        { $inc: { 'likesInfo.dislikesCount': -1 } },
-      );
-      return result.modifiedCount === 1;
-    }
-  }
-  async deleteLikeInfoComment(
+  async deleteLikeInfoCommentMongo(
     userId: string,
     commentId: string,
   ): Promise<boolean> {

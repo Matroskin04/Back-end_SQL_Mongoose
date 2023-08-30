@@ -2,8 +2,18 @@ import { ObjectId } from 'mongodb';
 import { HydratedDocument, Model } from 'mongoose';
 import { CommentLikesInfo, PostLikesInfo } from './likes-info.entity';
 
-export class CommentsLikesInfoDBType {
+export class CommentsLikesInfoDBTypeMongo {
   _id: ObjectId;
+
+  commentId: string;
+
+  userId: string;
+
+  statusLike: 'Like' | 'Dislike';
+}
+
+export class CommentsLikesInfoDBType {
+  id: string;
 
   commentId: string;
 

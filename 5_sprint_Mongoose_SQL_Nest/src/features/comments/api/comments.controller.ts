@@ -27,6 +27,11 @@ import { UpdateCommentInputModel } from './models/input/update-comment.input.mod
 import { UpdateCommentLikeStatusInputModel } from './models/input/update-comment-like-status.input.model';
 import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
+import { IsUserBannedForBlogGuard } from '../../../infrastructure/guards/blogs-comments-posts-guards/is-user-banned-for-blog.guard';
+import {
+  IsUserBannedByJWTGuard,
+  IsUserBannedByLoginOrEmailGuard,
+} from '../../../infrastructure/guards/is-user-banned.guard';
 
 @SkipThrottle()
 @Controller('/hometask-nest/comments')
@@ -67,34 +72,32 @@ export class CommentsController {
     return;
   }
 
-  @UseGuards(JwtAccessGuardMongo)
+  @UseGuards(JwtAccessGuard, IsUserBannedByJWTGuard)
   @Put(':id/like-status')
   async updateLikeStatusOfComment(
     @Param('id') commentId: string,
-    @CurrentUserIdMongo() userId: ObjectId,
+    @CurrentUserId() userId: string,
     @Body() inputLikeInfoModel: UpdateCommentLikeStatusInputModel,
-    @Res() res: Response<string>,
-  ) {
+  ): Promise<string | void> {
     const result = await this.commentsService.updateLikeStatusOfComment(
       commentId,
       userId,
       inputLikeInfoModel.likeStatus,
     );
 
-    result
-      ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
-      : res
-          .status(HTTP_STATUS_CODE.NOT_FOUND_404)
-          .send("Comment with specified id doesn't exist");
+    if (!result)
+      throw new NotFoundException("Comment with specified id doesn't exist");
+    return;
   }
 
-  @UseGuards(JwtAccessGuard) //todo addition guard 403
+  @UseGuards(JwtAccessGuard) //todo add guard 403
   @Delete(':id')
   async deleteComment(
     @Param('id') commentId: string,
     @CurrentUserId() userId: string,
   ): Promise<void> {
     const result = await this.commentsService.deleteComment(commentId, userId);
+
     if (!result) throw new NotFoundException();
     return;
   }

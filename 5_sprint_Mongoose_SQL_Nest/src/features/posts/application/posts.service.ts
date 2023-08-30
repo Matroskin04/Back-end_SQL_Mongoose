@@ -79,7 +79,7 @@ export class PostsService {
     //если не существует likeInfo, то у пользователя 'None'
     if (!likeInfo) {
       if (likeStatus === 'None') return true; //Если статусы совпадают, то ничего не делаем
-      //Иначе create like info
+      //Otherwise create like info
       await this.likesInfoRepository.createLikeInfoOfPost(
         userId,
         postId,

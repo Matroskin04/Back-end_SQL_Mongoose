@@ -47,7 +47,7 @@ import {
 } from '../../../infrastructure/guards/authorization-guards/jwt-refresh.guard';
 import { RefreshToken } from '../../../infrastructure/decorators/auth/refresh-token-param.decorator';
 import { JwtService } from '../../jwt/jwt.service';
-import { IsUserBanGuard } from '../../../infrastructure/guards/is-user-ban.guard';
+import { IsUserBannedByLoginOrEmailGuard } from '../../../infrastructure/guards/is-user-banned.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { RegisterUserCommand } from '../application/use-cases/register-user.use-case';
 import { ConfirmEmailCommand } from '../application/use-cases/confirm-email.use-case';
@@ -78,7 +78,7 @@ export class AuthController {
     if (result) return result;
     throw new NotFoundException('User is not found');
   }
-  @UseGuards(LocalAuthGuard, IsUserBanGuard)
+  @UseGuards(LocalAuthGuard, IsUserBannedByLoginOrEmailGuard)
   @Post('login')
   async loginUser(
     @CurrentUserId() userId: string,

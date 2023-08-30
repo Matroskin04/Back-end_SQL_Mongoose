@@ -109,7 +109,8 @@ export class CommentsQueryRepository {
             
       (SELECT "likeStatus" as "myStatus"
         FROM public."comments_likes_info"
-            WHERE "userId" = $3 AND "commentId" = c."id")
+            WHERE "userId" = $3
+           AND "commentId" = c."id")
             
     FROM public."comments" as c
         JOIN public."users" as u

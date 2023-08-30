@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import {
   CommentsLikesInfoDBType,
+  CommentsLikesInfoDBTypeMongo,
   PostsLikesInfoDBType,
 } from '../../domain/likes-info.db.types';
 import { InjectModel } from '@nestjs/mongoose';
@@ -39,11 +40,27 @@ export class LikesInfoQueryRepository {
     return result[0];
   }
 
+  async getLikesInfoComment(
+    commentId: string,
+    userId: string,
+  ): Promise<string | null> {
+    const result = await this.dataSource.query(
+      `
+      SELECT "likeStatus"
+        FROM public."comments_likes_info"
+      WHERE "commentId" = $1 AND "userId" = $2;`,
+      [commentId, userId],
+    );
+
+    if (!result[0]) return null;
+    return result[0];
+  }
+
   //MONGO
   async getLikesInfoByCommentAndUser(
     commentId: string,
     userId: string,
-  ): Promise<CommentsLikesInfoDBType | null> {
+  ): Promise<CommentsLikesInfoDBTypeMongo | null> {
     return this.CommentsLikesInfoModel.findOne({ commentId, userId });
   }
 

@@ -67,7 +67,9 @@ export function modifyCommentIntoViewModel(
     likesInfo: {
       likesCount: +commentInfo.likesCount,
       dislikesCount: +commentInfo.dislikesCount,
-      myStatus: AllLikeStatusEnum[commentInfo.myStatus] as AllLikeStatusType,
+      myStatus:
+        (AllLikeStatusEnum[commentInfo.myStatus] as AllLikeStatusType) ??
+        'None',
     },
   };
 }

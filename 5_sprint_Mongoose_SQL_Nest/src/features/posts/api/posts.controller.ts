@@ -23,20 +23,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommentsQueryRepository } from '../../comments/infrastructure/query.repository/comments.query.repository';
-import { Response } from 'express';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
-import {
-  CurrentUserId,
-  CurrentUserIdMongo,
-} from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
-import { ObjectId } from 'mongodb';
+import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CreateCommentByPostIdModel } from '../../comments/api/models/input/create-comment.input.model';
 import { CommentsService } from '../../comments/application/comments.service';
 import { UpdatePostLikeStatusModel } from './models/input/update-like-status.input.model';
 import { SkipThrottle } from '@nestjs/throttler';
-import { IsUserBannedGuard } from '../../../infrastructure/guards/blogs-comments-posts-guards/is-user-banned.guard';
+import { IsUserBannedByJWTGuard } from '../../../infrastructure/guards/is-user-banned.guard';
 
 @SkipThrottle()
 @Controller('/hometask-nest/posts')
@@ -88,7 +83,7 @@ export class PostsController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuard, IsUserBannedGuard)
+  @UseGuards(JwtAccessGuard, IsUserBannedByJWTGuard)
   @Post(':postId/comments')
   async createCommentByPostId(
     @Param('postId') postId: string,
@@ -105,14 +100,14 @@ export class PostsController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(IsUserBannedByJWTGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':postId/like-status')
   async updateLikeStatusOfPost(
     @Param('postId') postId: string,
     @CurrentUserId() userId: string,
     @Body() inputLikeStatusModel: UpdatePostLikeStatusModel,
-  ) {
+  ): Promise<string | void> {
     const result = await this.postsService.updateLikeStatusOfPost(
       postId.toString(),
       userId,
@@ -121,7 +116,7 @@ export class PostsController {
 
     if (!result)
       throw new NotFoundException("Post with specified id doesn't exist");
-    return result;
+    return;
   }
 
   /*@UseGuards(BasicAuthGuard)
