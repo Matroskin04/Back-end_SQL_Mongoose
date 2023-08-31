@@ -35,7 +35,7 @@ export function modifyCommentIntoInitialViewModel(
 
 export function modifyCommentIntoViewModel(
   commentInfo: CommentRawInfoType,
-): CommentViewType {
+): any {
   return {
     id: commentInfo.id,
     content: commentInfo.content,
@@ -43,7 +43,7 @@ export function modifyCommentIntoViewModel(
       userId: commentInfo.userId,
       userLogin: commentInfo.userLogin,
     },
-    createdAt: commentInfo.createdAt,
+    //createdAt: commentInfo.createdAt,
     likesInfo: {
       likesCount: +commentInfo.likesCount,
       dislikesCount: +commentInfo.dislikesCount,
