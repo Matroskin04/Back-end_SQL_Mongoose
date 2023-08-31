@@ -24,7 +24,7 @@ export function modifyCommentIntoInitialViewModel(
       userId: commentInfo.userId,
       userLogin,
     },
-    createdAt: new Date(commentInfo.createdAt).toISOString(),
+    createdAt: commentInfo.createdAt,
     likesInfo: {
       likesCount: 0,
       dislikesCount: 0,
@@ -43,7 +43,7 @@ export function modifyCommentIntoViewModel(
       userId: commentInfo.userId,
       userLogin: commentInfo.userLogin,
     },
-    createdAt: new Date(commentInfo.createdAt).toISOString(),
+    createdAt: commentInfo.createdAt,
     likesInfo: {
       likesCount: +commentInfo.likesCount,
       dislikesCount: +commentInfo.dislikesCount,
@@ -75,7 +75,7 @@ export function modifyCommentsOfBlogger(
       userId: allInfo.userId,
       userLogin: allInfo.userLogin,
     },
-    createdAt: new Date(allInfo.createdAt).toISOString(),
+    createdAt: allInfo.createdAt,
     likesInfo: {
       likesCount: +allInfo.likesCount,
       dislikesCount: +allInfo.dislikesCount,
