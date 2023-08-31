@@ -40,7 +40,6 @@ import { BlogsQueryRepository } from './features/blogs/infrastructure/query.repo
 import { BlogsRepository } from './features/blogs/infrastructure/repository/blogs.repository';
 import { UsersBloggerService } from './features/users/application/blogger/users-blogger.service';
 import { UsersBloggerController } from './features/users/api/blogger/users-blogger.controller';
-import { BannedUsersByBloggerQueryRepository } from './features/users/banned/banned-by-blogger-users/infrastructure/banned-users-by-blogger-query.repository';
 import { RegisterUserUseCase } from './features/auth/application/use-cases/register-user.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ConfirmEmailUseCase } from './features/auth/application/use-cases/confirm-email.use-case';
@@ -80,7 +79,6 @@ const queryRepositories = [
   LikesInfoQueryRepository,
   DevicesQueryRepository,
   CommentsQueryRepository,
-  BannedUsersByBloggerQueryRepository,
   UsersQueryRepository,
 ];
 const repositories = [

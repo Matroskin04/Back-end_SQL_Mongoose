@@ -6,32 +6,18 @@ import {
   PostsIdOfBloggerType,
   PostViewType,
 } from './posts.types.query.repository';
-import { ObjectId } from 'mongodb';
 import { QueryPostInputModel } from '../../api/models/input/query-post.input.model';
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import { modifyPostIntoViewModel } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
-import { StatusOfLike } from '../../../comments/infrastructure/query.repository/comments.types.query.repository';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Post } from '../../domain/posts.entity';
-import { PostModelType } from '../../domain/posts.db.types';
-import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/query.repository/likes-info.query.repository';
-import { reformNewestLikes } from '../../../../infrastructure/utils/functions/features/likes-info.functions.helpers';
 import { QueryBlogInputModel } from '../../../blogs/api/blogger/models/input/query-blog.input.model';
-import { BlogsQueryRepository } from '../../../blogs/infrastructure/query.repository/blogs.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AllLikeStatusEnum } from '../../../../infrastructure/utils/enums/like-status';
 
 @Injectable()
 export class PostsQueryRepository {
-  constructor(
-    @InjectDataSource() protected dataSource: DataSource,
-    @InjectModel(Post.name)
-    private PostModel: PostModelType,
-    protected likesInfoQueryRepository: LikesInfoQueryRepository,
-    protected blogsPublicQueryRepository: BlogsQueryRepository,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   //SQL
   async getAllPostsOfBlog(

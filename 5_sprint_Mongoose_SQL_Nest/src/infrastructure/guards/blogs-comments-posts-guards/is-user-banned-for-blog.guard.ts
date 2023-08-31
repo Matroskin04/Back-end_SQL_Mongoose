@@ -4,11 +4,8 @@ import {
   ExecutionContext,
   NotFoundException,
 } from '@nestjs/common';
-import { BannedUsersByBloggerQueryRepository } from '../../../features/users/banned/banned-by-blogger-users/infrastructure/banned-users-by-blogger-query.repository';
 import { BlogsQueryRepository } from '../../../features/blogs/infrastructure/query.repository/blogs.query.repository';
 import { PostsQueryRepository } from '../../../features/posts/infrastructure/query.repository/posts.query.repository';
-import { ObjectId } from 'mongodb';
-import { UsersQueryRepository } from '../../../features/users/infrastructure/query.repository/users.query.repository';
 
 @Injectable()
 export class IsUserBannedForBlogGuard implements CanActivate {

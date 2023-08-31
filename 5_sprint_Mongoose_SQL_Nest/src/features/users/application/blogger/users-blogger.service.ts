@@ -1,9 +1,6 @@
 import { SkipThrottle } from '@nestjs/throttler';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BanInfoBloggerType } from './dto/ban-info.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { BannedUsersByBlogger } from '../../banned/banned-by-blogger-users/domain/users-banned-by-blogger.entity';
-import { BannedUsersByBloggerModelType } from '../../banned/banned-by-blogger-users/domain/users-banned-by-blogger.db.types';
 import { UsersQueryRepository } from '../../infrastructure/query.repository/users.query.repository';
 import { UsersRepository } from '../../infrastructure/repository/users.repository';
 
@@ -11,8 +8,6 @@ import { UsersRepository } from '../../infrastructure/repository/users.repositor
 @SkipThrottle()
 export class UsersBloggerService {
   constructor(
-    @InjectModel(BannedUsersByBlogger.name)
-    private BannedUsersByBloggerModel: BannedUsersByBloggerModelType,
     protected usersRepository: UsersRepository,
     protected usersQueryRepository: UsersQueryRepository,
   ) {}

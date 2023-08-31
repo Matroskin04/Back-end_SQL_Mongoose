@@ -1,5 +1,3 @@
-import { BannedUsersViewType } from '../../banned/banned-by-blogger-users/domain/users-banned-by-blogger.db.types';
-
 export type UsersInfoViewType = {
   email: string;
   login: string;
@@ -35,6 +33,16 @@ export type UserViewType = {
 };
 
 export type BannedUserOfBlogType = {
+  id: string;
+  login: string;
+  banInfo: {
+    isBanned: boolean;
+    banDate: string;
+    banReason: string;
+  };
+};
+
+type BannedUsersViewType = {
   id: string;
   login: string;
   banInfo: {

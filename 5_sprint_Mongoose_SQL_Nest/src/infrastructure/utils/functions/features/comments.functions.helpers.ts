@@ -1,15 +1,7 @@
 import { CommentViewType } from '../../../../features/comments/infrastructure/repository/comments.types.repositories';
-import {
-  CommentDBType,
-  CommentDBTypeMongo,
-} from '../../../../features/comments/domain/comments.db.types';
-import { ObjectId } from 'mongodb';
-import { LikesInfoQueryRepository } from '../../../../features/likes-info/infrastructure/query.repository/likes-info.query.repository';
+import { CommentDBType } from '../../../../features/comments/domain/comments.db.types';
 import { StatusOfLike } from '../../../../features/comments/infrastructure/query.repository/comments.types.query.repository';
 import { CommentOfBloggerFuncType } from '../types/comments-functions-types';
-import { PostModelType } from '../../../../features/posts/domain/posts.db.types';
-import { PostsQueryRepository } from '../../../../features/posts/infrastructure/query.repository/posts.query.repository';
-import { NotFoundException } from '@nestjs/common';
 import { AllLikeStatusEnum, AllLikeStatusType } from '../../enums/like-status';
 
 export function modifyCommentIntoInitialViewModel(

@@ -1,6 +1,4 @@
 import { ObjectId } from 'mongodb';
-import { HydratedDocument, Model } from 'mongoose';
-import { Post } from './posts.entity';
 
 export type PostDBTypeMongo = {
   _id: ObjectId;
@@ -15,30 +13,4 @@ export type PostDBTypeMongo = {
     likesCount: number;
     dislikesCount: number;
   };
-};
-
-export type PostDocument = HydratedDocument<Post>;
-
-export type PostModelType = Model<PostDocument> & PostModelStaticMethodsType;
-
-export type PostModelStaticMethodsType = {
-  createInstance: (
-    postBody: PostDTOType,
-    blogName: string,
-    PostModel: PostModelType,
-  ) => PostDocument;
-};
-
-export type PostDTOType = {
-  title: string;
-  userId: string;
-  shortDescription: string;
-  content: string;
-  blogId: string;
-};
-
-export type PostUpdateDTOType = {
-  title: string;
-  shortDescription: string;
-  content: string;
 };

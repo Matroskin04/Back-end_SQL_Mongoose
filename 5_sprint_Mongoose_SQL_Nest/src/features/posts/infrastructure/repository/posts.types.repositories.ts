@@ -1,5 +1,3 @@
-import { PostDocument } from '../../domain/posts.db.types';
-
 export type PostType = {
   title: string;
   shortDescription: string;
@@ -27,18 +25,8 @@ export type NewestLikesType = Array<{
   login: string;
 }>;
 
-export type BodyPostType = {
-  title: string;
-  userId: string;
-  shortDescription: string;
-  content: string;
-  blogId: string;
-};
-
 export type BodyPostByBlogIdType = {
   title: string;
   shortDescription: string;
   content: string;
 };
-
-export type PostInstanceType = PostDocument;

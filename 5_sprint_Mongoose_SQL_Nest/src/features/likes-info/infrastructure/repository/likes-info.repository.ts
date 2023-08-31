@@ -1,9 +1,4 @@
-import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
-import {
-  CommentLikeInfoInstanceType,
-  PostLikeInfoInstanceType,
-} from './likes-info.types.repository';
 import {
   AllLikeStatusEnum,
   LikeDislikeStatusType,

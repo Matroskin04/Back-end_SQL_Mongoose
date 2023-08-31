@@ -4,9 +4,6 @@ import {
 } from '../infrastructure/repository/posts.types.repositories';
 import { PostsRepository } from '../infrastructure/repository/posts.repository';
 import { modifyPostIntoInitialViewModel } from '../../../infrastructure/utils/functions/features/posts.functions.helpers';
-import { PostModelType } from '../domain/posts.db.types';
-import { Post } from '../domain/posts.entity';
-import { InjectModel } from '@nestjs/mongoose';
 import { LikesInfoQueryRepository } from '../../likes-info/infrastructure/query.repository/likes-info.query.repository';
 import { AllLikeStatusType } from '../../../infrastructure/utils/enums/like-status';
 import { UsersQueryRepository } from '../../users/infrastructure/query.repository/users.query.repository';
@@ -19,8 +16,6 @@ import { BlogsQueryRepository } from '../../blogs/infrastructure/query.repositor
 @Injectable()
 export class PostsService {
   constructor(
-    @InjectModel(Post.name)
-    private PostModel: PostModelType,
     protected postsRepository: PostsRepository,
     protected postsQueryRepository: PostsQueryRepository,
     protected blogsPublicQueryRepository: BlogsQueryRepository,

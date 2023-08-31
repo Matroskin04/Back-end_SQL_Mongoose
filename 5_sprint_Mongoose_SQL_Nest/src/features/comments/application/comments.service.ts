@@ -4,9 +4,6 @@ import { CommentsQueryRepository } from '../infrastructure/query.repository/comm
 import { LikesInfoQueryRepository } from '../../likes-info/infrastructure/query.repository/likes-info.query.repository';
 import { CommentViewType } from '../infrastructure/repository/comments.types.repositories';
 import { CommentsRepository } from '../infrastructure/repository/comments.repository';
-import { InjectModel } from '@nestjs/mongoose';
-import { Post } from '../../posts/domain/posts.entity';
-import { PostModelType } from '../../posts/domain/posts.db.types';
 import { modifyCommentIntoInitialViewModel } from '../../../infrastructure/utils/functions/features/comments.functions.helpers';
 import { AllLikeStatusType } from '../../../infrastructure/utils/enums/like-status';
 import { LikesInfoRepository } from '../../likes-info/infrastructure/repository/likes-info.repository';
@@ -16,8 +13,6 @@ import { CommentsLikesRepository } from '../infrastructure/subrepository/comment
 @Injectable()
 export class CommentsService {
   constructor(
-    @InjectModel(Post.name)
-    private PostModel: PostModelType,
     protected commentsLikesRepository: CommentsLikesRepository,
     protected commentsRepository: CommentsRepository,
     protected postsQueryRepository: PostsQueryRepository,
