@@ -116,14 +116,26 @@ export class UsersQueryRepository {
   }
 
   //addition methods
-  async doesUserExistByIdLoginEmail(identifier: string): Promise<boolean> {
+  async doesUserExistById(userId: string): Promise<boolean> {
     const result = await this.dataSource.query(
       `
     SELECT COUNT(*)
         FROM public."users"
-        WHERE "id" = $1 OR "login" = $1 OR "email" = $1
+        WHERE "id" = $1
     `,
-      [identifier],
+      [userId],
+    );
+    return +result[0].count === 1;
+  }
+
+  async doesUserExistByLoginEmail(loginOrEmail: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    SELECT COUNT(*)
+        FROM public."users"
+        WHERE "login" = $1 OR "email" = $1
+    `,
+      [loginOrEmail],
     );
     return +result[0].count === 1;
   }

@@ -13,7 +13,7 @@ export class ValidateEmailRegistrationGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     const doesExistByLogin =
-      await this.usersQueryRepository.doesUserExistByIdLoginEmail(
+      await this.usersQueryRepository.doesUserExistByLoginEmail(
         request.body.login,
       );
     if (doesExistByLogin) {
@@ -26,7 +26,7 @@ export class ValidateEmailRegistrationGuard implements CanActivate {
     }
 
     const doesExistByEmail =
-      await this.usersQueryRepository.doesUserExistByIdLoginEmail(
+      await this.usersQueryRepository.doesUserExistByLoginEmail(
         request.body.email,
       );
     if (doesExistByEmail) {

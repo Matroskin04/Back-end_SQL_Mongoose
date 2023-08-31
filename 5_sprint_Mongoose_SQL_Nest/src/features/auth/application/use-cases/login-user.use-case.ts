@@ -17,9 +17,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     command: LoginUserCommand,
   ): Promise<TokensAndUserIdType | null> {
     const { userId } = command;
-    const user = await this.usersQueryRepository.doesUserExistByIdLoginEmail(
-      userId,
-    );
+    const user = await this.usersQueryRepository.doesUserExistById(userId);
     if (!user) {
       //If user doesn't exist - then payload is incorrect
       return null;

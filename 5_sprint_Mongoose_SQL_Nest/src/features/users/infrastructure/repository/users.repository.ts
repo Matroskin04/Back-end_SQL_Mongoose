@@ -7,7 +7,6 @@ import { DataSource } from 'typeorm';
 export class UsersRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  //SQL
   async createUser(
     userId: string,
     login: string,

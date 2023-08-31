@@ -10,7 +10,6 @@ export class PasswordRecoveryPublicRepository {
     confirmationCode: string | null,
     userId: string,
   ): Promise<void> {
-    //todo где-то нужно передавать, где-то нет. Как реилизовать
     await this.dataSource.query(
       `
     INSERT INTO public.users_password_recovery(
