@@ -52,22 +52,30 @@ export class PostsQueryRepository {
         WHERE b2."isBanned" = false AND b2."id" = $4),
         
       (SELECT COUNT(*) as "likesCount"
-        FROM public."posts_likes_info"
-            WHERE "likeStatus" = $1 AND "postId" = p."id"),
+        FROM public."posts_likes_info" as li
+            JOIN public."users_ban_info" as bi2
+            ON li."userId" = bi2."userId"
+        WHERE li."likeStatus" = $1 AND li."postId" = p."id" AND bi2."isBanned" = false),
             
       (SELECT COUNT(*) as "dislikesCount"
-        FROM public."posts_likes_info"
-            WHERE "likeStatus" = $2 AND "postId" = p."id"),
+        FROM public."posts_likes_info" as li
+            JOIN public."users_ban_info" as bi2
+            ON li."userId" = bi2."userId"
+        WHERE li."likeStatus" = $2 AND li."postId" = p."id" AND bi2."isBanned" = false),
             
       (SELECT "likeStatus" as "myStatus"
-        FROM public."posts_likes_info"
-            WHERE "userId" = $3 AND "postId" = p."id"),
+        FROM public."posts_likes_info" as li
+            JOIN public."users_ban_info" as bi2
+            ON li."userId" = bi2."userId"
+        WHERE li."userId" = $3 AND li."postId" = p."id" AND bi2."isBanned" = false),
             
       (SELECT json_agg(to_jsonb("threeLikes")) as "newestLikes"
         FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
             JOIN public."users" as u
-            ON u."id" = li."userId"
-        WHERE li."postId" = p."id" AND li."likeStatus" = $1
+                ON u."id" = li."userId"
+            JOIN public."users_ban_info" as bi2
+                ON u."id" = bi2."userId"
+        WHERE li."postId" = p."id" AND li."likeStatus" = $1 AND bi2."isBanned" = false
         GROUP BY u."login", li."addedAt", li."userId"
              ORDER BY "addedAt" DESC
              LIMIT 3) as "threeLikes" )
@@ -114,22 +122,30 @@ export class PostsQueryRepository {
         WHERE b2."isBanned" = false),
         
       (SELECT COUNT(*) as "likesCount"
-        FROM public."posts_likes_info"
-            WHERE "likeStatus" = $1 AND "postId" = p."id"),
+       FROM public."posts_likes_info" as li
+            JOIN public."users_ban_info" as bi2
+            ON li."userId" = bi2."userId"
+        WHERE li."likeStatus" = $1 AND li."postId" = p."id" AND bi2."isBanned" = false),
             
       (SELECT COUNT(*) as "dislikesCount"
-        FROM public."posts_likes_info"
-            WHERE "likeStatus" = $2 AND "postId" = p."id"),
+        FROM public."posts_likes_info" as li
+            JOIN public."users_ban_info" as bi2
+            ON li."userId" = bi2."userId"
+        WHERE li."likeStatus" = $2 AND li."postId" = p."id" AND bi2."isBanned" = false),
             
       (SELECT "likeStatus" as "myStatus"
-        FROM public."posts_likes_info"
-            WHERE "userId" = $3 AND "postId" = p."id"),
+        FROM public."posts_likes_info" as li
+            JOIN public."users_ban_info" as bi2
+            ON li."userId" = bi2."userId"
+        WHERE li."userId" = $3 AND li."postId" = p."id" AND bi2."isBanned" = false),
             
       (SELECT json_agg(to_jsonb("threeLikes")) as "newestLikes"
         FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
             JOIN public."users" as u
-            ON u."id" = li."userId"
-        WHERE li."postId" = p."id" AND li."likeStatus" = $1
+                ON u."id" = li."userId"
+            JOIN public."users_ban_info" as bi2
+                ON u."id" = bi2."userId"
+        WHERE li."postId" = p."id" AND li."likeStatus" = $1 AND bi2."isBanned" = false
         GROUP BY u."login", li."addedAt", li."userId"
              ORDER BY "addedAt" DESC
              LIMIT 3) as "threeLikes" )
@@ -181,22 +197,30 @@ export class PostsQueryRepository {
      SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."createdAt", b."name" as "blogName",
         
       (SELECT COUNT(*) as "likesCount"
-        FROM public."posts_likes_info"
-            WHERE "likeStatus" = $1 AND "postId" = p."id"),
+       FROM public."posts_likes_info" as li
+            JOIN public."users_ban_info" as bi2
+            ON li."userId" = bi2."userId"
+        WHERE li."likeStatus" = $1 AND li."postId" = p."id" AND bi2."isBanned" = false),
             
       (SELECT COUNT(*) as "dislikesCount"
-        FROM public."posts_likes_info"
-            WHERE "likeStatus" = $2 AND "postId" = p."id"),
+        FROM public."posts_likes_info" as li
+            JOIN public."users_ban_info" as bi2
+            ON li."userId" = bi2."userId"
+        WHERE li."likeStatus" = $2 AND li."postId" = p."id" AND bi2."isBanned" = false),
             
       (SELECT "likeStatus" as "myStatus"
-        FROM public."posts_likes_info"
-            WHERE "userId" = $3 AND "postId" = p."id"),
+        FROM public."posts_likes_info" as li
+            JOIN public."users_ban_info" as bi2
+            ON li."userId" = bi2."userId"
+        WHERE li."userId" = $3 AND li."postId" = p."id" AND bi2."isBanned" = false),
             
       (SELECT json_agg(to_jsonb("threeLikes")) as "newestLikes"
         FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
             JOIN public."users" as u
-            ON u."id" = li."userId"
-        WHERE li."postId" = p."id" AND li."likeStatus" = $1
+                ON u."id" = li."userId"
+            JOIN public."users_ban_info" as bi2
+                ON u."id" = bi2."userId"
+        WHERE li."postId" = p."id" AND li."likeStatus" = $1 AND bi2."isBanned" = false
         GROUP BY u."login", li."addedAt", li."userId"
              ORDER BY "addedAt" DESC
              LIMIT 3) as "threeLikes" )
