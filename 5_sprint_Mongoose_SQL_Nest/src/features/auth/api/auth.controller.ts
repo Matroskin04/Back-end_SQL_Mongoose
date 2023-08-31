@@ -12,9 +12,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
-  AuthOutputModel,
-  ViewTokenModel,
-} from './models/output/auth.output.model';
+  UserInfoOutputModel,
+  LoginOutputModel,
+} from './models/output/user-info.output.model';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import {
   ConfirmationCodeAuthModel,
@@ -62,8 +62,8 @@ export class AuthController {
   @Get('me')
   async getUserInformation(
     @CurrentUserId() userId: string,
-  ): Promise<AuthOutputModel> {
-    const result = await this.usersQueryRepository.getUserInfoById(userId);
+  ): Promise<UserInfoOutputModel> {
+    const result = await this.usersQueryRepository.getUserInfoByIdView(userId);
 
     if (result) return result;
     throw new NotFoundException('User is not found');
@@ -72,10 +72,11 @@ export class AuthController {
   @Post('login')
   async loginUser(
     @CurrentUserId() userId: string,
-    @Res({ passthrough: true }) res: Response<ViewTokenModel>,
     @Ip() ip: string,
     @TitleOfDevice() title: string,
+    @Res({ passthrough: true }) res: Response<LoginOutputModel>,
   ) {
+    //todo как пордтянуть типизацицю
     const result = await this.commandBus.execute(new LoginUserCommand(userId));
 
     if (result) {
@@ -156,7 +157,7 @@ export class AuthController {
   async newRefreshToken(
     @CurrentUserId() userId: string,
     @RefreshToken() refreshToken: string,
-    @Res() res: Response<ViewTokenModel | string>,
+    @Res() res: Response<LoginOutputModel | string>,
   ) {
     const tokens = await this.jwtService.changeTokensByRefreshToken(
       userId,

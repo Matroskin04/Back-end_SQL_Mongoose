@@ -12,11 +12,11 @@ export class ValidateEmailRegistrationGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const userInfoByLogin =
-      await this.usersQueryRepository.getUserBanInfoByLoginOrEmail(
+    const doesExistByLogin =
+      await this.usersQueryRepository.doesUserExistByIdLoginEmail(
         request.body.login,
       );
-    if (userInfoByLogin) {
+    if (doesExistByLogin) {
       throw new BadRequestException([
         {
           message: `This ${request.body.login} is already exists, point out another`,
@@ -24,12 +24,12 @@ export class ValidateEmailRegistrationGuard implements CanActivate {
         },
       ]);
     }
-    //todo создавать отдельный метод без banInfo (есть еще с pass/email), лишний join
-    const userInfoByEmail =
-      await this.usersQueryRepository.getUserBanInfoByLoginOrEmail(
+
+    const doesExistByEmail =
+      await this.usersQueryRepository.doesUserExistByIdLoginEmail(
         request.body.email,
       );
-    if (userInfoByEmail) {
+    if (doesExistByEmail) {
       throw new BadRequestException([
         {
           message: `This ${request.body.email} is already exists, point out another`,

@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { UserDBTypeMongo } from '../../../users/domain/users.db.types';
 
-export type ARTokensAndUserIdType = {
+export type TokensAndUserIdType = {
   accessToken: string;
   refreshToken: string;
   userId: string;

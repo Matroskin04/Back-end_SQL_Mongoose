@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ARTokensAndUserIdType } from '../dto/auth.dto.service';
-import { ObjectId } from 'mongodb';
+import { TokensAndUserIdType } from '../dto/auth.dto.service';
 import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
 import { JwtService } from '../../../jwt/jwt.service';
 
@@ -16,11 +15,13 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
   ) {}
   async execute(
     command: LoginUserCommand,
-  ): Promise<ARTokensAndUserIdType | null> {
+  ): Promise<TokensAndUserIdType | null> {
     const { userId } = command;
-    const user = await this.usersQueryRepository.getUserInfoById(userId);
+    const user = await this.usersQueryRepository.doesUserExistByIdLoginEmail(
+      userId,
+    );
     if (!user) {
-      //Если user не существует, значит payload неверный
+      //If user doesn't exist - then payload is incorrect
       return null;
     }
 

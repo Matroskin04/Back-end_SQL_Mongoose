@@ -24,23 +24,17 @@ export class DevicesService {
     return result[1] > 0;
   }
 
-  //MONGO
   async createNewDevice(
     ip: string,
     title: string,
-    userId: ObjectId,
+    userId: string,
     refreshToken: string,
   ): Promise<void> {
     const payloadToken = this.jwtService.getPayloadToken(refreshToken);
     if (!payloadToken) {
       throw new UnauthorizedException();
     }
-    await this.deviceRepository.createDevice(
-      ip,
-      title,
-      payloadToken,
-      userId.toString(),
-    );
+    await this.deviceRepository.createDevice(ip, title, payloadToken, userId);
 
     return;
   }

@@ -7,13 +7,11 @@ import { AuthService } from '../../features/auth/application/auth.service';
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({
-      usernameField: 'loginOrEmail', //переименовываю поле, с которого парсится юзернейм
+      usernameField: 'loginOrEmail', //rename field with username
     });
   }
 
   async validate(loginOrEmail: string, password: string): Promise<any> {
-    //todo Оставить только SQL потом
-
     const user = await this.authService.validateUser(loginOrEmail, password);
     if (!user) {
       throw new UnauthorizedException();

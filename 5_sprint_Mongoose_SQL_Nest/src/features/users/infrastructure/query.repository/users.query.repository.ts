@@ -10,7 +10,7 @@ import {
 import { QueryUsersBloggerInputModel } from '../../api/blogger/models/input/query-users-blogger.input.model';
 import {
   BannedUsersOfBlogPaginationType,
-  UsersInfoPublicType,
+  UsersInfoViewType,
   UsersPaginationType,
 } from './users.types.query.repository';
 
@@ -19,7 +19,7 @@ export class UsersQueryRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   //view methods
-  async getUserInfoById(userId: string): Promise<null | UsersInfoPublicType> {
+  async getUserInfoByIdView(userId: string): Promise<null | UsersInfoViewType> {
     const result = await this.dataSource.query(
       `
     SELECT "email", "login", "id" AS "userId"
@@ -116,6 +116,18 @@ export class UsersQueryRepository {
   }
 
   //addition methods
+  async doesUserExistByIdLoginEmail(identifier: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    SELECT COUNT(*)
+        FROM public."users"
+        WHERE "id" = $1 OR "login" = $1 OR "email" = $1
+    `,
+      [identifier],
+    );
+    return +result[0].count === 1;
+  }
+
   async getUserByRecoveryCode(recoveryCode: string): Promise<any> {
     //todo тип
     const result = await this.dataSource.query(

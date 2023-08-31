@@ -20,7 +20,7 @@ export class IsUserBannedByLoginOrEmailGuard implements CanActivate {
       request.body.loginOrEmail,
     );
     if (!user) throw new UnauthorizedException('User is not found');
-    if (user.isBanned) throw new UnauthorizedException('User is banned'); //Если забанен - то Unauthorized
+    if (user.isBanned) throw new UnauthorizedException('User is banned'); //If user is banned - then Unauthorized
 
     return true;
   }
