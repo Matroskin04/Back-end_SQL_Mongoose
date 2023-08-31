@@ -16,7 +16,7 @@ export class BlogsSAService {
   ) {}
 
   async bindBlogWithUser(blogId: string, userId: string): Promise<boolean> {
-    const user = await this.usersQueryRepository.getUserLoginByUserId(userId);
+    const user = await this.usersQueryRepository.getUserLoginById(userId);
     if (!user) {
       return false;
     }

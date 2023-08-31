@@ -21,9 +21,7 @@ export class UsersBloggerService {
     userId: string,
     banInfo: BanInfoBloggerType,
   ): Promise<void> {
-    const userLogin = await this.usersQueryRepository.getUserLoginByUserId(
-      userId,
-    );
+    const userLogin = await this.usersQueryRepository.getUserLoginById(userId);
     if (!userLogin) throw new NotFoundException('User login is not found');
 
     if (banInfo.isBanned) {

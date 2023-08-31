@@ -22,15 +22,8 @@ import {
   RegistrationAuthInputModel,
 } from './models/input/registration-auth.input.model';
 import { LocalAuthGuard } from '../../../infrastructure/guards/authorization-guards/local-auth.guard';
-import {
-  CurrentUserId,
-  CurrentUserIdMongo,
-} from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
-import { ObjectId } from 'mongodb';
-import {
-  JwtAccessGuard,
-  JwtAccessGuardMongo,
-} from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { ValidateConfirmationCodeGuard } from '../../../infrastructure/guards/validation-guards/validate-confirmation-code.guard';
 import { ValidateEmailResendingGuard } from '../../../infrastructure/guards/validation-guards/validate-email-resending.guard';
 import {
@@ -41,10 +34,7 @@ import { ValidateEmailRegistrationGuard } from '../../../infrastructure/guards/v
 import { SkipThrottle } from '@nestjs/throttler';
 import { DevicesService } from '../../devices/application/devices.service';
 import { TitleOfDevice } from '../../../infrastructure/decorators/auth/title-of-device.param.decorator';
-import {
-  JwtRefreshGuard,
-  JwtRefreshGuardMongo,
-} from '../../../infrastructure/guards/authorization-guards/jwt-refresh.guard';
+import { JwtRefreshGuard } from '../../../infrastructure/guards/authorization-guards/jwt-refresh.guard';
 import { RefreshToken } from '../../../infrastructure/decorators/auth/refresh-token-param.decorator';
 import { JwtService } from '../../jwt/jwt.service';
 import { IsUserBannedByLoginOrEmailGuard } from '../../../infrastructure/guards/is-user-banned.guard';

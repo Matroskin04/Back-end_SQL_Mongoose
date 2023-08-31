@@ -76,9 +76,7 @@ export class CommentsService {
   ): Promise<null | CommentViewType> {
     //todo нужно ли проверять, нужно ли прикрепляться к userId, postId
 
-    const userLogin = await this.usersQueryRepository.getUserLoginByUserId(
-      userId,
-    );
+    const userLogin = await this.usersQueryRepository.getUserLoginById(userId);
     if (!userLogin) {
       return null;
     }

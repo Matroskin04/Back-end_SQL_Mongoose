@@ -21,19 +21,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
-import {
-  JwtAccessGuard,
-  JwtAccessGuardMongo,
-} from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import { JwtAccessGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
 import { PostsService } from '../../../posts/application/posts.service';
 import { BlogsBloggerService } from '../../application/blogger/blogs-blogger.service';
-import {
-  CurrentUserId,
-  CurrentUserIdMongo,
-} from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
-import { ObjectId } from 'mongodb';
+import { CurrentUserId } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { CreatePostByBlogIdModel } from '../../../posts/api/models/input/create-post.input.model';
 import { PostTypeWithId } from '../../../posts/infrastructure/repository/posts.types.repositories';
 import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';

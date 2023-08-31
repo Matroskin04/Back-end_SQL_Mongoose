@@ -15,10 +15,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { JwtRefreshGuard } from '../../../infrastructure/guards/authorization-guards/jwt-refresh.guard';
 import { RefreshToken } from '../../../infrastructure/decorators/auth/refresh-token-param.decorator';
 import { Response } from 'express';
-import {
-  CurrentUserId,
-  CurrentUserIdMongo,
-} from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { ObjectId } from 'mongodb';
 import { CommandBus } from '@nestjs/cqrs';
 import { DeleteDevicesExcludeCurrentCommand } from '../application/use-cases/delete-devices-exclude-current.use-case';

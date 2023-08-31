@@ -31,10 +31,7 @@ import { EmailAdapter } from './infrastructure/adapters/email.adapter';
 import { AuthController } from './features/auth/api/auth.controller';
 import { JwtRefreshStrategy } from './infrastructure/strategy/jwt-refresh.strategy';
 import { JwtModule } from '@nestjs/jwt';
-import {
-  JwtAccessStrategy,
-  JwtAccessStrategyMongo,
-} from './infrastructure/strategy/jwt-access.strategy';
+import { JwtAccessStrategy } from './infrastructure/strategy/jwt-access.strategy';
 import { BasicStrategy } from './infrastructure/strategy/basic.strategy';
 import {
   CommentLikesInfo,
@@ -83,7 +80,6 @@ import { UpdateBanInfoOfUserUseCase } from './features/users/application/sa/use-
 import { DeleteDevicesExcludeCurrentUseCase } from './features/devices/application/use-cases/delete-devices-exclude-current.use-case';
 import { DeleteDeviceByIdUseCase } from './features/devices/application/use-cases/delete-device-by-id.use-case';
 import { UsersQueryRepository } from './features/users/infrastructure/query.repository/users.query.repository';
-import { User, UserSchema } from './features/users/domain/users.entity';
 import {
   BannedUsersByBlogger,
   BannedUsersByBloggerSchema,
@@ -163,7 +159,6 @@ const handlers = [
     }),
     MongooseModule.forRoot(process.env.MONGO_URL!),
     MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
       { name: Post.name, schema: PostSchema },
       { name: BannedUsersByBlogger.name, schema: BannedUsersByBloggerSchema },
       { name: LikesInfo.name, schema: LikesInfoSchema },
@@ -195,7 +190,6 @@ const handlers = [
     LocalStrategy,
     JwtRefreshStrategy,
     JwtAccessStrategy,
-    JwtAccessStrategyMongo,
     BasicStrategy,
     IsUserBannedByJWTStrategy,
 

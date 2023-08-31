@@ -1,11 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import add from 'date-fns/add';
 import { v4 as uuidv4 } from 'uuid';
 import { CryptoAdapter } from '../../../../infrastructure/adapters/crypto.adapter';
 import { EmailManager } from '../../../../infrastructure/managers/email-manager';
-import { InjectModel } from '@nestjs/mongoose';
-import { User } from '../../../users/domain/users.entity';
-import { UserModelType } from '../../../users/domain/users.db.types';
 import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/subrepository/email-confirmation.public.repository';
 import { PasswordRecoveryPublicRepository } from '../../../users/infrastructure/subrepository/password-recovery.public.repository';
 import { BanInfoPublicRepository } from '../../../users/infrastructure/subrepository/ban-info.public.repository';
@@ -24,8 +20,6 @@ export class RegisterUserUseCase
   implements ICommandHandler<RegisterUserCommand>
 {
   constructor(
-    @InjectModel(User.name)
-    private UserModel: UserModelType,
     protected cryptoAdapter: CryptoAdapter,
     protected emailManager: EmailManager,
     protected usersRepository: UsersRepository,

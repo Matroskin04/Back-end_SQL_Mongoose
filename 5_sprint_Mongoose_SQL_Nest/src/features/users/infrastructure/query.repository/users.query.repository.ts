@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { QueryUsersSAInputModel } from '../../api/sa/models/input/query-users-sa.input.model';
-import { UsersPaginationType } from './users-sa.types.query.repository';
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
-import { InjectModel } from '@nestjs/mongoose';
-import { UserDBTypeMongo, UserModelType } from '../../domain/users.db.types';
-import { ObjectId } from 'mongodb';
-import { User } from '../../domain/users.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import {
@@ -13,19 +8,17 @@ import {
   modifyUserIntoViewModel,
 } from '../helpers/modify-user-into-view-model.helper';
 import { QueryUsersBloggerInputModel } from '../../api/blogger/models/input/query-users-blogger.input.model';
-import { BannedUsersOfBlogPaginationType } from './users-blogger.types.query.repository';
-import { UsersInfoPublicType } from './users-public.types.query.repository';
+import {
+  BannedUsersOfBlogPaginationType,
+  UsersInfoPublicType,
+  UsersPaginationType,
+} from './users.types.query.repository';
 
 @Injectable()
 export class UsersQueryRepository {
-  constructor(
-    @InjectDataSource() protected dataSource: DataSource,
-    @InjectModel(User.name)
-    private UserModel: UserModelType,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  //SQL
-
+  //view methods
   async getUserInfoById(userId: string): Promise<null | UsersInfoPublicType> {
     const result = await this.dataSource.query(
       `
@@ -36,67 +29,6 @@ export class UsersQueryRepository {
       [userId],
     );
     return result[0];
-  }
-
-  async getUserByRecoveryCode(recoveryCode: string): Promise<any> {
-    //todo тип
-    const result = await this.dataSource.query(
-      `
-    SELECT u."id", pc."expirationDate", pc."confirmationCode"
-      FROM public."users" AS u
-      JOIN public."users_password_recovery" AS pc
-        ON u."id" = pc."userId"
-        WHERE "confirmationCode" = $1`,
-      [recoveryCode],
-    );
-    if (!result[0]) return null;
-    return result[0];
-  }
-
-  async getUserBanInfoByLoginOrEmail(logOrEmail: string): Promise<any | null> {
-    //todo тип
-    const userInfo = await this.dataSource.query(
-      `
-    SELECT u."id", u."login", u."email", bi."isBanned" 
-      FROM public."users" as u
-        JOIN public."users_ban_info" as bi
-        ON u."id" = bi."userId"
-      WHERE u."login" = $1 OR u."email" = $1`,
-      [logOrEmail],
-    );
-    if (userInfo.length === 0) return null;
-    return userInfo[0];
-  }
-
-  async getUserPassEmailInfoByLoginOrEmail(
-    logOrEmail: string,
-  ): Promise<any | null> {
-    //todo тип
-    const userInfo = await this.dataSource.query(
-      `
-    SELECT u."id", u."login", u."email", u."passwordHash", ec."isConfirmed" 
-      FROM public."users" AS u
-      JOIN public."users_email_confirmation" AS ec 
-      ON u."id" = ec."userId"
-      WHERE u."login" = $1 OR u."email" = $1`,
-      [logOrEmail],
-    );
-    if (userInfo.length === 0) return null;
-    return userInfo[0];
-  }
-
-  async getUserWithBanInfoById(userId: string): Promise<any> {
-    const userInfo = await this.dataSource.query(
-      `
-    SELECT u."id", u."login", u."email", u."createdAt", bi."isBanned", bi."banReason", bi."banDate"
-      FROM public."users" as u
-        JOIN public."users_ban_info" as bi
-        ON u."id" = bi."userId"
-      WHERE u."id" = $1 AND u."isDeleted" = false`,
-      [userId],
-    );
-    if (userInfo.length === 0) return null;
-    return userInfo[0];
   }
 
   async getAllUsers(
@@ -183,7 +115,69 @@ export class UsersQueryRepository {
     };
   }
 
-  async getUserLoginByUserId(userId: string): Promise<string | null> {
+  //addition methods
+  async getUserByRecoveryCode(recoveryCode: string): Promise<any> {
+    //todo тип
+    const result = await this.dataSource.query(
+      `
+    SELECT u."id", pc."expirationDate", pc."confirmationCode"
+      FROM public."users" AS u
+      JOIN public."users_password_recovery" AS pc
+        ON u."id" = pc."userId"
+        WHERE "confirmationCode" = $1`,
+      [recoveryCode],
+    );
+    if (!result[0]) return null;
+    return result[0];
+  }
+
+  async getUserBanInfoByLoginOrEmail(logOrEmail: string): Promise<any | null> {
+    //todo тип
+    const userInfo = await this.dataSource.query(
+      `
+    SELECT u."id", u."login", u."email", bi."isBanned" 
+      FROM public."users" as u
+        JOIN public."users_ban_info" as bi
+        ON u."id" = bi."userId"
+      WHERE u."login" = $1 OR u."email" = $1`,
+      [logOrEmail],
+    );
+    if (userInfo.length === 0) return null;
+    return userInfo[0];
+  }
+
+  async getUserWithBanInfoById(userId: string): Promise<any> {
+    const userInfo = await this.dataSource.query(
+      `
+    SELECT u."id", u."login", u."email", u."createdAt", bi."isBanned", bi."banReason", bi."banDate"
+      FROM public."users" as u
+        JOIN public."users_ban_info" as bi
+        ON u."id" = bi."userId"
+      WHERE u."id" = $1 AND u."isDeleted" = false`,
+      [userId],
+    );
+    if (userInfo.length === 0) return null;
+    return userInfo[0];
+  }
+
+  async getUserPassEmailInfoByLoginOrEmail(
+    logOrEmail: string,
+  ): Promise<any | null> {
+    //todo тип
+    const userInfo = await this.dataSource.query(
+      `
+    SELECT u."id", u."login", u."email", u."passwordHash", ec."isConfirmed" 
+      FROM public."users" AS u
+      JOIN public."users_email_confirmation" AS ec 
+      ON u."id" = ec."userId"
+      WHERE u."login" = $1 OR u."email" = $1`,
+      [logOrEmail],
+    );
+    if (userInfo.length === 0) return null;
+    return userInfo[0];
+  }
+
+  async getUserLoginById(userId: string): Promise<string | null> {
     const result = await this.dataSource.query(
       `
     SELECT "login"
@@ -203,15 +197,5 @@ export class UsersQueryRepository {
       [confirmationCode],
     );
     return result[0].userId;
-  }
-
-  //MONGO
-  async getUserByUserIdMongo(
-    userId: ObjectId,
-  ): Promise<UserDBTypeMongo | null> {
-    // todo отдельный логин
-
-    const user = await this.UserModel.findOne({ _id: userId });
-    return user;
   }
 }

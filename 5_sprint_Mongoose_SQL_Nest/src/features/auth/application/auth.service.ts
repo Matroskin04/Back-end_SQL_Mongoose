@@ -1,17 +1,10 @@
 import * as bcrypt from 'bcryptjs';
 import { UsersQueryRepository } from '../../users/infrastructure/query.repository/users.query.repository';
-import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
-import { User } from '../../users/domain/users.entity';
-import { UserModelType } from '../../users/domain/users.db.types';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectModel(User.name)
-    private UserModel: UserModelType,
-    protected usersQueryRepository: UsersQueryRepository,
-  ) {}
+  constructor(protected usersQueryRepository: UsersQueryRepository) {}
 
   //SQL
   async validateUser(

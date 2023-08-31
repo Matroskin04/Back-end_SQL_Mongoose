@@ -25,27 +25,3 @@ export class JwtAccessStrategy extends PassportStrategy(
     return { id: payload.userId };
   }
 }
-
-@Injectable()
-export class JwtAccessStrategyMongo extends PassportStrategy(
-  Strategy,
-  'jwt-access-mongo',
-) {
-  constructor(protected usersQueryRepository: UsersQueryRepository) {
-    super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: process.env.PRIVATE_KEY_ACCESS_TOKEN,
-    });
-  }
-
-  async validate(payload: any) {
-    const user = await this.usersQueryRepository.getUserByUserIdMongo(
-      payload.userId,
-    ); //todo оставить потом только SQL
-
-    if (!user) throw new UnauthorizedException();
-
-    return { id: payload.userId };
-  }
-}

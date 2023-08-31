@@ -13,26 +13,14 @@ import {
 import { CommentOutputModel } from './models/output/comment.output.model';
 import { CommentsQueryRepository } from '../infrastructure/query.repository/comments.query.repository';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
-import { Response } from 'express';
 import { CommentsService } from '../application/comments.service';
-import {
-  JwtAccessGuard,
-  JwtAccessGuardMongo,
-} from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
-import {
-  CurrentUserId,
-  CurrentUserIdMongo,
-} from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
-import { ObjectId } from 'mongodb';
+import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { UpdateCommentInputModel } from './models/input/update-comment.input.model';
 import { UpdateCommentLikeStatusInputModel } from './models/input/update-comment-like-status.input.model';
 import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
-import { IsUserBannedForBlogGuard } from '../../../infrastructure/guards/blogs-comments-posts-guards/is-user-banned-for-blog.guard';
-import {
-  IsUserBannedByJWTGuard,
-  IsUserBannedByLoginOrEmailGuard,
-} from '../../../infrastructure/guards/is-user-banned.guard';
+import { IsUserBannedByJWTGuard } from '../../../infrastructure/guards/is-user-banned.guard';
 
 @SkipThrottle()
 @Controller('/hometask-nest/comments')

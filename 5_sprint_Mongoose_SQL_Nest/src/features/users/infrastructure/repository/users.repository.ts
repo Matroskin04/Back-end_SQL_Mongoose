@@ -1,18 +1,11 @@
 import { ObjectId } from 'mongodb';
-import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
-import { User } from '../../domain/users.entity';
-import { UserModelType } from '../../domain/users.db.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable() //todo для чего этот декоратор
 export class UsersRepository {
-  constructor(
-    @InjectDataSource() protected dataSource: DataSource,
-    @InjectModel(User.name)
-    private UserModel: UserModelType,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   //SQL
   async createUser(

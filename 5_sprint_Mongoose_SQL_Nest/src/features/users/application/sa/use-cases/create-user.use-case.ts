@@ -1,5 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UserViewType } from '../../../infrastructure/query.repository/users-sa.types.query.repository';
 import { BadRequestException } from '@nestjs/common';
 import { createBodyErrorBadRequest } from '../../../../../infrastructure/utils/functions/create-error-bad-request.function';
 import { UserInfoType } from '../dto/user-info.dto';
@@ -10,6 +9,7 @@ import { UsersQueryRepository } from '../../../infrastructure/query.repository/u
 import { EmailConfirmationPublicRepository } from '../../../infrastructure/subrepository/email-confirmation.public.repository';
 import { PasswordRecoveryPublicRepository } from '../../../infrastructure/subrepository/password-recovery.public.repository';
 import { BanInfoPublicRepository } from '../../../infrastructure/subrepository/ban-info.public.repository';
+import { UserViewType } from '../../../infrastructure/query.repository/users.types.query.repository';
 
 export class CreateUserCommand {
   constructor(public inputUserDTO: UserInfoType) {}

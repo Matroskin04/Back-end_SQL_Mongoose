@@ -15,7 +15,7 @@ export class BlogsBloggerService {
     blogDTO: BodyBlogType,
     userId: string,
   ): Promise<BlogViewType> {
-    const user = await this.usersQueryRepository.getUserLoginByUserId(userId);
+    const user = await this.usersQueryRepository.getUserLoginById(userId);
     if (!user) throw new Error('User is not found');
 
     const result = await this.blogsRepository.createBlog(blogDTO, userId);
