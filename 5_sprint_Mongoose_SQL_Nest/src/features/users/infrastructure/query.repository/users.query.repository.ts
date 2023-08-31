@@ -58,8 +58,8 @@ export class UsersQueryRepository {
     const userInfo = await this.dataSource.query(
       `
     SELECT u."id", u."login", u."email", bi."isBanned" 
-      FROM public."users" AS u
-        JOIN public."users_ban_info" AS bi
+      FROM public."users" as u
+        JOIN public."users_ban_info" as bi
         ON u."id" = bi."userId"
       WHERE u."login" = $1 OR u."email" = $1`,
       [logOrEmail],
@@ -89,8 +89,8 @@ export class UsersQueryRepository {
     const userInfo = await this.dataSource.query(
       `
     SELECT u."id", u."login", u."email", u."createdAt", bi."isBanned", bi."banReason", bi."banDate"
-      FROM public."users" AS u
-        JOIN public."users_ban_info" AS bi
+      FROM public."users" as u
+        JOIN public."users_ban_info" as bi
         ON u."id" = bi."userId"
       WHERE u."id" = $1 AND u."isDeleted" = false`,
       [userId],

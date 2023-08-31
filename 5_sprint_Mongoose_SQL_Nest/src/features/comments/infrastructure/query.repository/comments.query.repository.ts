@@ -55,11 +55,11 @@ export class CommentsQueryRepository {
         
       (SELECT COUNT(*) as "likesCount"
         FROM public."comments_likes_info"
-            WHERE "likeStatus" = $2 AND "commentId" = c."id"),
+            WHERE "likeStatus" = $2 AND "commentId" = c."id" AND bi."isBanned" = false),
             
       (SELECT COUNT(*) as "dislikesCount"
         FROM public."comments_likes_info"
-            WHERE "likeStatus" = $3 AND "commentId" = c."id"),
+            WHERE "likeStatus" = $3 AND "commentId" = c."id" AND bi."isBanned" = false),
             
       (SELECT "likeStatus" as "myStatus"
         FROM public."comments_likes_info"
@@ -67,8 +67,10 @@ export class CommentsQueryRepository {
             
     FROM public."comments" as c
         JOIN public."users" as u
-        ON u."id" = c."userId"
-    WHERE c."postId" = $1
+            ON u."id" = c."userId"
+        JOIN public."users_ban_info" as bi
+            ON u."id" = bi."userId"
+    WHERE c."postId" = $1 AND bi."isBanned" = false
         ORDER BY "${sortBy}" ${sortDirection}
         LIMIT $5 OFFSET $6`,
       [
@@ -100,11 +102,11 @@ export class CommentsQueryRepository {
         
       (SELECT COUNT(*) as "likesCount"
         FROM public."comments_likes_info"
-            WHERE "likeStatus" = $1 AND "commentId" = c."id"),
+            WHERE "likeStatus" = $1 AND "commentId" = c."id" AND bi."isBanned" = false),
             
       (SELECT COUNT(*) as "dislikesCount"
         FROM public."comments_likes_info"
-            WHERE "likeStatus" = $2 AND "commentId" = c."id"),
+            WHERE "likeStatus" = $2 AND "commentId" = c."id" AND bi."isBanned" = false),
             
       (SELECT "likeStatus" as "myStatus"
         FROM public."comments_likes_info"
@@ -113,8 +115,10 @@ export class CommentsQueryRepository {
             
     FROM public."comments" as c
         JOIN public."users" as u
-        ON u."id" = c."userId"
-    WHERE c."id" = $4`,
+            ON u."id" = c."userId"
+        JOIN public."users_ban_info" as bi
+            ON u."id" = bi."userId"
+    WHERE c."id" = $4 AND bi."isBanned" = false`,
       [AllLikeStatusEnum.Like, AllLikeStatusEnum.Dislike, userId, commentId],
     );
 
@@ -151,11 +155,11 @@ export class CommentsQueryRepository {
         
       (SELECT COUNT(*) as "likesCount"
         FROM public."comments_likes_info"
-            WHERE "likeStatus" = $2 AND "commentId" = c."id"),
+            WHERE "likeStatus" = $2 AND "commentId" = c."id" AND bi."isBanned" = false),
             
       (SELECT COUNT(*) as "dislikesCount"
         FROM public."comments_likes_info"
-            WHERE "likeStatus" = $3 AND "commentId" = c."id"),
+            WHERE "likeStatus" = $3 AND "commentId" = c."id" AND bi."isBanned" = false),
             
       (SELECT "likeStatus" as "myStatus"
         FROM public."comments_likes_info"
@@ -168,7 +172,9 @@ export class CommentsQueryRepository {
             ON p."id" = c."postId"
         JOIN public."blogs" as b
             ON b."id" = p."blogId"
-    WHERE c."userId" = $1
+        JOIN public."users_ban_info" as bi
+            ON u."id" = bi."userId"
+    WHERE c."userId" = $1 AND bi."isBanned" = false
         ORDER BY "${sortBy}" ${sortDirection}
         LIMIT $4 OFFSET $5`,
       [
