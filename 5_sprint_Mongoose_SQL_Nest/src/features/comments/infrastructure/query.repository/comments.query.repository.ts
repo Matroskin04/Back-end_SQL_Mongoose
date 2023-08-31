@@ -56,19 +56,19 @@ export class CommentsQueryRepository {
       (SELECT COUNT(*) as "likesCount"
         FROM public."comments_likes_info" as li
             JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi."userId"
+            ON li."userId" = bi2."userId"
         WHERE li."likeStatus" = $2 AND li."commentId" = c."id" AND bi2."isBanned" = false),
             
       (SELECT COUNT(*) as "dislikesCount"
         FROM public."comments_likes_info" as li
             JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi."userId"
+            ON li."userId" = bi2."userId"
         WHERE li."likeStatus" = $3 AND li."commentId" = c."id" AND bi2."isBanned" = false),
             
       (SELECT "likeStatus" as "myStatus"
         FROM public."comments_likes_info" as li
             JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi."userId"
+            ON li."userId" = bi2."userId"
         WHERE li."userId" = $4 AND li."commentId" = c."id" AND bi2."isBanned" = false)
             
     FROM public."comments" as c
@@ -109,24 +109,26 @@ export class CommentsQueryRepository {
       (SELECT COUNT(*) as "likesCount"
         FROM public."comments_likes_info" as li
             JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi."userId"
+            ON li."userId" = bi2."userId"
         WHERE li."likeStatus" = $1 AND li."commentId" = c."id" AND bi2."isBanned" = false),
             
       (SELECT COUNT(*) as "dislikesCount"
         FROM public."comments_likes_info" as li
             JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi."userId"
+            ON li."userId" = bi2."userId"
         WHERE li."likeStatus" = $2 AND li."commentId" = c."id" AND bi2."isBanned" = false),
             
       (SELECT "likeStatus" as "myStatus"
         FROM public."comments_likes_info" as li
             JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi."userId"
+            ON li."userId" = bi2."userId"
         WHERE li."userId" = $3 AND li."commentId" = c."id" AND bi2."isBanned" = false)
             
     FROM public."comments" as c
         JOIN public."users" as u
-        ON u."id" = c."userId"
+            ON u."id" = c."userId"
+        JOIN public."users_ban_info" as bi
+            ON u."id" = bi."userId"
     WHERE c."id" = $4 AND bi."isBanned" = false`,
       [AllLikeStatusEnum.Like, AllLikeStatusEnum.Dislike, userId, commentId],
     );
@@ -165,19 +167,19 @@ export class CommentsQueryRepository {
       (SELECT COUNT(*) as "likesCount"
         FROM public."comments_likes_info" as li
             JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi."userId"
+            ON li."userId" = bi2."userId"
         WHERE li."likeStatus" = $2 AND li."commentId" = c."id" AND bi2."isBanned" = false),
             
       (SELECT COUNT(*) as "dislikesCount"
         FROM public."comments_likes_info" as li
             JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi."userId"
+            ON li."userId" = bi2."userId"
         WHERE li."likeStatus" = $3 AND li."commentId" = c."id" AND bi2."isBanned" = false),
             
       (SELECT "likeStatus" as "myStatus"
         FROM public."comments_likes_info" as li
             JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi."userId"
+            ON li."userId" = bi2."userId"
         WHERE li."userId" = $1 AND li."commentId" = c."id" AND bi2."isBanned" = false)
             
     FROM public."comments" as c
