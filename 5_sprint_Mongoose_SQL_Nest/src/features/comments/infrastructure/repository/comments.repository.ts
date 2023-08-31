@@ -30,7 +30,7 @@ export class CommentsRepository {
     INSERT INTO public."comments"(
         "content", "userId", "postId")
         VALUES ($1, $2, $3)
-    RETURNING "id", "content", "userId", "postId"`,
+    RETURNING "id", "content", "userId", "postId", "createdAt"`,
       [content, userId, postId],
     );
     return result[0];

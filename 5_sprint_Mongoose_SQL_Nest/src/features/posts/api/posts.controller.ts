@@ -32,6 +32,7 @@ import { CommentsService } from '../../comments/application/comments.service';
 import { UpdatePostLikeStatusModel } from './models/input/update-like-status.input.model';
 import { SkipThrottle } from '@nestjs/throttler';
 import { IsUserBannedByJWTGuard } from '../../../infrastructure/guards/is-user-banned.guard';
+import { IsUserBannedForBlogGuard } from '../../../infrastructure/guards/blogs-comments-posts-guards/is-user-banned-for-blog.guard';
 
 @SkipThrottle()
 @Controller('/hometask-nest/posts')
@@ -84,7 +85,7 @@ export class PostsController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuard, IsUserBannedByJWTGuard)
+  @UseGuards(JwtAccessGuard, IsUserBannedByJWTGuard, IsUserBannedForBlogGuard)
   @Post(':postId/comments')
   async createCommentByPostId(
     @Param('postId') postId: string,
