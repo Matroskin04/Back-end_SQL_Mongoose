@@ -12,39 +12,19 @@ import { PostsQueryRepository } from '../../../../features/posts/infrastructure/
 import { NotFoundException } from '@nestjs/common';
 import { AllLikeStatusEnum, AllLikeStatusType } from '../../enums/like-status';
 
-export function modifyCommentMongo(
-  comment: any,
-  myStatus: StatusOfLike,
-): CommentViewType {
-  return {
-    id: comment._id,
-    content: comment.content,
-    commentatorInfo: {
-      userId: comment.commentatorInfo.userId,
-      userLogin: comment.commentatorInfo.userLogin,
-    },
-    //  createdAt: comment.createdAt,
-    likesInfo: {
-      likesCount: comment.likesInfo.likesCount,
-      dislikesCount: comment.likesInfo.dislikesCount,
-      myStatus,
-    },
-  };
-}
-
 export function modifyCommentIntoInitialViewModel(
-  comment: CommentDBType,
+  commentInfo: CommentDBType,
   userLogin: string,
   myStatus: StatusOfLike,
 ): CommentViewType {
   return {
-    id: comment.id,
-    content: comment.content,
+    id: commentInfo.id,
+    content: commentInfo.content,
     commentatorInfo: {
-      userId: comment.userId,
+      userId: commentInfo.userId,
       userLogin,
     },
-    // createdAt: comment.createdAt,
+    createdAt: new Date(commentInfo.createdAt).toISOString(),
     likesInfo: {
       likesCount: 0,
       dislikesCount: 0,
@@ -63,7 +43,7 @@ export function modifyCommentIntoViewModel(
       userId: commentInfo.userId,
       userLogin: commentInfo.userLogin,
     },
-    // createdAt: commentInfo.createdAt,
+    createdAt: new Date(commentInfo.createdAt).toISOString(),
     likesInfo: {
       likesCount: +commentInfo.likesCount,
       dislikesCount: +commentInfo.dislikesCount,
@@ -95,7 +75,7 @@ export function modifyCommentsOfBlogger(
       userId: allInfo.userId,
       userLogin: allInfo.userLogin,
     },
-    createdAt: allInfo.createdAt,
+    createdAt: new Date(allInfo.createdAt).toISOString(),
     likesInfo: {
       likesCount: +allInfo.likesCount,
       dislikesCount: +allInfo.dislikesCount,

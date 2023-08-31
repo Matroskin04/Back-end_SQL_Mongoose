@@ -10,28 +10,6 @@ import { LikesInfoQueryRepository } from '../../../../features/likes-info/infras
 import { reformNewestLikes } from './likes-info.functions.helpers';
 import { AllLikeStatusEnum, AllLikeStatusType } from '../../enums/like-status';
 
-export function modifyPostIntoViewModelMongo(
-  post: PostDBTypeMongo,
-  newestLikes: NewestLikesType,
-  myStatus: 'None' | 'Like' | 'Dislike',
-): PostViewType {
-  return {
-    id: post._id.toString(),
-    title: post.title,
-    shortDescription: post.shortDescription,
-    content: post.content,
-    blogId: post.blogId,
-    blogName: post.blogName,
-    createdAt: post.createdAt,
-    extendedLikesInfo: {
-      likesCount: post.likesInfo.likesCount,
-      dislikesCount: post.likesInfo.dislikesCount,
-      myStatus,
-      newestLikes,
-    },
-  };
-}
-
 export function modifyPostIntoInitialViewModel(
   post: PostDBType,
   blogName: string,
@@ -69,7 +47,7 @@ export function modifyPostIntoViewModel(postInfo: PostRawType): PostViewType {
       dislikesCount: +postInfo.dislikesCount,
       myStatus:
         (AllLikeStatusEnum[postInfo.myStatus] as AllLikeStatusType) ?? 'None',
-      newestLikes: postInfo.newestLikes,
+      newestLikes: postInfo.newestLikes ?? [],
     },
   };
 }

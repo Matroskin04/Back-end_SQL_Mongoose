@@ -9,10 +9,7 @@ import {
 import { ObjectId } from 'mongodb';
 import { QueryPostInputModel } from '../../api/models/input/query-post.input.model';
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
-import {
-  modifyPostIntoViewModel,
-  modifyPostIntoViewModelMongo,
-} from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
+import { modifyPostIntoViewModel } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { StatusOfLike } from '../../../comments/infrastructure/query.repository/comments.types.query.repository';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -70,6 +67,7 @@ export class PostsQueryRepository {
         FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
             JOIN public."users" as u
             ON u."id" = li."userId"
+        WHERE li."postId" = p."id"
         GROUP BY u."login", li."addedAt", li."userId"
              ORDER BY "addedAt" DESC
              LIMIT 3) as "threeLikes" )
@@ -131,6 +129,7 @@ export class PostsQueryRepository {
         FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
             JOIN public."users" as u
             ON u."id" = li."userId"
+        WHERE li."postId" = p."id"
         GROUP BY u."login", li."addedAt", li."userId"
              ORDER BY "addedAt" DESC
              LIMIT 3) as "threeLikes" )
@@ -197,6 +196,7 @@ export class PostsQueryRepository {
         FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
             JOIN public."users" as u
             ON u."id" = li."userId"
+        WHERE li."postId" = p."id"
         GROUP BY u."login", li."addedAt", li."userId"
              ORDER BY "addedAt" DESC
              LIMIT 3) as "threeLikes" )
@@ -223,75 +223,5 @@ export class PostsQueryRepository {
     );
     if (!result[0]) return null;
     return result[0];
-  }
-
-  //MONGO
-  async getPostByIdMongo(
-    postId: ObjectId,
-    userId: ObjectId | null,
-  ): Promise<null | PostViewType> {
-    const post = await this.PostModel.findOne({ _id: postId });
-    if (!post) {
-      return null;
-    }
-
-    const allBannedBlogsId: any = [];
-    //await this.blogsPublicQueryRepository.getAllBannedBlogsId();
-    if (
-      //if this post belongs to a blog, return null
-      allBannedBlogsId &&
-      allBannedBlogsId.findIndex((e) => e._id.toString() === post.blogId) !== -1
-    )
-      return null;
-    //set StatusLike
-    let myStatus: StatusOfLike = 'None';
-
-    if (userId) {
-      const likeInfo =
-        await this.likesInfoQueryRepository.getLikesInfoByPostAndUserMongo(
-          postId.toString(),
-          userId.toString(),
-        );
-
-      if (likeInfo) {
-        myStatus = likeInfo.statusLike;
-      }
-    }
-
-    //find last 3 Likes
-    const newestLikes =
-      await this.likesInfoQueryRepository.getNewestLikesOfPost(
-        postId.toString(),
-      );
-    const reformedNewestLikes = reformNewestLikes(newestLikes);
-
-    return modifyPostIntoViewModelMongo(post, reformedNewestLikes, myStatus);
-  }
-
-  async getAllPostsIdOfBlogger(
-    arrBlogsId: BlogsIdInputType,
-  ): Promise<PostsIdOfBloggerType> {
-    let allPostsId: PostsIdOfBloggerType = [];
-    for (const blog of arrBlogsId) {
-      const postsOfBlog = await this.PostModel.find(
-        {
-          blogId: blog._id.toString(),
-        },
-        { _id: 1 },
-      ).lean();
-      allPostsId = allPostsId.concat(postsOfBlog);
-    }
-    return allPostsId;
-  }
-
-  async getPostMainInfoById(
-    postId: ObjectId,
-  ): Promise<PostMainInfoType | null> {
-    const post = await this.PostModel.findOne(
-      { _id: postId },
-      { _id: 1, title: 1, blogId: 1, blogName: 1 },
-    ).lean();
-    console.log('getPostMainInfoById', post);
-    return post as PostMainInfoType; //todo type???
   }
 }

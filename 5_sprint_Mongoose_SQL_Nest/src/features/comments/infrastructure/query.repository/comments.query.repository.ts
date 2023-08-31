@@ -5,12 +5,8 @@ import { CommentViewType } from '../repository/comments.types.repositories';
 import { InjectModel } from '@nestjs/mongoose';
 import { CommentModelType } from '../../domain/comments.db.types';
 import { QueryPostInputModel } from '../../../posts/api/models/input/query-post.input.model';
+import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import {
-  variablesForReturn,
-  variablesForReturnMongo,
-} from '../../../../infrastructure/utils/functions/variables-for-return.function';
-import {
-  modifyCommentMongo,
   modifyCommentIntoViewModel,
   modifyCommentsOfBlogger,
 } from '../../../../infrastructure/utils/functions/features/comments.functions.helpers';
