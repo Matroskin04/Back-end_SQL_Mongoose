@@ -67,7 +67,7 @@ export class PostsQueryRepository {
         FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
             JOIN public."users" as u
             ON u."id" = li."userId"
-        WHERE li."postId" = p."id"
+        WHERE li."postId" = p."id" AND li."likeStatus" = $1
         GROUP BY u."login", li."addedAt", li."userId"
              ORDER BY "addedAt" DESC
              LIMIT 3) as "threeLikes" )
@@ -129,7 +129,7 @@ export class PostsQueryRepository {
         FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
             JOIN public."users" as u
             ON u."id" = li."userId"
-        WHERE li."postId" = p."id"
+        WHERE li."postId" = p."id" AND li."likeStatus" = $1
         GROUP BY u."login", li."addedAt", li."userId"
              ORDER BY "addedAt" DESC
              LIMIT 3) as "threeLikes" )
@@ -196,7 +196,7 @@ export class PostsQueryRepository {
         FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
             JOIN public."users" as u
             ON u."id" = li."userId"
-        WHERE li."postId" = p."id"
+        WHERE li."postId" = p."id" AND li."likeStatus" = $1
         GROUP BY u."login", li."addedAt", li."userId"
              ORDER BY "addedAt" DESC
              LIMIT 3) as "threeLikes" )
