@@ -16,20 +16,13 @@ import {
   LoginOutputModel,
 } from './models/output/user-info.output.model';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
-import {
-  ConfirmationCodeAuthModel,
-  EmailResendingAuthModel,
-  RegistrationAuthInputModel,
-} from './models/input/registration-auth.input.model';
+import { RegistrationAuthInputModel } from './models/input/registration-auth.input.model';
 import { LocalAuthGuard } from '../../../infrastructure/guards/authorization-guards/local-auth.guard';
 import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { ValidateConfirmationCodeGuard } from '../../../infrastructure/guards/validation-guards/validate-confirmation-code.guard';
 import { ValidateEmailResendingGuard } from '../../../infrastructure/guards/validation-guards/validate-email-resending.guard';
-import {
-  NewPasswordAuthModel,
-  PasswordRecoveryAuthModel,
-} from './models/input/password-flow-auth.input.model';
+import { PasswordRecoveryInputModel } from './models/input/password-flow-auth.input.model';
 import { ValidateEmailRegistrationGuard } from '../../../infrastructure/guards/validation-guards/validate-email-registration.guard';
 import { SkipThrottle } from '@nestjs/throttler';
 import { DevicesService } from '../../devices/application/devices.service';
@@ -46,6 +39,9 @@ import { SaveNewPassCommand } from '../application/use-cases/save-new-pass.use-c
 import { LoginUserCommand } from '../application/use-cases/login-user.use-case';
 import { SendEmailPassRecoveryCommand } from '../application/use-cases/send-email-pass-recovery.use-case';
 import { UsersQueryRepository } from '../../users/infrastructure/query.repository/users.query.repository';
+import { ConfirmationCodeInputModel } from './models/input/confirmation-code.input.model';
+import { EmailResendingInputModel } from './models/input/email-resending.input.model';
+import { NewPasswordInputModel } from './models/input/new-password.input.model';
 
 // @SkipThrottle()
 @Controller('/hometask-nest/auth')
@@ -129,7 +125,7 @@ export class AuthController {
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Post('registration-confirmation')
   async confirmEmail(
-    @Body() inputConfirmationCode: ConfirmationCodeAuthModel,
+    @Body() inputConfirmationCode: ConfirmationCodeInputModel,
   ): Promise<string> {
     await this.commandBus.execute(
       new ConfirmEmailCommand(inputConfirmationCode.code),
@@ -142,7 +138,7 @@ export class AuthController {
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Post('registration-email-resending')
   async resendEmailConfirmation(
-    @Body() inputEmailModel: EmailResendingAuthModel,
+    @Body() inputEmailModel: EmailResendingInputModel,
     @CurrentUserId() userId: string,
   ): Promise<string> {
     await this.commandBus.execute(
@@ -176,7 +172,7 @@ export class AuthController {
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Post('password-recovery')
   async passwordRecovery(
-    @Body() inputEmailModel: PasswordRecoveryAuthModel,
+    @Body() inputEmailModel: PasswordRecoveryInputModel,
   ): Promise<string> {
     await this.commandBus.execute(
       new SendEmailPassRecoveryCommand(inputEmailModel.email),
@@ -188,7 +184,7 @@ export class AuthController {
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Post('new-password')
   async saveNewPassword(
-    @Body() inputInfo: NewPasswordAuthModel,
+    @Body() inputInfo: NewPasswordInputModel,
   ): Promise<string> {
     await this.commandBus.execute(
       new SaveNewPassCommand(inputInfo.newPassword, inputInfo.recoveryCode),
