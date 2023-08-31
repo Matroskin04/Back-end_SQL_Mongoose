@@ -1,22 +1,11 @@
-import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
-import {
-  CommentDBType,
-  CommentModelType,
-} from '../../domain/comments.db.types';
-import { InjectModel } from '@nestjs/mongoose';
-import { CommentInstanceType } from './comments.types.repositories';
-import { Comment, CommentatorInfo } from '../../domain/comments.entity';
+import { CommentDBType } from '../../domain/comments.db.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CommentsRepository {
-  constructor(
-    @InjectDataSource() protected dataSource: DataSource,
-    @InjectModel(Comment.name)
-    private CommentModel: CommentModelType,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   //SQL
 
@@ -56,12 +45,5 @@ export class CommentsRepository {
       [commentId],
     );
     return result[1] === 1;
-  }
-
-  //MONGO
-
-  async save(comment: CommentInstanceType): Promise<void> {
-    await comment.save();
-    return;
   }
 }

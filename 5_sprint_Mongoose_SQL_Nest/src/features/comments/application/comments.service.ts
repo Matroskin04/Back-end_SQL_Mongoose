@@ -1,9 +1,7 @@
-import { ObjectId } from 'mongodb';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UsersQueryRepository } from '../../users/infrastructure/query.repository/users.query.repository';
 import { CommentsQueryRepository } from '../infrastructure/query.repository/comments.query.repository';
 import { LikesInfoQueryRepository } from '../../likes-info/infrastructure/query.repository/likes-info.query.repository';
-import { LikesInfoService } from '../../likes-info/application/likes-info.service';
 import { CommentViewType } from '../infrastructure/repository/comments.types.repositories';
 import { CommentsRepository } from '../infrastructure/repository/comments.repository';
 import { InjectModel } from '@nestjs/mongoose';
@@ -11,8 +9,6 @@ import { Post } from '../../posts/domain/posts.entity';
 import { PostModelType } from '../../posts/domain/posts.db.types';
 import { modifyCommentIntoInitialViewModel } from '../../../infrastructure/utils/functions/features/comments.functions.helpers';
 import { AllLikeStatusType } from '../../../infrastructure/utils/enums/like-status';
-import { Comment } from '../domain/comments.entity';
-import { CommentModelType } from '../domain/comments.db.types';
 import { LikesInfoRepository } from '../../likes-info/infrastructure/repository/likes-info.repository';
 import { PostsQueryRepository } from '../../posts/infrastructure/query.repository/posts.query.repository';
 import { CommentsLikesRepository } from '../infrastructure/subrepository/comments-likes.repository';
@@ -22,14 +18,11 @@ export class CommentsService {
   constructor(
     @InjectModel(Post.name)
     private PostModel: PostModelType,
-    @InjectModel(Comment.name)
-    private CommentModel: CommentModelType,
     protected commentsLikesRepository: CommentsLikesRepository,
     protected commentsRepository: CommentsRepository,
     protected postsQueryRepository: PostsQueryRepository,
     protected usersQueryRepository: UsersQueryRepository,
     protected commentsQueryRepository: CommentsQueryRepository,
-    protected likesInfoService: LikesInfoService,
     protected likesInfoRepository: LikesInfoRepository,
     protected likesInfoQueryRepository: LikesInfoQueryRepository,
   ) {}

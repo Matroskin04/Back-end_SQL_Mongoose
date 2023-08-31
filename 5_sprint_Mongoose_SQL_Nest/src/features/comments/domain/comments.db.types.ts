@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 import { HydratedDocument, Model } from 'mongoose';
-import { Comment } from './comments.entity';
 
 export type CommentDBTypeMongo = {
   _id: ObjectId;
@@ -23,19 +22,4 @@ export type CommentDBType = {
   createdAt: string;
   postId: string;
   userId: string;
-};
-
-export type CommentDocument = HydratedDocument<Comment>;
-
-export type CommentModelType = Model<CommentDocument> &
-  CommentStaticMethodsType;
-
-export type CommentStaticMethodsType = {
-  createInstance: (
-    content: string,
-    userId: string,
-    userLogin: string,
-    postId: string,
-    CommentModel: CommentModelType,
-  ) => CommentDocument; //todo слишком много добавляется
 };

@@ -1,9 +1,6 @@
-import { ObjectId } from 'mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
 import { CommentViewType } from '../repository/comments.types.repositories';
-import { InjectModel } from '@nestjs/mongoose';
-import { CommentModelType } from '../../domain/comments.db.types';
 import { QueryPostInputModel } from '../../../posts/api/models/input/query-post.input.model';
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import {
@@ -12,13 +9,8 @@ import {
 } from '../../../../infrastructure/utils/functions/features/comments.functions.helpers';
 import {
   CommentOfPostPaginationType,
-  CommentsDBType,
   CommentsOfBloggerPaginationType,
-  StatusOfLike,
 } from './comments.types.query.repository';
-import { Comment } from '../../domain/comments.entity';
-import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/query.repository/likes-info.query.repository';
-import { BlogsQueryRepository } from '../../../blogs/infrastructure/query.repository/blogs.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AllLikeStatusEnum } from '../../../../infrastructure/utils/enums/like-status';
@@ -27,11 +19,7 @@ import { AllLikeStatusEnum } from '../../../../infrastructure/utils/enums/like-s
 export class CommentsQueryRepository {
   constructor(
     @InjectDataSource() protected dataSource: DataSource,
-    @InjectModel(Comment.name)
-    private CommentModel: CommentModelType,
     protected postsQueryRepository: PostsQueryRepository,
-    protected likesInfoQueryRepository: LikesInfoQueryRepository,
-    protected blogsPublicQueryRepository: BlogsQueryRepository,
   ) {}
 
   //SQL

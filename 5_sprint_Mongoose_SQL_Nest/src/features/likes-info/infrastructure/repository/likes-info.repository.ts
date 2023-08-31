@@ -4,22 +4,7 @@ import {
   CommentLikeInfoInstanceType,
   PostLikeInfoInstanceType,
 } from './likes-info.types.repository';
-import { InjectModel } from '@nestjs/mongoose';
 import {
-  CommentLikesInfo,
-  PostLikesInfo,
-} from '../../domain/likes-info.entity';
-import {
-  CommentLikesInfoModelType,
-  PostLikesInfoModelType,
-  PostsLikesInfoDBType,
-} from '../../domain/likes-info.db.types';
-import { Comment } from '../../../comments/domain/comments.entity';
-import { CommentModelType } from '../../../comments/domain/comments.db.types';
-import { Post } from '../../../posts/domain/posts.entity';
-import { PostModelType } from '../../../posts/domain/posts.db.types';
-import {
-  LikeDislikeStatusEnum,
   AllLikeStatusEnum,
   LikeDislikeStatusType,
   AllLikeStatusType,
@@ -29,17 +14,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class LikesInfoRepository {
-  constructor(
-    @InjectDataSource() protected dataSource: DataSource,
-    @InjectModel(Post.name)
-    private PostModel: PostModelType,
-    @InjectModel(Comment.name)
-    private CommentModel: CommentModelType,
-    @InjectModel(CommentLikesInfo.name)
-    private CommentsLikesInfoModel: CommentLikesInfoModelType,
-    @InjectModel(PostLikesInfo.name)
-    private PostsLikesInfoModel: PostLikesInfoModelType,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   //SQL
   async createLikeInfoOfPost(
@@ -113,38 +88,5 @@ export class LikesInfoRepository {
       [userId, commentId],
     );
     return result[1] === 1;
-  }
-
-  //MONGO
-  async getCommentLikeInfoInstance(
-    commentId: string,
-    userId: string,
-  ): Promise<CommentLikeInfoInstanceType | null> {
-    const commentLikeInfo = await this.CommentsLikesInfoModel.findOne({
-      commentId,
-      userId,
-    });
-
-    if (!commentLikeInfo) return null;
-    return commentLikeInfo;
-  }
-
-  async save(
-    likeInfo: PostLikeInfoInstanceType | CommentLikeInfoInstanceType,
-  ): Promise<void> {
-    await likeInfo.save();
-
-    return;
-  }
-
-  async deleteLikeInfoCommentMongo(
-    userId: string,
-    commentId: string,
-  ): Promise<boolean> {
-    const result = await this.CommentsLikesInfoModel.deleteOne({
-      userId,
-      commentId,
-    });
-    return result.deletedCount === 1;
   }
 }

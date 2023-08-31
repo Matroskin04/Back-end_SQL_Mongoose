@@ -1,5 +1,3 @@
-import { CommentDocument } from '../../domain/comments.db.types';
-
 export type CommentViewType = {
   id: string;
   content: string;
@@ -14,5 +12,3 @@ export type CommentViewType = {
     myStatus: 'None' | 'Like' | 'Dislike';
   };
 };
-
-export type CommentInstanceType = CommentDocument;

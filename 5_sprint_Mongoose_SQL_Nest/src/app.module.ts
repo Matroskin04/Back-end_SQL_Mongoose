@@ -1,18 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import {
-  LikesInfo,
-  LikesInfoSchema,
-  Post,
-  PostSchema,
-} from './features/posts/domain/posts.entity';
-import {
-  Comment,
-  CommentatorInfo,
-  CommentatorInfoSchema,
-  CommentsSchema,
-} from './features/comments/domain/comments.entity';
 import { PostsController } from './features/posts/api/posts.controller';
 import { PostsService } from './features/posts/application/posts.service';
 import { PostsQueryRepository } from './features/posts/infrastructure/query.repository/posts.query.repository';
@@ -33,13 +20,6 @@ import { JwtRefreshStrategy } from './infrastructure/strategy/jwt-refresh.strate
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAccessStrategy } from './infrastructure/strategy/jwt-access.strategy';
 import { BasicStrategy } from './infrastructure/strategy/basic.strategy';
-import {
-  CommentLikesInfo,
-  CommentsLikesInfoSchema,
-  PostLikesInfo,
-  PostsLikesInfoSchema,
-} from './features/likes-info/domain/likes-info.entity';
-import { LikesInfoService } from './features/likes-info/application/likes-info.service';
 import { LikesInfoQueryRepository } from './features/likes-info/infrastructure/query.repository/likes-info.query.repository';
 import { LikesInfoRepository } from './features/likes-info/infrastructure/repository/likes-info.repository';
 import { CommentsService } from './features/comments/application/comments.service';
@@ -80,10 +60,6 @@ import { UpdateBanInfoOfUserUseCase } from './features/users/application/sa/use-
 import { DeleteDevicesExcludeCurrentUseCase } from './features/devices/application/use-cases/delete-devices-exclude-current.use-case';
 import { DeleteDeviceByIdUseCase } from './features/devices/application/use-cases/delete-device-by-id.use-case';
 import { UsersQueryRepository } from './features/users/infrastructure/query.repository/users.query.repository';
-import {
-  BannedUsersByBlogger,
-  BannedUsersByBloggerSchema,
-} from './features/users/banned/banned-by-blogger-users/domain/users-banned-by-blogger.entity';
 import { CommentsLikesRepository } from './features/comments/infrastructure/subrepository/comments-likes.repository';
 import { IsUserBannedByJWTStrategy } from './infrastructure/strategy/is-user-banned-by-jwt.strategy';
 
@@ -93,7 +69,6 @@ const services = [
   CommentsService,
   BlogsSAService,
   DevicesService,
-  LikesInfoService,
   JwtService,
   UsersSaService,
   UsersBloggerService,
@@ -157,16 +132,6 @@ const handlers = [
       synchronize: false,
       url: process.env.POSTGRES_URL + '?sslmode=require',
     }),
-    MongooseModule.forRoot(process.env.MONGO_URL!),
-    MongooseModule.forFeature([
-      { name: Post.name, schema: PostSchema },
-      { name: BannedUsersByBlogger.name, schema: BannedUsersByBloggerSchema },
-      { name: LikesInfo.name, schema: LikesInfoSchema },
-      { name: PostLikesInfo.name, schema: PostsLikesInfoSchema },
-      { name: Comment.name, schema: CommentsSchema },
-      { name: CommentatorInfo.name, schema: CommentatorInfoSchema },
-      { name: CommentLikesInfo.name, schema: CommentsLikesInfoSchema },
-    ]),
     JwtModule.register({}),
   ],
   controllers: [
