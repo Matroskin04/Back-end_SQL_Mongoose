@@ -44,7 +44,7 @@ export class UsersSaController {
     @Query() query: QueryUsersSAInputModel,
     @Res() res: Response<ViewAllUsersModels | string>,
   ) {
-    const result = await this.usersQueryRepository.getAllUsers(query);
+    const result = await this.usersQueryRepository.getAllUsersView(query);
     res.status(HTTP_STATUS_CODE.OK_200).send(result);
   }
 

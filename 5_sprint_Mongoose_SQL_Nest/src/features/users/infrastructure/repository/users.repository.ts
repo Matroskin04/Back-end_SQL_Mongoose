@@ -42,7 +42,7 @@ export class UsersRepository {
 
   async updatePassword(
     newPasswordHash: string,
-    userId: ObjectId,
+    userId: string,
   ): Promise<boolean> {
     const result = await this.dataSource.query(
       `

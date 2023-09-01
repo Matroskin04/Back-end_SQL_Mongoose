@@ -10,9 +10,17 @@ import {
 import { QueryUsersBloggerInputModel } from '../../api/blogger/models/input/query-users-blogger.input.model';
 import {
   BannedUsersOfBlogPaginationType,
+  UserBanInfoType,
+  UserByRecoveryCodeType,
   UsersInfoViewType,
   UsersPaginationType,
-} from './users.types.query.repository';
+  UserWithBanInfoType,
+  UserWithPassEmailInfoType,
+} from './users.output.types.query.repository';
+import {
+  UsersQueryBloggerType,
+  UsersQuerySAType,
+} from './users.input.types.query.repository';
 
 @Injectable()
 export class UsersQueryRepository {
@@ -31,10 +39,7 @@ export class UsersQueryRepository {
     return result[0];
   }
 
-  async getAllUsers(
-    query: QueryUsersSAInputModel,
-  ): Promise<UsersPaginationType> {
-    //todo отдельное query
+  async getAllUsersView(query: UsersQuerySAType): Promise<UsersPaginationType> {
     const {
       pageNumber,
       pageSize,
@@ -44,7 +49,7 @@ export class UsersQueryRepository {
       searchEmailTerm,
       banStatus,
     } = variablesForReturn(query);
-    //todo validate input data
+
     const result = await this.dataSource.query(
       `
     SELECT u."id", u."login", u."email", u."createdAt", bi."isBanned", bi."banDate", bi."banReason",
@@ -77,8 +82,8 @@ export class UsersQueryRepository {
     };
   }
 
-  async getBannedUsersOfBlog(
-    query: QueryUsersBloggerInputModel,
+  async getBannedUsersOfBlogView(
+    query: UsersQueryBloggerType,
     blogId: string,
   ): Promise<BannedUsersOfBlogPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchLoginTerm } =
@@ -140,23 +145,25 @@ export class UsersQueryRepository {
     return +result[0].count === 1;
   }
 
-  async getUserByRecoveryCode(recoveryCode: string): Promise<any> {
-    //todo тип
+  async getUserByRecoveryCode(
+    recoveryCode: string,
+  ): Promise<UserByRecoveryCodeType | null> {
     const result = await this.dataSource.query(
       `
     SELECT u."id", pc."expirationDate", pc."confirmationCode"
       FROM public."users" AS u
-      JOIN public."users_password_recovery" AS pc
+        JOIN public."users_password_recovery" AS pc
         ON u."id" = pc."userId"
-        WHERE "confirmationCode" = $1`,
+            WHERE "confirmationCode" = $1`,
       [recoveryCode],
     );
     if (!result[0]) return null;
     return result[0];
   }
 
-  async getUserBanInfoByLoginOrEmail(logOrEmail: string): Promise<any | null> {
-    //todo тип
+  async getUserBanInfoByLoginOrEmail(
+    logOrEmail: string,
+  ): Promise<UserBanInfoType | null> {
     const userInfo = await this.dataSource.query(
       `
     SELECT u."id", u."login", u."email", bi."isBanned" 
@@ -170,7 +177,9 @@ export class UsersQueryRepository {
     return userInfo[0];
   }
 
-  async getUserWithBanInfoById(userId: string): Promise<any> {
+  async getUserWithBanInfoById(
+    userId: string,
+  ): Promise<UserWithBanInfoType | null> {
     const userInfo = await this.dataSource.query(
       `
     SELECT u."id", u."login", u."email", u."createdAt", bi."isBanned", bi."banReason", bi."banDate"
@@ -186,8 +195,7 @@ export class UsersQueryRepository {
 
   async getUserPassEmailInfoByLoginOrEmail(
     logOrEmail: string,
-  ): Promise<any | null> {
-    //todo тип
+  ): Promise<UserWithPassEmailInfoType | null> {
     const userInfo = await this.dataSource.query(
       `
     SELECT u."id", u."login", u."email", u."passwordHash", ec."isConfirmed" 

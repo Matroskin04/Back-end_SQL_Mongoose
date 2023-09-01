@@ -1,4 +1,4 @@
-import { UserViewType } from '../../../../infrastructure/query.repository/users.types.query.repository';
+import { UserViewType } from '../../../../infrastructure/query.repository/users.output.types.query.repository';
 
 export type UserOutputModel = UserViewType;
 

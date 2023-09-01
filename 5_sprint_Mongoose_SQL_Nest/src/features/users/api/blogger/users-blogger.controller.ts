@@ -31,7 +31,7 @@ export class UsersBloggerController {
     @Query() query: QueryUsersBloggerInputModel,
     @Param('blogId') blogId: string,
   ) {
-    const result = await this.usersQueryRepository.getBannedUsersOfBlog(
+    const result = await this.usersQueryRepository.getBannedUsersOfBlogView(
       query,
       blogId,
     );

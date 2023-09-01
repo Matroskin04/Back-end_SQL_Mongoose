@@ -30,7 +30,7 @@ export class PasswordRecoveryPublicRepository {
       SET "confirmationCode" = $1, "expirationDate" = now() + ('3 hour'::interval) 
       WHERE "userId" = $2`,
       [newCode, userId],
-    ); //todo другая дата ставится
+    );
     return result[1] === 1;
   }
 }
