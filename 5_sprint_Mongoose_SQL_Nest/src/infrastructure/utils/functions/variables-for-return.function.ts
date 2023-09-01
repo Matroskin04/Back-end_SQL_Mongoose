@@ -2,7 +2,7 @@ import {
   VariablesForReturnMongoType,
   VariablesForReturnType,
 } from './types/variables-for-return.types';
-import { QueryBlogInputModel } from '../../../features/blogs/api/blogger/models/input/query-blog.input.model';
+import { QueryBlogsInputModel } from '../../../features/blogs/api/blogger/models/input/queries-blog.input.model';
 import { AllQueryParamsTypes } from './types/all-query-params-types';
 
 export async function variablesForReturnMongo(

@@ -10,7 +10,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
 import { JwtAccessNotStrictGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import { CurrentUserId } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
-import { QueryBlogInputModel } from '../blogger/models/input/query-blog.input.model';
+import { QueryBlogsInputModel } from '../blogger/models/input/queries-blog.input.model';
 import {
   BlogOutputModel,
   ViewAllBlogsModel,
@@ -28,7 +28,7 @@ export class BlogsPublicController {
 
   @Get()
   async getAllBlogs(
-    @Query() query: QueryBlogInputModel,
+    @Query() query: QueryBlogsInputModel,
   ): Promise<ViewAllBlogsModel> {
     const result = await this.blogsQueryRepository.getAllBlogsPublic(query);
     return result;
@@ -46,7 +46,7 @@ export class BlogsPublicController {
   async getAllPostsOfBlog(
     @Param('blogId') blogId: string,
     @CurrentUserId() userId: string,
-    @Query() query: QueryBlogInputModel,
+    @Query() query: QueryBlogsInputModel,
   ): Promise<ViewPostsOfBlogModel> {
     const result = await this.postsQueryRepository.getAllPostsOfBlog(
       blogId,

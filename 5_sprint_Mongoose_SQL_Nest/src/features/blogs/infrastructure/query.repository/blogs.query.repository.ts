@@ -4,7 +4,7 @@ import {
   BlogAllInfoOutputType,
 } from './blogs-public.types.query.repository';
 import { Injectable } from '@nestjs/common';
-import { QueryBlogInputModel } from '../../api/blogger/models/input/query-blog.input.model';
+import { QueryBlogsInputModel } from '../../api/blogger/models/input/queries-blog.input.model';
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -16,7 +16,7 @@ export class BlogsQueryRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   async getAllBlogsOfBlogger(
-    query: QueryBlogInputModel,
+    query: QueryBlogsInputModel,
     userId: string,
   ): Promise<BlogPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
@@ -47,7 +47,7 @@ export class BlogsQueryRepository {
     };
   }
 
-  async getAllBlogsSA(query: QueryBlogInputModel): Promise<ViewAllBlogsModel> {
+  async getAllBlogsSA(query: QueryBlogsInputModel): Promise<ViewAllBlogsModel> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
       variablesForReturn(query);
 
@@ -77,7 +77,7 @@ export class BlogsQueryRepository {
   }
 
   async getAllBlogsPublic(
-    query: QueryBlogInputModel,
+    query: QueryBlogsInputModel,
   ): Promise<BlogPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
       variablesForReturn(query);

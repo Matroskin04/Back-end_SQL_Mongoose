@@ -10,7 +10,7 @@ import { QueryPostInputModel } from '../../api/models/input/query-post.input.mod
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import { modifyPostIntoViewModel } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { Injectable } from '@nestjs/common';
-import { QueryBlogInputModel } from '../../../blogs/api/blogger/models/input/query-blog.input.model';
+import { QueryBlogsInputModel } from '../../../blogs/api/blogger/models/input/queries-blog.input.model';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AllLikeStatusEnum } from '../../../../infrastructure/utils/enums/like-status';
@@ -22,7 +22,7 @@ export class PostsQueryRepository {
   //SQL
   async getAllPostsOfBlog(
     blogId: string,
-    query: QueryBlogInputModel,
+    query: QueryBlogsInputModel,
     userId: string | null,
   ): Promise<null | PostPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection } =

@@ -1,4 +1,8 @@
-import { QueryBlogInputModel } from './models/input/query-blog.input.model';
+import {
+  QueryBlogsInputModel,
+  QueryCommentsOfBlogInputModel,
+  QueryPostsOfBlogInputModel,
+} from './models/input/queries-blog.input.model';
 import {
   ViewAllBlogsModel,
   ViewPostsOfBlogModel,
@@ -48,7 +52,7 @@ export class BlogsBloggerController {
   @UseGuards(JwtAccessGuard)
   @Get()
   async getAllBlogs(
-    @Query() query: QueryBlogInputModel,
+    @Query() query: QueryBlogsInputModel,
     @CurrentUserId() userId: string,
   ): Promise<ViewAllBlogsModel> {
     const result = await this.blogsQueryRepository.getAllBlogsOfBlogger(
@@ -63,7 +67,7 @@ export class BlogsBloggerController {
   async getAllPostsOfBlog(
     @Param('blogId') blogId: string,
     @CurrentUserId() userId: string,
-    @Query() query: QueryBlogInputModel,
+    @Query() query: QueryPostsOfBlogInputModel,
   ): Promise<ViewPostsOfBlogModel> {
     const result = await this.postsQueryRepository.getAllPostsOfBlog(
       blogId,
@@ -78,7 +82,7 @@ export class BlogsBloggerController {
   @Get('comments')
   async getCommentsOfBlogger(
     @CurrentUserId() userId: string,
-    @Query() query: QueryBlogInputModel,
+    @Query() query: QueryCommentsOfBlogInputModel,
   ) {
     const result = await this.commentsQueryRepository.getCommentsOfBlogger(
       query,
