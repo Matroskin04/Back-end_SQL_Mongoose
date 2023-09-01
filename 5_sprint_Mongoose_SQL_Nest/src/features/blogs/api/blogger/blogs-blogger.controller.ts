@@ -4,10 +4,10 @@ import {
   QueryPostsOfBlogInputModel,
 } from './models/input/queries-blog.input.model';
 import {
-  ViewAllBlogsModel,
-  ViewPostsOfBlogModel,
+  BlogsOutputModel,
+  PostsOfBlogViewModel,
   BlogOutputModel,
-} from './models/output/blog.output.model';
+} from './models/output/blog.output.models';
 import { CreateBlogInputModel } from './models/input/create-blog.input.model';
 import { UpdateBlogInputModel } from './models/input/update-blog.input.model';
 
@@ -54,7 +54,7 @@ export class BlogsBloggerController {
   async getAllBlogs(
     @Query() query: QueryBlogsInputModel,
     @CurrentUserId() userId: string,
-  ): Promise<ViewAllBlogsModel> {
+  ): Promise<BlogsOutputModel> {
     const result = await this.blogsQueryRepository.getAllBlogsOfBlogger(
       query,
       userId.toString(),
@@ -68,7 +68,7 @@ export class BlogsBloggerController {
     @Param('blogId') blogId: string,
     @CurrentUserId() userId: string,
     @Query() query: QueryPostsOfBlogInputModel,
-  ): Promise<ViewPostsOfBlogModel> {
+  ): Promise<PostsOfBlogViewModel> {
     const result = await this.postsQueryRepository.getAllPostsOfBlog(
       blogId,
       query,
@@ -166,10 +166,7 @@ export class BlogsBloggerController {
   @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':blogId/posts/:postId')
-  async deletePostOfBlog(
-    // @Param('blogId') blogId: string,
-    @Param('postId') postId: string,
-  ): Promise<void> {
+  async deletePostOfBlog(@Param('postId') postId: string): Promise<void> {
     const result = await this.postsService.deleteSinglePost(postId);
     if (!result) throw new NotFoundException();
     return;

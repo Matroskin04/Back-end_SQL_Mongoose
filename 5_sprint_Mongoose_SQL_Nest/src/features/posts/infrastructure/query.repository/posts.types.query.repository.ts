@@ -21,18 +21,3 @@ export type PostViewType = PostTypeWithId & {
     newestLikes: NewestLikesType;
   };
 };
-
-export type PostMainInfoType = {
-  _id: ObjectId;
-  title: 'string';
-  blogId: 'string';
-  blogName: 'string';
-};
-
-export type PostsDBType = Array<PostDBTypeMongo>;
-
-export type BlogsIdInputType = Array<{ _id: ObjectId }>;
-
-export type PostsIdOfBloggerType = Array<{
-  _id: ObjectId;
-}>;

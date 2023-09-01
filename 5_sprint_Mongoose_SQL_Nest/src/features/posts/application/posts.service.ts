@@ -12,6 +12,7 @@ import { LikesInfoRepository } from '../../likes-info/infrastructure/repository/
 import { BodyForUpdatePostDto } from './dto/body-for-update-post.dto';
 import { Injectable } from '@nestjs/common';
 import { BlogsQueryRepository } from '../../blogs/infrastructure/query.repository/blogs.query.repository';
+import { PostViewType } from '../infrastructure/query.repository/posts.types.query.repository';
 
 @Injectable()
 export class PostsService {

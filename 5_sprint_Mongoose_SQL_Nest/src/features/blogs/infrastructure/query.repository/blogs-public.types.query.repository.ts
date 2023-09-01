@@ -1,8 +1,4 @@
-import {
-  BlogOutputModel,
-  BlogOutputModelMongo,
-} from '../../api/blogger/models/output/blog.output.model';
-import { ObjectId } from 'mongodb';
+import { BlogOutputModel } from '../../api/blogger/models/output/blog.output.models';
 
 export type BlogPaginationType = {
   pagesCount: number;
@@ -31,7 +27,3 @@ export type BlogAllInfoOutputType = {
   isMembership: boolean;
   isBanned: boolean;
 };
-
-export type BannedBlogsIdType = Array<{
-  _id: ObjectId;
-}>;

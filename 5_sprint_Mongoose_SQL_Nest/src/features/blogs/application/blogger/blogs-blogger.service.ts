@@ -2,7 +2,7 @@ import { BodyBlogType } from '../../infrastructure/repository/blogs-blogger.type
 import { Injectable } from '@nestjs/common';
 import { BlogsRepository } from '../../infrastructure/repository/blogs.repository';
 import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
-import { BlogViewType } from '../../infrastructure/query.repository/blogs-blogger.types.query.repository';
+import { CreateBlogDTO } from './dto/create-blog.dto';
 
 @Injectable()
 export class BlogsBloggerService {
@@ -14,7 +14,7 @@ export class BlogsBloggerService {
   async createBlog(
     blogDTO: BodyBlogType,
     userId: string,
-  ): Promise<BlogViewType> {
+  ): Promise<CreateBlogDTO> {
     const user = await this.usersQueryRepository.getUserLoginById(userId);
     if (!user) throw new Error('User is not found');
 

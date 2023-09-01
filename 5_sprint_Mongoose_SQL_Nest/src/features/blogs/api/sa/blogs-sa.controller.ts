@@ -65,7 +65,7 @@ export class BlogsSAController {
   /* @Get(':id')
   async getBlogById(
     @Param('id') blogId: string,
-    @Res() res: Response<BlogOutputModel>,
+    @Res() res: Response<BlogOutputModels>,
   ) {
     const result = await this.blogsQueryRepository.getBlogById(blogId);
     result
@@ -95,7 +95,7 @@ export class BlogsSAController {
   @Post()
   async createBlog(
     @Body() inputBlogModel: CreateBlogInputModel,
-    @Res() res: Response<BlogOutputModel>,
+    @Res() res: Response<BlogOutputModels>,
   ) {
     const result = await this.blogsService.createBlog(inputBlogModel);
     res.status(HTTP_STATUS_CODE.CREATED_201).send(result);

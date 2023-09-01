@@ -134,8 +134,13 @@ export class BlogsQueryRepository {
   }
 
   async isUserBannedForBlog(userId: string, blogId: string): Promise<boolean> {
-    const result = await this.dataSource.query(`
-    SELECT "isBanned" FROM public."banned_users_of_blog"`);
+    const result = await this.dataSource.query(
+      `
+    SELECT "isBanned" 
+        FROM public."banned_users_of_blog"
+            WHERE "userId" = $1 AND "blogId" = $2`,
+      [userId, blogId],
+    );
     return !!result[0]?.isBanned;
   }
 }

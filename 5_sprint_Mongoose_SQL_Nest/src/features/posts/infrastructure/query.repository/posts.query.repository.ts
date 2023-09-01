@@ -1,9 +1,5 @@
 import {
-  BlogsIdInputType,
-  PostMainInfoType,
   PostPaginationType,
-  PostsDBType,
-  PostsIdOfBloggerType,
   PostViewType,
 } from './posts.types.query.repository';
 import { QueryPostInputModel } from '../../api/models/input/query-post.input.model';

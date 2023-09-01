@@ -11,12 +11,12 @@ import { PostsQueryRepository } from '../../../posts/infrastructure/query.reposi
 import { JwtAccessNotStrictGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import { CurrentUserId } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { QueryBlogsInputModel } from '../blogger/models/input/queries-blog.input.model';
+import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
 import {
   BlogOutputModel,
-  ViewAllBlogsModel,
-  ViewPostsOfBlogModel,
-} from '../blogger/models/output/blog.output.model';
-import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
+  BlogsOutputModel,
+  PostsOfBlogViewModel,
+} from './models/output/blog.output.models';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogs')
@@ -29,7 +29,7 @@ export class BlogsPublicController {
   @Get()
   async getAllBlogs(
     @Query() query: QueryBlogsInputModel,
-  ): Promise<ViewAllBlogsModel> {
+  ): Promise<BlogsOutputModel> {
     const result = await this.blogsQueryRepository.getAllBlogsPublic(query);
     return result;
   }
@@ -47,7 +47,7 @@ export class BlogsPublicController {
     @Param('blogId') blogId: string,
     @CurrentUserId() userId: string,
     @Query() query: QueryBlogsInputModel,
-  ): Promise<ViewPostsOfBlogModel> {
+  ): Promise<PostsOfBlogViewModel> {
     const result = await this.postsQueryRepository.getAllPostsOfBlog(
       blogId,
       query,
