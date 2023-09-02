@@ -68,7 +68,7 @@ import { UserEmailConfirmation } from './features/users/domain/user-email-confir
 import { UserBanInfo } from './features/users/domain/user-ban-info.entity';
 import { Post } from './features/posts/domain/post.entity';
 import { Comment } from './features/comments/domain/comment.entity';
-import { BannedUsersOfBlog } from './features/blogs/domain/banned-users-of-blog.entity';
+import { BannedUserOfBlog } from './features/blogs/domain/banned-users-of-blog.entity';
 import { PostLikeInfo } from './features/posts/domain/post-like-info.entity';
 import { CommentLikeInfo } from './features/comments/domain/comment-like-info.entity';
 
@@ -131,7 +131,7 @@ const handlers = [
     ConfigModule.forRoot(),
     TypeOrmModule.forFeature([
       Blog,
-      BannedUsersOfBlog,
+      BannedUserOfBlog,
       Post,
       PostLikeInfo,
       Comment,
@@ -150,7 +150,7 @@ const handlers = [
       database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: true,
       synchronize: true,
-      url: process.env.POSTGRES_URL + '?sslmode=require',
+      // url: process.env.POSTGRES_URL + '?sslmode=require',
     }),
     JwtModule.register({}),
   ],

@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/domain/user.entity';
 import { Post } from '../../posts/domain/post.entity';
-import { BannedUsersOfBlog } from './banned-users-of-blog.entity';
+import { BannedUserOfBlog } from './banned-users-of-blog.entity';
 
 @Entity()
 export class Blog {
@@ -47,6 +47,6 @@ export class Blog {
   @OneToMany(() => Post, (p) => p.blog)
   post: Post[];
 
-  @OneToMany(() => BannedUsersOfBlog, (bu) => bu.blog)
-  bannedUsersOfBlog: BannedUsersOfBlog[];
+  @OneToMany(() => BannedUserOfBlog, (bu) => bu.blog)
+  bannedUsersOfBlog: BannedUserOfBlog[];
 }

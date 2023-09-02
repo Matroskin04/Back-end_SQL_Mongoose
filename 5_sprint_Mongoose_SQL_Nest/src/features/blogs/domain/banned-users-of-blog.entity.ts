@@ -12,7 +12,7 @@ import { Blog } from './blog.entity';
 
 @Entity()
 @Unique(['userId', 'blogId'])
-export class BannedUsersOfBlog {
+export class BannedUserOfBlog {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

@@ -12,7 +12,7 @@ import { UserBanInfo } from './user-ban-info.entity';
 import { Blog } from '../../blogs/domain/blog.entity';
 import { Post } from '../../posts/domain/post.entity';
 import { Comment } from '../../comments/domain/comment.entity';
-import { BannedUsersOfBlog } from '../../blogs/domain/banned-users-of-blog.entity';
+import { BannedUserOfBlog } from '../../blogs/domain/banned-users-of-blog.entity';
 import { PostLikeInfo } from '../../posts/domain/post-like-info.entity';
 import { CommentLikeInfo } from '../../comments/domain/comment-like-info.entity';
 
@@ -54,8 +54,8 @@ export class User {
   @OneToMany(() => Comment, (c) => c.user)
   comment: Comment[];
 
-  @OneToMany(() => BannedUsersOfBlog, (bu) => bu.user)
-  bannedUsersOfBlog: BannedUsersOfBlog[];
+  @OneToMany(() => BannedUserOfBlog, (bu) => bu.user)
+  bannedUsersOfBlog: BannedUserOfBlog[];
 
   @OneToMany(() => PostLikeInfo, (li) => li.user)
   postLikeInfo: PostLikeInfo[];
