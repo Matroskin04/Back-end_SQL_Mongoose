@@ -30,7 +30,7 @@ import { DevicesController } from './features/devices/api/devices.controller';
 import { DevicesService } from './features/devices/application/devices.service';
 import { DevicesQueryRepository } from './features/devices/infrastructure/query.repository/devices.query.repository';
 import { DevicesRepository } from './features/devices/infrastructure/repository/devices.repository';
-import { JwtService } from './features/jwt/jwt.service';
+import { JwtAdapter } from './infrastructure/adapters/jwt.adapter';
 import { BlogsPublicController } from './features/blogs/api/public/blogs-public.controller';
 import { BlogsBloggerController } from './features/blogs/api/blogger/blogs-blogger.controller';
 import { BlogsSAController } from './features/blogs/api/sa/blogs-sa.controller';
@@ -68,7 +68,7 @@ const services = [
   CommentsService,
   BlogsSAService,
   DevicesService,
-  JwtService,
+  JwtAdapter,
   UsersSaService,
   UsersBloggerService,
   PostsService,

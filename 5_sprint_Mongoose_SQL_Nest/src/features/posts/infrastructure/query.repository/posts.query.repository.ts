@@ -6,7 +6,7 @@ import { QueryPostInputModel } from '../../api/models/input/query-post.input.mod
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import { modifyPostIntoViewModel } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { Injectable } from '@nestjs/common';
-import { QueryBlogsInputModel } from '../../../blogs/api/blogger/models/input/queries-blog.input.model';
+import { QueryBlogsInputModel } from '../../../blogs/api/models/input/queries-blog.input.model';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AllLikeStatusEnum } from '../../../../infrastructure/utils/enums/like-status';
@@ -93,7 +93,7 @@ export class PostsQueryRepository {
   ): Promise<PostPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(query);
-    //todo all in one query - normal?
+
     const result = await this.dataSource.query(
       `
     SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."createdAt", b."name" as "blogName",
@@ -146,7 +146,7 @@ export class PostsQueryRepository {
         (+pageNumber - 1) * +pageSize,
       ],
     );
-    //todo get likes in json normal?
+
     return {
       pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
       page: +pageNumber,

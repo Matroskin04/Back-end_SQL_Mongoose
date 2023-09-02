@@ -75,7 +75,7 @@ export class PostsController {
     @CurrentUserId() userId: string | null,
     @Query() query: QueryPostInputModel,
   ): Promise<ViewAllCommentsOfPostModel> {
-    const result = await this.commentsQueryRepository.getCommentsOfPost(
+    const result = await this.commentsQueryRepository.getCommentsOfPostView(
       postId,
       query,
       userId,
@@ -102,7 +102,7 @@ export class PostsController {
     return result;
   }
 
-  @UseGuards(IsUserBannedByJWTGuard)
+  @UseGuards(JwtAccessGuard, IsUserBannedByJWTGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':postId/like-status')
   async updateLikeStatusOfPost(

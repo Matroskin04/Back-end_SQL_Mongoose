@@ -2,14 +2,14 @@ import {
   QueryBlogsInputModel,
   QueryCommentsOfBlogInputModel,
   QueryPostsOfBlogInputModel,
-} from './models/input/queries-blog.input.model';
+} from '../models/input/queries-blog.input.model';
 import {
   BlogsOutputModel,
   PostsOfBlogViewModel,
   BlogOutputModel,
-} from './models/output/blog.output.models';
-import { CreateBlogInputModel } from './models/input/create-blog.input.model';
-import { UpdateBlogInputModel } from './models/input/update-blog.input.model';
+} from '../models/output/blog.output.models';
+import { CreateBlogInputModel } from '../models/input/create-blog.input.model';
+import { UpdateBlogInputModel } from '../models/input/update-blog.input.model';
 
 import {
   Body,
@@ -34,7 +34,7 @@ import { CurrentUserId } from '../../../../infrastructure/decorators/auth/curren
 import { CreatePostByBlogIdModel } from '../../../posts/api/models/input/create-post.input.model';
 import { PostTypeWithId } from '../../../posts/infrastructure/repository/posts.types.repositories';
 import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
-import { UpdatePostByBlogIdInputModel } from './models/input/update-post-by-blog-id.input.model';
+import { UpdatePostByBlogIdInputModel } from '../models/input/update-post-by-blog-id.input.model';
 import { CommentsQueryRepository } from '../../../comments/infrastructure/query.repository/comments.query.repository';
 import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
 

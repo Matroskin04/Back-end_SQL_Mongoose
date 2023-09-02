@@ -1,7 +1,3 @@
-export type QueryPostInputModel = {
-  searchNameTerm?: string;
-  sortBy?: string;
-  sortDirection?: string;
-  pageNumber?: string | number;
-  pageSize?: string | number;
-};
+import { QueryPostsOfBlogInputModel } from '../../../../blogs/api/models/input/queries-blog.input.model';
+
+export class QueryPostInputModel extends QueryPostsOfBlogInputModel {}

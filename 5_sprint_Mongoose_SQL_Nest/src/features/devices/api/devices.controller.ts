@@ -8,7 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { DevicesQueryRepository } from '../infrastructure/query.repository/devices.query.repository';
-import { DevicesService } from '../application/devices.service';
 import { DeviceOutputModel } from './models/output/device.output.model';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { SkipThrottle } from '@nestjs/throttler';
@@ -16,7 +15,6 @@ import { JwtRefreshGuard } from '../../../infrastructure/guards/authorization-gu
 import { RefreshToken } from '../../../infrastructure/decorators/auth/refresh-token-param.decorator';
 import { Response } from 'express';
 import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
-import { ObjectId } from 'mongodb';
 import { CommandBus } from '@nestjs/cqrs';
 import { DeleteDevicesExcludeCurrentCommand } from '../application/use-cases/delete-devices-exclude-current.use-case';
 import { DeleteDeviceByIdCommand } from '../application/use-cases/delete-device-by-id.use-case';
@@ -27,7 +25,6 @@ export class DevicesController {
   constructor(
     protected commandBus: CommandBus,
     protected devicesQueryRepository: DevicesQueryRepository,
-    protected devicesService: DevicesService,
   ) {}
 
   @UseGuards(JwtRefreshGuard)

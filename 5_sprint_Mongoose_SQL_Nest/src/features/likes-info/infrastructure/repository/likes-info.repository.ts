@@ -11,7 +11,6 @@ import { DataSource } from 'typeorm';
 export class LikesInfoRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  //SQL
   async createLikeInfoOfPost(
     userId: string,
     postId: string,

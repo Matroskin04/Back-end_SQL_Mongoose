@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { DevicesRepository } from '../infrastructure/repository/devices.repository';
-import { JwtService } from '../../jwt/jwt.service';
+import { JwtAdapter } from '../../../infrastructure/adapters/jwt.adapter';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -9,7 +9,7 @@ import { DataSource } from 'typeorm';
 export class DevicesService {
   constructor(
     @InjectDataSource() protected dataSource: DataSource,
-    protected jwtService: JwtService,
+    protected jwtService: JwtAdapter,
     protected deviceRepository: DevicesRepository,
   ) {}
 

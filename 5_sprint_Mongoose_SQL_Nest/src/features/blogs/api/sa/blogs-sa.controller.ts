@@ -10,13 +10,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
-import { QueryBlogInputModel } from './models/input/query-blog.input.model';
-import { ViewAllBlogsModel } from './models/output/blog.output.model';
+import { AllBlogsSAOutputModel } from '../models/output/blog-sa.output.model';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { BasicAuthGuard } from '../../../../infrastructure/guards/authorization-guards/basic-auth.guard';
 import { BlogsSAService } from '../../application/sa/blogs-sa.service';
-import { BanInfoInputModel } from './models/input/ban-info.input.model';
+import { BanInfoInputModel } from '../models/input/ban-info.input.model';
 import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
+import { QueryBlogsInputModel } from '../models/input/queries-blog.input.model';
 
 @SkipThrottle()
 @Controller('/hometask-nest/sa/blogs')
@@ -29,8 +29,8 @@ export class BlogsSAController {
   @UseGuards(BasicAuthGuard)
   @Get()
   async getAllBlogs(
-    @Query() query: QueryBlogInputModel,
-  ): Promise<ViewAllBlogsModel> {
+    @Query() query: QueryBlogsInputModel,
+  ): Promise<AllBlogsSAOutputModel> {
     const result = await this.blogsPublicQueryRepository.getAllBlogsSA(query);
     return result;
   }
@@ -41,7 +41,7 @@ export class BlogsSAController {
   async bindBlogWithUser(
     @Param('id') blogId: string,
     @Param('userId') userId: string,
-  ) {
+  ): Promise<void> {
     const result = await this.blogsSAService.bindBlogWithUser(blogId, userId);
     if (!result) throw new NotFoundException();
     return;

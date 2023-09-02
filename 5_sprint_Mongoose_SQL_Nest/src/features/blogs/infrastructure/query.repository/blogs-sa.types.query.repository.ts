@@ -1,33 +1,14 @@
-import { ObjectId } from 'mongodb';
-
-export type ViewAllBlogsModel = {
+export type AllBlogsSAViewType = {
   pagesCount: number;
   page: number;
   pageSize: number;
   totalCount: number;
-  items: Array<BlogSAOutputType>;
+  items: Array<BlogSAViewType>;
 };
 
-export type BlogSAOutputType = {
+export type BlogSAViewType = {
   id: string;
-  banInfo: { isBanned: boolean; banDate: null | string };
-} & BlogBodyType;
 
-export type BlogSAOutputDBType = {
-  _id: ObjectId;
-  isBanned: boolean;
-} & BlogBodyType;
-
-export type BlogOutputType = {
-  id: string;
-  name: string;
-  description: string;
-  websiteUrl: string;
-  userId: string;
-  isBanned: boolean;
-};
-
-type BlogBodyType = {
   name: string;
 
   description: string;
@@ -41,5 +22,9 @@ type BlogBodyType = {
   blogOwnerInfo: {
     userId: string;
     userLogin: string;
+  };
+  banInfo: {
+    isBanned: boolean;
+    banDate: string;
   };
 };

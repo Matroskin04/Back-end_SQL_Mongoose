@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsersQueryRepository } from '../../features/users/infrastructure/query.repository/users.query.repository';
-import { JwtService } from '../../features/jwt/jwt.service';
+import { JwtAdapter } from '../adapters/jwt.adapter';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()

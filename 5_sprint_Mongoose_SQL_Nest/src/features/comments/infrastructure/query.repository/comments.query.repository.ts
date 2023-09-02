@@ -8,9 +8,10 @@ import {
   modifyCommentsOfBlogger,
 } from '../../../../infrastructure/utils/functions/features/comments.functions.helpers';
 import {
+  CommentDBType,
   CommentOfPostPaginationType,
   CommentsOfBloggerPaginationType,
-} from './comments.types.query.repository';
+} from './comments.output.types.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AllLikeStatusEnum } from '../../../../infrastructure/utils/enums/like-status';
@@ -22,8 +23,8 @@ export class CommentsQueryRepository {
     protected postsQueryRepository: PostsQueryRepository,
   ) {}
 
-  //SQL
-  async getCommentsOfPost(
+  //view methods
+  async getCommentsOfPostView(
     postId: string,
     query: QueryPostInputModel,
     userId: string | null,
@@ -86,7 +87,7 @@ export class CommentsQueryRepository {
     };
   }
 
-  async getCommentByIdViewModel(
+  async getCommentByIdView(
     commentId: string,
     userId: string | null,
   ): Promise<CommentViewType | null> {
@@ -123,18 +124,6 @@ export class CommentsQueryRepository {
 
     if (!commentInfo[0]) return null;
     return modifyCommentIntoViewModel(commentInfo[0]);
-  }
-
-  async getCommentDBInfoById(commentId: string): Promise<any | null> {
-    const commentInfo = await this.dataSource.query(
-      `
-    SELECT "id", "userId", "postId", "content", "createdAt"
-        FROM public."comments" as c
-            WHERE "id" = $1`,
-      [commentId],
-    );
-    if (!commentInfo[0]) return null;
-    return commentInfo[0];
   }
 
   async getCommentsOfBlogger(
@@ -198,5 +187,18 @@ export class CommentsQueryRepository {
       totalCount: +commentInfo[0]?.count || 0,
       items: commentInfo.map((comment) => modifyCommentsOfBlogger(comment)),
     };
+  }
+
+  //addition methods
+  async getCommentDBInfoById(commentId: string): Promise<CommentDBType | null> {
+    const commentInfo = await this.dataSource.query(
+      `
+    SELECT "id", "userId", "postId", "content", "createdAt"
+        FROM public."comments" as c
+            WHERE "id" = $1`,
+      [commentId],
+    );
+    if (!commentInfo[0]) return null;
+    return commentInfo[0];
   }
 }

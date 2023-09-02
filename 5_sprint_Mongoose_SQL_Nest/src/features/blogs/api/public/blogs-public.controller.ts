@@ -10,13 +10,13 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
 import { JwtAccessNotStrictGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import { CurrentUserId } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
-import { QueryBlogsInputModel } from '../blogger/models/input/queries-blog.input.model';
+import { QueryBlogsInputModel } from '../models/input/queries-blog.input.model';
 import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
 import {
   BlogOutputModel,
   BlogsOutputModel,
   PostsOfBlogViewModel,
-} from './models/output/blog.output.models';
+} from '../models/output/blog.output.models';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogs')

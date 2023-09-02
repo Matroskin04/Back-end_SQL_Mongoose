@@ -62,8 +62,6 @@ export class CommentsService {
     userId: string,
     postId: string,
   ): Promise<null | CommentViewType> {
-    //todo нужно ли проверять, нужно ли прикрепляться к userId, postId
-
     const userLogin = await this.usersQueryRepository.getUserLoginById(userId);
     if (!userLogin) {
       return null;
@@ -116,7 +114,7 @@ export class CommentsService {
           commentId,
         );
         if (!isDeleted) {
-          //todo имеет ли смысл в проверки
+          //todo не имеет
           throw new Error('Like status of the comment is not deleted');
         }
         return true;

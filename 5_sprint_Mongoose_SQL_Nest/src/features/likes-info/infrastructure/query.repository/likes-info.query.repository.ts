@@ -1,7 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { NewestLikesType } from '../../../posts/infrastructure/repository/posts.types.repositories';
-
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 

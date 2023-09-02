@@ -29,7 +29,7 @@ import { DevicesService } from '../../devices/application/devices.service';
 import { TitleOfDevice } from '../../../infrastructure/decorators/auth/title-of-device.param.decorator';
 import { JwtRefreshGuard } from '../../../infrastructure/guards/authorization-guards/jwt-refresh.guard';
 import { RefreshToken } from '../../../infrastructure/decorators/auth/refresh-token-param.decorator';
-import { JwtService } from '../../jwt/jwt.service';
+import { JwtAdapter } from '../../../infrastructure/adapters/jwt.adapter';
 import { IsUserBannedByLoginOrEmailGuard } from '../../../infrastructure/guards/is-user-banned.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { RegisterUserCommand } from '../application/use-cases/register-user.use-case';
@@ -48,7 +48,7 @@ import { NewPasswordInputModel } from './models/input/new-password.input.model';
 export class AuthController {
   constructor(
     protected commandBus: CommandBus,
-    protected jwtService: JwtService,
+    protected jwtService: JwtAdapter,
     protected devicesService: DevicesService,
     protected usersQueryRepository: UsersQueryRepository,
   ) {}
@@ -72,7 +72,6 @@ export class AuthController {
     @TitleOfDevice() title: string,
     @Res({ passthrough: true }) res: Response<LoginOutputModel>,
   ) {
-    //todo как пордтянуть типизацицю
     const result = await this.commandBus.execute(new LoginUserCommand(userId));
 
     if (result) {

@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { UsersQueryRepository } from '../../features/users/infrastructure/query.repository/users.query.repository';
 
-//todo duplicate logic from jwt strategy
+// todo duplicate logic from jwt strategy
 @Injectable()
 export class IsUserBannedByJWTStrategy extends PassportStrategy(
   Strategy,

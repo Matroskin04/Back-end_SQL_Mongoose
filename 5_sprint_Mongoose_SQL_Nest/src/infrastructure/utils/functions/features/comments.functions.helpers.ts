@@ -1,6 +1,6 @@
 import { CommentViewType } from '../../../../features/comments/infrastructure/repository/comments.types.repositories';
 import { CommentDBType } from '../../../../features/comments/domain/comments.db.types';
-import { StatusOfLike } from '../../../../features/comments/infrastructure/query.repository/comments.types.query.repository';
+import { StatusOfLike } from '../../../../features/comments/infrastructure/query.repository/comments.output.types.query.repository';
 import { CommentOfBloggerFuncType } from '../types/comments-functions-types';
 import { AllLikeStatusEnum, AllLikeStatusType } from '../../enums/like-status';
 

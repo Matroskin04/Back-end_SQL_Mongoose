@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { TokensAndUserIdType } from '../dto/auth.dto.service';
+import { LoginUserDTO } from '../dto/login-user.dto';
 import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
-import { JwtService } from '../../../jwt/jwt.service';
+import { JwtAdapter } from '../../../../infrastructure/adapters/jwt.adapter';
 
 export class LoginUserCommand {
   constructor(public userId: string) {}
@@ -10,12 +10,10 @@ export class LoginUserCommand {
 @CommandHandler(LoginUserCommand)
 export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
   constructor(
-    protected jwtService: JwtService,
+    protected jwtService: JwtAdapter,
     protected usersQueryRepository: UsersQueryRepository,
   ) {}
-  async execute(
-    command: LoginUserCommand,
-  ): Promise<TokensAndUserIdType | null> {
+  async execute(command: LoginUserCommand): Promise<LoginUserDTO | null> {
     const { userId } = command;
     const user = await this.usersQueryRepository.doesUserExistById(userId);
     if (!user) {

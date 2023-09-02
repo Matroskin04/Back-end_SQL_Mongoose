@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { JwtService } from '../../../jwt/jwt.service';
+import { JwtAdapter } from '../../../../infrastructure/adapters/jwt.adapter';
 import { DevicesRepository } from '../../infrastructure/repository/devices.repository';
 
 export class DeleteDevicesExcludeCurrentCommand {
@@ -11,7 +11,7 @@ export class DeleteDevicesExcludeCurrentUseCase
   implements ICommandHandler<DeleteDevicesExcludeCurrentCommand>
 {
   constructor(
-    protected jwtService: JwtService,
+    protected jwtService: JwtAdapter,
     protected deviceRepository: DevicesRepository,
   ) {}
   async execute(

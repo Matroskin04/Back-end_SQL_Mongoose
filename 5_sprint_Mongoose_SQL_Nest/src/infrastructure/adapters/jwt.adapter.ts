@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { AccessRefreshTokens } from './jwt.types.service';
+import { AccessRefreshTokens } from './types/jwt.types.adapter';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService as JwtServiceNest } from '@nestjs/jwt';
-import { DevicesRepository } from '../devices/infrastructure/repository/devices.repository';
+import { DevicesRepository } from '../../features/devices/infrastructure/repository/devices.repository';
 import { JwtPayload } from 'jsonwebtoken';
 
+//todo jwt - where to transport
 @Injectable()
-export class JwtService {
+export class JwtAdapter {
   constructor(
     protected jwtServiceNest: JwtServiceNest,
     protected devicesRepository: DevicesRepository,

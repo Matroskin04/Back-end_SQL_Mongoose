@@ -42,22 +42,20 @@ export class UsersSaController {
   @Get()
   async getAllUsers(
     @Query() query: QueryUsersSAInputModel,
-    @Res() res: Response<ViewAllUsersModels | string>,
-  ) {
+  ): Promise<ViewAllUsersModels> {
     const result = await this.usersQueryRepository.getAllUsersView(query);
-    res.status(HTTP_STATUS_CODE.OK_200).send(result);
+    return result;
   }
 
   @UseGuards(BasicAuthGuard)
   @Post()
   async createUser(
     @Body() inputUserModel: CreateUserInputModel,
-    @Res() res: Response<UserOutputModel>,
-  ) {
+  ): Promise<UserOutputModel> {
     const result = await this.commandBus.execute(
       new CreateUserCommand(inputUserModel),
     );
-    res.status(HTTP_STATUS_CODE.CREATED_201).send(result);
+    return result;
   }
 
   @UseGuards(BasicAuthGuard)
@@ -66,7 +64,7 @@ export class UsersSaController {
   async updateBanInfoOfUser(
     @Param('id') userId: string,
     @Body() inputBanInfo: UpdateBanInfoOfUserInputModel,
-  ) {
+  ): Promise<void> {
     const result = await this.commandBus.execute(
       new UpdateBanInfoOfUserCommand(userId, inputBanInfo),
     );
@@ -76,11 +74,10 @@ export class UsersSaController {
 
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
-  async deleteUser(@Param('id') userId: string, @Res() res: Response<void>) {
+  async deleteUser(@Param('id') userId: string): Promise<void> {
     const result = await this.commandBus.execute(new DeleteUserCommand(userId));
 
-    result
-      ? res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204)
-      : res.sendStatus(HTTP_STATUS_CODE.NOT_FOUND_404);
+    if (!result) throw new NotFoundException('User is not found');
+    return;
   }
 }

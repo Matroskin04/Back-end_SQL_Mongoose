@@ -3,8 +3,6 @@ import { CommentViewType } from '../repository/comments.types.repositories';
 
 export type StatusOfLike = 'Like' | 'Dislike' | 'None';
 
-export type CommentsDBType = Array<CommentDBTypeMongo>;
-
 export type CommentOfPostPaginationType = {
   pagesCount: number;
   page: number;
@@ -40,4 +38,12 @@ export type CommentOfBloggerType = {
     blogId: string;
     blogName: string;
   };
+};
+
+export type CommentDBType = {
+  id: string;
+  userId: string;
+  postId: string;
+  content: string;
+  createdAt: string;
 };

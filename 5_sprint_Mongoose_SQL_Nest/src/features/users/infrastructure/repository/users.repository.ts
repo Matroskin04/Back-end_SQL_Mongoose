@@ -70,7 +70,6 @@ export class UsersRepository {
   }
 
   async deleteUserById(userId: string): Promise<boolean> {
-    //todo удалять каскадом или пометку 'isDeleted'?
     const result = await this.dataSource.query(
       `
     UPDATE public."users"
