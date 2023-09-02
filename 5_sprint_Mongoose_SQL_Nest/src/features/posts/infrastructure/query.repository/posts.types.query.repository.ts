@@ -2,8 +2,6 @@ import {
   NewestLikesType,
   PostTypeWithId,
 } from '../repository/posts.types.repositories';
-import { PostDBTypeMongo } from '../../domain/posts.db.types';
-import { ObjectId } from 'mongodb';
 
 export type PostPaginationType = {
   pagesCount: number;

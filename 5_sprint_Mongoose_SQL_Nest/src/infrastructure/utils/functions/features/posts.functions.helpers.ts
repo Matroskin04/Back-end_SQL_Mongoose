@@ -1,13 +1,8 @@
 import {
   NewestLikesType,
   PostDBType,
-  PostTypeWithId,
 } from '../../../../features/posts/infrastructure/repository/posts.types.repositories';
-import { PostDBTypeMongo } from '../../../../features/posts/domain/posts.db.types';
 import { PostViewType } from '../../../../features/posts/infrastructure/query.repository/posts.types.query.repository';
-import { ObjectId } from 'mongodb';
-import { LikesInfoQueryRepository } from '../../../../features/likes-info/infrastructure/query.repository/likes-info.query.repository';
-import { reformNewestLikes } from './likes-info.functions.helpers';
 import { AllLikeStatusEnum, AllLikeStatusType } from '../../enums/like-status';
 
 export function modifyPostIntoInitialViewModel(
