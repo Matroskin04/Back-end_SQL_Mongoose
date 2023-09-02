@@ -1,4 +1,3 @@
-import { CommentDBTypeMongo } from '../../domain/comments.db.types';
 import { CommentViewType } from '../repository/comments.types.repositories';
 
 export type StatusOfLike = 'Like' | 'Dislike' | 'None';
