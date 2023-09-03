@@ -143,21 +143,15 @@ export class CommentsQueryRepository {
         
       (SELECT COUNT(*) as "likesCount"
         FROM public."comments_likes_info" as li
-            JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi2."userId"
-        WHERE li."likeStatus" = $2 AND li."commentId" = c."id" AND bi2."isBanned" = false),
+            WHERE li."likeStatus" = $2 AND li."commentId" = c."id"),
             
       (SELECT COUNT(*) as "dislikesCount"
         FROM public."comments_likes_info" as li
-            JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi2."userId"
-        WHERE li."likeStatus" = $3 AND li."commentId" = c."id" AND bi2."isBanned" = false),
+            WHERE li."likeStatus" = $3 AND li."commentId" = c."id"),
             
       (SELECT "likeStatus" as "myStatus"
         FROM public."comments_likes_info" as li
-            JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi2."userId"
-        WHERE li."userId" = $1 AND li."commentId" = c."id" AND bi2."isBanned" = false)
+            WHERE li."userId" = $1 AND li."commentId" = c."id")
             
     FROM public."comments" as c
         JOIN public."users" as u
@@ -166,8 +160,6 @@ export class CommentsQueryRepository {
             ON p."id" = c."postId"
         JOIN public."blogs" as b
             ON b."id" = p."blogId"
-        JOIN public."users_ban_info" as bi
-            ON u."id" = bi."userId"
     WHERE c."userId" = $1
         ORDER BY "${sortBy}" ${sortDirection}
         LIMIT $4 OFFSET $5`,
