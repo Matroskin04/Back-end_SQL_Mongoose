@@ -176,7 +176,7 @@ export class CommentsQueryRepository {
             ON b."id" = p."blogId"
         JOIN public."users_ban_info" as bi
             ON u."id" = bi."userId"
-    WHERE c."userId" = $1 AND bi."isBanned" = false
+    WHERE c."userId" = $1
         ORDER BY "${sortBy}" ${sortDirection}
         LIMIT $4 OFFSET $5`,
       [
