@@ -5,15 +5,14 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../../users/domain/user.entity';
-import { Post } from '../../posts/domain/post.entity';
-import { BannedUserOfBlog } from './banned-users-of-blog.entity';
+import { Users } from '../../users/domain/users.entity';
+import { Posts } from '../../posts/domain/posts.entity';
+import { BannedUsersOfBlog } from './banned-users-of-blog.entity';
 
 @Entity()
-export class Blog {
+export class Blogs {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -38,15 +37,15 @@ export class Blog {
   @Column()
   banDate: Date;
 
-  @ManyToOne(() => User, (u) => u.blog)
+  @ManyToOne(() => Users, (u) => u.blog)
   @JoinColumn()
-  user: User;
+  user: Users;
   @Column()
   userId: string;
 
-  @OneToMany(() => Post, (p) => p.blog)
-  post: Post[];
+  @OneToMany(() => Posts, (p) => p.blog)
+  post: Posts[];
 
-  @OneToMany(() => BannedUserOfBlog, (bu) => bu.blog)
-  bannedUsersOfBlog: BannedUserOfBlog[];
+  @OneToMany(() => BannedUsersOfBlog, (bu) => bu.blog)
+  bannedUsersOfBlog: BannedUsersOfBlog[];
 }

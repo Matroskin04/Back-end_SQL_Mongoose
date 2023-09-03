@@ -7,12 +7,12 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { User } from '../../users/domain/user.entity';
-import { Blog } from './blog.entity';
+import { Users } from '../../users/domain/users.entity';
+import { Blogs } from './blogs.entity';
 
 @Entity()
 @Unique(['userId', 'blogId'])
-export class BannedUserOfBlog {
+export class BannedUsersOfBlog {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -25,15 +25,15 @@ export class BannedUserOfBlog {
   @CreateDateColumn()
   banDate: Date;
 
-  @ManyToOne(() => User, (u) => u.bannedUsersOfBlog)
+  @ManyToOne(() => Users, (u) => u.bannedUsersOfBlog)
   @JoinColumn()
-  user: User;
+  user: Users;
   @Column()
   userId: string;
 
-  @ManyToOne(() => Blog, (b) => b.bannedUsersOfBlog)
+  @ManyToOne(() => Blogs, (b) => b.bannedUsersOfBlog)
   @JoinColumn()
-  blog: Blog;
+  blog: Blogs;
   @Column()
   blogId: string;
 }

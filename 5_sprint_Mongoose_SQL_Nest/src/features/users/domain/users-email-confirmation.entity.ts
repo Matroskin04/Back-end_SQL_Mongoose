@@ -7,13 +7,13 @@ import {
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+import { Users } from './users.entity';
 
 @Entity()
-export class UserEmailConfirmation {
-  @OneToOne(() => User, (u) => u.userEmailConfirmation)
+export class UsersEmailConfirmation {
+  @OneToOne(() => Users, (u) => u.userEmailConfirmation)
   @JoinColumn()
-  user: User;
+  user: Users;
   @PrimaryColumn()
   userId: string;
 

@@ -7,13 +7,14 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { User } from '../../users/domain/user.entity';
-import { Post } from './post.entity';
+import { Users } from '../../users/domain/users.entity';
+import { Posts } from '../../posts/domain/posts.entity';
+import { Comments } from './comments.entity';
 
 @Entity()
-@Unique(['userId', 'postId'])
+@Unique(['userId', 'commentId'])
 @Check('"likeStatus" = ANY (ARRAY[0, 1, 2])')
-export class PostLikeInfo {
+export class CommentsLikesInfo {
   //todo обязательно есть primary key
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -21,15 +22,15 @@ export class PostLikeInfo {
   @Column('smallint')
   likeStatus;
 
-  @ManyToOne(() => User, (u) => u.postLikeInfo)
+  @ManyToOne(() => Users, (u) => u.commentLikeInfo)
   @JoinColumn()
-  user: User;
+  user: Users;
   @Column()
   userId: string;
 
-  @ManyToOne(() => Post, (p) => p.postLikeInfo)
+  @ManyToOne(() => Comments, (c) => c.commentLikeInfo)
   @JoinColumn()
-  post: Post;
+  comment: Comments;
   @Column()
-  postId: string;
+  commentId: string;
 }

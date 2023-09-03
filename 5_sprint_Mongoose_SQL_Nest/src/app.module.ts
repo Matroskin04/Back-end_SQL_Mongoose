@@ -61,16 +61,16 @@ import { DeleteDeviceByIdUseCase } from './features/devices/application/use-case
 import { UsersQueryRepository } from './features/users/infrastructure/query.repository/users.query.repository';
 import { CommentsLikesRepository } from './features/comments/infrastructure/subrepository/comments-likes.repository';
 import { IsUserBannedByJWTStrategy } from './infrastructure/strategy/is-user-banned-by-jwt.strategy';
-import { Blog } from './features/blogs/domain/blog.entity';
-import { User } from './features/users/domain/user.entity';
-import { UserPasswordRecovery } from './features/users/domain/user-password-recovery.entity';
-import { UserEmailConfirmation } from './features/users/domain/user-email-confirmation.entity';
-import { UserBanInfo } from './features/users/domain/user-ban-info.entity';
-import { Post } from './features/posts/domain/post.entity';
-import { Comment } from './features/comments/domain/comment.entity';
-import { BannedUserOfBlog } from './features/blogs/domain/banned-users-of-blog.entity';
-import { PostLikeInfo } from './features/posts/domain/post-like-info.entity';
-import { CommentLikeInfo } from './features/comments/domain/comment-like-info.entity';
+import { Blogs } from './features/blogs/domain/blogs.entity';
+import { Users } from './features/users/domain/users.entity';
+import { UsersPasswordRecovery } from './features/users/domain/users-password-recovery.entity';
+import { UsersEmailConfirmation } from './features/users/domain/users-email-confirmation.entity';
+import { UsersBanInfo } from './features/users/domain/users-ban-info.entity';
+import { Posts } from './features/posts/domain/posts.entity';
+import { Comments } from './features/comments/domain/comments.entity';
+import { BannedUsersOfBlog } from './features/blogs/domain/banned-users-of-blog.entity';
+import { PostsLikesInfo } from './features/posts/domain/posts-likes-info.entity';
+import { CommentsLikesInfo } from './features/comments/domain/comments-likes-info.entity';
 
 const services = [
   AuthService,
@@ -130,16 +130,16 @@ const handlers = [
     }),
     ConfigModule.forRoot(),
     TypeOrmModule.forFeature([
-      Blog,
-      BannedUserOfBlog,
-      Post,
-      PostLikeInfo,
-      Comment,
-      CommentLikeInfo,
-      User,
-      UserPasswordRecovery,
-      UserEmailConfirmation,
-      UserBanInfo,
+      Blogs,
+      BannedUsersOfBlog,
+      Posts,
+      PostsLikesInfo,
+      Comments,
+      CommentsLikesInfo,
+      Users,
+      UsersPasswordRecovery,
+      UsersEmailConfirmation,
+      UsersBanInfo,
     ]),
     TypeOrmModule.forRoot({
       type: 'postgres',

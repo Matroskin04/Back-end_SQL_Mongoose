@@ -7,10 +7,10 @@ import {
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+import { Users } from './users.entity';
 
 @Entity()
-export class UserBanInfo {
+export class UsersBanInfo {
   @Column({ default: false })
   isBanned: boolean;
 
@@ -20,9 +20,9 @@ export class UserBanInfo {
   @CreateDateColumn()
   banDate: Date;
 
-  @OneToOne(() => User, (u) => u.userBanInfo)
+  @OneToOne(() => Users, (u) => u.userBanInfo)
   @JoinColumn()
-  user: User;
+  user: Users;
   @PrimaryColumn()
   userId: string;
 }

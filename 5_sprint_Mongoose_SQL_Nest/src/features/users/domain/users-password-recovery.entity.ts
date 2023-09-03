@@ -7,13 +7,13 @@ import {
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+import { Users } from './users.entity';
 
 @Entity()
-export class UserPasswordRecovery {
-  @OneToOne(() => User, (u) => u.userPasswordRecovery)
+export class UsersPasswordRecovery {
+  @OneToOne(() => Users, (u) => u.userPasswordRecovery)
   @JoinColumn()
-  user: User;
+  user: Users;
   @PrimaryColumn()
   userId: string;
 
