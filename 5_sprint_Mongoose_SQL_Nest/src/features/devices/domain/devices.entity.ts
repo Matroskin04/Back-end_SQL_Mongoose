@@ -19,7 +19,7 @@ export class Devices {
   title: string;
 
   @Column()
-  expirationDate: Date;
+  expirationDate: number;
 
   @Column()
   lastActiveDate: string;
