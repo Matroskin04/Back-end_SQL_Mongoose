@@ -84,7 +84,7 @@ export class PostsQueryRepository {
         (+pageNumber - 1) * +pageSize,
       ],
     );
-    //todo get likes in json normal?
+
     return {
       pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
       page: +pageNumber,

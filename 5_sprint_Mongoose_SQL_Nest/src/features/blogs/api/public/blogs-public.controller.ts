@@ -17,6 +17,7 @@ import {
   BlogsOutputModel,
   PostsOfBlogViewModel,
 } from '../models/output/blog.output.models';
+import { QueryPostInputModel } from '../../../posts/api/models/input/query-post.input.model';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogs')
@@ -46,7 +47,7 @@ export class BlogsPublicController {
   async getAllPostsOfBlog(
     @Param('blogId') blogId: string,
     @CurrentUserId() userId: string,
-    @Query() query: QueryBlogsInputModel,
+    @Query() query: QueryPostInputModel,
   ): Promise<PostsOfBlogViewModel> {
     const result = await this.postsQueryRepository.getAllPostsOfBlog(
       blogId,
