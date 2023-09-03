@@ -58,7 +58,6 @@ export class BlogsSAController {
       blogId,
       inputBanInfoModel.isBanned,
     );
-    if (!result) throw new NotFoundException();
     return;
   }
 

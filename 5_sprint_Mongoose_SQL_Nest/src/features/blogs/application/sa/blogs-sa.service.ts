@@ -28,10 +28,7 @@ export class BlogsSAService {
     return isUpdate;
   }
 
-  async updateBanInfoOfBlog(
-    blogId: string,
-    banStatus: boolean,
-  ): Promise<boolean> {
+  async updateBanInfoOfBlog(blogId: string, banStatus: boolean): Promise<void> {
     const blog = await this.blogsPublicQueryRepository.getBlogAllInfoById(
       blogId,
     );
@@ -49,6 +46,6 @@ export class BlogsSAService {
       blogId,
       banStatus,
     );
-    return isUpdate;
+    return;
   }
 }
