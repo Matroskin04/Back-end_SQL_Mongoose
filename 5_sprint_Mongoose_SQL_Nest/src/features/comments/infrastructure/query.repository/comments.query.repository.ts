@@ -132,14 +132,6 @@ export class CommentsQueryRepository {
   ): Promise<CommentsOfBloggerPaginationType | null> {
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(query);
-    const allComments1 = await this.dataSource.query(`
-    SELECT COUNT(*)
-        FROM public."comments"
-            WHERE "userId" = $1 `);
-    const allComments2 = await this.dataSource.query(`
-    SELECT "id", "userId"
-        FROM public."comments" `);
-    console.log(allComments1, allComments2);
 
     const commentInfo = await this.dataSource.query(
       `
