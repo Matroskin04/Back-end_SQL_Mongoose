@@ -14,10 +14,10 @@ export class UsersBanInfo {
   @Column({ default: false })
   isBanned: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   banReason: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ nullable: true })
   banDate: Date;
 
   @OneToOne(() => Users, (u) => u.userBanInfo)

@@ -19,10 +19,10 @@ export class BannedUsersOfBlog {
   @Column()
   isBanned: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   banReason: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ nullable: true })
   banDate: Date;
 
   @ManyToOne(() => Users, (u) => u.bannedUsersOfBlog)

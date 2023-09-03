@@ -12,10 +12,10 @@ export class Devices {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   ip: string;
 
-  @Column()
+  @Column({ nullable: true })
   title: string;
 
   @Column()
