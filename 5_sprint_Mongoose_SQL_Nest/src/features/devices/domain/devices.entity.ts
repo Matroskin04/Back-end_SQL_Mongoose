@@ -21,6 +21,9 @@ export class Devices {
   @Column()
   expirationDate: Date;
 
+  @Column()
+  lastActiveDate: string;
+
   @ManyToOne(() => Users, (u) => u.device)
   @JoinColumn()
   user: Users;

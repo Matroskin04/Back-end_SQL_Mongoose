@@ -1,6 +1,7 @@
 import {
   Check,
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -20,6 +21,9 @@ export class PostsLikesInfo {
 
   @Column('smallint')
   likeStatus;
+
+  @CreateDateColumn()
+  addedAt: Date;
 
   @ManyToOne(() => Users, (u) => u.postLikeInfo)
   @JoinColumn()

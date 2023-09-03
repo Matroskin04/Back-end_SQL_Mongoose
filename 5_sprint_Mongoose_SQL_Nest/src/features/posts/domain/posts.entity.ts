@@ -24,7 +24,7 @@ export class Posts {
   @Column({ length: 100 })
   shortDescription: string;
 
-  @Column()
+  @Column({ length: 1000 })
   content: string;
 
   @CreateDateColumn()
