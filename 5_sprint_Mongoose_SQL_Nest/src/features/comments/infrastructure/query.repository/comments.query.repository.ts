@@ -133,6 +133,13 @@ export class CommentsQueryRepository {
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(query);
 
+    const allComments = await this.dataSource.query(`
+    SELECT "userId" FROM "comments"`);
+
+    console.log('userId' + userId);
+
+    console.log('comments' + allComments);
+
     const commentInfo = await this.dataSource.query(
       `
     SELECT c."id", c."userId", c."content", c."createdAt", u."login" as "userLogin", 
