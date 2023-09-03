@@ -28,7 +28,7 @@ export function variablesForReturn(
 ): VariablesForReturnType {
   const pageNumber = query?.pageNumber ?? 1;
   const pageSize = query?.pageSize ?? 10;
-  const sortBy = query?.sortBy ?? 'id';
+  const sortBy = query?.sortBy ?? 'createdAt';
   const sortDirection = query?.sortDirection ?? 'desc';
 
   const searchLoginTerm: string = query?.searchLoginTerm ?? '';

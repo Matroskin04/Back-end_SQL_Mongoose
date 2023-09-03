@@ -145,4 +145,15 @@ export class BlogsQueryRepository {
     );
     return !!result[0]?.isBanned;
   }
+
+  async doesBlogExist(blogId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+  SELECT COUNT(*)
+    FROM public."blogs"
+        WHERE "id" = $1`,
+      [blogId],
+    );
+    return +result[0].count === 1;
+  }
 }

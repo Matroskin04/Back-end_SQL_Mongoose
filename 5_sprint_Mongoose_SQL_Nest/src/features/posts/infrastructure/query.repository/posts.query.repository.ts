@@ -10,10 +10,14 @@ import { QueryBlogsInputModel } from '../../../blogs/api/models/input/queries-bl
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AllLikeStatusEnum } from '../../../../infrastructure/utils/enums/like-status';
+import { BlogsQueryRepository } from '../../../blogs/infrastructure/query.repository/blogs.query.repository';
 
 @Injectable()
 export class PostsQueryRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() protected dataSource: DataSource,
+    protected blogsQueryRepository: BlogsQueryRepository,
+  ) {}
 
   //SQL
   async getAllPostsOfBlog(
@@ -21,6 +25,9 @@ export class PostsQueryRepository {
     query: QueryBlogsInputModel,
     userId: string | null,
   ): Promise<null | PostPaginationType> {
+    const blog = await this.blogsQueryRepository.doesBlogExist(blogId);
+    if (!blog) return null;
+
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(query);
 
