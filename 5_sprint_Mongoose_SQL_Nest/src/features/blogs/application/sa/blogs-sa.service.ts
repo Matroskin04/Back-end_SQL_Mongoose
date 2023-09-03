@@ -28,10 +28,14 @@ export class BlogsSAService {
     return isUpdate;
   }
 
-  async updateBanInfoOfBlog(blogId: string, banStatus: boolean): Promise<void> {
+  async updateBanInfoOfBlog(
+    blogId: string,
+    banStatus: boolean,
+  ): Promise<boolean> {
     const blog = await this.blogsPublicQueryRepository.getBlogAllInfoById(
       blogId,
     );
+
     if (!blog) throw new NotFoundException('Blog is not found');
 
     if (blog.isBanned === banStatus)
@@ -46,6 +50,6 @@ export class BlogsSAService {
       blogId,
       banStatus,
     );
-    return;
+    return isUpdate;
   }
 }

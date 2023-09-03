@@ -71,6 +71,7 @@ export class UsersSaController {
   }
 
   @UseGuards(BasicAuthGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':id')
   async deleteUser(@Param('id') userId: string): Promise<void> {
     const result = await this.commandBus.execute(new DeleteUserCommand(userId));

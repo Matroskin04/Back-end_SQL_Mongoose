@@ -128,7 +128,7 @@ export class BlogsQueryRepository {
       `
     SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership", "isBanned", "userId"
       FROM public."blogs"
-        WHERE "id" = $1 AND "isBanned" = false`,
+        WHERE "id" = $1`,
       [blogId],
     );
     if (!result[0]) return null;
