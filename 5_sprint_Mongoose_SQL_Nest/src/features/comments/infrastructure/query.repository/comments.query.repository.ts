@@ -133,8 +133,11 @@ export class CommentsQueryRepository {
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(query);
 
-    const allComments = await this.dataSource.query(`
-    SELECT "userId" FROM "comments"`);
+    const allComments = await this.dataSource.query(
+      `
+    SELECT "userId" FROM "comments" WHERE "userId" = $1`,
+      [userId],
+    );
 
     console.log('userId' + userId);
 
@@ -146,7 +149,11 @@ export class CommentsQueryRepository {
            p."id" as "postId", p."title", p."blogId", b."name" as "blogName",
       (SELECT COUNT(*)
         FROM public."comments"
-            WHERE "userId" = $1),
+            JOIN public."posts" as p
+                ON p."id" = c."postId"
+            JOIN public."blogs" as b
+                ON b."id" = p."blogId"
+        WHERE b."userId" = $1),
         
       (SELECT COUNT(*) as "likesCount"
         FROM public."comments_likes_info" as li
@@ -167,7 +174,7 @@ export class CommentsQueryRepository {
             ON p."id" = c."postId"
         JOIN public."blogs" as b
             ON b."id" = p."blogId"
-    WHERE c."userId" = $1
+    WHERE b."userId" = $1
         ORDER BY "${sortBy}" ${sortDirection}
         LIMIT $4 OFFSET $5`,
       [
@@ -178,6 +185,8 @@ export class CommentsQueryRepository {
         (+pageNumber - 1) * +pageSize,
       ],
     );
+
+    console.log(commentInfo[0]);
 
     return {
       pagesCount: Math.ceil((+commentInfo[0]?.count || 0) / +pageSize),
