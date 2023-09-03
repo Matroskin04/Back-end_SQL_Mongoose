@@ -71,6 +71,7 @@ import { Comments } from './features/comments/domain/comments.entity';
 import { BannedUsersOfBlog } from './features/blogs/domain/banned-users-of-blog.entity';
 import { PostsLikesInfo } from './features/posts/domain/posts-likes-info.entity';
 import { CommentsLikesInfo } from './features/comments/domain/comments-likes-info.entity';
+import { Devices } from './features/devices/domain/devices.entity';
 
 const services = [
   AuthService,
@@ -132,6 +133,7 @@ const handlers = [
     TypeOrmModule.forFeature([
       Blogs,
       BannedUsersOfBlog,
+      Devices,
       Posts,
       PostsLikesInfo,
       Comments,

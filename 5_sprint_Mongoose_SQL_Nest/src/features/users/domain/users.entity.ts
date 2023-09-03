@@ -15,6 +15,7 @@ import { Comments } from '../../comments/domain/comments.entity';
 import { BannedUsersOfBlog } from '../../blogs/domain/banned-users-of-blog.entity';
 import { PostsLikesInfo } from '../../posts/domain/posts-likes-info.entity';
 import { CommentsLikesInfo } from '../../comments/domain/comments-likes-info.entity';
+import { Devices } from '../../devices/domain/devices.entity';
 
 @Entity()
 export class Users {
@@ -62,4 +63,7 @@ export class Users {
 
   @OneToMany(() => CommentsLikesInfo, (li) => li.user)
   commentLikeInfo: CommentsLikesInfo[];
+
+  @OneToMany(() => Devices, (d) => d.user)
+  device: Devices[];
 }
