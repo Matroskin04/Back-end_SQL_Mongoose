@@ -153,7 +153,9 @@ export class CommentsQueryRepository {
                 ON p."id" = c."postId"
             JOIN public."blogs" as b
                 ON b."id" = p."blogId"
-        WHERE b."userId" = $1),
+            JOIN public."users_ban_info" as bi
+                ON u."id" = bi."userId"
+        WHERE b."userId" = $1 AND bi."isBanned" = false),
         
       (SELECT COUNT(*) as "likesCount"
         FROM public."comments_likes_info" as li
@@ -174,7 +176,9 @@ export class CommentsQueryRepository {
             ON p."id" = c."postId"
         JOIN public."blogs" as b
             ON b."id" = p."blogId"
-    WHERE b."userId" = $1
+        JOIN public."users_ban_info" as bi
+                ON u."id" = bi."userId"
+    WHERE b."userId" = $1 AND bi."isBanned" = false
         ORDER BY "${sortBy}" ${sortDirection}
         LIMIT $4 OFFSET $5`,
       [
