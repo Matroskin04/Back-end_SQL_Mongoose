@@ -6,7 +6,6 @@ import mongoose from 'mongoose';
 import { AppModule } from '../../../app.module';
 import { appSettings } from '../../../app.settings';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
-import * as process from 'process';
 import { EmailAdapter } from '../../../infrastructure/adapters/email.adapter';
 import { emailAdapterMock } from '../mock.providers/auth.mock.providers';
 import {
@@ -21,9 +20,6 @@ import {
   updatePasswordTest,
 } from './auth-public.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
-import { UserModelType } from '../../../features/users/domain/users.db.types';
-import { User } from '../../../features/users/domain/users.entity';
-import { getModelToken } from '@nestjs/mongoose';
 import { createUserTest } from '../../super-admin/users-sa.helpers';
 
 describe('Auth (Public); /auth', () => {
@@ -31,16 +27,10 @@ describe('Auth (Public); /auth', () => {
 
   //vars for starting app and testing
   let app: INestApplication;
-  let UserModel: UserModelType;
   let mongoServer: MongoMemoryServer;
   let httpServer;
 
   beforeAll(async () => {
-    //activate mongoServer
-    mongoServer = await MongoMemoryServer.create();
-    const mongoUri = mongoServer.getUri();
-    process.env['MONGO_URL'] = mongoUri;
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
@@ -53,8 +43,6 @@ describe('Auth (Public); /auth', () => {
     await app.init();
 
     httpServer = app.getHttpServer();
-
-    UserModel = moduleFixture.get<UserModelType>(getModelToken(User.name));
   });
 
   afterAll(async () => {

@@ -1,16 +1,11 @@
 import { INestApplication } from '@nestjs/common';
-import { UserModelType } from '../../../features/users/domain/users.db.types';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import process from 'process';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../app.module';
 import { appSettings } from '../../../app.settings';
-import { getModelToken } from '@nestjs/mongoose';
-import { User } from '../../../features/users/domain/users.entity';
-import mongoose from 'mongoose';
-import request from 'supertest';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { loginUserTest } from '../../public/auth/auth-public.helpers';
+import { v4 as uuidv4 } from 'uuid';
 import {
   createBlogTest,
   createResponseAllBlogsTest,
@@ -43,24 +38,16 @@ import {
   createCommentTest,
   createResponseCommentsOfBlogger,
 } from '../../public/comments-public.helpers';
-import * as http from 'http';
-import * as https from 'https';
 
 describe('Blogs, Post, Comments (Blogger); /blogger', () => {
   jest.setTimeout(5 * 60 * 1000);
-  //todo flow with comments need to test
+
   //vars for starting app and testing
   let app: INestApplication;
-  let UserModel: UserModelType;
   let mongoServer: MongoMemoryServer;
   let httpServer;
 
   beforeAll(async () => {
-    //activate mongoServer
-    mongoServer = await MongoMemoryServer.create();
-    const mongoUri = mongoServer.getUri();
-    process.env['MONGO_URL'] = mongoUri;
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -70,13 +57,9 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     await app.init();
 
     httpServer = app.getHttpServer();
-
-    UserModel = moduleFixture.get<UserModelType>(getModelToken(User.name));
   });
 
   afterAll(async () => {
-    await mongoose.disconnect();
-    await mongoServer.stop();
     await httpServer.close();
     await app.close();
   });
@@ -302,7 +285,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     it(`- (404) should not update blog because blog is not found with such id`, async () => {
       const result = await updateBlogBloggerTest(
         httpServer,
-        new ObjectId(),
+        uuidv4(),
         accessToken,
         correctBlogName,
         correctDescription,
@@ -388,7 +371,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     it(`- (404) should not delete blog because blog doesn't exist with such id`, async () => {
       const result = await deleteBlogBloggerTest(
         httpServer,
-        new ObjectId(),
+        uuidv4(),
         accessToken,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
@@ -436,7 +419,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     it(`- (404) should not create post because blog doesn't exist with such id`, async () => {
       const result = await createPostTest(
         httpServer,
-        new ObjectId(),
+        uuidv4(),
         accessToken,
         correctTitle,
         correctShortDescription,
@@ -548,11 +531,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     });
 
     it(`- (404) should not return posts because blog is not found`, async () => {
-      const result = await getAllPostsTest(
-        httpServer,
-        new ObjectId(),
-        accessToken,
-      );
+      const result = await getAllPostsTest(httpServer, uuidv4(), accessToken);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
@@ -633,7 +612,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       //blogId is incorrect
       const result1 = await updatePostTest(
         httpServer,
-        new ObjectId(),
+        uuidv4(),
         correctPostId,
         accessToken,
         correctTitle,
@@ -645,7 +624,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const result2 = await updatePostTest(
         httpServer,
         correctBlogId,
-        new ObjectId(),
+        uuidv4(),
         accessToken,
         correctTitle,
         correctShortDescription,
@@ -777,7 +756,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       //blogId is incorrect
       const result1 = await deletePostTest(
         httpServer,
-        new ObjectId(),
+        uuidv4(),
         correctPostId,
         accessToken,
       );
@@ -786,7 +765,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const result2 = await deletePostTest(
         httpServer,
         correctBlogId,
-        new ObjectId(),
+        uuidv4(),
         accessToken,
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
