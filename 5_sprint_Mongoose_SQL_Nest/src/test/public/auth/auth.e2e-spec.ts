@@ -8,6 +8,7 @@ import { appSettings } from '../../../app.settings';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { EmailAdapter } from '../../../infrastructure/adapters/email.adapter';
 import { emailAdapterMock } from '../mock.providers/auth.mock.providers';
+import { v4 as uuidv4 } from 'uuid';
 import {
   confirmEmailTest,
   createNewRefreshAccessTokensTest,
@@ -21,14 +22,17 @@ import {
 } from './auth-public.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { createUserTest } from '../../super-admin/users-sa.helpers';
+import { Connection } from 'typeorm';
+import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
 
 describe('Auth (Public); /auth', () => {
   jest.setTimeout(5 * 60 * 1000);
-
   //vars for starting app and testing
   let app: INestApplication;
   let mongoServer: MongoMemoryServer;
   let httpServer;
+  //todo how to replace Connection
+  let dbConnection: Connection;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -37,6 +41,7 @@ describe('Auth (Public); /auth', () => {
       .overrideProvider(EmailAdapter)
       .useValue(emailAdapterMock)
       .compile();
+    dbConnection = moduleFixture.get<Connection>(Connection);
 
     app = moduleFixture.createNestApplication();
     appSettings(app); //activate settings for app
@@ -56,8 +61,9 @@ describe('Auth (Public); /auth', () => {
   let busyLogin;
   const freeCorrectEmail = 'freeEmail@gmail.com';
   const freeCorrectLogin = 'freeLogin';
-  const correctPass = 'correctPass';
-  let confirmationCode;
+  const correctPass = 'correctPass1';
+  let emailConfirmationCode;
+  let passConfirmationCode;
 
   const lengthIs5 = '12345';
   const lengthIs21 = '123456789123456789123';
@@ -122,7 +128,7 @@ describe('Auth (Public); /auth', () => {
       const result = await registerUserTest(
         httpServer,
         'Egor123',
-        '123qwe',
+        correctPass,
         'meschit9@gmail.com',
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
@@ -140,7 +146,7 @@ describe('Auth (Public); /auth', () => {
       const result1 = await registerUserTest(
         httpServer,
         busyLogin,
-        '123qwe',
+        correctPass,
         freeCorrectEmail,
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
@@ -151,7 +157,7 @@ describe('Auth (Public); /auth', () => {
       const result2 = await registerUserTest(
         httpServer,
         freeCorrectLogin,
-        '123qwe',
+        correctPass,
         busyEmail,
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
@@ -178,7 +184,7 @@ describe('Auth (Public); /auth', () => {
       const result2 = await registerUserTest(
         httpServer,
         'Length===11',
-        'correct',
+        correctPass,
         freeCorrectEmail,
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
@@ -198,14 +204,13 @@ describe('Auth (Public); /auth', () => {
   });
 
   describe(`/auth/registration-confirmation (POST) - Registration-confirmation`, () => {
+    let userId;
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
     beforeAll(async () => {
-      await request(httpServer)
-        .delete('/hometask-nest/testing/all-data')
-        .expect(HTTP_STATUS_CODE.NO_CONTENT_204);
+      await deleteAllDataTest(httpServer);
 
       //register user
       const result = await registerUserTest(
@@ -218,27 +223,32 @@ describe('Auth (Public); /auth', () => {
     });
 
     it(`+ (204) should confirm email successfully
-              - (400) should not confirm email because of confirmation code is already been applied`, async () => {
+               - (400) should not confirm email because of confirmation code is already been applied`, async () => {
       //find confirmation code
-      const userInfo = await UserModel.findOne(
-        { login: freeCorrectLogin },
-        { 'emailConfirmation.confirmationCode': 1 },
+      const userInfo = await dbConnection.query(
+        `
+        SELECT ec."confirmationCode" 
+        FROM public."users" as u
+            JOIN public."users_email_confirmation" as ec
+            ON u."id" = ec."userId"
+        WHERE u."login" = $1`,
+        [freeCorrectLogin],
       );
-      confirmationCode = userInfo?.emailConfirmation.confirmationCode;
+      expect(userInfo[0]?.confirmationCode).toBeDefined();
+      emailConfirmationCode = userInfo[0].confirmationCode;
 
       //confirm email
-      const result1 = await confirmEmailTest(httpServer, confirmationCode);
+      const result1 = await confirmEmailTest(httpServer, emailConfirmationCode);
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //code is already been applied
-      const result2 = await confirmEmailTest(httpServer, confirmationCode);
+      const result2 = await confirmEmailTest(httpServer, emailConfirmationCode);
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result2.body).toEqual(createErrorsMessageTest(['code']));
     });
 
-    //
     it(`- (400) should not confirm email because of confirmation code is incorrect
-              - (400) should not confirm email because of confirmation code is expired`, async () => {
+               - (400) should not confirm email because of confirmation code is expired`, async () => {
       //incorrect code
       const result1 = await confirmEmailTest(
         httpServer,
@@ -251,28 +261,30 @@ describe('Auth (Public); /auth', () => {
       //register user
       const result4 = await registerUserTest(
         httpServer,
-        'Correct',
+        'Login2',
         correctPass,
-        'correct@mail.ru',
+        'email2@mail.ru',
       );
       expect(result4.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
-      const user = await UserModel.findOne({ login: 'Correct' });
-      expect(user).not.toBeNull();
-      //подменяем дату истечения срока кода
-      user!.emailConfirmation.expirationDate = new Date();
-      await user!.save();
 
-      const result2 = await confirmEmailTest(
-        httpServer,
-        user?.emailConfirmation.confirmationCode,
+      //change date of code expiration
+      await dbConnection.query(
+        `
+        UPDATE public."users_email_confirmation" as ec
+        SET "expirationDate" = now()
+        FROM public."users" as u
+            WHERE u."login" = $1 AND ec."userId" = u."id"`,
+        ['Login2'],
       );
+
+      const result2 = await confirmEmailTest(httpServer, emailConfirmationCode);
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result2.body).toEqual(createErrorsMessageTest(['code']));
     });
   });
 
   describe(`/auth/registration-email-resending (POST) - Resend confirmation code on email for registration
-                  /auth/registration-confirmation (POST)`, () => {
+                   /auth/registration-confirmation (POST)`, () => {
     let pastConfirmationCode;
     let newConfirmationCode;
     beforeEach(() => {
@@ -294,11 +306,7 @@ describe('Auth (Public); /auth', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //find confirmation code
-      const userInfo = await UserModel.findOne(
-        { login: freeCorrectLogin },
-        { 'emailConfirmation.confirmationCode': 1 },
-      );
-      pastConfirmationCode = userInfo?.emailConfirmation.confirmationCode;
+      pastConfirmationCode = emailConfirmationCode;
     });
 
     it(`+ (204) should resend new code`, async () => {
@@ -313,13 +321,19 @@ describe('Auth (Public); /auth', () => {
 
     //dependent
     it(`- (400) should not confirm email because it is past code (not new)
-              + (204) should confirm email with new code`, async () => {
+               + (204) should confirm email with new code`, async () => {
       //find current confirmation code
-      const userInfo = await UserModel.findOne(
-        { login: freeCorrectLogin },
-        { 'emailConfirmation.confirmationCode': 1 },
+      const userInfo = await dbConnection.query(
+        `
+        SELECT ec."confirmationCode" 
+        FROM public."users" as u
+            JOIN public."users_email_confirmation" as ec
+            ON u."id" = ec."userId"
+        WHERE u."login" = $1`,
+        [freeCorrectLogin],
       );
-      newConfirmationCode = userInfo?.emailConfirmation.confirmationCode;
+      expect(userInfo[0]?.confirmationCode).toBeDefined();
+      newConfirmationCode = userInfo[0]?.confirmationCode;
 
       //400 past code
       const result1 = await confirmEmailTest(httpServer, pastConfirmationCode);
@@ -340,7 +354,7 @@ describe('Auth (Public); /auth', () => {
     });
 
     it(`- (400) should not resend code because user with such email haven't registered
-              - (400) should not resend code because email is incorrect`, async () => {
+               - (400) should not resend code because email is incorrect`, async () => {
       const result1 = await resendEmailConfirmationCodeTest(
         httpServer,
         'NotExistingEmail@mail.ru',
@@ -360,7 +374,7 @@ describe('Auth (Public); /auth', () => {
   });
 
   describe(`/auth/login (POST) - login user
-                  /auth/logout (POST) - logout user`, () => {
+                   /auth/logout (POST) - logout user`, () => {
     let user;
     let accessToken;
     let refreshToken;
@@ -380,7 +394,7 @@ describe('Auth (Public); /auth', () => {
     });
 
     it(`+ (200) should login user with passed login
-              + (200) should login user with passed email`, async () => {
+               + (200) should login user with passed email`, async () => {
       const result1 = await loginUserTest(
         httpServer,
         user.body.login,
@@ -401,7 +415,7 @@ describe('Auth (Public); /auth', () => {
     });
 
     it(`- (401) should not login user because login is incorrect
-              - (401) should not login user because password is incorrect`, async () => {
+               - (401) should not login user because password is incorrect`, async () => {
       //incorrect login
       const result1 = await loginUserTest(
         httpServer,
@@ -420,7 +434,7 @@ describe('Auth (Public); /auth', () => {
 
     //dependent
     it(`- (401) refreshToken is incorrect
-              + (204) should logout user`, async () => {
+               + (204) should logout user`, async () => {
       //incorrect refreshToken
       const result1 = await logoutUserTest(httpServer, 'IncorrectRefreshToken');
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
@@ -432,7 +446,7 @@ describe('Auth (Public); /auth', () => {
 
     //dependent
     it(`- (401) shouldn't logout user because the user has already logged out
- and refresh token was deactivated `, async () => {
+  and refresh token was deactivated `, async () => {
       //refreshToken was deactivated
       const result = await logoutUserTest(httpServer, refreshToken);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
@@ -440,7 +454,7 @@ describe('Auth (Public); /auth', () => {
   });
 
   describe(`/auth/refresh-token (POST) - generate new pair of access and refresh tokens
-                  (Addition) /auth/logout (POST) - logout user for checking deactivated refreshToken`, () => {
+                   (Addition) /auth/logout (POST) - logout user for checking deactivated refreshToken`, () => {
     let user;
     let pastRefreshToken;
     let newRefreshToken;
@@ -497,7 +511,7 @@ describe('Auth (Public); /auth', () => {
 
     //dependent
     it(`- (401) shouldn't logout user because past refresh token was deactivated
-              - (204) should logout user with new refresh token`, async () => {
+               - (204) should logout user with new refresh token`, async () => {
       //refresh token was deactivated
       const result1 = await logoutUserTest(httpServer, pastRefreshToken);
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
@@ -509,7 +523,7 @@ describe('Auth (Public); /auth', () => {
   });
 
   describe(`/auth/password-recovery (POST) - send code for recovery password
-                  /auth/new-password (POST) - update password`, () => {
+                   /auth/new-password (POST) - update password`, () => {
     let user;
     let pastRecoveryCode;
     let newRecoveryCode;
@@ -541,8 +555,8 @@ describe('Auth (Public); /auth', () => {
       expect(result.body).toEqual(createErrorsMessageTest(['email']));
     });
 
-    it(`+ (204) should return status 204 but not send code 
-                      if user with such email doesn't exist`, async () => {
+    it(`+ (204) should return status 204 but not send code
+                       if user with such email doesn't exist`, async () => {
       const result = await sendCodeRecoveryPasswordTest(
         httpServer,
         'NotExistEmail@mail.ru',
@@ -560,12 +574,17 @@ describe('Auth (Public); /auth', () => {
       expect(emailAdapterMock.sendEmailPasswordRecovery).toBeCalled();
 
       //find recovery pass code
-      const userInfo1 = await UserModel.findOne(
-        { login: user.body.login },
-        { passwordRecovery: 1 },
+      const code = await dbConnection.query(
+        `
+        SELECT pr."confirmationCode" 
+        FROM public."users" as u
+            JOIN public."users_password_recovery" as pr
+            ON u."id" = pr."userId"
+        WHERE u."login" = $1`,
+        [user.body.login],
       );
-      expect(userInfo1).not.toBeNull();
-      pastRecoveryCode = userInfo1!.passwordRecovery.confirmationCode;
+      expect(code[0]?.confirmationCode).toBeDefined();
+      pastRecoveryCode = code[0].confirmationCode;
 
       const result2 = await sendCodeRecoveryPasswordTest(
         httpServer,
@@ -575,29 +594,35 @@ describe('Auth (Public); /auth', () => {
       expect(emailAdapterMock.sendEmailPasswordRecovery).toBeCalled();
 
       //find recovery new pass code
-      const userInfo2 = await UserModel.findOne(
-        { login: user.body.login },
-        { passwordRecovery: 1 },
+      const newCode = await dbConnection.query(
+        `
+        SELECT pr."confirmationCode" 
+        FROM public."users" as u
+            JOIN public."users_password_recovery" as pr
+            ON u."id" = pr."userId"
+        WHERE u."login" = $1`,
+        [user.body.login],
       );
-      expect(userInfo2).not.toBeNull();
-      newRecoveryCode = userInfo2!.passwordRecovery.confirmationCode;
+      expect(newCode[0]?.confirmationCode).toBeDefined();
+      newRecoveryCode = newCode[0].confirmationCode;
     });
 
     //dependent
     it(`- (400) shouldn't update password because code is incorrect
-              - (400) shouldn't update password because code is past (it was deactivated)`, async () => {
+               - (400) shouldn't update password because code is past (it was deactivated)`, async () => {
       const result1 = await updatePasswordTest(
         httpServer,
-        'newPassword',
-        'incorrectPasswordRecoveryCode',
+        'newPassword123',
+        uuidv4(),
       );
+      console.log(result1.body);
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(emailAdapterMock.sendEmailPasswordRecovery).not.toBeCalled();
       expect(result1.body).toEqual(createErrorsMessageTest(['recoveryCode']));
 
       const result2 = await updatePasswordTest(
         httpServer,
-        'newPassword',
+        'newPassword123',
         pastRecoveryCode,
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
@@ -609,7 +634,7 @@ describe('Auth (Public); /auth', () => {
     it(`+ (204) should update password with new code`, async () => {
       const result = await updatePasswordTest(
         httpServer,
-        'newPassword',
+        'newPassword123',
         newRecoveryCode,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
@@ -655,14 +680,15 @@ describe('Auth (Public); /auth', () => {
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
-      //find recovery pass code
-      const userModel = await UserModel.findOne({ login: user.body.login });
-      expect(userModel).not.toBeNull();
-      newRecoveryCode = userModel!.passwordRecovery.confirmationCode;
-
       //change date of expiration
-      userModel!.passwordRecovery.expirationDate = new Date();
-      await userModel!.save();
+      await dbConnection.query(
+        `
+        UPDATE public."users_password_recovery" as pr
+          SET "expirationDate" = now()
+        FROM public."users" as u
+        WHERE u."login" = $1 AND pr."userId" = u."id"`,
+        [user.body.login],
+      );
 
       //400 code is expired
       const result2 = await updatePasswordTest(

@@ -28,6 +28,11 @@ export class RegistrationAuthInputModel {
   @IsNotEmpty({ message: 'The field shouldn\t be empty' })
   @IsString({ message: 'It should be a string' })
   @Length(6, 20)
-  @IsStrongPassword({ minLowercase: 1, minUppercase: 1, minNumbers: 1 })
+  @IsStrongPassword({
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 0,
+  })
   password: string;
 }
