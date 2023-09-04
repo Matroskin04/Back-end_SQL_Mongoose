@@ -86,7 +86,7 @@ export class PostsQueryRepository {
     );
 
     return {
-      pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
+      pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,
@@ -155,7 +155,7 @@ export class PostsQueryRepository {
     );
 
     return {
-      pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
+      pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,

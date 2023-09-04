@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { QueryUsersSAInputModel } from '../../api/sa/models/input/query-users-sa.input.model';
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -7,7 +6,6 @@ import {
   modifyBannedUserOfBlogIntoViewModel,
   modifyUserIntoViewModel,
 } from '../helpers/modify-user-into-view-model.helper';
-import { QueryUsersBloggerInputModel } from '../../api/blogger/models/input/query-users-blogger.input.model';
 import {
   BannedUsersOfBlogPaginationType,
   UserBanInfoType,
@@ -74,7 +72,7 @@ export class UsersQueryRepository {
     );
 
     return {
-      pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
+      pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,
@@ -112,7 +110,7 @@ export class UsersQueryRepository {
     );
 
     return {
-      pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
+      pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,

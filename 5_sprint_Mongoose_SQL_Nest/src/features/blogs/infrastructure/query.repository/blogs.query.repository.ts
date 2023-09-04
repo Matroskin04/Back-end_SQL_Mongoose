@@ -39,7 +39,7 @@ export class BlogsQueryRepository {
       pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: +result[0]?.count,
+      totalCount: +result[0]?.count || 0,
       items: result.map((e) => {
         delete e.count;
         return e;
@@ -70,10 +70,10 @@ export class BlogsQueryRepository {
     );
 
     return {
-      pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
+      pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: +result[0]?.count || 0,
+      totalCount: +result[0]?.count,
       items: result.map((blog) => modifyBlogIntoSaOutputModel(blog)),
     };
   }
@@ -98,7 +98,7 @@ export class BlogsQueryRepository {
     );
 
     return {
-      pagesCount: Math.ceil((+result[0]?.count || 0) / +pageSize),
+      pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,

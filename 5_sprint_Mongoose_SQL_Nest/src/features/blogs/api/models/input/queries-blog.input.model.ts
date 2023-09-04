@@ -1,4 +1,10 @@
-import { IsIn, IsNumber, Matches, ValidateIf } from 'class-validator';
+import {
+  IsIn,
+  IsNumber,
+  IsPositive,
+  Matches,
+  ValidateIf,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 const valuesOfSortingBlogs = [
   'id',
@@ -41,11 +47,13 @@ export class QueryGeneralParams {
 
   @ValidateIf((o) => o.pageNumber !== undefined)
   @Transform(({ value }) => +value)
+  @IsPositive()
   @IsNumber()
   pageNumber?: string;
 
   @ValidateIf((o) => o.pageSize !== undefined)
   @Transform(({ value }) => +value)
+  @IsPositive()
   @IsNumber()
   pageSize?: string;
 }
