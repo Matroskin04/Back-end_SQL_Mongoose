@@ -179,7 +179,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     it(`+ (200) should return empty array`, async () => {
       const result = await getAllBlogsBloggerTest(httpServer, accessToken, '');
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result.body).toEqual(createResponseAllBlogsTest(1, 1, 10, 0, []));
+      expect(result.body).toEqual(createResponseAllBlogsTest([]));
     });
 
     // it(`(Addition) + (201) should create 10 blogs
@@ -302,7 +302,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //check blog with updating data
-      const blog = await getBlogByIdPublicTest(httpServer, correctBlogId, '');
+      const blog = await getBlogByIdPublicTest(httpServer, correctBlogId);
       expect(blog.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(blog.body).toEqual(
         createResponseSingleBlog(
@@ -382,7 +382,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //check that blog is deleted
-      const blog = await getBlogByIdPublicTest(httpServer, correctBlogId, '');
+      const blog = await getBlogByIdPublicTest(httpServer, correctBlogId);
       expect(blog.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
   });
@@ -566,7 +566,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
         accessToken,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result.body).toEqual(createResponseAllBlogsTest(1, 1, 10, 0, []));
+      expect(result.body).toEqual(createResponseAllBlogsTest([]));
     });
   });
 

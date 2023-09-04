@@ -49,18 +49,31 @@ export async function deleteBlogBloggerTest(httpServer, blogId, accessToken) {
 }
 
 export function createResponseAllBlogsTest(
-  pagesCount,
-  page,
-  pageSize,
-  totalCount,
-  items,
+  idsOfBlogs: Array<string> | number,
+  isMembership?: boolean,
+  totalCount?: number,
+  pagesCount?: number,
+  page?: number,
+  pageSize?: number,
 ) {
+  const allBlogs: any = [];
+  const limit = typeof idsOfBlogs === 'number' ? idsOfBlogs : idsOfBlogs.length;
+  for (let i = 0; i < limit; i++) {
+    allBlogs.push({
+      id: idsOfBlogs[i] ?? expect.any(String),
+      name: expect.any(String),
+      description: expect.any(String),
+      websiteUrl: expect.any(String),
+      createdAt: expect.any(String),
+      isMembership: isMembership ?? false,
+    });
+  }
   return {
-    pagesCount,
-    page,
-    pageSize,
-    totalCount,
-    items,
+    pagesCount: pagesCount ?? 1,
+    page: page ?? 1,
+    pageSize: pageSize ?? 10,
+    totalCount: totalCount ?? 0,
+    items: allBlogs,
   };
 }
 

@@ -54,7 +54,7 @@ export function createResponseCommentsOfBlogger(
     pagesCount: pagesCount ?? 1,
     page: page ?? 1,
     pageSize: pageSize ?? 10,
-    totalCount: totalCount,
+    totalCount: totalCount ?? 0,
     items: allComments,
   };
 }
