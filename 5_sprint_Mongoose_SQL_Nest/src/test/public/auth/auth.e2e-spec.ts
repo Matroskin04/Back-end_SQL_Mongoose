@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import mongoose from 'mongoose';
 import { AppModule } from '../../../app.module';
 import { appSettings } from '../../../app.settings';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
@@ -29,7 +27,6 @@ describe('Auth (Public); /auth', () => {
   jest.setTimeout(5 * 60 * 1000);
   //vars for starting app and testing
   let app: INestApplication;
-  let mongoServer: MongoMemoryServer;
   let httpServer;
   //todo how to replace Connection
   let dbConnection: Connection;
@@ -51,8 +48,6 @@ describe('Auth (Public); /auth', () => {
   });
 
   afterAll(async () => {
-    await mongoose.disconnect();
-    await mongoServer.stop();
     await httpServer.close();
     await app.close();
   });
@@ -63,7 +58,6 @@ describe('Auth (Public); /auth', () => {
   const freeCorrectLogin = 'freeLogin';
   const correctPass = 'correctPass1';
   let emailConfirmationCode;
-  let passConfirmationCode;
 
   const lengthIs5 = '12345';
   const lengthIs21 = '123456789123456789123';

@@ -1,5 +1,4 @@
 import { INestApplication } from '@nestjs/common';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../app.module';
 import { appSettings } from '../../../app.settings';
@@ -16,7 +15,6 @@ import {
 } from './blogs-blogger.helpers';
 import { createUserTest } from '../../super-admin/users-sa.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
-import { ObjectId } from 'mongodb';
 import {
   createPostTest,
   createResponseSinglePost,
@@ -25,7 +23,7 @@ import {
   updatePostTest,
 } from './posts-blogger.helpers';
 import { getPostByIdPublicTest } from '../../public/posts/posts-public.helpers';
-import { getBlogByIdPublicTest } from '../../public/blogs-public.helpers';
+import { getBlogByIdPublicTest } from '../../public/blogs/blogs-public.helpers';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
 import {
   createCorrectBlogTest,
@@ -44,7 +42,6 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
   //vars for starting app and testing
   let app: INestApplication;
-  let mongoServer: MongoMemoryServer;
   let httpServer;
 
   beforeAll(async () => {
@@ -65,7 +62,6 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
   });
   let user;
   let accessToken;
-  const correctCommentContent = 'correctCommentContent';
 
   //blogs
   let correctBlogId;
