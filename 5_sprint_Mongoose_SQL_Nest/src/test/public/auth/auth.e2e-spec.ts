@@ -1,15 +1,14 @@
-/*
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
-import { AppModule } from '../../app.module';
-import { appSettings } from '../../app.settings';
-import { HTTP_STATUS_CODE } from '../../infrastructure/utils/enums/http-status';
+import { AppModule } from '../../../app.module';
+import { appSettings } from '../../../app.settings';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import * as process from 'process';
-import { EmailAdapter } from '../../infrastructure/adapters/email.adapter';
-import { emailAdapterMock } from './mock.providers/auth.mock.providers';
+import { EmailAdapter } from '../../../infrastructure/adapters/email.adapter';
+import { emailAdapterMock } from '../mock.providers/auth.mock.providers';
 import {
   confirmEmailTest,
   createNewRefreshAccessTokensTest,
@@ -20,14 +19,14 @@ import {
   resendEmailConfirmationCodeTest,
   sendCodeRecoveryPasswordTest,
   updatePasswordTest,
-} from '../helpers/auth.helpers';
-import { createErrorsMessageTest } from '../helpers/errors-message.helper';
-import { UserModelType } from '../../features/users/domain/users.db.types';
-import { User } from '../../features/users/domain/users.entity';
+} from './auth-public.helpers';
+import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
+import { UserModelType } from '../../../features/users/domain/users.db.types';
+import { User } from '../../../features/users/domain/users.entity';
 import { getModelToken } from '@nestjs/mongoose';
-import { createUserTest } from '../helpers/users.helpers';
+import { createUserTest } from '../../super-admin/users-sa.helpers';
 
-describe('auth+comments All operation, chains: /auth + /posts/{id}/comments + /comments', () => {
+describe('Auth (Public); /auth', () => {
   jest.setTimeout(5 * 60 * 1000);
 
   //vars for starting app and testing
@@ -688,4 +687,3 @@ describe('auth+comments All operation, chains: /auth + /posts/{id}/comments + /c
     });
   });
 });
-*/
