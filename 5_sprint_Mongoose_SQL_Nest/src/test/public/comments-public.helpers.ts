@@ -1,4 +1,6 @@
 import request from 'supertest';
+import { HTTP_STATUS_CODE } from '../../infrastructure/utils/enums/http-status';
+import { CommentsAndUsersIdType } from './types/comments.types';
 
 export async function createCommentTest(
   httpServer,
@@ -8,7 +10,7 @@ export async function createCommentTest(
 ) {
   return request(httpServer)
     .post(`/hometask-nest/posts/${postId}/comments`)
-
+    .set('Authorization', `Bearer ${accessToken}`)
     .send({
       content,
     });
@@ -92,5 +94,80 @@ export function createResponseSingleCommentTest(
     },
   };
 }
+export function createResponseCommentsOfPostTest(
+  idsOfComments: Array<string> | number,
+  arrOfLikesCount?: Array<number> | null,
+  arrOfDislikesCount?: Array<number> | null,
+  arrOfMyStatus?: Array<string> | null,
+  totalCount?: number,
+  pagesCount?: number,
+  page?: number,
+  pageSize?: number,
+) {
+  const allComments: any = [];
+  let count = 0;
+  const limit =
+    typeof idsOfComments === 'number' ? idsOfComments : idsOfComments.length;
 
-// export function
+  for (let i = 0; i < limit; i++) {
+    allComments.push({
+      id: idsOfComments[i] ?? expect.any(String),
+      content: expect.any(String),
+      commentatorInfo: {
+        userId: expect.any(String),
+        userLogin: expect.any(String),
+      },
+      createdAt: expect.any(String),
+      likesInfo: {
+        likesCount: arrOfLikesCount ? arrOfLikesCount[count] : 0,
+        dislikesCount: arrOfDislikesCount ? arrOfDislikesCount[count] : 0,
+        myStatus: arrOfMyStatus ? arrOfMyStatus[count] : 'None',
+      },
+    });
+    count++;
+  }
+  return {
+    pagesCount: pagesCount ?? 1,
+    page: page ?? 1,
+    pageSize: pageSize ?? 10,
+    totalCount: totalCount ?? 0,
+    items: allComments,
+  };
+}
+
+export async function create9CommentsBy3Users(
+  httpServer,
+  postId,
+  accessTokens: [string, string, string],
+  usersId: [string, string, string],
+): Promise<CommentsAndUsersIdType> {
+  const commentNumber = [
+    'first',
+    'second',
+    'third',
+    'fourth',
+    'fifth',
+    'sixth',
+    'seventh',
+    'eighth',
+    'ninth',
+  ];
+  const commentsIdsInfo: any = [];
+  let count = 0;
+  for (const i of commentNumber) {
+    const result = await createCommentTest(
+      httpServer,
+      postId,
+      accessTokens[Math.floor(count / 3)],
+      `Content of the ${i} comment`,
+    );
+
+    expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+    commentsIdsInfo.push({
+      id: result.body.id,
+      userId: usersId[Math.floor(count / 3)],
+    });
+    count++;
+  }
+  return commentsIdsInfo;
+}

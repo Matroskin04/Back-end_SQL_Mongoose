@@ -20,8 +20,11 @@ import {
 import { createAndLogin3UsersTest } from '../blogs/blogs-public.helpers';
 import { createResponseAllPostsTest } from '../blogs/posts-blogs-puclic.helpers';
 import {
+  create9CommentsBy3Users,
   createCommentTest,
+  createResponseCommentsOfPostTest,
   createResponseSingleCommentTest,
+  getCommentsOfPostTest,
 } from '../comments-public.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { createPostTest } from '../../blogger/blogs/posts-blogs-blogger.helpers';
@@ -56,6 +59,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
   let accessToken2;
   let accessToken3;
   let postsIds;
+  let commentsIds;
 
   //comments
   const correctCommentContent = 'Correct comment content';
@@ -233,30 +237,44 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       await deleteAllDataTest(httpServer);
 
       //create and login user
-      user = await createCorrectUserTest(httpServer);
-      const result = await loginCorrectUserTest(httpServer);
-      accessToken1 = result.accessToken;
+      const result = await createAndLogin3UsersTest(httpServer);
+      accessToken1 = result[0].accessToken;
+      accessToken2 = result[1].accessToken;
+      accessToken3 = result[2].accessToken;
 
       blog = await createCorrectBlogTest(httpServer, accessToken1);
       post = await createCorrectPostTest(httpServer, blog.id, accessToken1);
+      commentsIds = await create9CommentsBy3Users(
+        httpServer,
+        post.id,
+        [accessToken1, accessToken2, accessToken3],
+        [result[0].userId, result[1].userId, result[2].userId],
+      );
     });
 
     it(`- (404) post with such id is not found`, async () => {
-      const result = await getPostByIdPublicTest(httpServer, uuidv4());
+      const result = await getCommentsOfPostTest(
+        httpServer,
+        uuidv4(),
+        accessToken1,
+      );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
-    it(`+ (200) should return post by id`, async () => {
-      const result = await getPostByIdPublicTest(httpServer, post.id);
+    it(`+ (200) should return comments of post`, async () => {
+      const result = await getCommentsOfPostTest(
+        httpServer,
+        post.id,
+        accessToken1,
+      );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
-        createResponseSinglePost(
-          post.id,
-          post.title,
-          post.shortDescription,
-          post.content,
-          blog.id,
-          blog.name,
+        createResponseCommentsOfPostTest(
+          commentsIds.map((e) => e.id).reverse(),
+          null,
+          null,
+          null,
+          9,
         ),
       );
     });
