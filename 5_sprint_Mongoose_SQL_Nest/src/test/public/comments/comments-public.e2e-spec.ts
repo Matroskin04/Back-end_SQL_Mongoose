@@ -46,6 +46,7 @@ describe('Comments, Put-like comment, (Public); /', () => {
     await app.close();
   });
   let user;
+  const correctPass = 'Password1';
   let post;
   let blog;
   let comment;
@@ -115,77 +116,64 @@ describe('Comments, Put-like comment, (Public); /', () => {
         accessToken1,
       );
     });
-    // it(`- (401) jwt access token is incorrect`, async () => {
-    //   //jwt is incorrect
-    //   const result = await deleteCommentTest(
-    //     httpServer,
-    //     comment.id,
-    //     correctPostId,
-    //     'IncorrectJWT',
-    //   );
-    //   expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
-    // });
-    //
-    // it(`- (404) should not delete post because blog is not found with such id
-    //           - (404) should not delete post because post is not found with such id`, async () => {
-    //   //blogId is incorrect
-    //   const result1 = await deletePostTest(
-    //     httpServer,
-    //     uuidv4(),
-    //     correctPostId,
-    //     accessToken,
-    //   );
-    //   expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
-    //   //postId is incorrect
-    //   const result2 = await deletePostTest(
-    //     httpServer,
-    //     correctBlogId,
-    //     uuidv4(),
-    //     accessToken,
-    //   );
-    //   expect(result2.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
-    // });
-    //
-    // it(`- (403) shouldn't delete post if the blog of this post doesn't belong to current user`, async () => {
-    //   //creates new user
-    //   const newUser = await createUserTest(
-    //     httpServer,
-    //     'user2',
-    //     'correctPass',
-    //     'email2@gmail.com',
-    //   );
-    //   expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-    //
-    //   const result1 = await loginUserTest(
-    //     httpServer,
-    //     newUser.body.login,
-    //     'correctPass',
-    //   );
-    //   expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-    //   const accessToken2 = result1.body.accessToken;
-    //
-    //   //403 (update blog that doesn't belong this user
-    //   const result2 = await deletePostTest(
-    //     httpServer,
-    //     correctBlogId,
-    //     correctPostId,
-    //     accessToken2,
-    //   );
-    //   expect(result2.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
-    // });
-    //
-    // it(`+ (204) should delete post`, async () => {
-    //   const result = await deletePostTest(
-    //     httpServer,
-    //     correctBlogId,
-    //     correctPostId,
-    //     accessToken,
-    //   );
-    //   expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
-    //
-    //   //check that post is deleted
-    //   const post = await getPostByIdPublicTest(httpServer, correctPostId);
-    //   expect(post.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
-    // });
+    it(`- (401) jwt access token is incorrect`, async () => {
+      //jwt is incorrect
+      const result = await deleteCommentTest(
+        httpServer,
+        comment.id,
+        'IncorrectJWT',
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+    });
+
+    it(`- (404) comment with such id is not found`, async () => {
+      const result = await deleteCommentTest(
+        httpServer,
+        uuidv4(),
+        accessToken1,
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
+    });
+
+    it(`- (403) shouldn't delete comment if it doesn't belong to current user`, async () => {
+      //creates new user
+      const newUser = await createUserTest(
+        httpServer,
+        'user2',
+        correctPass,
+        'email2@gmail.com',
+      );
+      expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+
+      const result1 = await loginUserTest(
+        httpServer,
+        newUser.body.login,
+        correctPass,
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      const accessToken2 = result1.body.accessToken;
+
+      //403 (delete comment that doesn't belong this user)
+      const result2 = await deleteCommentTest(
+        httpServer,
+        comment.id,
+        accessToken2,
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
+    });
+
+    it(`+ (204) should delete comment
+              (Addition) - (404) deleted comment shouldn't be found`, async () => {
+      const result = await deleteCommentTest(
+        httpServer,
+        comment.id,
+        accessToken1,
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      //check that comment is deleted
+      const post = await getCommentTest(httpServer, comment.id);
+      expect(post.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
+    });
   });
 });

@@ -62,6 +62,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
   });
   let user;
   let accessToken;
+  const correctPass = 'Password1';
 
   //blogs
   let correctBlogId;
@@ -253,7 +254,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const newUser = await createUserTest(
         httpServer,
         'user2',
-        'correctPass',
+        correctPass,
         'email2@gmail.com',
       );
       expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
@@ -261,7 +262,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const result1 = await loginUserTest(
         httpServer,
         newUser.body.login,
-        'correctPass',
+        correctPass,
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       const accessToken2 = result1.body.accessToken;
@@ -342,7 +343,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const newUser = await createUserTest(
         httpServer,
         'user2',
-        'correctPass',
+        correctPass,
         'email2@gmail.com',
       );
       expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
@@ -350,7 +351,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const result1 = await loginUserTest(
         httpServer,
         newUser.body.login,
-        'correctPass',
+        correctPass,
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       const accessToken2 = result1.body.accessToken;
@@ -458,7 +459,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const newUser = await createUserTest(
         httpServer,
         'user2',
-        'correctPass',
+        correctPass,
         'email2@gmail.com',
       );
       expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
@@ -466,7 +467,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const result1 = await loginUserTest(
         httpServer,
         newUser.body.login,
-        'correctPass',
+        correctPass,
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       const accessToken2 = result1.body.accessToken;
@@ -536,7 +537,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const newUser = await createUserTest(
         httpServer,
         'user2',
-        'correctPass',
+        correctPass,
         'email2@gmail.com',
       );
       expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
@@ -544,7 +545,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const result1 = await loginUserTest(
         httpServer,
         newUser.body.login,
-        'correctPass',
+        correctPass,
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       const accessToken2 = result1.body.accessToken;
@@ -634,7 +635,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const newUser = await createUserTest(
         httpServer,
         'user2',
-        'correctPass',
+        correctPass,
         'email2@gmail.com',
       );
       expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
@@ -642,7 +643,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const result1 = await loginUserTest(
         httpServer,
         newUser.body.login,
-        'correctPass',
+        correctPass,
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       const accessToken2 = result1.body.accessToken;
@@ -772,7 +773,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const newUser = await createUserTest(
         httpServer,
         'user2',
-        'correctPass',
+        correctPass,
         'email2@gmail.com',
       );
       expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
@@ -780,7 +781,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const result1 = await loginUserTest(
         httpServer,
         newUser.body.login,
-        'correctPass',
+        correctPass,
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       const accessToken2 = result1.body.accessToken;
