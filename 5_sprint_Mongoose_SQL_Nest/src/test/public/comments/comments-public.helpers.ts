@@ -29,6 +29,18 @@ export async function getCommentTest(httpServer, commentId, accessToken?) {
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
+export async function updateCommentTest(
+  httpServer,
+  commentId,
+  content,
+  accessToken,
+) {
+  return request(httpServer)
+    .put(`/hometask-nest/comments/${commentId}`)
+    .set('Authorization', `Bearer ${accessToken}`)
+    .send({ content });
+}
+
 export async function deleteCommentTest(httpServer, commentId, accessToken) {
   return request(httpServer)
     .delete(`/hometask-nest/comments/${commentId}`)
