@@ -78,17 +78,17 @@ export function createResponseAllBlogsTest(
 }
 
 export function createResponseSingleBlog(
-  id,
-  name,
-  description,
-  websiteUrl,
+  id?,
+  name?,
+  description?,
+  websiteUrl?,
   isMembership?,
 ) {
   return {
-    id,
-    name,
-    description,
-    websiteUrl,
+    id: id ?? expect.any(String),
+    name: name ?? expect.any(String),
+    description: description ?? expect.any(String),
+    websiteUrl: websiteUrl ?? expect.any(String),
     createdAt: expect.any(String),
     isMembership: isMembership ?? false,
   };

@@ -8,14 +8,20 @@ export async function createCommentTest(
 ) {
   return request(httpServer)
     .post(`/hometask-nest/posts/${postId}/comments`)
-    .set('Authorization', `Bearer ${accessToken}`)
+
     .send({
       content,
     });
 }
 
+export async function getCommentsOfPostTest(httpServer, postId, accessToken?) {
+  return request(httpServer)
+    .get(`/hometask-nest/posts/${postId}/comments`)
+    .set('Authorization', `Bearer ${accessToken}`);
+}
+
 export function createResponseCommentsOfBlogger(
-  idsOfComments: Array<string | null>,
+  idsOfComments: Array<string> | number,
   idsOfPosts: Array<number> | null,
   arrOfLikesCount: Array<number> | null,
   arrOfDislikesCount: Array<number> | null,
@@ -27,9 +33,12 @@ export function createResponseCommentsOfBlogger(
 ) {
   const allComments: any = [];
   let count = 0;
-  for (const id of idsOfComments) {
+  const limit =
+    typeof idsOfComments === 'number' ? idsOfComments : idsOfComments.length;
+
+  for (let i = 0; i < limit; i++) {
     allComments.push({
-      id: id ?? expect.any(String),
+      id: idsOfComments[i] ?? expect.any(String),
       content: expect.any(String),
       commentatorInfo: {
         userId: expect.any(String),
@@ -58,3 +67,30 @@ export function createResponseCommentsOfBlogger(
     items: allComments,
   };
 }
+
+export function createResponseSingleCommentTest(
+  id?: string | null,
+  content?: string | null,
+  userId?: string | null,
+  login?: string | null,
+  likesCount?: number,
+  dislikesCount?: number,
+  myStatus?: string,
+) {
+  return {
+    id: id ?? expect.any(String),
+    content: content ?? expect.any(String),
+    commentatorInfo: {
+      userId: userId ?? expect.any(String),
+      userLogin: login ?? expect.any(String),
+    },
+    createdAt: expect.any(String),
+    likesInfo: {
+      likesCount: likesCount ?? 0,
+      dislikesCount: dislikesCount ?? 0,
+      myStatus: myStatus ?? 'None',
+    },
+  };
+}
+
+// export function

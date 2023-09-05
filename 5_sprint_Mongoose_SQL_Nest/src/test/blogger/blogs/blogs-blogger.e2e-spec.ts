@@ -21,7 +21,7 @@ import {
   deletePostTest,
   getAllPostsTest,
   updatePostTest,
-} from './posts-blogger.helpers';
+} from './posts-blogs-blogger.helpers';
 import { getPostByIdPublicTest } from '../../public/posts/posts-public.helpers';
 import { getBlogByIdPublicTest } from '../../public/blogs/blogs-public.helpers';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
@@ -31,7 +31,7 @@ import {
   createCorrectUserTest,
   loginCorrectUserTest,
 } from '../../helpers/chains-of-requests.helpers';
-import { getAllCommentsOfBloggerTest } from './comments-blogger.helpers';
+import { getAllCommentsOfBloggerTest } from './comments-blogs-blogger.helpers';
 import {
   createCommentTest,
   createResponseCommentsOfBlogger,
@@ -704,7 +704,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //check post with updating data
-      const post = await getPostByIdPublicTest(httpServer, correctPostId, '');
+      const post = await getPostByIdPublicTest(httpServer, correctPostId);
       expect(post.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(post.body).toEqual(
         createResponseSinglePost(
@@ -805,7 +805,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //check that post is deleted
-      const post = await getPostByIdPublicTest(httpServer, correctPostId, '');
+      const post = await getPostByIdPublicTest(httpServer, correctPostId);
       expect(post.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
   });
