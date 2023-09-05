@@ -35,7 +35,7 @@ import { getAllCommentsOfBloggerTest } from './comments-blogs-blogger.helpers';
 import {
   createCommentTest,
   createResponseCommentsOfBlogger,
-} from '../../public/comments-public.helpers';
+} from '../../public/comments/comments-public.helpers';
 
 describe('Blogs, Post, Comments (Blogger); /blogger', () => {
   jest.setTimeout(5 * 60 * 1000);

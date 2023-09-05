@@ -1,6 +1,7 @@
 import request from 'supertest';
-import { HTTP_STATUS_CODE } from '../../infrastructure/utils/enums/http-status';
-import { CommentsAndUsersIdType } from './types/comments.types';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { CommentsAndUsersIdType } from '../types/comments.types';
+import { CreateCorrectCommentTestType } from '../../helpers/types/chains-of-requests.types';
 
 export async function createCommentTest(
   httpServer,
@@ -20,6 +21,39 @@ export async function getCommentsOfPostTest(httpServer, postId, accessToken?) {
   return request(httpServer)
     .get(`/hometask-nest/posts/${postId}/comments`)
     .set('Authorization', `Bearer ${accessToken}`);
+}
+
+export async function getCommentTest(httpServer, commentId, accessToken?) {
+  return request(httpServer)
+    .get(`/hometask-nest/comments/${commentId}`)
+    .set('Authorization', `Bearer ${accessToken}`);
+}
+
+export async function deleteCommentTest(httpServer, commentId, accessToken) {
+  return request(httpServer)
+    .delete(`/hometask-nest/comments/${commentId}`)
+    .set('Authorization', `Bearer ${accessToken}`);
+}
+
+export async function createCorrectCommentTest(
+  httpServer,
+  postId,
+  accessToken,
+): Promise<CreateCorrectCommentTestType> {
+  const comment = await createCommentTest(
+    httpServer,
+    postId,
+    accessToken,
+    'Correct content of comment',
+  );
+  expect(comment.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+  expect(comment.body.id).toBeDefined();
+
+  return {
+    id: comment.body.id,
+    content: comment.body.content,
+    userId: comment.body.commentatorInfo.userId,
+  };
 }
 
 export function createResponseCommentsOfBlogger(
@@ -70,7 +104,7 @@ export function createResponseCommentsOfBlogger(
   };
 }
 
-export function createResponseSingleCommentTest(
+export function createResponseSingleComment(
   id?: string | null,
   content?: string | null,
   userId?: string | null,

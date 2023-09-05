@@ -72,7 +72,6 @@ describe('Auth (Public); /auth', () => {
         .expect(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       user = await createUserTest(
-        //todo How to add type for user.body
         httpServer,
         freeCorrectLogin,
         correctPass,

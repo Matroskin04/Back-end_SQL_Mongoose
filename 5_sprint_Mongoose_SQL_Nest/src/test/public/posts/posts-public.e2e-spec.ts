@@ -23,11 +23,10 @@ import {
   create9CommentsBy3Users,
   createCommentTest,
   createResponseCommentsOfPostTest,
-  createResponseSingleCommentTest,
+  createResponseSingleComment,
   getCommentsOfPostTest,
-} from '../comments-public.helpers';
+} from '../comments/comments-public.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
-import { createPostTest } from '../../blogger/blogs/posts-blogs-blogger.helpers';
 
 describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -212,24 +211,24 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       // expect(result3.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       // expect(result3.body).toEqual(createErrorsMessageTest(['content']));
     });
-  });
 
-  it(`+ (201) should create comment`, async () => {
-    const result = await createCommentTest(
-      httpServer,
-      post.id,
-      accessToken1,
-      correctCommentContent,
-    );
-    expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-    expect(result.body).toEqual(
-      createResponseSingleCommentTest(
-        null,
+    it(`+ (201) should create comment`, async () => {
+      const result = await createCommentTest(
+        httpServer,
+        post.id,
+        accessToken1,
         correctCommentContent,
-        user.id,
-        user.login,
-      ),
-    );
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+      expect(result.body).toEqual(
+        createResponseSingleComment(
+          null,
+          correctCommentContent,
+          user.id,
+          user.login,
+        ),
+      );
+    });
   });
 
   describe(`/posts/:id (GET) - get comments by post id`, () => {

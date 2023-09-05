@@ -22,3 +22,9 @@ export type CreateCorrectPostTestType = {
   shortDescription: string;
   content: string;
 };
+
+export type CreateCorrectCommentTestType = {
+  id: string;
+  content: string;
+  userId: string;
+};
