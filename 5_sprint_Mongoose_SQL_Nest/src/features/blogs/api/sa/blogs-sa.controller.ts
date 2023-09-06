@@ -17,11 +17,14 @@ import { BlogsSAService } from '../../application/sa/blogs-sa.service';
 import { BanInfoInputModel } from '../models/input/ban-info.input.model';
 import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
 import { QueryBlogsInputModel } from '../models/input/queries-blog.input.model';
+import { CommandBus } from '@nestjs/cqrs';
+import { BindBlogWithUserCommand } from '../../application/sa/use-cases/bind-blog-with-user.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/sa/blogs')
 export class BlogsSAController {
   constructor(
+    protected commandBus: CommandBus,
     protected blogsPublicQueryRepository: BlogsQueryRepository,
     protected blogsSAService: BlogsSAService,
   ) {}
@@ -42,7 +45,9 @@ export class BlogsSAController {
     @Param('id') blogId: string,
     @Param('userId') userId: string,
   ): Promise<void> {
-    const result = await this.blogsSAService.bindBlogWithUser(blogId, userId);
+    const result = await this.commandBus.execute(
+      new BindBlogWithUserCommand(blogId, userId),
+    );
     if (!result) throw new NotFoundException();
     return;
   }

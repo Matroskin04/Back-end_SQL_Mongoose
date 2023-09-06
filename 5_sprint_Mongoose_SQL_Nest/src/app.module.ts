@@ -74,6 +74,7 @@ import { ValidateUserUseCase } from './features/auth/application/use-cases/valid
 import { CreateBlogUseCase } from './features/blogs/application/blogger/use-cases/create-blog.use-case';
 import { UpdateBlogUseCase } from './features/blogs/application/blogger/use-cases/update-blog.use-case';
 import { DeleteBlogUseCase } from './features/blogs/application/blogger/use-cases/delete-blog.use-case';
+import { BindBlogWithUserUseCase } from './features/blogs/application/sa/use-cases/bind-blog-with-user.use-case';
 
 const services = [
   CommentsService,
@@ -118,6 +119,7 @@ const handlers = [
   CreateBlogUseCase,
   UpdateBlogUseCase,
   DeleteBlogUseCase,
+  BindBlogWithUserUseCase,
   //users
   CreateUserUseCase,
   UpdateBanInfoOfUserUseCase,
