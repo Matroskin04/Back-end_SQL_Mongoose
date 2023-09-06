@@ -13,12 +13,12 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { AllBlogsSAOutputModel } from '../models/output/blog-sa.output.model';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { BasicAuthGuard } from '../../../../infrastructure/guards/authorization-guards/basic-auth.guard';
-import { BlogsSAService } from '../../application/sa/blogs-sa.service';
 import { BanInfoInputModel } from '../models/input/ban-info.input.model';
 import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
 import { QueryBlogsInputModel } from '../models/input/queries-blog.input.model';
 import { CommandBus } from '@nestjs/cqrs';
 import { BindBlogWithUserCommand } from '../../application/sa/use-cases/bind-blog-with-user.use-case';
+import { UpdateBanInfoOfBlogCommand } from '../../application/sa/use-cases/update-ban-info-of-blog.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/sa/blogs')
@@ -26,7 +26,6 @@ export class BlogsSAController {
   constructor(
     protected commandBus: CommandBus,
     protected blogsPublicQueryRepository: BlogsQueryRepository,
-    protected blogsSAService: BlogsSAService,
   ) {}
 
   @UseGuards(BasicAuthGuard)
@@ -59,9 +58,8 @@ export class BlogsSAController {
     @Param('id') blogId: string,
     @Body() inputBanInfoModel: BanInfoInputModel,
   ): Promise<void> {
-    const result = await this.blogsSAService.updateBanInfoOfBlog(
-      blogId,
-      inputBanInfoModel.isBanned,
+    const result = await this.commandBus.execute(
+      new UpdateBanInfoOfBlogCommand(blogId, inputBanInfoModel.isBanned),
     );
     if (!result) throw new NotFoundException();
     return;

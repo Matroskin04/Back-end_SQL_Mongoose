@@ -32,8 +32,6 @@ import { DevicesRepository } from './features/devices/infrastructure/repository/
 import { JwtAdapter } from './infrastructure/adapters/jwt.adapter';
 import { BlogsPublicController } from './features/blogs/api/public/blogs-public.controller';
 import { BlogsBloggerController } from './features/blogs/api/blogger/blogs-blogger.controller';
-import { BlogsSAController } from './features/blogs/api/sa/blogs-sa.controller';
-import { BlogsSAService } from './features/blogs/application/sa/blogs-sa.service';
 import { BlogsQueryRepository } from './features/blogs/infrastructure/query.repository/blogs.query.repository';
 import { BlogsRepository } from './features/blogs/infrastructure/repository/blogs.repository';
 import { UsersBloggerService } from './features/users/application/blogger/users-blogger.service';
@@ -75,10 +73,10 @@ import { CreateBlogUseCase } from './features/blogs/application/blogger/use-case
 import { UpdateBlogUseCase } from './features/blogs/application/blogger/use-cases/update-blog.use-case';
 import { DeleteBlogUseCase } from './features/blogs/application/blogger/use-cases/delete-blog.use-case';
 import { BindBlogWithUserUseCase } from './features/blogs/application/sa/use-cases/bind-blog-with-user.use-case';
+import { UpdateBanInfoOfBlogUseCase } from './features/blogs/application/sa/use-cases/update-ban-info-of-blog.use-case';
 
 const services = [
   CommentsService,
-  BlogsSAService,
   DevicesService,
   JwtAdapter,
   UsersSaService,
@@ -120,6 +118,7 @@ const handlers = [
   UpdateBlogUseCase,
   DeleteBlogUseCase,
   BindBlogWithUserUseCase,
+  UpdateBanInfoOfBlogUseCase,
   //users
   CreateUserUseCase,
   UpdateBanInfoOfUserUseCase,
@@ -167,7 +166,6 @@ const handlers = [
     AuthController,
     BlogsPublicController,
     BlogsBloggerController,
-    BlogsSAController,
     DevicesController,
     PostsController,
     CommentsController,
