@@ -37,11 +37,14 @@ import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner
 import { UpdatePostByBlogIdInputModel } from '../models/input/update-post-by-blog-id.input.model';
 import { CommentsQueryRepository } from '../../../comments/infrastructure/query.repository/comments.query.repository';
 import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateBlogCommand } from '../../application/blogger/use-cases/create-blog.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogger/blogs')
 export class BlogsBloggerController {
   constructor(
+    protected commandBus: CommandBus,
     protected blogsQueryRepository: BlogsQueryRepository,
     protected postsQueryRepository: PostsQueryRepository,
     protected blogsBloggerService: BlogsBloggerService,
@@ -98,9 +101,8 @@ export class BlogsBloggerController {
     @Body() inputBlogModel: CreateBlogInputModel,
     @CurrentUserId() userId: string,
   ): Promise<BlogOutputModel> {
-    const result = await this.blogsBloggerService.createBlog(
-      inputBlogModel,
-      userId,
+    const result = await this.commandBus.execute(
+      new CreateBlogCommand(inputBlogModel, userId),
     );
     return result;
   }

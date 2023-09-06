@@ -72,6 +72,7 @@ import { PostsLikesInfo } from './features/posts/domain/posts-likes-info.entity'
 import { CommentsLikesInfo } from './features/comments/domain/comments-likes-info.entity';
 import { Devices } from './features/devices/domain/devices.entity';
 import { ValidateUserUseCase } from './features/auth/application/use-cases/validate-user.use-case';
+import { CreateBlogUseCase } from './features/blogs/application/blogger/use-cases/create-blog.use-case';
 
 const services = [
   BlogsBloggerService,
@@ -113,6 +114,8 @@ const handlers = [
   LoginUserUseCase,
   ValidateUserUseCase,
   SendEmailPassRecoveryUseCase,
+  //blogs
+  CreateBlogUseCase,
   //users
   CreateUserUseCase,
   UpdateBanInfoOfUserUseCase,
