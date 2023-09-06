@@ -28,20 +28,21 @@ import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authoriz
 import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CreateCommentByPostIdModel } from '../../comments/api/models/input/create-comment.input.model';
-import { CommentsService } from '../../comments/application/comments.service';
 import { UpdatePostLikeStatusModel } from './models/input/update-like-status.input.model';
 import { SkipThrottle } from '@nestjs/throttler';
 import { IsUserBannedByJWTGuard } from '../../../infrastructure/guards/is-user-banned.guard';
 import { IsUserBannedForBlogGuard } from '../../../infrastructure/guards/blogs-comments-posts-guards/is-user-banned-for-blog.guard';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateCommentCommand } from '../../comments/application/use-cases/create-comment-by-post-id.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/posts')
 export class PostsController {
   constructor(
+    protected commandBus: CommandBus,
     protected postsQueryRepository: PostsQueryRepository,
     protected postsService: PostsService,
     protected commentsQueryRepository: CommentsQueryRepository,
-    protected commentsService: CommentsService,
   ) {}
 
   @UseGuards(JwtAccessNotStrictGuard)
@@ -92,10 +93,8 @@ export class PostsController {
     @CurrentUserId() userId: string,
     @Body() inputCommentModel: CreateCommentByPostIdModel,
   ): Promise<ViewCommentOfPostModel> {
-    const result = await this.commentsService.createCommentByPostId(
-      inputCommentModel.content,
-      userId,
-      postId,
+    const result = await this.commandBus.execute(
+      new CreateCommentCommand(inputCommentModel.content, userId, postId),
     );
 
     if (!result) throw new NotFoundException();

@@ -7,13 +7,11 @@ import {
   NotFoundException,
   Param,
   Put,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { CommentOutputModel } from './models/output/comment.output.model';
 import { CommentsQueryRepository } from '../infrastructure/query.repository/comments.query.repository';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
-import { CommentsService } from '../application/comments.service';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { UpdateCommentInputModel } from './models/input/update-comment.input.model';
@@ -24,6 +22,7 @@ import { IsUserBannedByJWTGuard } from '../../../infrastructure/guards/is-user-b
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateCommentCommand } from '../application/use-cases/update-comment.use-case';
 import { DeleteCommentCommand } from '../application/use-cases/delete-comment.use-case';
+import { UpdateCommentLikeStatusCommand } from '../application/use-cases/update-comment-like-status.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/comments')
@@ -31,7 +30,6 @@ export class CommentsController {
   constructor(
     protected commandBus: CommandBus,
     protected commentsQueryRepository: CommentsQueryRepository,
-    protected commentsService: CommentsService,
   ) {}
 
   @UseGuards(JwtAccessNotStrictGuard)
@@ -72,10 +70,12 @@ export class CommentsController {
     @CurrentUserId() userId: string,
     @Body() inputLikeInfoModel: UpdateCommentLikeStatusInputModel,
   ): Promise<string | void> {
-    const result = await this.commentsService.updateLikeStatusOfComment(
-      commentId,
-      userId,
-      inputLikeInfoModel.likeStatus,
+    const result = await this.commandBus.execute(
+      new UpdateCommentLikeStatusCommand(
+        commentId,
+        userId,
+        inputLikeInfoModel.likeStatus,
+      ),
     );
 
     if (!result)

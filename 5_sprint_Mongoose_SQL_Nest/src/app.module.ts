@@ -21,7 +21,6 @@ import { JwtAccessStrategy } from './infrastructure/strategy/jwt-access.strategy
 import { BasicStrategy } from './infrastructure/strategy/basic.strategy';
 import { LikesInfoQueryRepository } from './features/likes-info/infrastructure/query.repository/likes-info.query.repository';
 import { LikesInfoRepository } from './features/likes-info/infrastructure/repository/likes-info.repository';
-import { CommentsService } from './features/comments/application/comments.service';
 import { CommentsRepository } from './features/comments/infrastructure/repository/comments.repository';
 import { IsBlogByIdExistsConstraint } from './infrastructure/decorators/posts/blog-id-exists.decorator';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -76,9 +75,10 @@ import { BindBlogWithUserUseCase } from './features/blogs/application/sa/use-cas
 import { UpdateBanInfoOfBlogUseCase } from './features/blogs/application/sa/use-cases/update-ban-info-of-blog.use-case';
 import { UpdateCommentUseCase } from './features/comments/application/use-cases/update-comment.use-case';
 import { DeleteCommentCommand } from './features/comments/application/use-cases/delete-comment.use-case';
+import { CreateCommentUseCase } from './features/comments/application/use-cases/create-comment-by-post-id.use-case';
+import { UpdateCommentLikeStatusUseCase } from './features/comments/application/use-cases/update-comment-like-status.use-case';
 
 const services = [
-  CommentsService,
   DevicesService,
   JwtAdapter,
   UsersSaService,
@@ -122,7 +122,9 @@ const handlers = [
   BindBlogWithUserUseCase,
   UpdateBanInfoOfBlogUseCase,
   //comments
+  CreateCommentUseCase,
   UpdateCommentUseCase,
+  UpdateCommentLikeStatusUseCase,
   DeleteCommentCommand,
   //users
   CreateUserUseCase,
