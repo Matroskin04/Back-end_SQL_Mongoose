@@ -21,11 +21,15 @@ import { UpdateCommentLikeStatusInputModel } from './models/input/update-comment
 import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import { IsUserBannedByJWTGuard } from '../../../infrastructure/guards/is-user-banned.guard';
+import { CommandBus } from '@nestjs/cqrs';
+import { UpdateCommentCommand } from '../application/use-cases/update-comment.use-case';
+import { DeleteCommentCommand } from '../application/use-cases/delete-comment.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/comments')
 export class CommentsController {
   constructor(
+    protected commandBus: CommandBus,
     protected commentsQueryRepository: CommentsQueryRepository,
     protected commentsService: CommentsService,
   ) {}
@@ -53,10 +57,8 @@ export class CommentsController {
     @CurrentUserId() userId: string,
     @Body() inputCommentModel: UpdateCommentInputModel,
   ): Promise<void> {
-    const result = await this.commentsService.updateComment(
-      commentId,
-      userId,
-      inputCommentModel.content,
+    const result = await this.commandBus.execute(
+      new UpdateCommentCommand(commentId, userId, inputCommentModel.content),
     );
     if (!result) throw new NotFoundException();
     return;
@@ -88,7 +90,9 @@ export class CommentsController {
     @Param('id') commentId: string,
     @CurrentUserId() userId: string,
   ): Promise<void> {
-    const result = await this.commentsService.deleteComment(commentId, userId);
+    const result = await this.commandBus.execute(
+      new DeleteCommentCommand(commentId, userId),
+    );
 
     if (!result) throw new NotFoundException();
     return;

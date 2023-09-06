@@ -74,6 +74,8 @@ import { UpdateBlogUseCase } from './features/blogs/application/blogger/use-case
 import { DeleteBlogUseCase } from './features/blogs/application/blogger/use-cases/delete-blog.use-case';
 import { BindBlogWithUserUseCase } from './features/blogs/application/sa/use-cases/bind-blog-with-user.use-case';
 import { UpdateBanInfoOfBlogUseCase } from './features/blogs/application/sa/use-cases/update-ban-info-of-blog.use-case';
+import { UpdateCommentUseCase } from './features/comments/application/use-cases/update-comment.use-case';
+import { DeleteCommentCommand } from './features/comments/application/use-cases/delete-comment.use-case';
 
 const services = [
   CommentsService,
@@ -119,6 +121,9 @@ const handlers = [
   DeleteBlogUseCase,
   BindBlogWithUserUseCase,
   UpdateBanInfoOfBlogUseCase,
+  //comments
+  UpdateCommentUseCase,
+  DeleteCommentCommand,
   //users
   CreateUserUseCase,
   UpdateBanInfoOfUserUseCase,

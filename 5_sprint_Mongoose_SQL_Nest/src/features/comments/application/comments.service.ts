@@ -23,27 +23,6 @@ export class CommentsService {
   ) {}
 
   //SQL
-  async updateComment(
-    commentId: string,
-    userId: string,
-    content: string,
-  ): Promise<boolean> {
-    const comment = await this.commentsQueryRepository.getCommentDBInfoById(
-      commentId,
-    );
-
-    if (!comment) return false;
-    if (comment.userId !== userId) throw new ForbiddenException();
-
-    const isUpdate = await this.commentsRepository.updateComment(
-      content,
-      commentId,
-    );
-    if (!isUpdate) throw new Error('Updating failed');
-
-    return true;
-  }
-
   async deleteComment(commentId: string, userId: string): Promise<boolean> {
     const comment = await this.commentsQueryRepository.getCommentDBInfoById(
       commentId,
