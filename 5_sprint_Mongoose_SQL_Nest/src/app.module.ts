@@ -24,7 +24,6 @@ import { CommentsRepository } from './features/comments/infrastructure/repositor
 import { IsBlogByIdExistsConstraint } from './infrastructure/decorators/posts/blog-id-exists.decorator';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { DevicesController } from './features/devices/api/devices.controller';
-import { DevicesService } from './features/devices/application/devices.service';
 import { DevicesQueryRepository } from './features/devices/infrastructure/query.repository/devices.query.repository';
 import { DevicesRepository } from './features/devices/infrastructure/repository/devices.repository';
 import { JwtAdapter } from './infrastructure/adapters/jwt.adapter';
@@ -82,13 +81,9 @@ import { UpdatePostLikeStatusUseCase } from './features/posts/application/use-ca
 import { DeletePostUseCase } from './features/posts/application/use-cases/delete-post.use-case';
 import { DeleteDevicesByUserIdUseCase } from './features/devices/application/use-cases/delete-devices-by-user-id.use.case';
 import { CreateDeviceUseCase } from './features/devices/application/use-cases/create-device.use-case';
+import { DeleteDeviceByRefreshTokenUseCase } from './features/devices/application/use-cases/delete-device-by-refresh-token.use-case';
 
-const services = [
-  DevicesService,
-  JwtAdapter,
-  UsersSaService,
-  UsersBloggerService,
-];
+const services = [JwtAdapter, UsersSaService, UsersBloggerService];
 const queryRepositories = [
   BlogsQueryRepository,
   PostsQueryRepository,
@@ -141,6 +136,7 @@ const handlers = [
   DeleteUserUseCase,
   //devices
   CreateDeviceUseCase,
+  DeleteDeviceByRefreshTokenUseCase,
   DeleteDevicesExcludeCurrentUseCase,
   DeleteDeviceByIdUseCase,
   DeleteDevicesByUserIdUseCase,

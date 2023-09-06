@@ -1,6 +1,5 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BanInfoSAType } from '../dto/ban-info.dto';
-import { DevicesService } from '../../../../devices/application/devices.service';
 import { UsersRepository } from '../../../infrastructure/repository/users.repository';
 import { DeleteDevicesByUserIdCommand } from '../../../../devices/application/use-cases/delete-devices-by-user-id.use.case';
 

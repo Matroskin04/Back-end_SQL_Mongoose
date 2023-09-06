@@ -25,7 +25,6 @@ import { ValidateEmailResendingGuard } from '../../../infrastructure/guards/vali
 import { PasswordRecoveryInputModel } from './models/input/password-flow-auth.input.model';
 import { ValidateEmailRegistrationGuard } from '../../../infrastructure/guards/validation-guards/validate-email-registration.guard';
 import { SkipThrottle } from '@nestjs/throttler';
-import { DevicesService } from '../../devices/application/devices.service';
 import { TitleOfDevice } from '../../../infrastructure/decorators/auth/title-of-device.param.decorator';
 import { JwtRefreshGuard } from '../../../infrastructure/guards/authorization-guards/jwt-refresh.guard';
 import { RefreshToken } from '../../../infrastructure/decorators/auth/refresh-token-param.decorator';
@@ -43,6 +42,7 @@ import { ConfirmationCodeInputModel } from './models/input/confirmation-code.inp
 import { EmailResendingInputModel } from './models/input/email-resending.input.model';
 import { NewPasswordInputModel } from './models/input/new-password.input.model';
 import { CreateDeviceCommand } from '../../devices/application/use-cases/create-device.use-case';
+import { DeleteDeviceByRefreshTokenCommand } from '../../devices/application/use-cases/delete-device-by-refresh-token.use-case';
 
 // @SkipThrottle()
 @Controller('/hometask-nest/auth')
@@ -50,7 +50,6 @@ export class AuthController {
   constructor(
     protected commandBus: CommandBus,
     protected jwtService: JwtAdapter,
-    protected devicesService: DevicesService,
     protected usersQueryRepository: UsersQueryRepository,
   ) {}
 
@@ -102,7 +101,9 @@ export class AuthController {
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Post('logout')
   async logoutUser(@RefreshToken() refreshToken: string): Promise<void> {
-    await this.devicesService.deleteDeviceByRefreshToken(refreshToken);
+    await this.commandBus.execute(
+      new DeleteDeviceByRefreshTokenCommand(refreshToken),
+    );
     return;
   }
 
