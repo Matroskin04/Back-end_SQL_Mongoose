@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PostsController } from './features/posts/api/posts.controller';
-import { PostsService } from './features/posts/application/posts.service';
 import { PostsQueryRepository } from './features/posts/infrastructure/query.repository/posts.query.repository';
 import { PostsRepository } from './features/posts/infrastructure/repository/posts.repository';
 import { CommentsController } from './features/comments/api/comments.controller';
@@ -80,13 +79,13 @@ import { UpdateCommentLikeStatusUseCase } from './features/comments/application/
 import { CreatePostUseCase } from './features/posts/application/use-cases/create-post.use-case';
 import { UpdatePostUseCase } from './features/posts/application/use-cases/update-post.use-case';
 import { UpdatePostLikeStatusUseCase } from './features/posts/application/use-cases/update-post-like-status.use-case';
+import { DeletePostUseCase } from './features/posts/application/use-cases/delete-post.use-case';
 
 const services = [
   DevicesService,
   JwtAdapter,
   UsersSaService,
   UsersBloggerService,
-  PostsService,
 ];
 const queryRepositories = [
   BlogsQueryRepository,
@@ -128,6 +127,7 @@ const handlers = [
   CreatePostUseCase,
   UpdatePostUseCase,
   UpdatePostLikeStatusUseCase,
+  DeletePostUseCase,
   //comments
   CreateCommentUseCase,
   UpdateCommentUseCase,

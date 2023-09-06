@@ -8,7 +8,6 @@ import {
   ViewAllCommentsOfPostModel,
   ViewCommentOfPostModel,
 } from './models/output/comments-of-post.output.model';
-import { PostsService } from '../application/posts.service';
 import {
   Body,
   Controller,
@@ -42,7 +41,6 @@ export class PostsController {
   constructor(
     protected commandBus: CommandBus,
     protected postsQueryRepository: PostsQueryRepository,
-    protected postsService: PostsService,
     protected commentsQueryRepository: CommentsQueryRepository,
   ) {}
 

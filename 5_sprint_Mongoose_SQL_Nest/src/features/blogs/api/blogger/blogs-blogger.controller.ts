@@ -28,7 +28,6 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAccessGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
-import { PostsService } from '../../../posts/application/posts.service';
 import { CurrentUserId } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { CreatePostByBlogIdModel } from '../../../posts/api/models/input/create-post.input.model';
 import { PostTypeWithId } from '../../../posts/infrastructure/repository/posts.types.repositories';
@@ -42,6 +41,7 @@ import { UpdateBlogCommand } from '../../application/blogger/use-cases/update-bl
 import { DeleteBlogCommand } from '../../application/blogger/use-cases/delete-blog.use-case';
 import { CreatePostCommand } from '../../../posts/application/use-cases/create-post.use-case';
 import { UpdatePostCommand } from '../../../posts/application/use-cases/update-post.use-case';
+import { DeletePostCommand } from '../../../posts/application/use-cases/delete-post.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogger/blogs')
@@ -50,7 +50,6 @@ export class BlogsBloggerController {
     protected commandBus: CommandBus,
     protected blogsQueryRepository: BlogsQueryRepository,
     protected postsQueryRepository: PostsQueryRepository,
-    protected postsService: PostsService,
     protected commentsQueryRepository: CommentsQueryRepository,
   ) {}
 
@@ -166,7 +165,7 @@ export class BlogsBloggerController {
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':blogId/posts/:postId')
   async deletePostOfBlog(@Param('postId') postId: string): Promise<void> {
-    const result = await this.postsService.deleteSinglePost(postId);
+    const result = await this.commandBus.execute(new DeletePostCommand(postId));
     if (!result) throw new NotFoundException();
     return;
   }
