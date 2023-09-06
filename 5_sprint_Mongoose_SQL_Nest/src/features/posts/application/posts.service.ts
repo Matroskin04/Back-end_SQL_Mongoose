@@ -11,52 +11,16 @@ import { PostsQueryRepository } from '../infrastructure/query.repository/posts.q
 import { LikesInfoRepository } from '../../likes-info/infrastructure/repository/likes-info.repository';
 import { BodyForUpdatePostDto } from './dto/body-for-update-post.dto';
 import { Injectable } from '@nestjs/common';
-import { BlogsQueryRepository } from '../../blogs/infrastructure/query.repository/blogs.query.repository';
-import { PostViewType } from '../infrastructure/query.repository/posts.types.query.repository';
 
 @Injectable()
 export class PostsService {
   constructor(
     protected postsRepository: PostsRepository,
     protected postsQueryRepository: PostsQueryRepository,
-    protected blogsPublicQueryRepository: BlogsQueryRepository,
     protected usersQueryRepository: UsersQueryRepository,
     protected likesInfoQueryRepository: LikesInfoQueryRepository,
     protected likesInfoRepository: LikesInfoRepository,
   ) {}
-
-  async createPostByBlogId(
-    blogId: string,
-    userId: string,
-    postDTO: BodyPostByBlogIdType,
-  ): Promise<null | PostTypeWithId> {
-    //checking the existence of a blog
-    const blog = await this.blogsPublicQueryRepository.getBlogAllInfoById(
-      blogId,
-    );
-    if (!blog) {
-      return null;
-    }
-
-    const post = await this.postsRepository.createPost(postDTO, blogId, userId);
-
-    const postMapped = modifyPostIntoInitialViewModel(
-      post,
-      blog.name,
-      [],
-      'None',
-    );
-
-    return postMapped;
-  }
-
-  async updatePost(
-    blogId: string,
-    postId: string,
-    postDTO: BodyForUpdatePostDto,
-  ) {
-    return this.postsRepository.updatePost(postDTO, postId);
-  }
 
   async updateLikeStatusOfPost(
     postId: string,

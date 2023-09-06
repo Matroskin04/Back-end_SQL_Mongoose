@@ -77,6 +77,8 @@ import { UpdateCommentUseCase } from './features/comments/application/use-cases/
 import { DeleteCommentCommand } from './features/comments/application/use-cases/delete-comment.use-case';
 import { CreateCommentUseCase } from './features/comments/application/use-cases/create-comment-by-post-id.use-case';
 import { UpdateCommentLikeStatusUseCase } from './features/comments/application/use-cases/update-comment-like-status.use-case';
+import { CreatePostUseCase } from './features/posts/application/use-cases/create-post.use-case';
+import { UpdatePostUseCase } from './features/posts/application/use-cases/update-post.use-case';
 
 const services = [
   DevicesService,
@@ -121,6 +123,9 @@ const handlers = [
   DeleteBlogUseCase,
   BindBlogWithUserUseCase,
   UpdateBanInfoOfBlogUseCase,
+  //posts
+  CreatePostUseCase,
+  UpdatePostUseCase,
   //comments
   CreateCommentUseCase,
   UpdateCommentUseCase,

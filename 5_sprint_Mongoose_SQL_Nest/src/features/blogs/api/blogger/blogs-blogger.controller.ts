@@ -40,6 +40,8 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateBlogCommand } from '../../application/blogger/use-cases/create-blog.use-case';
 import { UpdateBlogCommand } from '../../application/blogger/use-cases/update-blog.use-case';
 import { DeleteBlogCommand } from '../../application/blogger/use-cases/delete-blog.use-case';
+import { CreatePostCommand } from '../../../posts/application/use-cases/create-post.use-case';
+import { UpdatePostCommand } from '../../../posts/application/use-cases/update-post.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogger/blogs')
@@ -114,10 +116,8 @@ export class BlogsBloggerController {
     @CurrentUserId() userId: string,
     @Body() inputPostModel: CreatePostByBlogIdModel,
   ): Promise<PostTypeWithId> {
-    const result = await this.postsService.createPostByBlogId(
-      blogId,
-      userId,
-      inputPostModel,
+    const result = await this.commandBus.execute(
+      new CreatePostCommand(blogId, userId, inputPostModel),
     );
     if (!result) throw new NotFoundException();
     return result;
@@ -145,10 +145,8 @@ export class BlogsBloggerController {
     @Param('postId') postId: string,
     @Body() inputPostModel: UpdatePostByBlogIdInputModel,
   ): Promise<void> {
-    const result = await this.postsService.updatePost(
-      blogId,
-      postId,
-      inputPostModel,
+    const result = await this.commandBus.execute(
+      new UpdatePostCommand(blogId, postId, inputPostModel),
     );
 
     if (!result) throw new NotFoundException();
