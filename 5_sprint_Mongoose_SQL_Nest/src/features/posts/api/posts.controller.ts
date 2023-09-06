@@ -34,6 +34,7 @@ import { IsUserBannedByJWTGuard } from '../../../infrastructure/guards/is-user-b
 import { IsUserBannedForBlogGuard } from '../../../infrastructure/guards/blogs-comments-posts-guards/is-user-banned-for-blog.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateCommentCommand } from '../../comments/application/use-cases/create-comment-by-post-id.use-case';
+import { UpdatePostLikeStatusCommand } from '../application/use-cases/update-post-like-status.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/posts')
@@ -109,10 +110,12 @@ export class PostsController {
     @CurrentUserId() userId: string,
     @Body() inputLikeStatusModel: UpdatePostLikeStatusModel,
   ): Promise<string | void> {
-    const result = await this.postsService.updateLikeStatusOfPost(
-      postId.toString(),
-      userId,
-      inputLikeStatusModel.likeStatus,
+    const result = await this.commandBus.execute(
+      new UpdatePostLikeStatusCommand(
+        postId.toString(),
+        userId,
+        inputLikeStatusModel.likeStatus,
+      ),
     );
 
     if (!result)

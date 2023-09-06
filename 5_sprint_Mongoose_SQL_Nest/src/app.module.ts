@@ -79,6 +79,7 @@ import { CreateCommentUseCase } from './features/comments/application/use-cases/
 import { UpdateCommentLikeStatusUseCase } from './features/comments/application/use-cases/update-comment-like-status.use-case';
 import { CreatePostUseCase } from './features/posts/application/use-cases/create-post.use-case';
 import { UpdatePostUseCase } from './features/posts/application/use-cases/update-post.use-case';
+import { UpdatePostLikeStatusUseCase } from './features/posts/application/use-cases/update-post-like-status.use-case';
 
 const services = [
   DevicesService,
@@ -126,6 +127,7 @@ const handlers = [
   //posts
   CreatePostUseCase,
   UpdatePostUseCase,
+  UpdatePostLikeStatusUseCase,
   //comments
   CreateCommentUseCase,
   UpdateCommentUseCase,
