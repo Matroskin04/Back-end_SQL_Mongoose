@@ -11,7 +11,6 @@ import { UsersSaService } from './features/users/application/sa/users-sa.service
 import { TestingController } from './features/testing/api/testing.controller';
 import { TestingRepository } from './features/testing/repository/testing.repository';
 import { LocalStrategy } from './infrastructure/strategy/local.strategy';
-import { AuthService } from './features/auth/application/auth.service';
 import { CryptoAdapter } from './infrastructure/adapters/crypto.adapter';
 import { EmailManager } from './infrastructure/managers/email-manager';
 import { EmailAdapter } from './infrastructure/adapters/email.adapter';
@@ -72,9 +71,9 @@ import { BannedUsersOfBlog } from './features/blogs/domain/banned-users-of-blog.
 import { PostsLikesInfo } from './features/posts/domain/posts-likes-info.entity';
 import { CommentsLikesInfo } from './features/comments/domain/comments-likes-info.entity';
 import { Devices } from './features/devices/domain/devices.entity';
+import { ValidateUserUseCase } from './features/auth/application/use-cases/validate-user.use-case';
 
 const services = [
-  AuthService,
   BlogsBloggerService,
   CommentsService,
   BlogsSAService,
@@ -112,6 +111,7 @@ const handlers = [
   ResendConfirmationEmailMessageUseCase,
   SaveNewPassUseCase,
   LoginUserUseCase,
+  ValidateUserUseCase,
   SendEmailPassRecoveryUseCase,
   //users
   CreateUserUseCase,
