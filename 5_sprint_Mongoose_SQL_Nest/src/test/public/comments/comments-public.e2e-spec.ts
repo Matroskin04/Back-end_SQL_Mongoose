@@ -19,11 +19,10 @@ import {
   getCommentTest,
   updateCommentTest,
 } from './comments-public.helpers';
-import { deletePostTest } from '../../blogger/blogs/posts-blogs-blogger.helpers';
 import { createUserTest } from '../../super-admin/users-sa.helpers';
 import { loginUserTest } from '../auth/auth-public.helpers';
-import { getPostByIdPublicTest } from '../posts/posts-public.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
+import { startApp } from '../../test.utils';
 
 describe('Comments, Put-like comment, (Public); /', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -33,15 +32,9 @@ describe('Comments, Put-like comment, (Public); /', () => {
   let httpServer;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    appSettings(app); //activate settings for app
-    await app.init();
-
-    httpServer = app.getHttpServer();
+    const info = await startApp();
+    app = info.app;
+    httpServer = info.httpServer;
   });
 
   afterAll(async () => {

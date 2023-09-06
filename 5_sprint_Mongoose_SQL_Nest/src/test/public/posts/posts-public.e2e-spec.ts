@@ -16,6 +16,7 @@ import {
   createResponseSinglePost,
   getPostByIdPublicTest,
   getPostsPublicTest,
+  UpdateStatusLikeOfPostTest,
 } from './posts-public.helpers';
 import { createAndLogin3UsersTest } from '../blogs/blogs-public.helpers';
 import { createResponseAllPostsTest } from '../blogs/posts-blogs-puclic.helpers';
@@ -27,6 +28,7 @@ import {
   getCommentsOfPostTest,
 } from '../comments/comments-public.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
+import { startApp } from '../../test.utils';
 
 describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -36,15 +38,9 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
   let httpServer;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    appSettings(app); //activate settings for app
-    await app.init();
-
-    httpServer = app.getHttpServer();
+    const info = await startApp();
+    app = info.app;
+    httpServer = info.httpServer;
   });
 
   afterAll(async () => {
@@ -276,6 +272,48 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
           9,
         ),
       );
+    });
+  });
+
+  describe(`/posts/:id/like-status (PUT) - update like status of a post`, () => {
+    beforeAll(async () => {
+      await deleteAllDataTest(httpServer);
+
+      //create and login user
+      const result = await createAndLogin3UsersTest(httpServer);
+      accessToken1 = result[0].accessToken;
+      accessToken2 = result[1].accessToken;
+      accessToken3 = result[2].accessToken;
+
+      blog = await createCorrectBlogTest(httpServer, accessToken1);
+      post = await createCorrectPostTest(httpServer, blog.id, accessToken1);
+      commentsIds = await create9CommentsBy3Users(
+        httpServer,
+        post.id,
+        [accessToken1, accessToken2, accessToken3],
+        [result[0].userId, result[1].userId, result[2].userId],
+      );
+    });
+
+    it(`- (401) jwt access token is incorrect`, async () => {
+      //jwt is incorrect
+      const result = await UpdateStatusLikeOfPostTest(
+        httpServer,
+        post.id,
+        'Like',
+        'IncorrectJWT',
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+    });
+
+    it(`- (404) post with such id is not found`, async () => {
+      const result = await UpdateStatusLikeOfPostTest(
+        httpServer,
+        uuidv4(),
+        'Like',
+        accessToken1,
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
   });
 });

@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
-import { createPostTest } from '../../blogger/blogs/posts-blogs-blogger.helpers';
+import { createPostTest } from '../../blogger/blogs/posts-blogger.helpers';
 import { PostsAndUsersIdType } from '../types/posts.types';
 
 export async function getPostByIdPublicTest(httpServer, postId, accessToken?) {
@@ -13,6 +13,18 @@ export async function getPostsPublicTest(httpServer, accessToken?) {
   return request(httpServer)
     .get(`/hometask-nest/posts`)
     .set('Authorization', `Bearer ${accessToken}`);
+}
+
+export async function UpdateStatusLikeOfPostTest(
+  httpServer,
+  postId,
+  likeStatus,
+  accessToken,
+) {
+  return request(httpServer)
+    .put(`/hometask-nest/posts/${postId}/like-status`)
+    .set('Authorization', `Bearer ${accessToken}`)
+    .send({ likeStatus });
 }
 
 export async function create9PostsOf3BlogsBy3Users(

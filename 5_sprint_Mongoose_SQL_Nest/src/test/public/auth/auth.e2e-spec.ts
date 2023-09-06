@@ -20,31 +20,23 @@ import {
 } from './auth-public.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { createUserTest } from '../../super-admin/users-sa.helpers';
-import { Connection } from 'typeorm';
+import { Connection, DataSource } from 'typeorm';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
+import { startApp } from '../../test.utils';
 
 describe('Auth (Public); /auth', () => {
   jest.setTimeout(5 * 60 * 1000);
   //vars for starting app and testing
   let app: INestApplication;
   let httpServer;
-  //todo how to replace Connection
-  let dbConnection: Connection;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(EmailAdapter)
-      .useValue(emailAdapterMock)
-      .compile();
-    dbConnection = moduleFixture.get<Connection>(Connection);
+    const info = await startApp();
+    app = info.app;
+    httpServer = info.httpServer;
 
-    app = moduleFixture.createNestApplication();
-    appSettings(app); //activate settings for app
-    await app.init();
-
-    httpServer = app.getHttpServer();
+    dataSource = await app.resolve(DataSource);
   });
 
   afterAll(async () => {
@@ -218,7 +210,7 @@ describe('Auth (Public); /auth', () => {
     it(`+ (204) should confirm email successfully
                - (400) should not confirm email because of confirmation code is already been applied`, async () => {
       //find confirmation code
-      const userInfo = await dbConnection.query(
+      const userInfo = await dataSource.query(
         `
         SELECT ec."confirmationCode" 
         FROM public."users" as u
@@ -261,7 +253,7 @@ describe('Auth (Public); /auth', () => {
       expect(result4.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //change date of code expiration
-      await dbConnection.query(
+      await dataSource.query(
         `
         UPDATE public."users_email_confirmation" as ec
         SET "expirationDate" = now()
@@ -316,7 +308,7 @@ describe('Auth (Public); /auth', () => {
     it(`- (400) should not confirm email because it is past code (not new)
                + (204) should confirm email with new code`, async () => {
       //find current confirmation code
-      const userInfo = await dbConnection.query(
+      const userInfo = await dataSource.query(
         `
         SELECT ec."confirmationCode" 
         FROM public."users" as u
@@ -567,7 +559,7 @@ describe('Auth (Public); /auth', () => {
       expect(emailAdapterMock.sendEmailPasswordRecovery).toBeCalled();
 
       //find recovery pass code
-      const code = await dbConnection.query(
+      const code = await dataSource.query(
         `
         SELECT pr."confirmationCode" 
         FROM public."users" as u
@@ -587,7 +579,7 @@ describe('Auth (Public); /auth', () => {
       expect(emailAdapterMock.sendEmailPasswordRecovery).toBeCalled();
 
       //find recovery new pass code
-      const newCode = await dbConnection.query(
+      const newCode = await dataSource.query(
         `
         SELECT pr."confirmationCode" 
         FROM public."users" as u
@@ -674,7 +666,7 @@ describe('Auth (Public); /auth', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //change date of expiration
-      await dbConnection.query(
+      await dataSource.query(
         `
         UPDATE public."users_password_recovery" as pr
           SET "expirationDate" = now()

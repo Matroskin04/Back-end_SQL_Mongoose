@@ -21,7 +21,7 @@ import {
   deletePostTest,
   getAllPostsTest,
   updatePostTest,
-} from './posts-blogs-blogger.helpers';
+} from './posts-blogger.helpers';
 import { getPostByIdPublicTest } from '../../public/posts/posts-public.helpers';
 import { getBlogByIdPublicTest } from '../../public/blogs/blogs-public.helpers';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
@@ -31,11 +31,12 @@ import {
   createCorrectUserTest,
   loginCorrectUserTest,
 } from '../../helpers/chains-of-requests.helpers';
-import { getAllCommentsOfBloggerTest } from './comments-blogs-blogger.helpers';
+import { getAllCommentsOfBloggerTest } from './comments-blogger.helpers';
 import {
   createCommentTest,
   createResponseCommentsOfBlogger,
 } from '../../public/comments/comments-public.helpers';
+import { startApp } from '../../test.utils';
 
 describe('Blogs, Post, Comments (Blogger); /blogger', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -45,15 +46,9 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
   let httpServer;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    appSettings(app); //activate settings for app
-    await app.init();
-
-    httpServer = app.getHttpServer();
+    const info = await startApp();
+    app = info.app;
+    httpServer = info.httpServer;
   });
 
   afterAll(async () => {
