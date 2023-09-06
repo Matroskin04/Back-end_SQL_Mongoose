@@ -80,6 +80,7 @@ import { CreatePostUseCase } from './features/posts/application/use-cases/create
 import { UpdatePostUseCase } from './features/posts/application/use-cases/update-post.use-case';
 import { UpdatePostLikeStatusUseCase } from './features/posts/application/use-cases/update-post-like-status.use-case';
 import { DeletePostUseCase } from './features/posts/application/use-cases/delete-post.use-case';
+import { DeleteDevicesByUserIdUseCase } from './features/devices/application/use-cases/delete-devices-by-user-id.use.case';
 
 const services = [
   DevicesService,
@@ -140,6 +141,7 @@ const handlers = [
   //devices
   DeleteDevicesExcludeCurrentUseCase,
   DeleteDeviceByIdUseCase,
+  DeleteDevicesByUserIdUseCase,
 ];
 
 @Module({

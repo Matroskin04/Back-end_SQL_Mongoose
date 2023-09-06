@@ -64,4 +64,14 @@ export class DevicesRepository {
     console.log(result);
     return result[1] > 0;
   }
+
+  async deleteAllDevicesByUserId(userId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    DELETE FROM public."devices"
+        WHERE "userId" = $1 `,
+      [userId],
+    );
+    return result[1] > 0;
+  }
 }

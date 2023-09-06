@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { DevicesRepository } from '../infrastructure/repository/devices.repository';
 import { JwtAdapter } from '../../../infrastructure/adapters/jwt.adapter';
@@ -12,17 +11,6 @@ export class DevicesService {
     protected jwtService: JwtAdapter,
     protected deviceRepository: DevicesRepository,
   ) {}
-
-  //SQL
-  async deleteAllDevicesByUserId(userId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    DELETE FROM public."devices"
-        WHERE "userId" = $1 `,
-      [userId],
-    );
-    return result[1] > 0;
-  }
 
   async createNewDevice(
     ip: string,

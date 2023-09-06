@@ -1,7 +1,8 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BanInfoSAType } from '../dto/ban-info.dto';
 import { DevicesService } from '../../../../devices/application/devices.service';
 import { UsersRepository } from '../../../infrastructure/repository/users.repository';
+import { DeleteDevicesByUserIdCommand } from '../../../../devices/application/use-cases/delete-devices-by-user-id.use.case';
 
 export class UpdateBanInfoOfUserCommand {
   constructor(public userId: string, public banInfo: BanInfoSAType) {}
@@ -12,8 +13,8 @@ export class UpdateBanInfoOfUserUseCase
   implements ICommandHandler<UpdateBanInfoOfUserCommand>
 {
   constructor(
+    protected commandBus: CommandBus,
     protected usersRepository: UsersRepository,
-    protected devicesService: DevicesService,
   ) {}
 
   async execute(command: UpdateBanInfoOfUserCommand): Promise<boolean> {
@@ -30,7 +31,7 @@ export class UpdateBanInfoOfUserUseCase
       //Если юзера банят:
 
       //удаляем все девайсы
-      await this.devicesService.deleteAllDevicesByUserId(userId);
+      await this.commandBus.execute(new DeleteDevicesByUserIdCommand(userId));
       return true;
     }
 
