@@ -39,6 +39,7 @@ import { CommentsQueryRepository } from '../../../comments/infrastructure/query.
 import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateBlogCommand } from '../../application/blogger/use-cases/create-blog.use-case';
+import { UpdateBlogCommand } from '../../application/blogger/use-cases/update-blog.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogger/blogs')
@@ -130,9 +131,8 @@ export class BlogsBloggerController {
     @Param('blogId') blogId: string,
     @Body() inputBlogModel: UpdateBlogInputModel,
   ): Promise<void> {
-    const result = await this.blogsBloggerService.updateBlog(
-      blogId,
-      inputBlogModel,
+    const result = await this.commandBus.execute(
+      new UpdateBlogCommand(inputBlogModel, blogId),
     );
     if (!result) throw new NotFoundException();
     return;
