@@ -12,21 +12,6 @@ export class DevicesService {
     protected deviceRepository: DevicesRepository,
   ) {}
 
-  async createNewDevice(
-    ip: string,
-    title: string,
-    userId: string,
-    refreshToken: string,
-  ): Promise<void> {
-    const payloadToken = this.jwtService.getPayloadToken(refreshToken);
-    if (!payloadToken) {
-      throw new UnauthorizedException();
-    }
-    await this.deviceRepository.createDevice(ip, title, payloadToken, userId);
-
-    return;
-  }
-
   async deleteDeviceByRefreshToken(refreshToken: string): Promise<boolean> {
     const payloadToken = this.jwtService.getPayloadToken(refreshToken);
     if (!payloadToken) {

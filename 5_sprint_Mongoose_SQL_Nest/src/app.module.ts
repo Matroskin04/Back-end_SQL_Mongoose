@@ -81,6 +81,7 @@ import { UpdatePostUseCase } from './features/posts/application/use-cases/update
 import { UpdatePostLikeStatusUseCase } from './features/posts/application/use-cases/update-post-like-status.use-case';
 import { DeletePostUseCase } from './features/posts/application/use-cases/delete-post.use-case';
 import { DeleteDevicesByUserIdUseCase } from './features/devices/application/use-cases/delete-devices-by-user-id.use.case';
+import { CreateDeviceUseCase } from './features/devices/application/use-cases/create-device.use-case';
 
 const services = [
   DevicesService,
@@ -139,6 +140,7 @@ const handlers = [
   UpdateBanInfoOfUserUseCase,
   DeleteUserUseCase,
   //devices
+  CreateDeviceUseCase,
   DeleteDevicesExcludeCurrentUseCase,
   DeleteDeviceByIdUseCase,
   DeleteDevicesByUserIdUseCase,

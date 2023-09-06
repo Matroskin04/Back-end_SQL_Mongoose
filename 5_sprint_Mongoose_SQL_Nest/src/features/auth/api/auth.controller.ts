@@ -42,6 +42,7 @@ import { UsersQueryRepository } from '../../users/infrastructure/query.repositor
 import { ConfirmationCodeInputModel } from './models/input/confirmation-code.input.model';
 import { EmailResendingInputModel } from './models/input/email-resending.input.model';
 import { NewPasswordInputModel } from './models/input/new-password.input.model';
+import { CreateDeviceCommand } from '../../devices/application/use-cases/create-device.use-case';
 
 // @SkipThrottle()
 @Controller('/hometask-nest/auth')
@@ -75,11 +76,13 @@ export class AuthController {
     const result = await this.commandBus.execute(new LoginUserCommand(userId));
 
     if (result) {
-      await this.devicesService.createNewDevice(
-        ip || 'unknown',
-        title,
-        result.userId,
-        result.refreshToken,
+      await this.commandBus.execute(
+        new CreateDeviceCommand(
+          ip || 'unknown',
+          title,
+          result.userId,
+          result.refreshToken,
+        ),
       );
 
       res.cookie('refreshToken', result.refreshToken, {
