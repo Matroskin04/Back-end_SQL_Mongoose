@@ -6,7 +6,6 @@ import { PostsRepository } from './features/posts/infrastructure/repository/post
 import { CommentsController } from './features/comments/api/comments.controller';
 import { UsersSaController } from './features/users/api/sa/users-sa.controller';
 import { CommentsQueryRepository } from './features/comments/infrastructure/query.repository/comments.query.repository';
-import { UsersSaService } from './features/users/application/sa/users-sa.service';
 import { TestingController } from './features/testing/api/testing.controller';
 import { TestingRepository } from './features/testing/repository/testing.repository';
 import { LocalStrategy } from './infrastructure/strategy/local.strategy';
@@ -31,7 +30,6 @@ import { BlogsPublicController } from './features/blogs/api/public/blogs-public.
 import { BlogsBloggerController } from './features/blogs/api/blogger/blogs-blogger.controller';
 import { BlogsQueryRepository } from './features/blogs/infrastructure/query.repository/blogs.query.repository';
 import { BlogsRepository } from './features/blogs/infrastructure/repository/blogs.repository';
-import { UsersBloggerService } from './features/users/application/blogger/users-blogger.service';
 import { UsersBloggerController } from './features/users/api/blogger/users-blogger.controller';
 import { RegisterUserUseCase } from './features/auth/application/use-cases/register-user.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -84,7 +82,6 @@ import { CreateDeviceUseCase } from './features/devices/application/use-cases/cr
 import { DeleteDeviceByRefreshTokenUseCase } from './features/devices/application/use-cases/delete-device-by-refresh-token.use-case';
 import { UpdateUserBanInfoForBlogUseCase } from './features/users/application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
 
-const services = [JwtAdapter, UsersSaService, UsersBloggerService];
 const queryRepositories = [
   BlogsQueryRepository,
   PostsQueryRepository,
@@ -190,7 +187,6 @@ const handlers = [
     TestingController,
   ],
   providers: [
-    ...services,
     ...queryRepositories,
     ...repositories,
     IsBlogByIdExistsConstraint,
@@ -205,7 +201,7 @@ const handlers = [
     EmailManager,
     CryptoAdapter,
     EmailAdapter,
-
+    JwtAdapter,
     //handlers
     ...handlers,
 

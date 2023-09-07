@@ -12,16 +12,11 @@ import {
 } from '@nestjs/common';
 import { JwtAccessGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { UpdateBanInfoOfUserInputModel } from './models/input/update-ban-info-of-user.input.model';
-import { UsersBloggerService } from '../../application/blogger/users-blogger.service';
 import { QueryUsersBloggerInputModel } from './models/input/query-users-blogger.input.model';
 import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
 import { UsersQueryRepository } from '../../infrastructure/query.repository/users.query.repository';
 import { CommandBus } from '@nestjs/cqrs';
-import { UpdateBanInfoOfUserCommand } from '../../application/sa/use-cases/update-ban-info-of-user.use-case';
-import {
-  UpdateUserBanInfoForBlogCommand,
-  UpdateUserBanInfoForBlogUseCase,
-} from '../../application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
+import { UpdateUserBanInfoForBlogCommand } from '../../application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogger/users')

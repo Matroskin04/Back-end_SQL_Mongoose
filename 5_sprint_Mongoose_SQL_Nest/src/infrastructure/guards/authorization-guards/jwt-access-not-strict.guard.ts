@@ -1,14 +1,10 @@
-import {
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ExtractJwt } from 'passport-jwt';
-import { UsersSaService } from '../../../features/users/application/sa/users-sa.service';
+import { JwtAdapter } from '../../adapters/jwt.adapter';
 @Injectable()
 export class JwtAccessNotStrictGuard extends AuthGuard('jwt') {
-  constructor(protected usersService: UsersSaService) {
+  constructor(protected jwtAdapter: JwtAdapter) {
     super();
   }
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -17,7 +13,7 @@ export class JwtAccessNotStrictGuard extends AuthGuard('jwt') {
 
     if (!accessToken) return true;
 
-    const userId = await this.usersService.getUserIdByAccessToken(accessToken);
+    const userId = await this.jwtAdapter.getUserIdByAccessToken(accessToken);
     if (!userId) return true;
     request.userId = userId;
     return true;

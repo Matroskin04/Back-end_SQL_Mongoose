@@ -3,7 +3,7 @@ import { AccessRefreshTokens } from './types/jwt.types.adapter';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService as JwtServiceNest } from '@nestjs/jwt';
 import { DevicesRepository } from '../../features/devices/infrastructure/repository/devices.repository';
-import { JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 //todo jwt - where to transport
 @Injectable()
@@ -42,6 +42,20 @@ export class JwtAdapter {
       });
     } catch (e) {
       console.log(e);
+      return null;
+    }
+  }
+
+  async getUserIdByAccessToken(token: string): Promise<null | string> {
+    try {
+      const decode = jwt.verify(
+        token,
+        process.env.PRIVATE_KEY_ACCESS_TOKEN!,
+      ) as {
+        userId: string;
+      };
+      return decode.userId;
+    } catch (err) {
       return null;
     }
   }
