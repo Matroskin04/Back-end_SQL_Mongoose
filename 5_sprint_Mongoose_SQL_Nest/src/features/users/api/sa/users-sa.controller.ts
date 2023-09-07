@@ -26,7 +26,7 @@ import { UpdateBanInfoOfUserInputModel } from './models/input/update-ban-info-of
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../../application/sa/use-cases/create-user.use-case';
 import { DeleteUserCommand } from '../../application/sa/use-cases/delete-user.use-case';
-import { UpdateBanInfoOfUserCommand } from '../../application/sa/use-cases/update-ban-info-user.use-case';
+import { UpdateBanInfoOfUserCommand } from '../../application/sa/use-cases/update-ban-info-of-user.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/sa/users')

@@ -48,7 +48,7 @@ import { EmailConfirmationPublicRepository } from './features/users/infrastructu
 import { UsersRepository } from './features/users/infrastructure/repository/users.repository';
 import { CreateUserUseCase } from './features/users/application/sa/use-cases/create-user.use-case';
 import { DeleteUserUseCase } from './features/users/application/sa/use-cases/delete-user.use-case';
-import { UpdateBanInfoOfUserUseCase } from './features/users/application/sa/use-cases/update-ban-info-user.use-case';
+import { UpdateBanInfoOfUserUseCase } from './features/users/application/sa/use-cases/update-ban-info-of-user.use-case';
 import { DeleteDevicesExcludeCurrentUseCase } from './features/devices/application/use-cases/delete-devices-exclude-current.use-case';
 import { DeleteDeviceByIdUseCase } from './features/devices/application/use-cases/delete-device-by-id.use-case';
 import { UsersQueryRepository } from './features/users/infrastructure/query.repository/users.query.repository';
@@ -82,6 +82,7 @@ import { DeletePostUseCase } from './features/posts/application/use-cases/delete
 import { DeleteDevicesByUserIdUseCase } from './features/devices/application/use-cases/delete-devices-by-user-id.use.case';
 import { CreateDeviceUseCase } from './features/devices/application/use-cases/create-device.use-case';
 import { DeleteDeviceByRefreshTokenUseCase } from './features/devices/application/use-cases/delete-device-by-refresh-token.use-case';
+import { UpdateUserBanInfoForBlogUseCase } from './features/users/application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
 
 const services = [JwtAdapter, UsersSaService, UsersBloggerService];
 const queryRepositories = [
@@ -133,6 +134,7 @@ const handlers = [
   //users
   CreateUserUseCase,
   UpdateBanInfoOfUserUseCase,
+  UpdateUserBanInfoForBlogUseCase,
   DeleteUserUseCase,
   //devices
   CreateDeviceUseCase,

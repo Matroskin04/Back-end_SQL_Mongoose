@@ -16,12 +16,18 @@ import { UsersBloggerService } from '../../application/blogger/users-blogger.ser
 import { QueryUsersBloggerInputModel } from './models/input/query-users-blogger.input.model';
 import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
 import { UsersQueryRepository } from '../../infrastructure/query.repository/users.query.repository';
+import { CommandBus } from '@nestjs/cqrs';
+import { UpdateBanInfoOfUserCommand } from '../../application/sa/use-cases/update-ban-info-of-user.use-case';
+import {
+  UpdateUserBanInfoForBlogCommand,
+  UpdateUserBanInfoForBlogUseCase,
+} from '../../application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
 
 @SkipThrottle()
 @Controller('/hometask-nest/blogger/users')
 export class UsersBloggerController {
   constructor(
-    protected usersBloggerService: UsersBloggerService,
+    protected commandBus: CommandBus,
     protected usersQueryRepository: UsersQueryRepository,
   ) {}
 
@@ -46,9 +52,8 @@ export class UsersBloggerController {
     @Param('userId') userId: string,
     @Body() inputBanInfoModel: UpdateBanInfoOfUserInputModel,
   ) {
-    await this.usersBloggerService.updateBanInfoOfUser(
-      userId,
-      inputBanInfoModel,
+    await this.commandBus.execute(
+      new UpdateUserBanInfoForBlogCommand(userId, inputBanInfoModel),
     );
     return;
   }
