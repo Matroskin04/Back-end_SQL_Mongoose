@@ -50,7 +50,7 @@ export async function deleteBlogBloggerTest(httpServer, blogId, accessToken) {
 
 export function createResponseAllBlogsTest(
   idsOfBlogs: Array<string> | number,
-  isMembership?: boolean,
+  isMembership?: boolean[] | null,
   totalCount?: number,
   pagesCount?: number,
   page?: number,
@@ -65,7 +65,7 @@ export function createResponseAllBlogsTest(
       description: expect.any(String),
       websiteUrl: expect.any(String),
       createdAt: expect.any(String),
-      isMembership: isMembership ?? false,
+      isMembership: isMembership ? isMembership[i] : false,
     });
   }
   return {
