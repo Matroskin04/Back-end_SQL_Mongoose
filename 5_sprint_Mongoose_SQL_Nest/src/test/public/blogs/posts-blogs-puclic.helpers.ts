@@ -4,10 +4,12 @@ export async function getPostsOfBlogPublicTest(
   httpServer,
   blogId,
   accessToken?,
+  query?,
 ) {
   return request(httpServer)
     .get(`/hometask-nest/blogs/${blogId}/posts`)
-    .set('Authorization', `Bearer ${accessToken}`);
+    .set('Authorization', `Bearer ${accessToken}`)
+    .query(query || '');
 }
 
 export function createResponseAllPostsTest(

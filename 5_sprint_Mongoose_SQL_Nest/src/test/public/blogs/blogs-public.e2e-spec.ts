@@ -28,6 +28,10 @@ import {
   getPostsOfBlogPublicTest,
 } from './posts-blogs-puclic.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
+import {
+  create9PostsOf3BlogsBy3Users,
+  create9PostsOfBlog,
+} from '../posts/posts-public.helpers';
 
 describe('Blogs (Public); /', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -60,7 +64,6 @@ describe('Blogs (Public); /', () => {
   let accessToken1;
   let accessToken2;
   let accessToken3;
-  let blogsIds;
 
   let correctBlogId;
   const correctBlogName = 'correctName';
@@ -69,6 +72,7 @@ describe('Blogs (Public); /', () => {
     'https://SoBqgeyargbRK5jx76KYc6XS3qU9LWMJCvbDif9VXOiplGf4-RK0nhw34lvql.zgG73ki0po16f.J4U96ZRvoH3VE_WK';
 
   describe(`/blogs (GET) - get all blogs`, () => {
+    let blogsIds;
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
@@ -264,6 +268,7 @@ describe('Blogs (Public); /', () => {
   });
 
   describe(`/blogs/:id/posts (GET) - get posts of blog`, () => {
+    let postsIds;
     let blog;
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
@@ -273,6 +278,8 @@ describe('Blogs (Public); /', () => {
       accessToken1 = result1.accessToken;
 
       blog = await createCorrectBlogTest(httpServer, accessToken1);
+      //create 9 posts of 3 blogs by 3 users
+      postsIds = await create9PostsOfBlog(httpServer, blog.id, accessToken1);
     });
 
     it(`- (404) should not return posts because of blog with such id doesn't exist`, async () => {
@@ -280,10 +287,192 @@ describe('Blogs (Public); /', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
-    it(`+ (200) should return blog by id`, async () => {
+    it(`+ (200) should return 9 posts of blog by id`, async () => {
       const result = await getPostsOfBlogPublicTest(httpServer, blog.id);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result.body).toEqual(createResponseAllPostsTest([]));
+      expect(result.body).toEqual(
+        createResponseAllPostsTest(postsIds, null, null, null, 9, 1, 1, 10),
+      );
+    });
+
+    it(`+ (200) should return 3 posts (query: pageSize=3, pageNumber=2)
+              + (200) should return 4 posts (query: pageSize=5, pageNumber=2)`, async () => {
+      //3 posts
+      const result1 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'pageSize=3&&pageNumber=2',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllPostsTest(
+          postsIds.slice(3, 6),
+          null,
+          null,
+          null,
+          9,
+          3,
+          2,
+          3,
+        ),
+      );
+
+      //4 posts
+      const result2 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'pageSize=5&&pageNumber=2',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllPostsTest(
+          postsIds.slice(5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          2,
+          5,
+        ),
+      );
+    });
+
+    it(`+ (200) should return 9 posts (query: sortBy=title&&pageSize=5)
+              + (200) should return 9 posts (query: sortBy=content&&pageSize=5)
+              + (200) should return 9 posts (query: sortBy=shortDescription&&pageSize=5)
+              + (200) should return 9 posts (query: sortDirection=asc)
+              + (200) should return 9 posts (query: sortBy=id&&sortDirection=desc)`, async () => {
+      const postsIdsCopy = [...postsIds];
+      //sortBy=name, total 9 posts
+      const result1 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortBy=content, total 9 posts
+      const result2 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortBy=shortDescription, total 9 posts
+      const result3 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortDirection=asc, total 9 posts
+      const result4 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortDirection=asc',
+      );
+      expect(result4.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result4.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.reverse(),
+          null,
+          null,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+
+      //sortBy=id&&sortDirection=desc, total 9 blogs
+      const result5 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortBy=id&&sortDirection=desc',
+      );
+      expect(result5.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result5.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.sort().reverse(),
+          null,
+          null,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+    });
+
+    it(`- (400) sortBy has incorrect value (query: sortBy=Truncate;)
+              - (400) sortDirection has incorrect value (query: sortDirection=Truncate;)`, async () => {
+      //status 400
+      const result1 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortBy=Truncate;',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result1.body).toEqual(createErrorsMessageTest(['sortBy']));
+
+      //status 400
+      const result2 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortDirection=Truncate;',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
     });
   });
 });
