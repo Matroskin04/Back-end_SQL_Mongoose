@@ -27,8 +27,7 @@ import {
   createResponseAllPostsTest,
   getPostsOfBlogPublicTest,
 } from './posts-blogs-puclic.helpers';
-import { createUserTest } from '../../super-admin/users-sa.helpers';
-import { loginUserTest } from '../auth/auth-public.helpers';
+import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 
 describe('Blogs (Public); /', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -78,6 +77,7 @@ describe('Blogs (Public); /', () => {
       accessToken1 = result[0].accessToken;
       accessToken2 = result[1].accessToken;
       accessToken3 = result[2].accessToken;
+
       //create 9 blogs by 3 users
       blogsIds = await create9BlogsBy3Users(httpServer, [
         accessToken1,
@@ -86,12 +86,149 @@ describe('Blogs (Public); /', () => {
       ]);
     });
 
-    it(`+ (200) should return 10 blogs`, async () => {
+    it(`+ (200) should return 9 blogs`, async () => {
       const result = await getAllBlogsPublicTest(httpServer);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
-        createResponseAllBlogsTest(blogsIds.reverse(), false, 9, 1, 1, 10),
+        createResponseAllBlogsTest(blogsIds, null, 9, 1, 1, 10),
       );
+    });
+
+    it(`+ (200) should return 0 blogs (no blogs with such name term) `, async () => {
+      const result = await getAllBlogsPublicTest(
+        httpServer,
+        'searchNameTerm=qwertyuio1234568',
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result.body).toEqual(
+        createResponseAllBlogsTest([], null, 0, 1, 1, 10),
+      );
+    });
+
+    it(`+ (200) should return 3 blogs (query: pageSize=3, pageNumber=2)
+              + (200) should return 4 blogs (query: pageSize=5, pageNumber=2)`, async () => {
+      //3 blogs
+      const result1 = await getAllBlogsPublicTest(
+        httpServer,
+        'pageSize=3&&pageNumber=2',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllBlogsTest(blogsIds.slice(3, 6), null, 9, 3, 2, 3),
+      );
+
+      //4 blogs
+      const result2 = await getAllBlogsPublicTest(
+        httpServer,
+        'pageSize=5&&pageNumber=2',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllBlogsTest(blogsIds.slice(5), null, 9, 2, 2, 5),
+      );
+    });
+
+    it(`+ (200) should return 9 blogs (query: sortBy=name&&pageSize=5)
+              + (200) should return 9 blogs (query: sortDirection=asc)
+              + (200) should return 9 blogs (query: sortBy=id&&sortDirection=desc)`, async () => {
+      const blogsIdsCopy = [...blogsIds];
+      //sortBy=name, 9 blogs
+      const result1 = await getAllBlogsPublicTest(
+        httpServer,
+        'sortBy=name&&pageSize=5',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllBlogsTest(blogsIdsCopy.slice(0, 5), null, 9, 2, 1, 5),
+      );
+
+      //sortDirection=asc, 9 blogs
+      const result2 = await getAllBlogsPublicTest(
+        httpServer,
+        'sortDirection=asc',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllBlogsTest(blogsIdsCopy.reverse(), null, 9, 1, 1, 10),
+      );
+
+      //sortBy=id&&sortDirection=desc, 9 blogs
+      const result3 = await getAllBlogsPublicTest(
+        httpServer,
+        'sortBy=id&&sortDirection=desc',
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
+        createResponseAllBlogsTest(
+          blogsIdsCopy.sort().reverse(),
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+    });
+
+    it(`+ (200) should return 1 blog (query: searchNameTerm=irs)
+              + (200) should return 7 blogs (query: searchNameTerm=TH)
+              + (200) should return 4 blogs (query: searchNameTerm=S)`, async () => {
+      //searchNameTerm=irs, 1 blogs
+      const result1 = await getAllBlogsPublicTest(
+        httpServer,
+        'searchNameTerm=irs',
+      );
+      console.log(blogsIds[8]);
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllBlogsTest([blogsIds[8]], null, 1, 1, 1, 10),
+      );
+
+      //searchNameTerm=TH, 7 blogs
+      const result2 = await getAllBlogsPublicTest(
+        httpServer,
+        'searchNameTerm=TH',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllBlogsTest(blogsIds.slice(0, 7), null, 7, 1, 1, 10),
+      );
+
+      //searchNameTerm=S, 4 blogs
+      const result3 = await getAllBlogsPublicTest(
+        httpServer,
+        'searchNameTerm=S',
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
+        createResponseAllBlogsTest(
+          blogsIds.filter((e, i) => i === 2 || i === 3 || i === 7 || i === 8),
+          null,
+          4,
+          1,
+          1,
+          10,
+        ),
+      );
+    });
+
+    it(`- (400) sortBy has incorrect value (query: sortBy=Truncate;)
+              - (400) sortDirection has incorrect value (query: sortDirection=Truncate;)`, async () => {
+      //status 400
+      const result1 = await getAllBlogsPublicTest(
+        httpServer,
+        'sortBy=Truncate;',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result1.body).toEqual(createErrorsMessageTest(['sortBy']));
+
+      //status 400
+      const result2 = await getAllBlogsPublicTest(
+        httpServer,
+        'sortDirection=Truncate;',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
     });
   });
 
