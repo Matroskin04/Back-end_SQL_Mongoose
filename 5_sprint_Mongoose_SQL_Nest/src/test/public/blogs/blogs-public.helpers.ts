@@ -9,8 +9,8 @@ export async function getBlogByIdPublicTest(httpServer, blogId) {
   return request(httpServer).get(`/hometask-nest/blogs/${blogId}`);
 }
 
-export async function getAllBlogsPublicTest(httpServer) {
-  return request(httpServer).get(`/hometask-nest/blogs`);
+export async function getAllBlogsPublicTest(httpServer, query?) {
+  return request(httpServer).get(`/hometask-nest/blogs`).query(query);
 }
 
 export async function create9BlogsBy3Users(
@@ -29,18 +29,20 @@ export async function create9BlogsBy3Users(
     'ninth',
   ];
   const blogsIds: any = [];
+  let count = 1;
   for (const i of blogNumber) {
     const result = await createBlogTest(
       httpServer,
       accessTokens[0],
-      `Name ${i}`,
+      `Name ${count} ${i}`,
       `Description ${i}`,
       `https://samurai.it-incubator.io`,
     );
     expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
     blogsIds.push(result.body.id);
+    count++;
   }
-  return blogsIds;
+  return blogsIds.reverse();
 }
 
 export async function createAndLogin3UsersTest(
