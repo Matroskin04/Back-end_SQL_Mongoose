@@ -65,6 +65,40 @@ export async function create9PostsOf3BlogsBy3Users(
   return postsIdsInfo;
 }
 
+export async function create9PostsOfBlog(
+  httpServer,
+  blogId: string,
+  accessToken: string,
+): Promise<string[]> {
+  const postNumber = [
+    'first',
+    'second',
+    'third',
+    'fourth',
+    'fifth',
+    'sixth',
+    'seventh',
+    'eighth',
+    'ninth',
+  ];
+  const postsIds: any = [];
+  let count = 1;
+  for (const i of postNumber) {
+    const result = await createPostTest(
+      httpServer,
+      blogId,
+      accessToken,
+      `Title ${count} ${i}`,
+      `ShortDescription ${count} ${i}`,
+      `Content ${count} ${i}`,
+    );
+    expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+    postsIds.push(result.body.id);
+    count++;
+  }
+  return postsIds.reverse();
+}
+
 export function createResponseSinglePost(
   id?,
   title?,
