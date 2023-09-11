@@ -1,7 +1,4 @@
 import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../../app.module';
-import { appSettings } from '../../../app.settings';
 import { v4 as uuidv4 } from 'uuid';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
 import {
@@ -19,7 +16,10 @@ import {
   UpdateStatusLikeOfPostTest,
 } from './posts-public.helpers';
 import { createAndLogin3UsersTest } from '../blogs/blogs-public.helpers';
-import { createResponseAllPostsTest } from '../blogs/posts-blogs-puclic.helpers';
+import {
+  createResponseAllPostsTest,
+  getPostsOfBlogPublicTest,
+} from '../blogs/posts-blogs-puclic.helpers';
 import {
   create9CommentsBy3Users,
   createCommentTest,
@@ -91,7 +91,6 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
     });
 
     it(`+ (200) should return 9 posts (without jwt)`, async () => {
-      //jwt is incorrect
       const result = await getPostsPublicTest(httpServer);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
@@ -103,6 +102,186 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
           9,
         ),
       );
+    });
+
+    it(`+ (200) should return 3 posts (query: pageSize=3, pageNumber=2)
+              + (200) should return 4 posts (query: pageSize=5, pageNumber=2)`, async () => {
+      //3 posts
+      const result1 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'pageSize=3&&pageNumber=2',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllPostsTest(
+          postsIds.slice(3, 6),
+          null,
+          null,
+          null,
+          9,
+          3,
+          2,
+          3,
+        ),
+      );
+
+      //4 posts
+      const result2 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'pageSize=5&&pageNumber=2',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllPostsTest(
+          postsIds.slice(5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          2,
+          5,
+        ),
+      );
+    });
+
+    it(`+ (200) should return 9 posts (query: sortBy=title&&pageSize=5)
+              + (200) should return 9 posts (query: sortBy=content&&pageSize=5)
+              + (200) should return 9 posts (query: sortBy=shortDescription&&pageSize=5)
+              + (200) should return 9 posts (query: sortDirection=asc)
+              + (200) should return 9 posts (query: sortBy=id&&sortDirection=desc)`, async () => {
+      const postsIdsCopy = [...postsIds];
+      //sortBy=name, total 9 posts
+      const result1 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortBy=content, total 9 posts
+      const result2 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortBy=shortDescription, total 9 posts
+      const result3 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortDirection=asc, total 9 posts
+      const result4 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortDirection=asc',
+      );
+      expect(result4.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result4.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.reverse(),
+          null,
+          null,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+
+      //sortBy=id&&sortDirection=desc, total 9 posts
+      const result5 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortBy=id&&sortDirection=desc',
+      );
+      expect(result5.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result5.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.sort().reverse(),
+          null,
+          null,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+    });
+
+    it(`- (400) sortBy has incorrect value (query: sortBy=Truncate;)
+              - (400) sortDirection has incorrect value (query: sortDirection=Truncate;)`, async () => {
+      //status 400
+      const result1 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortBy=Truncate;',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result1.body).toEqual(createErrorsMessageTest(['sortBy']));
+
+      //status 400
+      const result2 = await getPostsOfBlogPublicTest(
+        httpServer,
+        blog.id,
+        accessToken1,
+        'sortDirection=Truncate;',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
     });
   });
 
