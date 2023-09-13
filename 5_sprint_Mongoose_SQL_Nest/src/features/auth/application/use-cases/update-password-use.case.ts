@@ -7,19 +7,21 @@ import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.re
 import { UsersOrmRepository } from '../../../users/infrastructure/typeORM/repository/users-orm.repository';
 import { UsersOrmQueryRepository } from '../../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 
-export class SaveNewPassCommand {
+export class UpdatePasswordCommand {
   constructor(public newPassword: string, public recoveryCode: string) {}
 }
 
-@CommandHandler(SaveNewPassCommand)
-export class SaveNewPassUseCase implements ICommandHandler<SaveNewPassCommand> {
+@CommandHandler(UpdatePasswordCommand)
+export class UpdatePasswordUseCase
+  implements ICommandHandler<UpdatePasswordCommand>
+{
   constructor(
     protected cryptoAdapter: CryptoAdapter,
     protected usersOrmRepository: UsersOrmRepository,
     protected usersOrmQueryRepository: UsersOrmQueryRepository,
   ) {}
 
-  async execute(command: SaveNewPassCommand): Promise<void> {
+  async execute(command: UpdatePasswordCommand): Promise<void> {
     const { newPassword, recoveryCode } = command;
     const user = await this.usersOrmQueryRepository.getUserByRecoveryCode(
       recoveryCode,

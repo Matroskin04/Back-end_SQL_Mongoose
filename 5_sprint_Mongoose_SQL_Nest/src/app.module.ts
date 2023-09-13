@@ -35,7 +35,7 @@ import { RegisterUserUseCase } from './features/auth/application/use-cases/regis
 import { CqrsModule } from '@nestjs/cqrs';
 import { ConfirmEmailUseCase } from './features/auth/application/use-cases/confirm-email.use-case';
 import { ResendConfirmationEmailMessageUseCase } from './features/auth/application/use-cases/resend-confirmation-email-message.use-case';
-import { SaveNewPassUseCase } from './features/auth/application/use-cases/save-new-pass.use-case';
+import { UpdatePasswordUseCase } from './features/auth/application/use-cases/update-password-use.case';
 import { LoginUserUseCase } from './features/auth/application/use-cases/login-user.use-case';
 import process from 'process';
 import { SendEmailPassRecoveryUseCase } from './features/auth/application/use-cases/send-email-pass-recovery.use-case';
@@ -126,7 +126,7 @@ const handlers = [
   RegisterUserUseCase,
   ConfirmEmailUseCase,
   ResendConfirmationEmailMessageUseCase,
-  SaveNewPassUseCase,
+  UpdatePasswordUseCase,
   LoginUserUseCase,
   ValidateUserUseCase,
   SendEmailPassRecoveryUseCase,
