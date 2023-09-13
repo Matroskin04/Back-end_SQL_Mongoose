@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository } from 'typeorm';
 import {
   BannedUsersOfBlogPaginationType,
   UserBanInfoType,
@@ -73,27 +73,46 @@ export class UsersOrmQueryRepository {
           .select('COUNT(*)')
           .from(Users, 'u')
           .leftJoin('u.userBanInfo', 'bi')
-          .where('u."login" ILIKE :login OR u."email" ILIKE :email', {
+          .where('u."isDeleted" = false')
+          .andWhere(
+            new Brackets((qb) => {
+              qb.where('u."login" ILIKE :login OR u."email" ILIKE :email', {
+                login: `%${searchLoginTerm}%`,
+                email: `%${searchEmailTerm}%`,
+              });
+            }),
+          )
+          .andWhere(
+            new Brackets((qb) => {
+              qb.where(
+                'bi."isBanned" = :banStatus OR :banStatus::boolean IS NULL',
+                {
+                  banStatus,
+                },
+              );
+            }),
+          );
+      })
+      .leftJoin('u.userBanInfo', 'bi')
+      .where('u."isDeleted" = false')
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('u."login" ILIKE :login OR u."email" ILIKE :email', {
             login: `%${searchLoginTerm}%`,
             email: `%${searchEmailTerm}%`,
-          })
-          .andWhere('u."isDeleted" = false')
-          .andWhere(
+          });
+        }),
+      )
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where(
             'bi."isBanned" = :banStatus OR :banStatus::boolean IS NULL',
             {
               banStatus,
             },
           );
-      })
-      .leftJoin('u.userBanInfo', 'bi')
-      .where('u."login" ILIKE :login OR u."email" ILIKE :email', {
-        login: `%${searchLoginTerm}%`,
-        email: `%${searchEmailTerm}%`,
-      })
-      .andWhere('u."isDeleted" = false')
-      .andWhere('bi."isBanned" = :banStatus OR :banStatus::boolean IS NULL', {
-        banStatus,
-      })
+        }),
+      )
       .orderBy(`u.${sortBy}`, sortDirection)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize)
