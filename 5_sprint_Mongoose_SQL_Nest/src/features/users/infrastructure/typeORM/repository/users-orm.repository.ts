@@ -1,11 +1,16 @@
 import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Users } from '../../../domain/users.entity';
 
 @Injectable() //todo для чего этот декоратор
 export class UsersOrmRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Users)
+    protected usersRepository: Repository<Users>,
+    @InjectDataSource() protected dataSource: DataSource,
+  ) {}
 
   async createUser(
     userId: string,
@@ -13,14 +18,11 @@ export class UsersOrmRepository {
     email: string,
     passwordHash: string,
   ): Promise<void> {
-    await this.dataSource.query(
-      `
-    INSERT INTO public.users( 
-        "id", "login", "email", "passwordHash") 
-        VALUES ($1, $2, $3, $4);
-`,
-      [userId, login, email, passwordHash],
-    );
+    await this.usersRepository
+      .createQueryBuilder()
+      .insert()
+      .values({ id: userId, login, email, passwordHash })
+      .execute();
     return;
   }
 

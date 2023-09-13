@@ -1,26 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { UsersEmailConfirmation } from '../../../domain/users-email-confirmation.entity';
 
 @Injectable()
-export class EmailConfirmationOrmPublicRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+export class EmailConfirmationOrmRepository {
+  constructor(
+    @InjectRepository(UsersEmailConfirmation)
+    protected usersEmailConfirmation: Repository<UsersEmailConfirmation>,
+    @InjectDataSource() protected dataSource: DataSource,
+  ) {}
 
   async createEmailConfirmationInfo(
     confirmationCode: string,
     intervalForExpirationDate: string,
     isConfirmed: boolean,
     userId: string,
-  ) {
-    const result = await this.dataSource.query(
-      `
-    INSERT INTO public.users_email_confirmation( 
-        "confirmationCode", "expirationDate", "isConfirmed", "userId") 
-        VALUES ($1, now() + ($2::interval), $3, $4);
-    `,
-      [confirmationCode, intervalForExpirationDate ?? '0', isConfirmed, userId],
-    );
-    return result;
+  ): Promise<void> {
+    await this.usersEmailConfirmation
+      .createQueryBuilder()
+      .insert()
+      .values({
+        confirmationCode,
+        expirationDate: () =>
+          `NOW() + INTERVAL '${intervalForExpirationDate ?? '0'}'`,
+        isConfirmed,
+        userId,
+      })
+      .execute();
+    return;
   }
 
   async updateEmailConfirmationStatus(userId: string): Promise<boolean> {

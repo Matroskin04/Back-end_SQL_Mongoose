@@ -83,6 +83,10 @@ import { DeleteDeviceByRefreshTokenUseCase } from './features/devices/applicatio
 import { UpdateUserBanInfoForBlogUseCase } from './features/users/application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
 import { UsersOrmQueryRepository } from './features/users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 import { DevicesOrmRepository } from './features/devices/infrastructure/typeORM/repository/devices-orm.repository';
+import { UsersOrmRepository } from './features/users/infrastructure/typeORM/repository/users-orm.repository';
+import { EmailConfirmationOrmRepository } from './features/users/infrastructure/typeORM/subrepository/email-confirmation-orm.public.repository';
+import { PasswordRecoveryOrmRepository } from './features/users/infrastructure/typeORM/subrepository/password-recovery-orm.public.repository';
+import { BanInfoOrmRepository } from './features/users/infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
 
 const queryRepositories = [
   // SQL
@@ -98,6 +102,7 @@ const queryRepositories = [
   DevicesOrmRepository,
 ];
 const repositories = [
+  //SQL
   PasswordRecoveryPublicRepository,
   BanInfoPublicRepository,
   EmailConfirmationPublicRepository,
@@ -109,6 +114,12 @@ const repositories = [
   PostsRepository,
   UsersRepository,
   TestingRepository,
+
+  //ORM
+  UsersOrmRepository,
+  EmailConfirmationOrmRepository,
+  PasswordRecoveryOrmRepository,
+  BanInfoOrmRepository,
 ];
 const handlers = [
   //auth

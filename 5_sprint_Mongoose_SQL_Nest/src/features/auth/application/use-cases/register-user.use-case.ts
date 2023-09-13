@@ -6,6 +6,10 @@ import { EmailConfirmationPublicRepository } from '../../../users/infrastructure
 import { PasswordRecoveryPublicRepository } from '../../../users/infrastructure/SQL/subrepository/password-recovery.public.repository';
 import { BanInfoPublicRepository } from '../../../users/infrastructure/SQL/subrepository/ban-info.public.repository';
 import { UsersRepository } from '../../../users/infrastructure/SQL/repository/users.repository';
+import { UsersOrmRepository } from '../../../users/infrastructure/typeORM/repository/users-orm.repository';
+import { EmailConfirmationOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/email-confirmation-orm.public.repository';
+import { PasswordRecoveryOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/password-recovery-orm.public.repository';
+import { BanInfoOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
 
 export class RegisterUserCommand {
   constructor(
@@ -22,10 +26,10 @@ export class RegisterUserUseCase
   constructor(
     protected cryptoAdapter: CryptoAdapter,
     protected emailManager: EmailManager,
-    protected usersRepository: UsersRepository,
-    protected emailConfirmationPublicRepository: EmailConfirmationPublicRepository,
-    protected passwordRecoveryPublicRepository: PasswordRecoveryPublicRepository,
-    protected banInfoPublicRepository: BanInfoPublicRepository,
+    protected usersOrmRepository: UsersOrmRepository,
+    protected emailConfirmationPublicRepository: EmailConfirmationOrmRepository,
+    protected passwordRecoveryPublicRepository: PasswordRecoveryOrmRepository,
+    protected banInfoPublicRepository: BanInfoOrmRepository,
   ) {}
 
   async execute(command: RegisterUserCommand): Promise<void> {
@@ -34,7 +38,12 @@ export class RegisterUserUseCase
     const passwordHash = await this.cryptoAdapter._generateHash(password);
 
     const userId = uuidv4();
-    await this.usersRepository.createUser(userId, login, email, passwordHash);
+    await this.usersOrmRepository.createUser(
+      userId,
+      login,
+      email,
+      passwordHash,
+    );
     const confirmationCode = uuidv4();
 
     await this.emailConfirmationPublicRepository.createEmailConfirmationInfo(

@@ -1,22 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { UsersEmailConfirmation } from '../../../domain/users-email-confirmation.entity';
+import { UsersPasswordRecovery } from '../../../domain/users-password-recovery.entity';
 
 Injectable();
-export class PasswordRecoveryOrmPublicRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+export class PasswordRecoveryOrmRepository {
+  constructor(
+    @InjectRepository(UsersPasswordRecovery)
+    protected usersPasswordRecovery: Repository<UsersPasswordRecovery>,
+    @InjectDataSource() protected dataSource: DataSource,
+  ) {}
 
   async createPassRecoveryInfo(
-    confirmationCode: string | null,
+    confirmationCode: string,
     userId: string,
   ): Promise<void> {
-    await this.dataSource.query(
-      `
-    INSERT INTO public.users_password_recovery(
-        "confirmationCode", "userId")
-        VALUES ( $1, $2);`,
-      [confirmationCode, userId],
-    );
+    await this.usersPasswordRecovery
+      .createQueryBuilder()
+      .insert()
+      .values({
+        confirmationCode,
+        userId,
+      })
+      .execute();
     return;
   }
 

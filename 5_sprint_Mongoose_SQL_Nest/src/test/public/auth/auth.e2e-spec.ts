@@ -1,10 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../../../app.module';
-import { appSettings } from '../../../app.settings';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
-import { EmailAdapter } from '../../../infrastructure/adapters/email.adapter';
 import { emailAdapterMock } from '../mock.providers/auth.mock.providers';
 import { v4 as uuidv4 } from 'uuid';
 import {

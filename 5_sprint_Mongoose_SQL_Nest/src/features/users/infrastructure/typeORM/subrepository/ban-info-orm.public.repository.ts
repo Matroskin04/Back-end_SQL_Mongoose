@@ -1,19 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { UsersBanInfo } from '../../../domain/users-ban-info.entity';
 
 Injectable();
-export class BanInfoPublicOrmRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+export class BanInfoOrmRepository {
+  constructor(
+    @InjectRepository(UsersBanInfo)
+    protected usersBanInfo: Repository<UsersBanInfo>,
+    @InjectDataSource() protected dataSource: DataSource,
+  ) {}
 
   async createBanInfoUser(userId: string): Promise<void> {
-    await this.dataSource.query(
-      `
-    INSERT INTO public.users_ban_info(
-        "userId")
-         VALUES ($1);`,
-      [userId],
-    );
+    await this.usersBanInfo
+      .createQueryBuilder()
+      .insert()
+      .values({ userId })
+      .execute();
     return;
   }
 }
