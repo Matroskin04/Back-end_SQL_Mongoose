@@ -23,8 +23,8 @@ import { CommentsRepository } from './features/comments/infrastructure/repositor
 import { IsBlogByIdExistsConstraint } from './infrastructure/decorators/posts/blog-id-exists.decorator';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { DevicesController } from './features/devices/api/devices.controller';
-import { DevicesQueryRepository } from './features/devices/infrastructure/query.repository/devices.query.repository';
-import { DevicesRepository } from './features/devices/infrastructure/repository/devices.repository';
+import { DevicesQueryRepository } from './features/devices/infrastructure/SQL/query.repository/devices.query.repository';
+import { DevicesRepository } from './features/devices/infrastructure/SQL/repository/devices.repository';
 import { JwtAdapter } from './infrastructure/adapters/jwt.adapter';
 import { BlogsPublicController } from './features/blogs/api/public/blogs-public.controller';
 import { BlogsBloggerController } from './features/blogs/api/blogger/blogs-blogger.controller';
@@ -82,6 +82,7 @@ import { CreateDeviceUseCase } from './features/devices/application/use-cases/cr
 import { DeleteDeviceByRefreshTokenUseCase } from './features/devices/application/use-cases/delete-device-by-refresh-token.use-case';
 import { UpdateUserBanInfoForBlogUseCase } from './features/users/application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
 import { UsersOrmQueryRepository } from './features/users/infrastructure/typeORM/query.repository/users-orm.query.repository';
+import { DevicesOrmRepository } from './features/devices/infrastructure/typeORM/repository/devices-orm.repository';
 
 const queryRepositories = [
   // SQL
@@ -94,6 +95,7 @@ const queryRepositories = [
 
   //ORM
   UsersOrmQueryRepository,
+  DevicesOrmRepository,
 ];
 const repositories = [
   PasswordRecoveryPublicRepository,

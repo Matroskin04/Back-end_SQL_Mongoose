@@ -7,7 +7,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { DevicesQueryRepository } from '../infrastructure/query.repository/devices.query.repository';
+import { DevicesQueryRepository } from '../infrastructure/SQL/query.repository/devices.query.repository';
 import { DeviceOutputModel } from './models/output/device.output.model';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { SkipThrottle } from '@nestjs/throttler';

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import {
   modifyBannedUserOfBlogIntoViewModel,
   modifyUserIntoViewModel,
@@ -19,10 +19,15 @@ import {
   UsersQueryBloggerType,
   UsersQuerySAType,
 } from './users.input.types.query.repository';
+import { Users } from '../../../domain/users.entity';
 
 @Injectable()
 export class UsersQueryRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Users)
+    protected usersRepository: Repository<Users>,
+    @InjectDataSource() protected dataSource: DataSource,
+  ) {}
 
   //view methods
   async getUserInfoByIdView(userId: string): Promise<null | UsersInfoViewType> {

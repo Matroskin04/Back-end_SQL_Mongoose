@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtAdapter } from '../../../../infrastructure/adapters/jwt.adapter';
-import { DevicesRepository } from '../../infrastructure/repository/devices.repository';
+import { DevicesRepository } from '../../infrastructure/SQL/repository/devices.repository';
 
 export class DeleteDevicesExcludeCurrentCommand {
   constructor(public refreshToken: string) {}

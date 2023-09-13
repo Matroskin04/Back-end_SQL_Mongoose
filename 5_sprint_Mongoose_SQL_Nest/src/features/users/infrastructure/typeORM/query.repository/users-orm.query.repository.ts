@@ -124,15 +124,13 @@ export class UsersOrmQueryRepository {
 
   //addition methods
   async doesUserExistById(userId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    SELECT COUNT(*)
-        FROM public."users"
-        WHERE "id" = $1
-    `,
-      [userId],
-    );
-    return +result[0].count === 1;
+    const doesExist = await this.usersRepository
+      .createQueryBuilder('u')
+      .select('COUNT(*)')
+      .where('u.id = :userId', { userId })
+      .getRawOne();
+
+    return +doesExist.count === 1;
   }
 
   async doesUserExistByLoginEmail(loginOrEmail: string): Promise<boolean> {

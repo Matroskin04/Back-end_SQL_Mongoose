@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ResponseTypeService } from '../../../../infrastructure/utils/functions/types/create-responses-service.types.service';
 import { createResponseService } from '../../../../infrastructure/utils/functions/create-response-service.function';
-import { DevicesQueryRepository } from '../../infrastructure/query.repository/devices.query.repository';
-import { DevicesRepository } from '../../infrastructure/repository/devices.repository';
+import { DevicesQueryRepository } from '../../infrastructure/SQL/query.repository/devices.query.repository';
+import { DevicesRepository } from '../../infrastructure/SQL/repository/devices.repository';
 
 export class DeleteDeviceByIdCommand {
   constructor(public deviceId: string, public userId: string) {}
