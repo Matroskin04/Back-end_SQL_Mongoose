@@ -1,7 +1,9 @@
 //todo type
 import { UserViewType } from '../query.repository/users.output.types.query.repository';
 
-export function modifyUserIntoViewModel(userInfo): UserViewType {
+export function modifyUserIntoViewModel(
+  userInfo: UserWithBanInfoRawType,
+): UserViewType {
   return {
     id: userInfo.id,
     login: userInfo.login,
@@ -38,4 +40,14 @@ type BannedUserOfBlogType = {
     banDate: string;
     banReason: string;
   };
+};
+
+type UserWithBanInfoRawType = {
+  id: string;
+  login: string;
+  email: string;
+  createdAt: string;
+  isBanned: boolean;
+  banDate: string | null;
+  banReason: string | null;
 };

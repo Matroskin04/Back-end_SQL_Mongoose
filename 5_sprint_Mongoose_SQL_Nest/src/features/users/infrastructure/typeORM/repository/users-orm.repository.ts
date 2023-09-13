@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Users } from '../../../domain/users.entity';
+import { UserIdAndDateType } from '../../SQL/repository/users.types.repository';
 
 @Injectable() //todo для чего этот декоратор
 export class UsersOrmRepository {
@@ -17,13 +18,15 @@ export class UsersOrmRepository {
     login: string,
     email: string,
     passwordHash: string,
-  ): Promise<void> {
-    await this.usersRepository
+  ): Promise<UserIdAndDateType> {
+    const result = await this.usersRepository
       .createQueryBuilder()
       .insert()
       .values({ id: userId, login, email, passwordHash })
+      .returning(['createdAt', 'id'])
       .execute();
-    return;
+
+    return { id: result.raw[0].id, createdAt: result.raw[0].createdAt };
   }
 
   async createInfoBannedUserOfBlog(
@@ -71,14 +74,14 @@ export class UsersOrmRepository {
   }
 
   async deleteUserById(userId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    UPDATE public."users"
-        SET "isDeleted" = true
-        WHERE "id" = $1`,
-      [userId],
-    );
-    return result[1] === 1;
+    const result = await this.usersRepository
+      .createQueryBuilder()
+      .update()
+      .set({ isDeleted: true })
+      .where('id = :userId', { userId })
+      .execute();
+
+    return result.affected === 1;
   }
 
   async deleteInfoBannedUserOfBlog(

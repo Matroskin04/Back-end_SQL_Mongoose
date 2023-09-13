@@ -9,7 +9,6 @@ import {
   Post,
   Put,
   Query,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { QueryUsersSAInputModel } from './models/input/query-users-sa.input.model';
@@ -27,13 +26,14 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../../application/sa/use-cases/create-user.use-case';
 import { DeleteUserCommand } from '../../application/sa/use-cases/delete-user.use-case';
 import { UpdateBanInfoOfUserCommand } from '../../application/sa/use-cases/update-ban-info-of-user.use-case';
+import { UsersOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/users-orm.query.repository';
 
 @SkipThrottle()
 @Controller('/hometask-nest/sa/users')
 export class UsersSaController {
   constructor(
     protected commandBus: CommandBus,
-    protected usersQueryRepository: UsersQueryRepository,
+    protected usersOrmQueryRepository: UsersOrmQueryRepository,
   ) {}
 
   @UseGuards(BasicAuthGuard)
@@ -41,7 +41,7 @@ export class UsersSaController {
   async getAllUsers(
     @Query() query: QueryUsersSAInputModel,
   ): Promise<ViewAllUsersModels> {
-    const result = await this.usersQueryRepository.getAllUsersView(query);
+    const result = await this.usersOrmQueryRepository.getAllUsersView(query);
     return result;
   }
 

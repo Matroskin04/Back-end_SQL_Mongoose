@@ -10,6 +10,12 @@ import { EmailConfirmationPublicRepository } from '../../../infrastructure/SQL/s
 import { PasswordRecoveryPublicRepository } from '../../../infrastructure/SQL/subrepository/password-recovery.public.repository';
 import { BanInfoPublicRepository } from '../../../infrastructure/SQL/subrepository/ban-info.public.repository';
 import { UserViewType } from '../../../infrastructure/SQL/query.repository/users.output.types.query.repository';
+import { UsersOrmQueryRepository } from '../../../infrastructure/typeORM/query.repository/users-orm.query.repository';
+import { UsersOrmRepository } from '../../../infrastructure/typeORM/repository/users-orm.repository';
+import { EmailConfirmationOrmRepository } from '../../../infrastructure/typeORM/subrepository/email-confirmation-orm.public.repository';
+import { PasswordRecoveryOrmRepository } from '../../../infrastructure/typeORM/subrepository/password-recovery-orm.public.repository';
+import { BanInfoOrmPublicRepository } from '../../../../../../dist/features/users/infrastructure/typeORM/subrepository/ban-info-orm.repository';
+import { BanInfoOrmRepository } from '../../../infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
 
 export class CreateUserCommand {
   constructor(public inputUserDTO: UserInfoType) {}
@@ -18,22 +24,19 @@ export class CreateUserCommand {
 @CommandHandler(CreateUserCommand)
 export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
   constructor(
-    protected usersQueryRepository: UsersQueryRepository,
+    protected usersOrmQueryRepository: UsersOrmQueryRepository,
     protected cryptoAdapter: CryptoAdapter,
-    protected usersRepository: UsersRepository,
-    protected emailConfirmationPublicRepository: EmailConfirmationPublicRepository,
-    protected passwordRecoveryPublicRepository: PasswordRecoveryPublicRepository,
-    protected banInfoPublicRepository: BanInfoPublicRepository,
+    protected usersOrmRepository: UsersOrmRepository,
+    protected emailConfirmationOrmRepository: EmailConfirmationOrmRepository,
+    protected passwordRecoveryOrmRepository: PasswordRecoveryOrmRepository,
+    protected banInfoOrmRepository: BanInfoOrmRepository,
   ) {}
   async execute(command: CreateUserCommand): Promise<UserViewType> {
     const { login, email, password } = command.inputUserDTO;
 
     //Проверяем, есть ли пользователь с такими данными
     const userByEmail =
-      await this.usersQueryRepository.getUserPassEmailInfoByLoginOrEmail(
-        //todo вынести проверку по логину и емаилу в отдельную фукнцию
-        email,
-      );
+      await this.usersOrmQueryRepository.doesUserExistByLoginOrEmail(email);
     if (userByEmail) {
       throw new BadRequestException(
         createBodyErrorBadRequest(
@@ -44,7 +47,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     }
 
     const userByLogin =
-      await this.usersQueryRepository.getUserPassEmailInfoByLoginOrEmail(login);
+      await this.usersOrmQueryRepository.doesUserExistByLoginOrEmail(login);
     if (userByLogin)
       throw new BadRequestException(
         createBodyErrorBadRequest(
@@ -56,34 +59,35 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     //создаем юзера
     const passwordHash = await this.cryptoAdapter._generateHash(password);
     const userId = uuidv4();
-    await this.usersRepository.createUser(userId, login, email, passwordHash);
+    const user = await this.usersOrmRepository.createUser(
+      userId,
+      login,
+      email,
+      passwordHash,
+    );
 
-    await this.emailConfirmationPublicRepository.createEmailConfirmationInfo(
+    await this.emailConfirmationOrmRepository.createEmailConfirmationInfo(
       uuidv4(),
       '5 hours',
       true,
       userId,
     );
 
-    await this.passwordRecoveryPublicRepository.createPassRecoveryInfo(
+    await this.passwordRecoveryOrmRepository.createPassRecoveryInfo(
       uuidv4(),
       userId,
     );
-    await this.banInfoPublicRepository.createBanInfoUser(userId);
-
-    //Получаем информацию о user для вывода
-    const user = await this.usersQueryRepository.getUserWithBanInfoById(userId);
-    if (!user) throw new Error('Created user is not found');
+    await this.banInfoOrmRepository.createBanInfoUser(userId);
 
     return {
       id: user.id,
-      login: user.login,
-      email: user.email,
+      login,
+      email,
       createdAt: user.createdAt,
       banInfo: {
-        isBanned: user.isBanned,
-        banDate: user.banDate,
-        banReason: user.banReason,
+        isBanned: false,
+        banDate: null,
+        banReason: null,
       },
     };
   }

@@ -21,6 +21,7 @@ import {
 } from '../../SQL/helpers/modify-user-into-view-model.helper';
 import { Users } from '../../../domain/users.entity';
 import { UsersEmailConfirmation } from '../../../domain/users-email-confirmation.entity';
+import { UsersBanInfo } from '../../../domain/users-ban-info.entity';
 
 @Injectable()
 export class UsersOrmQueryRepository {
@@ -55,28 +56,48 @@ export class UsersOrmQueryRepository {
       banStatus,
     } = variablesForReturn(query);
 
-    const result = await this.dataSource.query(
-      `
-    SELECT u."id", u."login", u."email", u."createdAt", bi."isBanned", bi."banDate", bi."banReason",
-        (SELECT COUNT(*) 
-          FROM public."users" as u2
-            JOIN public."users_ban_info" as bi2
-            ON bi2."userId" = u2."id"
-          WHERE (u2."login" ILIKE $1 OR u2."email" ILIKE $2) AND (bi2."isBanned" = $3 OR $3 IS NULL))
-    FROM public."users" as u
-        JOIN public."users_ban_info" as bi
-        ON bi."userId" = u."id"
-    WHERE (u."login" ILIKE $1 OR u."email" ILIKE $2) AND (bi."isBanned" = $3 OR $3 IS NULL) AND (u."isDeleted" = false)
-        ORDER BY "${sortBy}" ${sortDirection}
-        LIMIT $4 OFFSET $5`,
-      [
-        '%' + searchLoginTerm + '%',
-        '%' + searchEmailTerm + '%',
+    //todo order by - insert like variable?
+    const result = await this.usersRepository
+      .createQueryBuilder('u')
+      .select([
+        'u."id"',
+        'u."login"',
+        'u."email"',
+        'u."createdAt"',
+        'bi."isBanned"',
+        'bi."banDate"',
+        'bi."banReason"',
+      ])
+      .addSelect((subQuery) => {
+        return subQuery
+          .select('COUNT(*)')
+          .from(Users, 'u')
+          .leftJoin('u.userBanInfo', 'bi')
+          .where('u."login" ILIKE :login OR u."email" ILIKE :email', {
+            login: `%${searchLoginTerm}%`,
+            email: `%${searchEmailTerm}%`,
+          })
+          .andWhere('u."isDeleted" = false')
+          .andWhere(
+            'bi."isBanned" = :banStatus OR :banStatus::boolean IS NULL',
+            {
+              banStatus,
+            },
+          );
+      })
+      .leftJoin('u.userBanInfo', 'bi')
+      .where('u."login" ILIKE :login OR u."email" ILIKE :email', {
+        login: `%${searchLoginTerm}%`,
+        email: `%${searchEmailTerm}%`,
+      })
+      .andWhere('u."isDeleted" = false')
+      .andWhere('bi."isBanned" = :banStatus OR :banStatus::boolean IS NULL', {
         banStatus,
-        +pageSize,
-        (+pageNumber - 1) * +pageSize,
-      ],
-    );
+      })
+      .orderBy(`u.${sortBy}`, sortDirection)
+      .limit(+pageSize)
+      .offset((+pageNumber - 1) * +pageSize)
+      .getRawMany();
 
     return {
       pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
@@ -177,33 +198,52 @@ export class UsersOrmQueryRepository {
   async getUserWithBanInfoById(
     userId: string,
   ): Promise<UserWithBanInfoType | null> {
-    const userInfo = await this.dataSource.query(
-      `
-    SELECT u."id", u."login", u."email", u."createdAt", bi."isBanned", bi."banReason", bi."banDate"
-      FROM public."users" as u
-        JOIN public."users_ban_info" as bi
-        ON u."id" = bi."userId"
-      WHERE u."id" = $1 AND u."isDeleted" = false`,
-      [userId],
-    );
-    if (userInfo.length === 0) return null;
-    return userInfo[0];
+    const userInfo = await this.usersRepository
+      .createQueryBuilder('u')
+      .select([
+        'u."id"',
+        'u."login"',
+        'u."email"',
+        'u."createdAt"',
+        'bi."isBanned"',
+        'bi."banReason"',
+        'bi."banDate"',
+      ])
+      .leftJoin('u.userBanInfo', 'bi')
+      .where('u.id = :userId AND u."isDeleted" = false', { userId })
+      .getRawOne();
+    console.log(userInfo);
+    return userInfo ?? null;
   }
 
   async getUserPassEmailInfoByLoginOrEmail(
     logOrEmail: string,
   ): Promise<UserWithPassEmailInfoType | null> {
-    const userInfo = await this.dataSource.query(
-      `
-    SELECT u."id", u."login", u."email", u."passwordHash", ec."isConfirmed" 
-      FROM public."users" AS u
-      JOIN public."users_email_confirmation" AS ec 
-      ON u."id" = ec."userId"
-      WHERE u."login" = $1 OR u."email" = $1`,
-      [logOrEmail],
-    );
-    if (userInfo.length === 0) return null;
-    return userInfo[0];
+    const userInfo = await this.usersRepository
+      .createQueryBuilder('u')
+      .select([
+        'u."id"',
+        'u."login"',
+        'u."email"',
+        'u."passwordHash"',
+        'ec."isConfirmed"',
+      ])
+      .leftJoin('u.userEmailConfirmation', 'ec')
+      .where('u.login = :logOrEmail OR u.email = :logOrEmail', { logOrEmail })
+      .getRawOne();
+
+    return userInfo ?? null;
+  }
+
+  async doesUserExistByLoginOrEmail(logOrEmail: string): Promise<boolean> {
+    const doesExist = await this.usersRepository
+      .createQueryBuilder('u')
+      .select()
+      .leftJoin('u.userEmailConfirmation', 'ec')
+      .where('u.login = :logOrEmail OR u.email = :logOrEmail', { logOrEmail })
+      .getExists();
+
+    return doesExist;
   }
 
   async getUserLoginById(userId: string): Promise<string | null> {

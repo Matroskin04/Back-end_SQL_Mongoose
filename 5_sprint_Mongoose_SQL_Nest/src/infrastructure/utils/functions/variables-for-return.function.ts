@@ -11,7 +11,7 @@ export async function variablesForReturnMongo(
   const pageNumber = query?.pageNumber ?? 1;
   const pageSize = query?.pageSize ?? 10;
   const sortBy = query?.sortBy ?? '_id'; //'createdAt';
-  const sortDirection = query?.sortDirection === 'asc' ? 1 : -1;
+  const sortDirection = query?.sortDirection?.toUpperCase() === 'ASC' ? 1 : -1;
   const paramSort = { [sortBy]: sortDirection };
 
   return {
@@ -29,7 +29,7 @@ export function variablesForReturn(
   const pageNumber = query?.pageNumber ?? 1;
   const pageSize = query?.pageSize ?? 10;
   const sortBy = query?.sortBy ?? 'createdAt';
-  const sortDirection = query?.sortDirection ?? 'desc';
+  const sortDirection = query?.sortDirection ?? 'DESC';
 
   const searchLoginTerm: string = query?.searchLoginTerm ?? '';
   const searchEmailTerm: string = query?.searchEmailTerm ?? '';
