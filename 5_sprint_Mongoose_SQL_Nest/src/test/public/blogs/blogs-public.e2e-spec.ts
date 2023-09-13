@@ -430,7 +430,7 @@ describe('Blogs (Public); /', () => {
         ),
       );
 
-      //sortBy=id&&sortDirection=desc, total 9 blogs
+      //sortBy=id&&sortDirection=desc, total 9 posts
       const result5 = await getPostsOfBlogPublicTest(
         httpServer,
         blog.id,

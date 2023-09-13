@@ -18,7 +18,7 @@ import {
   UserOutputModel,
 } from './models/output/user.output.model';
 import { CreateUserInputModel } from './models/input/create-user.input.model';
-import { UsersQueryRepository } from '../../infrastructure/query.repository/users.query.repository';
+import { UsersQueryRepository } from '../../infrastructure/SQL/query.repository/users.query.repository';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { BasicAuthGuard } from '../../../../infrastructure/guards/authorization-guards/basic-auth.guard';
 import { SkipThrottle } from '@nestjs/throttler';

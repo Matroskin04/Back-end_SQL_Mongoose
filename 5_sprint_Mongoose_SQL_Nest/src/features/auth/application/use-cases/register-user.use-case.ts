@@ -2,10 +2,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { v4 as uuidv4 } from 'uuid';
 import { CryptoAdapter } from '../../../../infrastructure/adapters/crypto.adapter';
 import { EmailManager } from '../../../../infrastructure/managers/email-manager';
-import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/subrepository/email-confirmation.public.repository';
-import { PasswordRecoveryPublicRepository } from '../../../users/infrastructure/subrepository/password-recovery.public.repository';
-import { BanInfoPublicRepository } from '../../../users/infrastructure/subrepository/ban-info.public.repository';
-import { UsersRepository } from '../../../users/infrastructure/repository/users.repository';
+import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/SQL/subrepository/email-confirmation.public.repository';
+import { PasswordRecoveryPublicRepository } from '../../../users/infrastructure/SQL/subrepository/password-recovery.public.repository';
+import { BanInfoPublicRepository } from '../../../users/infrastructure/SQL/subrepository/ban-info.public.repository';
+import { UsersRepository } from '../../../users/infrastructure/SQL/repository/users.repository';
 
 export class RegisterUserCommand {
   constructor(

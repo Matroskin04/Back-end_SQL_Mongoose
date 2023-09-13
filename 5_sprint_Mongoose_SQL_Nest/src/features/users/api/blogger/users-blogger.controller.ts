@@ -14,7 +14,7 @@ import { JwtAccessGuard } from '../../../../infrastructure/guards/authorization-
 import { UpdateBanInfoOfUserInputModel } from './models/input/update-ban-info-of-user.input.model';
 import { QueryUsersBloggerInputModel } from './models/input/query-users-blogger.input.model';
 import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
-import { UsersQueryRepository } from '../../infrastructure/query.repository/users.query.repository';
+import { UsersQueryRepository } from '../../infrastructure/SQL/query.repository/users.query.repository';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateUserBanInfoForBlogCommand } from '../../application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
 

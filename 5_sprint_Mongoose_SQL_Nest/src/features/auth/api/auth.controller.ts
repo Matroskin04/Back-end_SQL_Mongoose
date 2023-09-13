@@ -37,12 +37,13 @@ import { ResendConfirmationEmailMessageCommand } from '../application/use-cases/
 import { SaveNewPassCommand } from '../application/use-cases/save-new-pass.use-case';
 import { LoginUserCommand } from '../application/use-cases/login-user.use-case';
 import { SendEmailPassRecoveryCommand } from '../application/use-cases/send-email-pass-recovery.use-case';
-import { UsersQueryRepository } from '../../users/infrastructure/query.repository/users.query.repository';
+import { UsersQueryRepository } from '../../users/infrastructure/SQL/query.repository/users.query.repository';
 import { ConfirmationCodeInputModel } from './models/input/confirmation-code.input.model';
 import { EmailResendingInputModel } from './models/input/email-resending.input.model';
 import { NewPasswordInputModel } from './models/input/new-password.input.model';
 import { CreateDeviceCommand } from '../../devices/application/use-cases/create-device.use-case';
 import { DeleteDeviceByRefreshTokenCommand } from '../../devices/application/use-cases/delete-device-by-refresh-token.use-case';
+import { UsersOrmQueryRepository } from '../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 
 // @SkipThrottle()
 @Controller('/hometask-nest/auth')
@@ -50,7 +51,7 @@ export class AuthController {
   constructor(
     protected commandBus: CommandBus,
     protected jwtService: JwtAdapter,
-    protected usersQueryRepository: UsersQueryRepository,
+    protected usersOrmQueryRepository: UsersOrmQueryRepository,
   ) {}
 
   @SkipThrottle()
@@ -59,7 +60,9 @@ export class AuthController {
   async getUserInformation(
     @CurrentUserId() userId: string,
   ): Promise<UserInfoOutputModel> {
-    const result = await this.usersQueryRepository.getUserInfoByIdView(userId);
+    const result = await this.usersOrmQueryRepository.getUserInfoByIdView(
+      userId,
+    );
 
     if (result) return result;
     throw new NotFoundException('User is not found');

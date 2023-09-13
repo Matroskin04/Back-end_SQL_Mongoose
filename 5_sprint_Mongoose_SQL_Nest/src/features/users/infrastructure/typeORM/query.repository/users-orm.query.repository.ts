@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import {
-  modifyBannedUserOfBlogIntoViewModel,
-  modifyUserIntoViewModel,
-} from '../helpers/modify-user-into-view-model.helper';
+import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import {
   BannedUsersOfBlogPaginationType,
   UserBanInfoType,
@@ -14,27 +10,35 @@ import {
   UsersPaginationType,
   UserWithBanInfoType,
   UserWithPassEmailInfoType,
-} from './users.output.types.query.repository';
+} from '../../SQL/query.repository/users.output.types.query.repository';
 import {
   UsersQueryBloggerType,
   UsersQuerySAType,
-} from './users.input.types.query.repository';
+} from '../../SQL/query.repository/users.input.types.query.repository';
+import {
+  modifyBannedUserOfBlogIntoViewModel,
+  modifyUserIntoViewModel,
+} from '../../SQL/helpers/modify-user-into-view-model.helper';
+import { Users } from '../../../domain/users.entity';
 
 @Injectable()
-export class UsersQueryRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+export class UsersOrmQueryRepository {
+  constructor(
+    @InjectRepository(Users)
+    protected usersRepository: Repository<Users>,
+    @InjectDataSource()
+    protected dataSource: DataSource,
+  ) {}
 
   //view methods
   async getUserInfoByIdView(userId: string): Promise<null | UsersInfoViewType> {
-    const result = await this.dataSource.query(
-      `
-    SELECT "email", "login", "id" AS "userId"
-        FROM public."users"
-        WHERE "id" = $1
-    `,
-      [userId],
-    );
-    return result[0];
+    const userInfo = await this.usersRepository
+      .createQueryBuilder('u')
+      .select(['u.email AS email', 'u.login AS login', 'u.id AS "userId"'])
+      .where('u.id = :userId', { userId })
+      .getRawOne();
+
+    return userInfo;
   }
 
   async getAllUsersView(query: UsersQuerySAType): Promise<UsersPaginationType> {

@@ -1,6 +1,6 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BanInfoSAType } from '../dto/ban-info.dto';
-import { UsersRepository } from '../../../infrastructure/repository/users.repository';
+import { UsersRepository } from '../../../infrastructure/SQL/repository/users.repository';
 import { DeleteDevicesByUserIdCommand } from '../../../../devices/application/use-cases/delete-devices-by-user-id.use.case';
 
 export class UpdateBanInfoOfUserCommand {

@@ -3,13 +3,13 @@ import { BadRequestException } from '@nestjs/common';
 import { createBodyErrorBadRequest } from '../../../../../infrastructure/utils/functions/create-error-bad-request.function';
 import { UserInfoType } from '../dto/user-info.dto';
 import { CryptoAdapter } from '../../../../../infrastructure/adapters/crypto.adapter';
-import { UsersRepository } from '../../../infrastructure/repository/users.repository';
+import { UsersRepository } from '../../../infrastructure/SQL/repository/users.repository';
 import { v4 as uuidv4 } from 'uuid';
-import { UsersQueryRepository } from '../../../infrastructure/query.repository/users.query.repository';
-import { EmailConfirmationPublicRepository } from '../../../infrastructure/subrepository/email-confirmation.public.repository';
-import { PasswordRecoveryPublicRepository } from '../../../infrastructure/subrepository/password-recovery.public.repository';
-import { BanInfoPublicRepository } from '../../../infrastructure/subrepository/ban-info.public.repository';
-import { UserViewType } from '../../../infrastructure/query.repository/users.output.types.query.repository';
+import { UsersQueryRepository } from '../../../infrastructure/SQL/query.repository/users.query.repository';
+import { EmailConfirmationPublicRepository } from '../../../infrastructure/SQL/subrepository/email-confirmation.public.repository';
+import { PasswordRecoveryPublicRepository } from '../../../infrastructure/SQL/subrepository/password-recovery.public.repository';
+import { BanInfoPublicRepository } from '../../../infrastructure/SQL/subrepository/ban-info.public.repository';
+import { UserViewType } from '../../../infrastructure/SQL/query.repository/users.output.types.query.repository';
 
 export class CreateUserCommand {
   constructor(public inputUserDTO: UserInfoType) {}

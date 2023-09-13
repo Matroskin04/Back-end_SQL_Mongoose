@@ -5,7 +5,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersQueryRepository } from '../../features/users/infrastructure/query.repository/users.query.repository';
+import { UsersQueryRepository } from '../../features/users/infrastructure/SQL/query.repository/users.query.repository';
 
 // todo duplicate logic from jwt strategy
 @Injectable()

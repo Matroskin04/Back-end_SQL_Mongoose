@@ -9,10 +9,11 @@ export async function getPostByIdPublicTest(httpServer, postId, accessToken?) {
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
-export async function getPostsPublicTest(httpServer, accessToken?) {
+export async function getPostsPublicTest(httpServer, query?, accessToken?) {
   return request(httpServer)
     .get(`/hometask-nest/posts`)
-    .set('Authorization', `Bearer ${accessToken}`);
+    .set('Authorization', `Bearer ${accessToken}`)
+    .query(query);
 }
 
 export async function UpdateStatusLikeOfPostTest(
@@ -51,9 +52,9 @@ export async function create9PostsOf3BlogsBy3Users(
       httpServer,
       blogsId[Math.floor(count / 3)],
       accessTokens[Math.floor(count / 3)],
-      `Title ${i}`,
-      `ShortDescription ${i}`,
-      `Content ${i}`,
+      `Title ${count} ${i}`,
+      `ShortDescription ${count} ${i}`,
+      `Content ${count} ${i}`,
     );
     expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
     postsIdsInfo.push({

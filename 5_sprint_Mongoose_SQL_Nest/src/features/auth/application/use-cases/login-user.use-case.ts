@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LoginUserDTO } from '../dto/login-user.dto';
-import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
+import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.repository/users.query.repository';
 import { JwtAdapter } from '../../../../infrastructure/adapters/jwt.adapter';
 
 export class LoginUserCommand {

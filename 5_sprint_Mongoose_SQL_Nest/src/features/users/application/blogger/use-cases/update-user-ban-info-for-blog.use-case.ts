@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
 import { BanInfoBloggerType } from '../dto/ban-info.dto';
-import { UsersRepository } from '../../../infrastructure/repository/users.repository';
-import { UsersQueryRepository } from '../../../infrastructure/query.repository/users.query.repository';
+import { UsersRepository } from '../../../infrastructure/SQL/repository/users.repository';
+import { UsersQueryRepository } from '../../../infrastructure/SQL/query.repository/users.query.repository';
 
 export class UpdateUserBanInfoForBlogCommand {
   constructor(public userId: string, public banInfo: BanInfoBloggerType) {}

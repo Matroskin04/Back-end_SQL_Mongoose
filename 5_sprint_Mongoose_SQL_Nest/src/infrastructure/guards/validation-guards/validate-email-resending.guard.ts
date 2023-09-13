@@ -4,7 +4,7 @@ import {
   ExecutionContext,
   BadRequestException,
 } from '@nestjs/common';
-import { UsersQueryRepository } from '../../../features/users/infrastructure/query.repository/users.query.repository';
+import { UsersQueryRepository } from '../../../features/users/infrastructure/SQL/query.repository/users.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 

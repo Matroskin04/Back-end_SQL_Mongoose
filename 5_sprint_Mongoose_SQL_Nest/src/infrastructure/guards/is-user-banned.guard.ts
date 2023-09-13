@@ -4,7 +4,7 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersQueryRepository } from '../../features/users/infrastructure/query.repository/users.query.repository';
+import { UsersQueryRepository } from '../../features/users/infrastructure/SQL/query.repository/users.query.repository';
 import { JwtAdapter } from '../adapters/jwt.adapter';
 import { AuthGuard } from '@nestjs/passport';
 

@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
+import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.repository/users.query.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { EmailManager } from '../../../../infrastructure/managers/email-manager';
-import { PasswordRecoveryPublicRepository } from '../../../users/infrastructure/subrepository/password-recovery.public.repository';
+import { PasswordRecoveryPublicRepository } from '../../../users/infrastructure/SQL/subrepository/password-recovery.public.repository';
 
 export class SendEmailPassRecoveryCommand {
   constructor(public email: string) {}

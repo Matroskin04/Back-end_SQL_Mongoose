@@ -40,16 +40,16 @@ import { LoginUserUseCase } from './features/auth/application/use-cases/login-us
 import process from 'process';
 import { SendEmailPassRecoveryUseCase } from './features/auth/application/use-cases/send-email-pass-recovery.use-case';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PasswordRecoveryPublicRepository } from './features/users/infrastructure/subrepository/password-recovery.public.repository';
-import { BanInfoPublicRepository } from './features/users/infrastructure/subrepository/ban-info.public.repository';
-import { EmailConfirmationPublicRepository } from './features/users/infrastructure/subrepository/email-confirmation.public.repository';
-import { UsersRepository } from './features/users/infrastructure/repository/users.repository';
+import { PasswordRecoveryPublicRepository } from './features/users/infrastructure/SQL/subrepository/password-recovery.public.repository';
+import { BanInfoPublicRepository } from './features/users/infrastructure/SQL/subrepository/ban-info.public.repository';
+import { EmailConfirmationPublicRepository } from './features/users/infrastructure/SQL/subrepository/email-confirmation.public.repository';
+import { UsersRepository } from './features/users/infrastructure/SQL/repository/users.repository';
 import { CreateUserUseCase } from './features/users/application/sa/use-cases/create-user.use-case';
 import { DeleteUserUseCase } from './features/users/application/sa/use-cases/delete-user.use-case';
 import { UpdateBanInfoOfUserUseCase } from './features/users/application/sa/use-cases/update-ban-info-of-user.use-case';
 import { DeleteDevicesExcludeCurrentUseCase } from './features/devices/application/use-cases/delete-devices-exclude-current.use-case';
 import { DeleteDeviceByIdUseCase } from './features/devices/application/use-cases/delete-device-by-id.use-case';
-import { UsersQueryRepository } from './features/users/infrastructure/query.repository/users.query.repository';
+import { UsersQueryRepository } from './features/users/infrastructure/SQL/query.repository/users.query.repository';
 import { CommentsLikesRepository } from './features/comments/infrastructure/subrepository/comments-likes.repository';
 import { IsUserBannedByJWTStrategy } from './infrastructure/strategy/is-user-banned-by-jwt.strategy';
 import { Blogs } from './features/blogs/domain/blogs.entity';
@@ -81,14 +81,19 @@ import { DeleteDevicesByUserIdUseCase } from './features/devices/application/use
 import { CreateDeviceUseCase } from './features/devices/application/use-cases/create-device.use-case';
 import { DeleteDeviceByRefreshTokenUseCase } from './features/devices/application/use-cases/delete-device-by-refresh-token.use-case';
 import { UpdateUserBanInfoForBlogUseCase } from './features/users/application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
+import { UsersOrmQueryRepository } from './features/users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 
 const queryRepositories = [
+  // SQL
   BlogsQueryRepository,
   PostsQueryRepository,
   LikesInfoQueryRepository,
   DevicesQueryRepository,
   CommentsQueryRepository,
   UsersQueryRepository,
+
+  //ORM
+  UsersOrmQueryRepository,
 ];
 const repositories = [
   PasswordRecoveryPublicRepository,
@@ -171,7 +176,7 @@ const handlers = [
       database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: true,
       synchronize: true,
-      url: process.env.POSTGRES_URL + '?sslmode=require',
+      // url: process.env.POSTGRES_URL + '?sslmode=require',
     }),
     JwtModule.register({}),
   ],

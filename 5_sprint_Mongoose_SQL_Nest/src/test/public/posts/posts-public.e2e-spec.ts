@@ -53,8 +53,6 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
   let accessToken1;
   let accessToken2;
   let accessToken3;
-  let postsIds;
-  let commentsIds;
 
   //comments
   const correctCommentContent = 'Correct comment content';
@@ -64,6 +62,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
   const contentLength19 = 'a'.repeat(19);
 
   describe(`/posts (GET) - get all posts`, () => {
+    let postsIds;
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
@@ -82,35 +81,28 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
         result[2].accessToken,
       );
       //create 10 blogs by 3 users
-      postsIds = await create9PostsOf3BlogsBy3Users(
+      const postsInfo = await create9PostsOf3BlogsBy3Users(
         httpServer,
         [blog1.id, blog2.id, blog3.id],
         [result[0].accessToken, result[1].accessToken, result[2].accessToken],
         [result[0].userId, result[1].userId, result[2].userId],
       );
+      postsIds = postsInfo.map((e) => e.id).reverse();
     });
 
     it(`+ (200) should return 9 posts (without jwt)`, async () => {
       const result = await getPostsPublicTest(httpServer);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
-        createResponseAllPostsTest(
-          postsIds.map((e) => e.id).reverse(),
-          null,
-          null,
-          null,
-          9,
-        ),
+        createResponseAllPostsTest(postsIds, null, null, null, 9),
       );
     });
 
     it(`+ (200) should return 3 posts (query: pageSize=3, pageNumber=2)
               + (200) should return 4 posts (query: pageSize=5, pageNumber=2)`, async () => {
       //3 posts
-      const result1 = await getPostsOfBlogPublicTest(
+      const result1 = await getPostsPublicTest(
         httpServer,
-        blog.id,
-        accessToken1,
         'pageSize=3&&pageNumber=2',
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
@@ -128,10 +120,8 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //4 posts
-      const result2 = await getPostsOfBlogPublicTest(
+      const result2 = await getPostsPublicTest(
         httpServer,
-        blog.id,
-        accessToken1,
         'pageSize=5&&pageNumber=2',
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
@@ -156,10 +146,8 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
               + (200) should return 9 posts (query: sortBy=id&&sortDirection=desc)`, async () => {
       const postsIdsCopy = [...postsIds];
       //sortBy=name, total 9 posts
-      const result1 = await getPostsOfBlogPublicTest(
+      const result1 = await getPostsPublicTest(
         httpServer,
-        blog.id,
-        accessToken1,
         'sortBy=title&&pageSize=5',
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
@@ -177,10 +165,8 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //sortBy=content, total 9 posts
-      const result2 = await getPostsOfBlogPublicTest(
+      const result2 = await getPostsPublicTest(
         httpServer,
-        blog.id,
-        accessToken1,
         'sortBy=title&&pageSize=5',
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
@@ -198,10 +184,8 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //sortBy=shortDescription, total 9 posts
-      const result3 = await getPostsOfBlogPublicTest(
+      const result3 = await getPostsPublicTest(
         httpServer,
-        blog.id,
-        accessToken1,
         'sortBy=title&&pageSize=5',
       );
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
@@ -219,12 +203,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //sortDirection=asc, total 9 posts
-      const result4 = await getPostsOfBlogPublicTest(
-        httpServer,
-        blog.id,
-        accessToken1,
-        'sortDirection=asc',
-      );
+      const result4 = await getPostsPublicTest(httpServer, 'sortDirection=asc');
       expect(result4.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result4.body).toEqual(
         createResponseAllPostsTest(
@@ -240,10 +219,8 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //sortBy=id&&sortDirection=desc, total 9 posts
-      const result5 = await getPostsOfBlogPublicTest(
+      const result5 = await getPostsPublicTest(
         httpServer,
-        blog.id,
-        accessToken1,
         'sortBy=id&&sortDirection=desc',
       );
       expect(result5.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
@@ -264,20 +241,13 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
     it(`- (400) sortBy has incorrect value (query: sortBy=Truncate;)
               - (400) sortDirection has incorrect value (query: sortDirection=Truncate;)`, async () => {
       //status 400
-      const result1 = await getPostsOfBlogPublicTest(
-        httpServer,
-        blog.id,
-        accessToken1,
-        'sortBy=Truncate;',
-      );
+      const result1 = await getPostsPublicTest(httpServer, 'sortBy=Truncate;');
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result1.body).toEqual(createErrorsMessageTest(['sortBy']));
 
       //status 400
-      const result2 = await getPostsOfBlogPublicTest(
+      const result2 = await getPostsPublicTest(
         httpServer,
-        blog.id,
-        accessToken1,
         'sortDirection=Truncate;',
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
@@ -319,7 +289,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
     });
   });
 
-  describe(`/posts/:id/comment (POST) - create comment by post id`, () => {
+  describe(`/posts/:id/comments (POST) - create comment by post id`, () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
@@ -406,7 +376,8 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
     });
   });
 
-  describe(`/posts/:id (GET) - get comments by post id`, () => {
+  describe(`/posts/:id/comments (GET) - get comments by post id`, () => {
+    let commentsIds;
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
@@ -418,43 +389,162 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
 
       blog = await createCorrectBlogTest(httpServer, accessToken1);
       post = await createCorrectPostTest(httpServer, blog.id, accessToken1);
-      commentsIds = await create9CommentsBy3Users(
+
+      const commentsInfo = await create9CommentsBy3Users(
         httpServer,
         post.id,
         [accessToken1, accessToken2, accessToken3],
         [result[0].userId, result[1].userId, result[2].userId],
       );
+
+      commentsIds = commentsInfo.map((e) => e.id).reverse();
     });
 
     it(`- (404) post with such id is not found`, async () => {
-      const result = await getCommentsOfPostTest(
-        httpServer,
-        uuidv4(),
-        accessToken1,
-      );
+      const result = await getCommentsOfPostTest(httpServer, uuidv4());
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
-    it(`+ (200) should return comments of post`, async () => {
-      const result = await getCommentsOfPostTest(
-        httpServer,
-        post.id,
-        accessToken1,
-      );
+    it(`+ (200) should return 9 comments of post`, async () => {
+      const result = await getCommentsOfPostTest(httpServer, post.id);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
+        createResponseCommentsOfPostTest(commentsIds, null, null, null, 9),
+      );
+    });
+
+    it(`+ (200) should return 3 comments (query: pageSize=3, pageNumber=2)
+              + (200) should return 4 comments (query: pageSize=5, pageNumber=2)`, async () => {
+      //3 comments
+      const result1 = await getCommentsOfPostTest(
+        httpServer,
+        post.id,
+        'pageSize=3&&pageNumber=2',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
         createResponseCommentsOfPostTest(
-          commentsIds.map((e) => e.id).reverse(),
+          commentsIds.slice(3, 6),
           null,
           null,
           null,
           9,
+          3,
+          2,
+          3,
         ),
       );
+
+      //4 comments
+      const result2 = await getCommentsOfPostTest(
+        httpServer,
+        post.id,
+        'pageSize=5&&pageNumber=2',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseCommentsOfPostTest(
+          commentsIds.slice(5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          2,
+          5,
+        ),
+      );
+    });
+
+    it(`+ (200) should return 9 comments (query: sortBy=content&&pageSize=5)
+              + (200) should return 9 comments (query: sortDirection=asc)
+              + (200) should return 9 comments (query: sortBy=id&&sortDirection=desc)`, async () => {
+      const commentsIdsCopy = [...commentsIds];
+      //sortBy=content, total 9 comments
+      const result2 = await getCommentsOfPostTest(
+        httpServer,
+        post.id,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseCommentsOfPostTest(
+          commentsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortDirection=asc, total 9 comments
+      const result4 = await getCommentsOfPostTest(
+        httpServer,
+        post.id,
+        'sortDirection=asc',
+      );
+      expect(result4.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result4.body).toEqual(
+        createResponseCommentsOfPostTest(
+          commentsIdsCopy.reverse(),
+          null,
+          null,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+
+      //sortBy=id&&sortDirection=desc, total 9 comments
+      const result5 = await getCommentsOfPostTest(
+        httpServer,
+        post.id,
+        'sortBy=id&&sortDirection=desc',
+      );
+      expect(result5.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result5.body).toEqual(
+        createResponseCommentsOfPostTest(
+          commentsIdsCopy.sort().reverse(),
+          null,
+          null,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+    });
+
+    it(`- (400) sortBy has incorrect value (query: sortBy=Truncate;)
+              - (400) sortDirection has incorrect value (query: sortDirection=Truncate;)`, async () => {
+      //status 400
+      const result1 = await getCommentsOfPostTest(
+        httpServer,
+        post.id,
+        'sortBy=Truncate;',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result1.body).toEqual(createErrorsMessageTest(['sortBy']));
+
+      //status 400
+      const result2 = await getCommentsOfPostTest(
+        httpServer,
+        post.id,
+        'sortDirection=Truncate;',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
     });
   });
 
   describe(`/posts/:id/like-status (PUT) - update like status of a post`, () => {
+    let commentsIds;
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 

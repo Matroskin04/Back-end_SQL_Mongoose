@@ -8,7 +8,7 @@ import { modifyPostIntoInitialViewModel } from '../../../../infrastructure/utils
 import { PostsRepository } from '../../infrastructure/repository/posts.repository';
 import { AllLikeStatusType } from '../../../../infrastructure/utils/enums/like-status';
 import { PostsQueryRepository } from '../../infrastructure/query.repository/posts.query.repository';
-import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
+import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.repository/users.query.repository';
 import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/query.repository/likes-info.query.repository';
 import { LikesInfoRepository } from '../../../likes-info/infrastructure/repository/likes-info.repository';
 

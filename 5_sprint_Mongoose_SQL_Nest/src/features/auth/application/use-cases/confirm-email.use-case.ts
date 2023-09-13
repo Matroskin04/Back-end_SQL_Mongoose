@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException } from '@nestjs/common';
-import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/subrepository/email-confirmation.public.repository';
-import { UsersQueryRepository } from '../../../users/infrastructure/query.repository/users.query.repository';
+import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/SQL/subrepository/email-confirmation.public.repository';
+import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.repository/users.query.repository';
 
 export class ConfirmEmailCommand {
   constructor(public confirmationCode: string) {}

@@ -9,6 +9,7 @@ export async function createCommentTest(
   accessToken,
   content,
 ) {
+  console.log(postId, content, accessToken);
   return request(httpServer)
     .post(`/hometask-nest/posts/${postId}/comments`)
     .set('Authorization', `Bearer ${accessToken}`)
@@ -17,10 +18,16 @@ export async function createCommentTest(
     });
 }
 
-export async function getCommentsOfPostTest(httpServer, postId, accessToken?) {
+export async function getCommentsOfPostTest(
+  httpServer,
+  postId,
+  query?,
+  accessToken?,
+) {
   return request(httpServer)
     .get(`/hometask-nest/posts/${postId}/comments`)
-    .set('Authorization', `Bearer ${accessToken}`);
+    .set('Authorization', `Bearer ${accessToken}`)
+    .query(query ?? '');
 }
 
 export async function getCommentTest(httpServer, commentId, accessToken?) {
@@ -205,9 +212,9 @@ export async function create9CommentsBy3Users(
       httpServer,
       postId,
       accessTokens[Math.floor(count / 3)],
-      `Content of the ${i} comment`,
+      `Content ${count} of the ${i} comment`,
     );
-
+    console.log(result.body);
     expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
     commentsIdsInfo.push({
       id: result.body.id,
