@@ -4,6 +4,7 @@ import { createResponseService } from '../../../../infrastructure/utils/function
 import { DevicesQueryRepository } from '../../infrastructure/SQL/query.repository/devices.query.repository';
 import { DevicesRepository } from '../../infrastructure/SQL/repository/devices.repository';
 import { JwtAdapter } from '../../../../infrastructure/adapters/jwt.adapter';
+import { DevicesOrmRepository } from '../../infrastructure/typeORM/repository/devices-orm.repository';
 
 export class DeleteDeviceByRefreshTokenCommand {
   constructor(public refreshToken: string) {}
@@ -15,7 +16,7 @@ export class DeleteDeviceByRefreshTokenUseCase
 {
   constructor(
     protected jwtAdapter: JwtAdapter,
-    protected deviceRepository: DevicesRepository,
+    protected devicesOrmRepository: DevicesOrmRepository,
   ) {}
   async execute(command: DeleteDeviceByRefreshTokenCommand): Promise<boolean> {
     const { refreshToken } = command;
@@ -25,6 +26,6 @@ export class DeleteDeviceByRefreshTokenUseCase
       throw new Error('Refresh is invalid');
     }
 
-    return this.deviceRepository.deleteDeviceById(payloadToken.deviceId);
+    return this.devicesOrmRepository.deleteDeviceById(payloadToken.deviceId);
   }
 }
