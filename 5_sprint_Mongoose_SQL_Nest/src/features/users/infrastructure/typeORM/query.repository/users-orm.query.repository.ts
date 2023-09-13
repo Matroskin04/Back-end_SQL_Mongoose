@@ -129,7 +129,7 @@ export class UsersOrmQueryRepository {
   async doesUserExistById(userId: string): Promise<boolean> {
     const doesExist = await this.usersRepository
       .createQueryBuilder('u')
-      .select('COUNT(*)')
+      .select('COUNT(*) as count')
       .where('u.id = :userId', { userId })
       .getRawOne();
 
@@ -167,17 +167,14 @@ export class UsersOrmQueryRepository {
   async getUserBanInfoByLoginOrEmail(
     logOrEmail: string,
   ): Promise<UserBanInfoType | null> {
-    const userInfo = await this.dataSource.query(
-      `
-    SELECT u."id", u."login", u."email", bi."isBanned" 
-      FROM public."users" as u
-        JOIN public."users_ban_info" as bi
-        ON u."id" = bi."userId"
-      WHERE u."login" = $1 OR u."email" = $1`,
-      [logOrEmail],
-    );
-    if (userInfo.length === 0) return null;
-    return userInfo[0];
+    const userInfo = await this.usersRepository
+      .createQueryBuilder('u')
+      .select(['u."id"', 'u."login"', 'u."email"', 'bi."isBanned"'])
+      .leftJoin('u.userBanInfo', 'bi')
+      .where('u.login = :logOrEmail OR u.email = :logOrEmail', { logOrEmail })
+      .getRawOne();
+
+    return userInfo ?? null;
   }
 
   async getUserWithBanInfoById(

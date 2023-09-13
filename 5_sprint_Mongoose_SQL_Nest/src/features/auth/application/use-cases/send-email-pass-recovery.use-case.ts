@@ -3,6 +3,8 @@ import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.re
 import { v4 as uuidv4 } from 'uuid';
 import { EmailManager } from '../../../../infrastructure/managers/email-manager';
 import { PasswordRecoveryPublicRepository } from '../../../users/infrastructure/SQL/subrepository/password-recovery.public.repository';
+import { UsersOrmQueryRepository } from '../../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
+import { PasswordRecoveryOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/password-recovery-orm.public.repository';
 
 export class SendEmailPassRecoveryCommand {
   constructor(public email: string) {}
@@ -13,21 +15,20 @@ export class SendEmailPassRecoveryUseCase
   implements ICommandHandler<SendEmailPassRecoveryCommand>
 {
   constructor(
-    protected passwordRecoveryPublicRepository: PasswordRecoveryPublicRepository,
-    protected usersQueryRepository: UsersQueryRepository,
+    protected passwordRecoveryOrmRepository: PasswordRecoveryOrmRepository,
+    protected usersOrmQueryRepository: UsersOrmQueryRepository,
     protected emailManager: EmailManager,
   ) {}
 
   async execute(command: SendEmailPassRecoveryCommand): Promise<void> {
     const { email } = command;
-    const user = await this.usersQueryRepository.getUserBanInfoByLoginOrEmail(
-      email,
-    );
+    const user =
+      await this.usersOrmQueryRepository.getUserBanInfoByLoginOrEmail(email);
     if (!user) return;
 
     const newCode = uuidv4();
     const result =
-      await this.passwordRecoveryPublicRepository.updateCodePasswordRecovery(
+      await this.passwordRecoveryOrmRepository.updateCodePasswordRecovery(
         user.id,
         newCode,
       );

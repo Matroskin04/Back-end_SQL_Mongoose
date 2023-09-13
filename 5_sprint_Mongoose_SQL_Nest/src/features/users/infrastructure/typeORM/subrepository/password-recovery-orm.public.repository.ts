@@ -31,13 +31,16 @@ export class PasswordRecoveryOrmRepository {
     userId: string,
     newCode: string,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    UPDATE public."users_password_recovery"
-      SET "confirmationCode" = $1, "expirationDate" = now() + ('3 hour'::interval) 
-      WHERE "userId" = $2`,
-      [newCode, userId],
-    );
-    return result[1] === 1;
+    const result = await this.usersPasswordRecovery
+      .createQueryBuilder()
+      .update()
+      .set({
+        confirmationCode: newCode,
+        expirationDate: () => `NOW() + INTERVAL '3 hours'`,
+      })
+      .where('userId = :userId', { userId })
+      .execute();
+
+    return result.affected === 1;
   }
 }
