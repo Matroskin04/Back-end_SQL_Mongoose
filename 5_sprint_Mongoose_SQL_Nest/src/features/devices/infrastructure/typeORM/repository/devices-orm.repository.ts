@@ -39,14 +39,14 @@ export class DevicesOrmRepository {
     deviceId: string,
     iat: number,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    UPDATE public."devices"
-      SET "lastActiveDate" = $1
-      WHERE "id" = $2`,
-      [new Date(iat * 1000).toISOString(), deviceId],
-    );
-    return result[1] === 1;
+    const result = await this.devicesRepository
+      .createQueryBuilder()
+      .update()
+      .set({ lastActiveDate: new Date(iat * 1000).toISOString() })
+      .where('id = :deviceId', { deviceId })
+      .execute();
+
+    return result.affected === 1;
   }
 
   async deleteDeviceById(deviceId: string): Promise<boolean> {

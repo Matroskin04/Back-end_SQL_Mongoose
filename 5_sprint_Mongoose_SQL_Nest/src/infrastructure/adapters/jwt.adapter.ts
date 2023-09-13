@@ -4,13 +4,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { JwtService as JwtServiceNest } from '@nestjs/jwt';
 import { DevicesRepository } from '../../features/devices/infrastructure/SQL/repository/devices.repository';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { DevicesOrmRepository } from '../../features/devices/infrastructure/typeORM/repository/devices-orm.repository';
 
 //todo jwt - where to transport
 @Injectable()
 export class JwtAdapter {
   constructor(
     protected jwtServiceNest: JwtServiceNest,
-    protected devicesRepository: DevicesRepository,
+    protected devicesOrmRepository: DevicesOrmRepository,
   ) {}
 
   createAccessJwtToken(userId: string): string {
@@ -80,10 +81,11 @@ export class JwtAdapter {
       throw new Error('Refresh token is invalid.');
     }
 
-    const device = await this.devicesRepository.updateLastActiveDateByDeviceId(
-      payloadToken.deviceId,
-      payloadNewRefresh.iat,
-    );
+    const device =
+      await this.devicesOrmRepository.updateLastActiveDateByDeviceId(
+        payloadToken.deviceId,
+        payloadNewRefresh.iat,
+      );
     if (!device) throw new Error('DeviceId in refresh token is invalid.');
 
     return {
