@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import add from 'date-fns/add';
 import { EmailManager } from '../../../../infrastructure/managers/email-manager';
 import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/SQL/subrepository/email-confirmation.public.repository';
+import { EmailConfirmationOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/email-confirmation-orm.public.repository';
 
 export class ResendConfirmationEmailMessageCommand {
   constructor(public userId: string, public email: string) {}
@@ -13,7 +14,7 @@ export class ResendConfirmationEmailMessageUseCase
   implements ICommandHandler<ResendConfirmationEmailMessageCommand>
 {
   constructor(
-    protected emailConfirmationPublicRepository: EmailConfirmationPublicRepository,
+    protected emailConfirmationOrmRepository: EmailConfirmationOrmRepository,
     protected emailManager: EmailManager,
   ) {}
 
@@ -22,7 +23,7 @@ export class ResendConfirmationEmailMessageUseCase
 
     const newCode = uuidv4();
     const result =
-      await this.emailConfirmationPublicRepository.updateConfirmationCode(
+      await this.emailConfirmationOrmRepository.updateConfirmationCode(
         userId,
         newCode,
         '5 hours',

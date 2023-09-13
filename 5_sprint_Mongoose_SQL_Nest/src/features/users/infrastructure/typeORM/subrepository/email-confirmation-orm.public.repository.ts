@@ -47,14 +47,17 @@ export class EmailConfirmationOrmRepository {
     newCode: string,
     intervalForExpirationDate: string,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    UPDATE public.users_email_confirmation 
-        SET "confirmationCode" = $1, "expirationDate" = now() + ($2::interval)
-        WHERE "userId" = $3
-    `,
-      [newCode, intervalForExpirationDate ?? '0', userId],
-    );
-    return result[1] === 1;
+    const result = await this.usersEmailConfirmation
+      .createQueryBuilder()
+      .update()
+      .set({
+        confirmationCode: newCode,
+        expirationDate: () =>
+          `NOW() + INTERVAL '${intervalForExpirationDate ?? '0'}'`,
+      })
+      .where('userId = :userId', { userId })
+      .execute();
+
+    return result.affected === 1;
   }
 }
