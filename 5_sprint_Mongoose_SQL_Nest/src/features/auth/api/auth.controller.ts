@@ -189,7 +189,7 @@ export class AuthController {
 
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Post('new-password')
-  async saveNewPassword(
+  async updatePassword(
     @Body() inputInfo: NewPasswordInputModel,
   ): Promise<string> {
     await this.commandBus.execute(

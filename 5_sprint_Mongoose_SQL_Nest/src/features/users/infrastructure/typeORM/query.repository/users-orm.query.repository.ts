@@ -151,17 +151,14 @@ export class UsersOrmQueryRepository {
   async getUserByRecoveryCode(
     recoveryCode: string,
   ): Promise<UserByRecoveryCodeType | null> {
-    const result = await this.dataSource.query(
-      `
-    SELECT u."id", pc."expirationDate", pc."confirmationCode"
-      FROM public."users" AS u
-        JOIN public."users_password_recovery" AS pc
-        ON u."id" = pc."userId"
-            WHERE "confirmationCode" = $1`,
-      [recoveryCode],
-    );
-    if (!result[0]) return null;
-    return result[0];
+    const result = await this.usersRepository
+      .createQueryBuilder('u')
+      .select(['u.id as id', 'pc."expirationDate"', 'pc."confirmationCode"'])
+      .leftJoin('u.userPasswordRecovery', 'pc')
+      .where('pc.confirmationCode = :recoveryCode', { recoveryCode })
+      .getRawOne();
+
+    return result ?? null;
   }
 
   async getUserBanInfoByLoginOrEmail(

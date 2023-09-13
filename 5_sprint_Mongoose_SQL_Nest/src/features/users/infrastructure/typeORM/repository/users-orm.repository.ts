@@ -46,14 +46,13 @@ export class UsersOrmRepository {
     newPasswordHash: string,
     userId: string,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    UPDATE public."users"
-      SET "passwordHash" = $1
-      WHERE "id" = $2`,
-      [newPasswordHash, userId],
-    );
-    return result[1] === 1;
+    const result = await this.usersRepository
+      .createQueryBuilder()
+      .update()
+      .set({ passwordHash: newPasswordHash })
+      .where('id = :userId', { userId })
+      .execute();
+    return result.affected === 1;
   }
 
   async updateBanInfoOfUser(
