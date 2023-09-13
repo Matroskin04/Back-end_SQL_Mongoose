@@ -35,7 +35,6 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateCommentCommand } from '../../comments/application/use-cases/create-comment-by-post-id.use-case';
 import { UpdatePostLikeStatusCommand } from '../application/use-cases/update-post-like-status.use-case';
 
-@SkipThrottle()
 @Controller('/hometask-nest/posts')
 export class PostsController {
   constructor(

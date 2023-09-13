@@ -24,7 +24,7 @@ import { ValidateConfirmationCodeGuard } from '../../../infrastructure/guards/va
 import { ValidateEmailResendingGuard } from '../../../infrastructure/guards/validation-guards/validate-email-resending.guard';
 import { PasswordRecoveryInputModel } from './models/input/password-flow-auth.input.model';
 import { ValidateEmailRegistrationGuard } from '../../../infrastructure/guards/validation-guards/validate-email-registration.guard';
-import { SkipThrottle } from '@nestjs/throttler';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { TitleOfDevice } from '../../../infrastructure/decorators/auth/title-of-device.param.decorator';
 import { JwtRefreshGuard } from '../../../infrastructure/guards/authorization-guards/jwt-refresh.guard';
 import { RefreshToken } from '../../../infrastructure/decorators/auth/refresh-token-param.decorator';
@@ -44,7 +44,7 @@ import { CreateDeviceCommand } from '../../devices/application/use-cases/create-
 import { DeleteDeviceByRefreshTokenCommand } from '../../devices/application/use-cases/delete-device-by-refresh-token.use-case';
 import { UsersOrmQueryRepository } from '../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 
-// @SkipThrottle()
+@Throttle(5, 10)
 @Controller('/hometask-nest/auth')
 export class AuthController {
   constructor(
@@ -66,6 +66,7 @@ export class AuthController {
     if (result) return result;
     throw new NotFoundException('User is not found');
   }
+
   @UseGuards(LocalAuthGuard, IsUserBannedByLoginOrEmailGuard)
   @Post('login')
   async loginUser(

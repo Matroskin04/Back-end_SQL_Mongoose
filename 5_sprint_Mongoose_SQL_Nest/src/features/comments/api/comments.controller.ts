@@ -24,7 +24,6 @@ import { UpdateCommentCommand } from '../application/use-cases/update-comment.us
 import { DeleteCommentCommand } from '../application/use-cases/delete-comment.use-case';
 import { UpdateCommentLikeStatusCommand } from '../application/use-cases/update-comment-like-status.use-case';
 
-@SkipThrottle()
 @Controller('/hometask-nest/comments')
 export class CommentsController {
   constructor(

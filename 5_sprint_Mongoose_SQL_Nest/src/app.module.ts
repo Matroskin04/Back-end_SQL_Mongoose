@@ -87,6 +87,7 @@ import { UsersOrmRepository } from './features/users/infrastructure/typeORM/repo
 import { EmailConfirmationOrmRepository } from './features/users/infrastructure/typeORM/subrepository/email-confirmation-orm.public.repository';
 import { PasswordRecoveryOrmRepository } from './features/users/infrastructure/typeORM/subrepository/password-recovery-orm.public.repository';
 import { BanInfoOrmRepository } from './features/users/infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
+import { APP_GUARD } from '@nestjs/core';
 
 const queryRepositories = [
   // SQL
@@ -162,10 +163,7 @@ const handlers = [
 @Module({
   imports: [
     CqrsModule,
-    ThrottlerModule.forRoot({
-      ttl: 10,
-      limit: 5,
-    }),
+    ThrottlerModule.forRoot(),
     ConfigModule.forRoot(),
     TypeOrmModule.forFeature([
       Blogs,
@@ -189,7 +187,7 @@ const handlers = [
       database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: true,
       synchronize: true,
-      // url: process.env.POSTGRES_URL + '?sslmode=require',
+      url: process.env.POSTGRES_URL + '?sslmode=require',
     }),
     JwtModule.register({}),
   ],
@@ -224,10 +222,10 @@ const handlers = [
     ...handlers,
 
     //Throttler
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

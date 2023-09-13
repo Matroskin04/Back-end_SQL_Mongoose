@@ -19,7 +19,6 @@ import { CommandBus } from '@nestjs/cqrs';
 import { DeleteDevicesExcludeCurrentCommand } from '../application/use-cases/delete-devices-exclude-current.use-case';
 import { DeleteDeviceByIdCommand } from '../application/use-cases/delete-device-by-id.use-case';
 
-@SkipThrottle()
 @Controller('/hometask-nest/security/devices')
 export class DevicesController {
   constructor(

@@ -20,7 +20,6 @@ import { CommandBus } from '@nestjs/cqrs';
 import { BindBlogWithUserCommand } from '../../application/sa/use-cases/bind-blog-with-user.use-case';
 import { UpdateBanInfoOfBlogCommand } from '../../application/sa/use-cases/update-ban-info-of-blog.use-case';
 
-@SkipThrottle()
 @Controller('/hometask-nest/sa/blogs')
 export class BlogsSAController {
   constructor(

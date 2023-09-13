@@ -18,7 +18,6 @@ import { UsersQueryRepository } from '../../infrastructure/SQL/query.repository/
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateUserBanInfoForBlogCommand } from '../../application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
 
-@SkipThrottle()
 @Controller('/hometask-nest/blogger/users')
 export class UsersBloggerController {
   constructor(

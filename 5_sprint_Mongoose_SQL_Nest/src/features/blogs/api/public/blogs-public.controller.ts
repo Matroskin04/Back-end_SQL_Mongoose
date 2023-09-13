@@ -19,7 +19,6 @@ import {
 } from '../models/output/blog.output.models';
 import { QueryPostInputModel } from '../../../posts/api/models/input/query-post.input.model';
 
-@SkipThrottle()
 @Controller('/hometask-nest/blogs')
 export class BlogsPublicController {
   constructor(

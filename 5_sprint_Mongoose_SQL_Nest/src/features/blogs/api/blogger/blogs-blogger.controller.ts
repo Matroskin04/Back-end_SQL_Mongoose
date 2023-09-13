@@ -43,7 +43,6 @@ import { CreatePostCommand } from '../../../posts/application/use-cases/create-p
 import { UpdatePostCommand } from '../../../posts/application/use-cases/update-post.use-case';
 import { DeletePostCommand } from '../../../posts/application/use-cases/delete-post.use-case';
 
-@SkipThrottle()
 @Controller('/hometask-nest/blogger/blogs')
 export class BlogsBloggerController {
   constructor(
