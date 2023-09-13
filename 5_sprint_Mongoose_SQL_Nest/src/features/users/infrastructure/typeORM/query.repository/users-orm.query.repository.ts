@@ -20,12 +20,15 @@ import {
   modifyUserIntoViewModel,
 } from '../../SQL/helpers/modify-user-into-view-model.helper';
 import { Users } from '../../../domain/users.entity';
+import { UsersEmailConfirmation } from '../../../domain/users-email-confirmation.entity';
 
 @Injectable()
 export class UsersOrmQueryRepository {
   constructor(
     @InjectRepository(Users)
     protected usersRepository: Repository<Users>,
+    @InjectRepository(UsersEmailConfirmation)
+    protected usersEmailConfirmation: Repository<UsersEmailConfirmation>,
     @InjectDataSource()
     protected dataSource: DataSource,
   ) {}
@@ -221,13 +224,15 @@ export class UsersOrmQueryRepository {
     return result[0].login;
   }
 
-  async getUserIdByConfirmationCode(confirmationCode: string): Promise<string> {
-    const result = await this.dataSource.query(
-      `
-    SELECT "userId" FROM public."users_email_confirmation"
-        WHERE "confirmationCode" = $1`,
-      [confirmationCode],
-    );
-    return result[0].userId;
+  async getUserIdByConfirmationCode(
+    confirmationCode: string,
+  ): Promise<string | null> {
+    const result = await this.usersEmailConfirmation
+      .createQueryBuilder('ec')
+      .select('ec.userId')
+      .where('ec.confirmationCode = :confirmationCode', { confirmationCode })
+      .getOne();
+
+    return result?.userId || null;
   }
 }

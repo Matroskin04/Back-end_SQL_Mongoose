@@ -32,14 +32,14 @@ export class EmailConfirmationOrmRepository {
   }
 
   async updateEmailConfirmationStatus(userId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    UPDATE public."users_email_confirmation"
-        SET "isConfirmed" = true
-        WHERE "userId" = $1;`,
-      [userId],
-    );
-    return result[1] === 1;
+    const result = await this.usersEmailConfirmation
+      .createQueryBuilder()
+      .update()
+      .set({ isConfirmed: true })
+      .where('userId = :userId', { userId })
+      .execute();
+
+    return result.affected === 1;
   }
 
   async updateConfirmationCode(
