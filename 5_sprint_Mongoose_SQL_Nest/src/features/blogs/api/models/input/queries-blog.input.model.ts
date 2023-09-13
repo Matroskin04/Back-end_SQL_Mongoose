@@ -43,6 +43,8 @@ export class QueryGeneralParams {
   @Matches(/^(desc|asc)$/i, {
     message: 'sortDirection must be one of the following values: desc, asc',
   })
+  @Transform(({ value }) => value.toLowerCase())
+  @IsIn(['asc', 'desc'])
   sortDirection?: 'ASC' | 'DESC';
 
   @ValidateIf((o) => o.pageNumber !== undefined)

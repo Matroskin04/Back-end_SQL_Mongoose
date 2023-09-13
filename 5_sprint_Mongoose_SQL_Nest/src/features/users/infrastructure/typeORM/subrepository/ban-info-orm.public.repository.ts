@@ -13,7 +13,7 @@ export class BanInfoOrmRepository {
   ) {}
 
   async createBanInfoUser(userId: string): Promise<void> {
-    const a = await this.usersBanInfo
+    await this.usersBanInfo
       .createQueryBuilder()
       .insert()
       .values({ userId })
