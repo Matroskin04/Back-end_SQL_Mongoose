@@ -16,10 +16,7 @@ import {
   UpdateStatusLikeOfPostTest,
 } from './posts-public.helpers';
 import { createAndLogin3UsersTest } from '../blogs/blogs-public.helpers';
-import {
-  createResponseAllPostsTest,
-  getPostsOfBlogPublicTest,
-} from '../blogs/posts-blogs-puclic.helpers';
+import { createResponseAllPostsTest } from '../blogs/posts-blogs-puclic.helpers';
 import {
   create9CommentsBy3Users,
   createCommentTest,
@@ -364,6 +361,8 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
         accessToken1,
         correctCommentContent,
       );
+      console.log(result.body);
+
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
       expect(result.body).toEqual(
         createResponseSingleComment(
@@ -461,13 +460,13 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
               + (200) should return 9 comments (query: sortBy=id&&sortDirection=desc)`, async () => {
       const commentsIdsCopy = [...commentsIds];
       //sortBy=content, total 9 comments
-      const result2 = await getCommentsOfPostTest(
+      const result1 = await getCommentsOfPostTest(
         httpServer,
         post.id,
-        'sortBy=title&&pageSize=5',
+        'sortBy=content&&pageSize=5',
       );
-      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result2.body).toEqual(
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
         createResponseCommentsOfPostTest(
           commentsIdsCopy.slice(0, 5),
           null,
@@ -481,13 +480,13 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //sortDirection=asc, total 9 comments
-      const result4 = await getCommentsOfPostTest(
+      const result2 = await getCommentsOfPostTest(
         httpServer,
         post.id,
         'sortDirection=asc',
       );
-      expect(result4.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result4.body).toEqual(
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
         createResponseCommentsOfPostTest(
           commentsIdsCopy.reverse(),
           null,
@@ -501,13 +500,13 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //sortBy=id&&sortDirection=desc, total 9 comments
-      const result5 = await getCommentsOfPostTest(
+      const result3 = await getCommentsOfPostTest(
         httpServer,
         post.id,
         'sortBy=id&&sortDirection=desc',
       );
-      expect(result5.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result5.body).toEqual(
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
         createResponseCommentsOfPostTest(
           commentsIdsCopy.sort().reverse(),
           null,

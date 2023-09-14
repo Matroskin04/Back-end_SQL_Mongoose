@@ -214,7 +214,6 @@ export async function create9CommentsBy3Users(
       accessTokens[Math.floor(count / 3)],
       `Content ${count} of the ${i} comment`,
     );
-    console.log(result.body);
     expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
     commentsIdsInfo.push({
       id: result.body.id,

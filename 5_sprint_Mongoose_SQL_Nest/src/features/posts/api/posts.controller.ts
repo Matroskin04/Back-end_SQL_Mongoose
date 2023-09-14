@@ -92,7 +92,7 @@ export class PostsController {
     @Body() inputCommentModel: CreateCommentByPostIdModel,
   ): Promise<ViewCommentOfPostModel> {
     const result = await this.commandBus.execute(
-      new CreateCommentCommand(inputCommentModel.content, userId, postId),
+      new CreateCommentCommand(postId, userId, inputCommentModel.content),
     );
 
     if (!result) throw new NotFoundException();

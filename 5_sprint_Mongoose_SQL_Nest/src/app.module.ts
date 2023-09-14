@@ -70,7 +70,10 @@ import { DeleteBlogUseCase } from './features/blogs/application/blogger/use-case
 import { BindBlogWithUserUseCase } from './features/blogs/application/sa/use-cases/bind-blog-with-user.use-case';
 import { UpdateBanInfoOfBlogUseCase } from './features/blogs/application/sa/use-cases/update-ban-info-of-blog.use-case';
 import { UpdateCommentUseCase } from './features/comments/application/use-cases/update-comment.use-case';
-import { DeleteCommentCommand } from './features/comments/application/use-cases/delete-comment.use-case';
+import {
+  DeleteCommentCommand,
+  DeleteCommentUseCase,
+} from './features/comments/application/use-cases/delete-comment.use-case';
 import { CreateCommentUseCase } from './features/comments/application/use-cases/create-comment-by-post-id.use-case';
 import { UpdateCommentLikeStatusUseCase } from './features/comments/application/use-cases/update-comment-like-status.use-case';
 import { CreatePostUseCase } from './features/posts/application/use-cases/create-post.use-case';
@@ -146,7 +149,7 @@ const handlers = [
   CreateCommentUseCase,
   UpdateCommentUseCase,
   UpdateCommentLikeStatusUseCase,
-  DeleteCommentCommand,
+  DeleteCommentUseCase,
   //users
   CreateUserUseCase,
   UpdateBanInfoOfUserUseCase,
@@ -186,7 +189,7 @@ const handlers = [
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
       url: process.env.POSTGRES_URL + '?sslmode=require',
     }),
     JwtModule.register({}),
