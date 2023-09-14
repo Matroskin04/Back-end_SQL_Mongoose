@@ -1,16 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { startApp } from '../test.utils';
 import { deleteAllDataTest } from '../helpers/delete-all-data.helper';
-import {
-  createCorrectBlogTest,
-  createCorrectPostTest,
-  createCorrectUserTest,
-  loginCorrectUserTest,
-} from '../helpers/chains-of-requests.helpers';
-import {
-  createCommentTest,
-  createResponseSingleComment,
-} from '../public/comments/comments-public.helpers';
 import { HTTP_STATUS_CODE } from '../../infrastructure/utils/enums/http-status';
 import { createErrorsMessageTest } from '../helpers/errors-message.helper';
 import {
@@ -18,15 +8,16 @@ import {
   createResponseSingleUserTest,
   createResponseUsersSaTest,
   createUserTest,
+  deleteUserSaTest,
   getUsersSaTest,
 } from './users-sa.helpers';
-import { getPostsPublicTest } from '../public/posts/posts-public.helpers';
-import { createResponseAllPostsTest } from '../public/blogs/posts-blogs-puclic.helpers';
+import { v4 as uuidv4 } from 'uuid';
+import { getBlogByIdPublicTest } from '../public/blogs/blogs-public.helpers';
 import {
-  create9BlogsBy3Users,
-  getAllBlogsPublicTest,
-} from '../public/blogs/blogs-public.helpers';
-import { createResponseAllBlogsTest } from '../blogger/blogs/blogs-blogger.helpers';
+  createResponseAllBlogsTest,
+  deleteBlogBloggerTest,
+} from '../blogger/blogs/blogs-blogger.helpers';
+import { getCurrentUserInfoTest } from '../public/auth/auth-public.helpers';
 
 describe('Users (SA); /sa', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -45,12 +36,6 @@ describe('Users (SA); /sa', () => {
     await httpServer.close();
     await app.close();
   });
-  let user;
-  let post;
-  let blog;
-  let accessToken1;
-  let accessToken2;
-  let accessToken3;
 
   let busyEmail;
   let busyLogin;
@@ -63,112 +48,6 @@ describe('Users (SA); /sa', () => {
   const passwordLength5 = '1'.repeat(5);
   const passwordLength21 = '1'.repeat(21);
   const incorrectEmail = 'incorrectEmail';
-
-  describe(`/users (POST) - create user by sa`, () => {
-    beforeAll(async () => {
-      await deleteAllDataTest(httpServer);
-    });
-
-    it(`- (401) sa login is incorrect
-              - (401) sa password is incorrect`, async () => {
-      //sa login is incorrect
-      const result1 = await createUserTest(
-        httpServer,
-        freeCorrectLogin,
-        correctPass,
-        freeCorrectEmail,
-        'IncorrectSaLogin',
-      );
-      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
-
-      //sa password is incorrect
-      const result2 = await createUserTest(
-        httpServer,
-        freeCorrectLogin,
-        correctPass,
-        freeCorrectEmail,
-        null,
-        'IncorrectSaPass',
-      );
-      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
-    });
-
-    it(`- (400) values of 'login', 'password' are incorrect (small length)
-              - (400) values of 'login', 'password' are incorrect (large length)
-              - (400) values of 'login', 'email' are incorrect (incorrect regexp)`, async () => {
-      const result1 = await createUserTest(
-        httpServer,
-        loginLength2,
-        passwordLength5,
-        freeCorrectEmail,
-      );
-      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
-      expect(result1.body).toEqual(
-        createErrorsMessageTest(['login', 'password']),
-      );
-
-      const result2 = await createUserTest(
-        httpServer,
-        loginLength11,
-        passwordLength21,
-        freeCorrectEmail,
-      );
-      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
-      expect(result2.body).toEqual(
-        createErrorsMessageTest(['login', 'password']),
-      );
-
-      const result3 = await createUserTest(
-        httpServer,
-        '~&^%$#@',
-        correctPass,
-        incorrectEmail,
-      );
-      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
-      expect(result3.body).toEqual(createErrorsMessageTest(['login', 'email']));
-    });
-
-    it(`+ (201) should create user`, async () => {
-      const result = await createUserTest(
-        httpServer,
-        freeCorrectLogin,
-        correctPass,
-        freeCorrectEmail,
-      );
-
-      expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-      expect(result.body).toEqual(
-        createResponseSingleUserTest(freeCorrectLogin, freeCorrectEmail),
-      );
-      busyEmail = freeCorrectEmail;
-      busyLogin = freeCorrectLogin;
-    });
-
-    //dependent
-    it(`- (400) user with such 'email' already exists
-              - (400) user with such 'login' already exists`, async () => {
-      //busy email
-      const result1 = await createUserTest(
-        httpServer,
-        'FreeLogin',
-        correctPass,
-        busyEmail,
-      );
-      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
-      expect(result1.body).toEqual(createErrorsMessageTest(['email']));
-
-      //busy login
-      const result2 = await createUserTest(
-        httpServer,
-        busyLogin,
-        correctPass,
-        'correctEmail@mail.ru',
-      );
-      console.log(result2.body);
-      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
-      expect(result2.body).toEqual(createErrorsMessageTest(['login']));
-    });
-  });
 
   describe(`/users (GET) - get all users`, () => {
     let usersIds;
@@ -345,6 +224,162 @@ describe('Users (SA); /sa', () => {
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
+    });
+  });
+
+  describe(`/users (POST) - create user by sa`, () => {
+    beforeAll(async () => {
+      await deleteAllDataTest(httpServer);
+    });
+
+    it(`- (401) sa login is incorrect
+              - (401) sa password is incorrect`, async () => {
+      //sa login is incorrect
+      const result1 = await createUserTest(
+        httpServer,
+        freeCorrectLogin,
+        correctPass,
+        freeCorrectEmail,
+        'IncorrectSaLogin',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+
+      //sa password is incorrect
+      const result2 = await createUserTest(
+        httpServer,
+        freeCorrectLogin,
+        correctPass,
+        freeCorrectEmail,
+        null,
+        'IncorrectSaPass',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+    });
+
+    it(`- (400) values of 'login', 'password' are incorrect (small length)
+              - (400) values of 'login', 'password' are incorrect (large length)
+              - (400) values of 'login', 'email' are incorrect (incorrect regexp)`, async () => {
+      const result1 = await createUserTest(
+        httpServer,
+        loginLength2,
+        passwordLength5,
+        freeCorrectEmail,
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result1.body).toEqual(
+        createErrorsMessageTest(['login', 'password']),
+      );
+
+      const result2 = await createUserTest(
+        httpServer,
+        loginLength11,
+        passwordLength21,
+        freeCorrectEmail,
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result2.body).toEqual(
+        createErrorsMessageTest(['login', 'password']),
+      );
+
+      const result3 = await createUserTest(
+        httpServer,
+        '~&^%$#@',
+        correctPass,
+        incorrectEmail,
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result3.body).toEqual(createErrorsMessageTest(['login', 'email']));
+    });
+
+    it(`+ (201) should create user`, async () => {
+      const result = await createUserTest(
+        httpServer,
+        freeCorrectLogin,
+        correctPass,
+        freeCorrectEmail,
+      );
+
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+      expect(result.body).toEqual(
+        createResponseSingleUserTest(freeCorrectLogin, freeCorrectEmail),
+      );
+      busyEmail = freeCorrectEmail;
+      busyLogin = freeCorrectLogin;
+    });
+
+    //dependent
+    it(`- (400) user with such 'email' already exists
+              - (400) user with such 'login' already exists`, async () => {
+      //busy email
+      const result1 = await createUserTest(
+        httpServer,
+        'FreeLogin',
+        correctPass,
+        busyEmail,
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result1.body).toEqual(createErrorsMessageTest(['email']));
+
+      //busy login
+      const result2 = await createUserTest(
+        httpServer,
+        busyLogin,
+        correctPass,
+        'correctEmail@mail.ru',
+      );
+      console.log(result2.body);
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result2.body).toEqual(createErrorsMessageTest(['login']));
+    });
+  });
+
+  describe(`/users/:id (DELETE) - delete user by id`, () => {
+    let correctUserId;
+    beforeAll(async () => {
+      await deleteAllDataTest(httpServer);
+
+      const user = await createUserTest(
+        httpServer,
+        freeCorrectLogin,
+        correctPass,
+        freeCorrectEmail,
+      );
+      correctUserId = user.body.id;
+    });
+
+    it(`- (401) sa login is incorrect
+              - (401) sa password is incorrect`, async () => {
+      //sa login is incorrect
+      const result1 = await deleteUserSaTest(
+        httpServer,
+        correctUserId,
+        freeCorrectEmail,
+        'IncorrectSaLogin',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+
+      //sa password is incorrect
+      const result2 = await deleteUserSaTest(
+        httpServer,
+        correctUserId,
+        null,
+        'IncorrectSaPass',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+    });
+
+    it(`- (404) user doesn't exist with such id`, async () => {
+      const result = await deleteUserSaTest(httpServer, uuidv4());
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
+    });
+
+    it(`+ (204) should delete user`, async () => {
+      const result = await deleteUserSaTest(httpServer, correctUserId);
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      //check that user is deleted
+      const users = await getUsersSaTest(httpServer);
+      expect(users.body.items.find((u) => u.id === correctUserId)).toBeFalsy();
     });
   });
 });

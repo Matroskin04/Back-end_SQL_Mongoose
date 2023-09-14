@@ -23,6 +23,12 @@ export async function getUsersSaTest(httpServer, query?, saLogin?, saPass?) {
     .query(query ?? '');
 }
 
+export async function deleteUserSaTest(httpServer, userId, saLogin?, saPass?) {
+  return request(httpServer)
+    .delete(`/hometask-nest/sa/users/${userId}`)
+    .auth(saLogin ?? 'admin', saPass ?? 'qwerty');
+}
+
 export function createResponseSingleUserTest(login?, email?) {
   return {
     id: expect.any(String),
