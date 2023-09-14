@@ -13,7 +13,7 @@ export async function getPostsPublicTest(httpServer, query?, accessToken?) {
   return request(httpServer)
     .get(`/hometask-nest/posts`)
     .set('Authorization', `Bearer ${accessToken}`)
-    .query(query);
+    .query(query ?? '');
 }
 
 export async function UpdateStatusLikeOfPostTest(
@@ -109,7 +109,7 @@ export function createResponseSinglePost(
   blogName?,
   likesCount?: number,
   dislikesCount?: number,
-  myStatus?: number,
+  myStatus?: 'Like' | 'Dislike',
 ) {
   return {
     id: id ?? expect.any(String),

@@ -542,8 +542,10 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
     });
   });
 
-  describe(`/posts/:id/like-status (PUT) - update like status of a post`, () => {
-    let commentsIds;
+  describe(`/posts/:id/like-status (PUT) - update like status of a post
+                  (Addition) /posts (GET) - get all posts
+                  (Addition) /posts/:id (GET) - get post by id`, () => {
+    let correctPostId;
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
@@ -555,12 +557,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
 
       blog = await createCorrectBlogTest(httpServer, accessToken1);
       post = await createCorrectPostTest(httpServer, blog.id, accessToken1);
-      commentsIds = await create9CommentsBy3Users(
-        httpServer,
-        post.id,
-        [accessToken1, accessToken2, accessToken3],
-        [result[0].userId, result[1].userId, result[2].userId],
-      );
+      correctPostId = post.id;
     });
 
     it(`- (401) jwt access token is incorrect`, async () => {
@@ -582,6 +579,221 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
         accessToken1,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
+    });
+
+    it(`- (400) value of likeStatus should be one of 'None'/'Like'/'Dislike'`, async () => {
+      const result = await UpdateStatusLikeOfPostTest(
+        httpServer,
+        correctPostId,
+        'Incorrect',
+        accessToken1,
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result.body).toEqual(createErrorsMessageTest(['likeStatus']));
+    });
+
+    //check count of likes/dislikes changing
+    it(`+ (204) should Like post by user1
+              + (204) should None post by user1
+              + (204) should Dislike post by user1
+              + (204) should None post by user1`, async () => {
+      //Like and check
+      const result1 = await UpdateStatusLikeOfPostTest(
+        httpServer,
+        correctPostId,
+        'Like',
+        accessToken1,
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      const checkPost1 = await getPostByIdPublicTest(
+        httpServer,
+        correctPostId,
+        accessToken1,
+      );
+      expect(checkPost1.body).toEqual(
+        createResponseSinglePost(
+          correctPostId,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          0,
+          'Like',
+        ),
+      );
+
+      //None and check
+      const result2 = await UpdateStatusLikeOfPostTest(
+        httpServer,
+        correctPostId,
+        'None',
+        accessToken1,
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      const checkPost2 = await getPostByIdPublicTest(
+        httpServer,
+        correctPostId,
+        accessToken1,
+      );
+      expect(checkPost2.body).toEqual(
+        createResponseSinglePost(
+          correctPostId,
+          null,
+          null,
+          null,
+          null,
+          null,
+          0,
+          0,
+        ),
+      );
+
+      //Dislike and check
+      const result3 = await UpdateStatusLikeOfPostTest(
+        httpServer,
+        correctPostId,
+        'Dislike',
+        accessToken1,
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      const checkPost3 = await getPostByIdPublicTest(
+        httpServer,
+        correctPostId,
+        accessToken1,
+      );
+      expect(checkPost3.body).toEqual(
+        createResponseSinglePost(
+          correctPostId,
+          null,
+          null,
+          null,
+          null,
+          null,
+          0,
+          1,
+          'Dislike',
+        ),
+      );
+
+      //None and check
+      const result4 = await UpdateStatusLikeOfPostTest(
+        httpServer,
+        correctPostId,
+        'None',
+        accessToken1,
+      );
+      expect(result4.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      const checkPost4 = await getPostByIdPublicTest(
+        httpServer,
+        correctPostId,
+        accessToken1,
+      );
+      expect(checkPost4.body).toEqual(
+        createResponseSinglePost(
+          correctPostId,
+          null,
+          null,
+          null,
+          null,
+          null,
+          0,
+          0,
+        ),
+      );
+    });
+
+    it(`+ (204) should Like post by user1
+              + (204) should Dislike post by user1
+              + (204) should Like post by user1`, async () => {
+      //Like and check
+      const result1 = await UpdateStatusLikeOfPostTest(
+        httpServer,
+        correctPostId,
+        'Like',
+        accessToken1,
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      const checkPost1 = await getPostByIdPublicTest(
+        httpServer,
+        correctPostId,
+        accessToken1,
+      );
+      expect(checkPost1.body).toEqual(
+        createResponseSinglePost(
+          correctPostId,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          0,
+          'Like',
+        ),
+      );
+
+      //Dislike and check
+      const result2 = await UpdateStatusLikeOfPostTest(
+        httpServer,
+        correctPostId,
+        'Dislike',
+        accessToken1,
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      const checkPost2 = await getPostByIdPublicTest(
+        httpServer,
+        correctPostId,
+        accessToken1,
+      );
+      expect(checkPost2.body).toEqual(
+        createResponseSinglePost(
+          correctPostId,
+          null,
+          null,
+          null,
+          null,
+          null,
+          0,
+          1,
+          'Dislike',
+        ),
+      );
+
+      //Like and check
+      const result3 = await UpdateStatusLikeOfPostTest(
+        httpServer,
+        correctPostId,
+        'Like',
+        accessToken1,
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      const checkPost3 = await getPostByIdPublicTest(
+        httpServer,
+        correctPostId,
+        accessToken1,
+      );
+      expect(checkPost3.body).toEqual(
+        createResponseSinglePost(
+          correctPostId,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          0,
+          'Like',
+        ),
+      );
     });
   });
 });
