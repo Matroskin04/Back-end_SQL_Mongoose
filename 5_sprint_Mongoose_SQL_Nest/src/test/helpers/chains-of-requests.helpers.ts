@@ -22,6 +22,7 @@ export async function createCorrectUserTest(
   expect(user.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
 
   return {
+    id: user.body.id,
     login: 'correct',
     password: 'correctPass',
     email: 'correctEmail@gmail.com',

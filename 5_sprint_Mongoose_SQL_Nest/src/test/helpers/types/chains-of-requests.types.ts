@@ -1,4 +1,5 @@
 export type CreateCorrectUserTestType = {
+  id: string;
   login: string;
   password: string;
   email: string;
