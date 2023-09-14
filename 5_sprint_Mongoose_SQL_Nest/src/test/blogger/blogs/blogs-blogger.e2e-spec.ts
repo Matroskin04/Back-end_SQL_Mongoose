@@ -1,7 +1,4 @@
 import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../../app.module';
-import { appSettings } from '../../../app.settings';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { loginUserTest } from '../../public/auth/auth-public.helpers';
 import { v4 as uuidv4 } from 'uuid';

@@ -45,8 +45,8 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     if (userByLogin)
       throw new BadRequestException(
         createBodyErrorBadRequest(
-          'User with such email already exists',
-          'email',
+          'User with such login already exists',
+          'login',
         ),
       );
 

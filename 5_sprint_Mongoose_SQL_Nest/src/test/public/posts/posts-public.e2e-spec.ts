@@ -136,9 +136,9 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
     });
 
-    it(`+ (200) should return 9 posts (query: sortBy=title&&pageSize=5)
-              + (200) should return 9 posts (query: sortBy=content&&pageSize=5)
-              + (200) should return 9 posts (query: sortBy=shortDescription&&pageSize=5)
+    it(`+ (200) should return 5 posts (query: sortBy=title&&pageSize=5)
+              + (200) should return 5 posts (query: sortBy=content&&pageSize=5)
+              + (200) should return 5 posts (query: sortBy=shortDescription&&pageSize=5)
               + (200) should return 9 posts (query: sortDirection=asc)
               + (200) should return 9 posts (query: sortBy=id&&sortDirection=desc)`, async () => {
       const postsIdsCopy = [...postsIds];
