@@ -37,7 +37,8 @@ export class PostsOrmQueryRepository {
 
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(query);
-    //todo вынести подзапросы
+
+    console.log(sortBy);
     const result = await this.postsRepository
       .createQueryBuilder('p')
       .select([
@@ -92,7 +93,7 @@ export class PostsOrmQueryRepository {
       .leftJoin('p.blog', 'b')
       .where('b.isBanned = false')
       .andWhere('b.id = :blogId', { blogId })
-      .orderBy(`b.${sortBy}`, sortDirection)
+      .orderBy(sortBy === 'blogName' ? 'b.name' : `p.${sortBy}`, sortDirection)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
 
@@ -138,7 +139,7 @@ export class PostsOrmQueryRepository {
       .addSelect((qb) => this.newestLikesBuilder(qb), 'newestLikes')
       .leftJoin('p.blog', 'b')
       .where('b.isBanned = false')
-      .orderBy(`b.${sortBy}`, sortDirection)
+      .orderBy(sortBy === 'blogName' ? 'b.name' : `p.${sortBy}`, sortDirection)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
 
