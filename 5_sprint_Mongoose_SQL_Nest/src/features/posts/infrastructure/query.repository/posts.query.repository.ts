@@ -10,7 +10,7 @@ import { QueryBlogsInputModel } from '../../../blogs/api/models/input/queries-bl
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AllLikeStatusEnum } from '../../../../infrastructure/utils/enums/like-status';
-import { BlogsQueryRepository } from '../../../blogs/infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 
 @Injectable()
 export class PostsQueryRepository {

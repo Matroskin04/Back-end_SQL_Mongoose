@@ -1,4 +1,4 @@
-import { BlogOutputModel } from '../../api/models/output/blog.output.models';
+import { BlogOutputModel } from '../../../api/models/output/blog.output.models';
 
 export type BlogPaginationType = {
   pagesCount: number;

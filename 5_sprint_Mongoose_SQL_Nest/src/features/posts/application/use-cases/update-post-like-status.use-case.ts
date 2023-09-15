@@ -3,7 +3,7 @@ import {
   BodyPostByBlogIdType,
   PostTypeWithId,
 } from '../../infrastructure/repository/posts.types.repositories';
-import { BlogsQueryRepository } from '../../../blogs/infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 import { modifyPostIntoInitialViewModel } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { PostsRepository } from '../../infrastructure/repository/posts.repository';
 import { AllLikeStatusType } from '../../../../infrastructure/utils/enums/like-status';

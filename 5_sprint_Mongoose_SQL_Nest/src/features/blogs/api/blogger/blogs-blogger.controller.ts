@@ -34,7 +34,7 @@ import { PostTypeWithId } from '../../../posts/infrastructure/repository/posts.t
 import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
 import { UpdatePostByBlogIdInputModel } from '../models/input/update-post-by-blog-id.input.model';
 import { CommentsQueryRepository } from '../../../comments/infrastructure/query.repository/comments.query.repository';
-import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../infrastructure/SQL/query.repository/blogs.query.repository';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateBlogCommand } from '../../application/blogger/use-cases/create-blog.use-case';
 import { UpdateBlogCommand } from '../../application/blogger/use-cases/update-blog.use-case';

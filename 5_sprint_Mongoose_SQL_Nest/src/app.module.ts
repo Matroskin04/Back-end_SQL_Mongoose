@@ -28,8 +28,8 @@ import { DevicesRepository } from './features/devices/infrastructure/SQL/reposit
 import { JwtAdapter } from './infrastructure/adapters/jwt.adapter';
 import { BlogsPublicController } from './features/blogs/api/public/blogs-public.controller';
 import { BlogsBloggerController } from './features/blogs/api/blogger/blogs-blogger.controller';
-import { BlogsQueryRepository } from './features/blogs/infrastructure/query.repository/blogs.query.repository';
-import { BlogsRepository } from './features/blogs/infrastructure/repository/blogs.repository';
+import { BlogsQueryRepository } from './features/blogs/infrastructure/SQL/query.repository/blogs.query.repository';
+import { BlogsRepository } from './features/blogs/infrastructure/SQL/repository/blogs.repository';
 import { UsersBloggerController } from './features/users/api/blogger/users-blogger.controller';
 import { RegisterUserUseCase } from './features/auth/application/use-cases/register-user.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -91,6 +91,7 @@ import { EmailConfirmationOrmRepository } from './features/users/infrastructure/
 import { PasswordRecoveryOrmRepository } from './features/users/infrastructure/typeORM/subrepository/password-recovery-orm.public.repository';
 import { BanInfoOrmRepository } from './features/users/infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
 import { APP_GUARD } from '@nestjs/core';
+import { BlogsOrmQueryRepository } from './features/blogs/infrastructure/typeORM/query.repository/blogs-orm.query.repository';
 
 const queryRepositories = [
   // SQL
@@ -102,6 +103,7 @@ const queryRepositories = [
   UsersQueryRepository,
 
   //ORM
+  BlogsOrmQueryRepository,
   UsersOrmQueryRepository,
   DevicesOrmRepository,
 ];

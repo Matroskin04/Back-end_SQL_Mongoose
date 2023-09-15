@@ -4,16 +4,21 @@ import {
   BlogAllInfoOutputType,
 } from './blogs-public.types.query.repository';
 import { Injectable } from '@nestjs/common';
-import { QueryBlogsInputModel } from '../../api/models/input/queries-blog.input.model';
-import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { QueryBlogsInputModel } from '../../../api/models/input/queries-blog.input.model';
+import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { AllBlogsSAViewType } from './blogs-sa.types.query.repository';
-import { modifyBlogIntoSaOutputModel } from '../../helpers/modify-blog-into-sa-output-model';
+import { modifyBlogIntoSaOutputModel } from '../../../helpers/modify-blog-into-sa-output-model';
+import { Blogs } from '../../../domain/blogs.entity';
 
 @Injectable()
-export class BlogsQueryRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+export class BlogsOrmQueryRepository {
+  constructor(
+    @InjectRepository(Blogs)
+    protected blogsRepository: Repository<Blogs>,
+    @InjectDataSource() protected dataSource: DataSource,
+  ) {}
 
   async getAllBlogsOfBlogger(
     query: QueryBlogsInputModel,
@@ -83,29 +88,33 @@ export class BlogsQueryRepository {
   ): Promise<BlogPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
       variablesForReturn(query);
-    //isBanned
-    const result = await this.dataSource.query(
-      `
-    SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership",
-      (SELECT COUNT(*)
-        FROM public."blogs"
-        WHERE "name" ILIKE $1 AND "isBanned" = false)
-    FROM public."blogs"
-        WHERE "name" ILIKE $1 AND "isBanned" = false
-            ORDER BY "${sortBy}" ${sortDirection}
-            LIMIT $2 OFFSET $3`,
-      [`%${searchNameTerm}%`, +pageSize, (+pageNumber - 1) * +pageSize],
-    );
+
+    const result = await this.blogsRepository
+      .createQueryBuilder('b')
+      .select([
+        'b.id',
+        'b.name',
+        'b.description',
+        'b.websiteUrl',
+        'b.createdAt',
+        'b.isMembership',
+      ])
+      .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
+      .andWhere('b.isBanned = false')
+      .orderBy(`CAST(b.${sortBy} AS TEXT) COLLATE "C"`, sortDirection)
+      .limit(+pageSize)
+      .offset((+pageNumber - 1) * +pageSize)
+      .getManyAndCount();
 
     return {
-      pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
+      pagesCount: Math.ceil((result[1] || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: +result[0]?.count || 0,
-      items: result.map((e) => {
-        delete e.count;
-        return e;
-      }),
+      totalCount: result[1] || 0,
+      items: result[0].map((blog) => ({
+        ...blog,
+        createdAt: blog.createdAt.toISOString(),
+      })),
     };
   }
 

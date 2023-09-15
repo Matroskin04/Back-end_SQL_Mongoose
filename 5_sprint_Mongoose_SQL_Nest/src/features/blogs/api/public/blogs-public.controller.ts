@@ -6,37 +6,37 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { SkipThrottle } from '@nestjs/throttler';
 import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
 import { JwtAccessNotStrictGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import { CurrentUserId } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { QueryBlogsInputModel } from '../models/input/queries-blog.input.model';
-import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../infrastructure/SQL/query.repository/blogs.query.repository';
 import {
   BlogOutputModel,
   BlogsOutputModel,
   PostsOfBlogViewModel,
 } from '../models/output/blog.output.models';
 import { QueryPostInputModel } from '../../../posts/api/models/input/query-post.input.model';
+import { BlogsOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
 
 @Controller('/hometask-nest/blogs')
 export class BlogsPublicController {
   constructor(
     protected postsQueryRepository: PostsQueryRepository,
-    protected blogsQueryRepository: BlogsQueryRepository,
+    protected blogsOrmQueryRepository: BlogsOrmQueryRepository,
   ) {}
 
   @Get()
   async getAllBlogs(
     @Query() query: QueryBlogsInputModel,
   ): Promise<BlogsOutputModel> {
-    const result = await this.blogsQueryRepository.getAllBlogsPublic(query);
+    const result = await this.blogsOrmQueryRepository.getAllBlogsPublic(query);
     return result;
   }
 
   @Get(':id')
   async getBlogById(@Param('id') blogId: string): Promise<BlogOutputModel> {
-    const result = await this.blogsQueryRepository.getBlogByIdPublic(blogId);
+    const result = await this.blogsOrmQueryRepository.getBlogByIdPublic(blogId);
     if (!result) throw new NotFoundException();
     return result;
   }

@@ -4,7 +4,7 @@ import {
   ExecutionContext,
   NotFoundException,
 } from '@nestjs/common';
-import { BlogsQueryRepository } from '../../../features/blogs/infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../../features/blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 import { PostsQueryRepository } from '../../../features/posts/infrastructure/query.repository/posts.query.repository';
 
 @Injectable()

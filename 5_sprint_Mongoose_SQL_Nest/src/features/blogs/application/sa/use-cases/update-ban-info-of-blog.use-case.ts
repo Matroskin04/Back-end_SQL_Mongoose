@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogsRepository } from '../../../infrastructure/repository/blogs.repository';
+import { BlogsRepository } from '../../../infrastructure/SQL/repository/blogs.repository';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { BlogsQueryRepository } from '../../../infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../../infrastructure/SQL/query.repository/blogs.query.repository';
 
 export class UpdateBanInfoOfBlogCommand {
   constructor(public blogId: string, public banStatus: boolean) {}

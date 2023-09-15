@@ -14,7 +14,7 @@ import { AllBlogsSAOutputModel } from '../models/output/blog-sa.output.model';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { BasicAuthGuard } from '../../../../infrastructure/guards/authorization-guards/basic-auth.guard';
 import { BanInfoInputModel } from '../models/input/ban-info.input.model';
-import { BlogsQueryRepository } from '../../infrastructure/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../infrastructure/SQL/query.repository/blogs.query.repository';
 import { QueryBlogsInputModel } from '../models/input/queries-blog.input.model';
 import { CommandBus } from '@nestjs/cqrs';
 import { BindBlogWithUserCommand } from '../../application/sa/use-cases/bind-blog-with-user.use-case';

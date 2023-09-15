@@ -1,6 +1,6 @@
-import { BlogPaginationType } from '../../../infrastructure/query.repository/blogs-public.types.query.repository';
+import { BlogPaginationType } from '../../../infrastructure/SQL/query.repository/blogs-public.types.query.repository';
 import { PostPaginationType } from '../../../../posts/infrastructure/query.repository/posts.types.query.repository';
-import { BlogOutputType } from '../../../infrastructure/repository/blogs-blogger.types.repositories';
+import { BlogOutputType } from '../../../infrastructure/SQL/repository/blogs-blogger.types.repositories';
 
 export type BlogOutputModel = BlogOutputType;
 
