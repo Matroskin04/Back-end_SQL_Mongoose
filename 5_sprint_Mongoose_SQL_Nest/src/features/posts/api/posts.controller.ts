@@ -3,7 +3,7 @@ import {
   ViewAllPostsModel,
   PostOutputModel,
 } from './models/output/post.output.model';
-import { PostsQueryRepository } from '../infrastructure/query.repository/posts.query.repository';
+import { PostsQueryRepository } from '../infrastructure/SQL/query.repository/posts.query.repository';
 import {
   ViewAllCommentsOfPostModel,
   ViewCommentOfPostModel,
@@ -34,12 +34,13 @@ import { IsUserBannedForBlogGuard } from '../../../infrastructure/guards/blogs-c
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateCommentCommand } from '../../comments/application/use-cases/create-comment-by-post-id.use-case';
 import { UpdatePostLikeStatusCommand } from '../application/use-cases/update-post-like-status.use-case';
+import { PostsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/posts-orm.query.repository';
 
 @Controller('/hometask-nest/posts')
 export class PostsController {
   constructor(
     protected commandBus: CommandBus,
-    protected postsQueryRepository: PostsQueryRepository,
+    protected postsOrmQueryRepository: PostsOrmQueryRepository,
     protected commentsQueryRepository: CommentsQueryRepository,
   ) {}
 
@@ -49,7 +50,10 @@ export class PostsController {
     @Query() query: QueryPostInputModel,
     @CurrentUserId() userId: string | null,
   ): Promise<ViewAllPostsModel> {
-    const result = await this.postsQueryRepository.getAllPosts(query, userId);
+    const result = await this.postsOrmQueryRepository.getAllPosts(
+      query,
+      userId,
+    );
     return result;
   }
 
@@ -59,7 +63,7 @@ export class PostsController {
     @Param('id') postId: string,
     @CurrentUserId() userId: string | null,
   ): Promise<PostOutputModel> {
-    const result = await this.postsQueryRepository.getPostByIdView(
+    const result = await this.postsOrmQueryRepository.getPostByIdView(
       postId,
       userId,
     );

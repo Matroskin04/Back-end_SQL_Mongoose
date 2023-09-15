@@ -1,8 +1,8 @@
 import {
   NewestLikesType,
   PostDBType,
-} from '../../../../features/posts/infrastructure/repository/posts.types.repositories';
-import { PostViewType } from '../../../../features/posts/infrastructure/query.repository/posts.types.query.repository';
+} from '../../../../features/posts/infrastructure/SQL/repository/posts.types.repositories';
+import { PostViewType } from '../../../../features/posts/infrastructure/SQL/query.repository/posts.types.query.repository';
 import { AllLikeStatusEnum, AllLikeStatusType } from '../../enums/like-status';
 
 export function modifyPostIntoInitialViewModel(

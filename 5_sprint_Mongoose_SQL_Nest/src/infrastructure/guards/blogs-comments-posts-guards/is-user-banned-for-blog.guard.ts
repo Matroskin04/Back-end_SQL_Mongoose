@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { BlogsQueryRepository } from '../../../features/blogs/infrastructure/SQL/query.repository/blogs.query.repository';
-import { PostsQueryRepository } from '../../../features/posts/infrastructure/query.repository/posts.query.repository';
+import { PostsQueryRepository } from '../../../features/posts/infrastructure/SQL/query.repository/posts.query.repository';
 
 @Injectable()
 export class IsUserBannedForBlogGuard implements CanActivate {

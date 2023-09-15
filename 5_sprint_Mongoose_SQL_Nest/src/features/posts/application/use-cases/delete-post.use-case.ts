@@ -2,10 +2,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import {
   BodyPostByBlogIdType,
   PostTypeWithId,
-} from '../../infrastructure/repository/posts.types.repositories';
+} from '../../infrastructure/SQL/repository/posts.types.repositories';
 import { BlogsQueryRepository } from '../../../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 import { modifyPostIntoInitialViewModel } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
-import { PostsRepository } from '../../infrastructure/repository/posts.repository';
+import { PostsRepository } from '../../infrastructure/SQL/repository/posts.repository';
 
 export class DeletePostCommand {
   constructor(public postId: string) {}
