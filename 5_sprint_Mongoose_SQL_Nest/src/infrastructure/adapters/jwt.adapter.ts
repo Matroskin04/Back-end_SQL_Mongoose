@@ -6,7 +6,6 @@ import { DevicesRepository } from '../../features/devices/infrastructure/SQL/rep
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { DevicesOrmRepository } from '../../features/devices/infrastructure/typeORM/repository/devices-orm.repository';
 
-//todo jwt - where to transport
 @Injectable()
 export class JwtAdapter {
   constructor(

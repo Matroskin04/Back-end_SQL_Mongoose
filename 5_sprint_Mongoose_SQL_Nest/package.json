@@ -21,7 +21,9 @@
     "test:e2e_watch": "jest --config src/test/jest-e2e.json --watch",
     "clear_jest": "jest --clearCache",
     "example_run": "node ./dist/tests.js",
-    "example_build": "tsc ./src/tests.ts"
+    "example_build": "tsc ./src/tests.ts",
+    "apply-migrations": "typeorm-ts-node-esm migration:run -d ./src/db/data-source.ts",
+    "add-migration": "node src/db/tools/add-migration.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

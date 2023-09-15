@@ -56,7 +56,6 @@ export class UpdateCommentLikeStatusUseCase
           commentId,
         );
         if (!isDeleted) {
-          //todo не имеет
           throw new Error('Like status of the comment is not deleted');
         }
         return true;
@@ -68,7 +67,6 @@ export class UpdateCommentLikeStatusUseCase
         likeStatus,
       );
       if (!isUpdate) {
-        //todo имеет ли смысл в проверки
         throw new Error('Like status of the post is not updated');
       }
     }

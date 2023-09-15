@@ -59,7 +59,6 @@ export class UpdatePostLikeStatusUseCase
         likeStatus,
       );
       if (!isUpdate) {
-        //todo имеет ли смысл в проверки
         throw new Error('Like status of the post is not updated');
       }
     }

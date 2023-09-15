@@ -37,7 +37,6 @@ export class CommentsRepository {
   }
 
   async deleteComment(commentId: string): Promise<boolean> {
-    //todo not comments - comments likes info
     const result = await this.dataSource.query(
       `
     DELETE FROM public."comments" 

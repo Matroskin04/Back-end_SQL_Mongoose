@@ -15,7 +15,6 @@ import { Comments } from './comments.entity';
 @Unique(['userId', 'commentId'])
 @Check('"likeStatus" = ANY (ARRAY[0, 1, 2])')
 export class CommentsLikesInfo {
-  //todo обязательно есть primary key
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
