@@ -6,6 +6,8 @@ import {
 import { BlogsQueryRepository } from '../../../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 import { modifyPostIntoInitialViewModel } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { PostsRepository } from '../../infrastructure/SQL/repository/posts.repository';
+import { BlogsOrmQueryRepository } from '../../../blogs/infrastructure/typeORM/query.repository/blogs-orm.query.repository';
+import { PostsOrmRepository } from '../../infrastructure/typeORM/repository/posts-orm.repository';
 
 export class CreatePostCommand {
   constructor(
@@ -18,22 +20,24 @@ export class CreatePostCommand {
 @CommandHandler(CreatePostCommand)
 export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
   constructor(
-    protected blogsPublicQueryRepository: BlogsQueryRepository,
-    protected postsRepository: PostsRepository,
+    protected blogsOrmQueryRepository: BlogsOrmQueryRepository,
+    protected postsOrmRepository: PostsOrmRepository,
   ) {}
 
   async execute(command: CreatePostCommand): Promise<null | PostTypeWithId> {
     const { postDTO, userId, blogId } = command;
 
     //checking the existence of a blog
-    const blog = await this.blogsPublicQueryRepository.getBlogAllInfoById(
-      blogId,
-    );
+    const blog = await this.blogsOrmQueryRepository.getBlogAllInfoById(blogId);
     if (!blog) {
       return null;
     }
 
-    const post = await this.postsRepository.createPost(postDTO, blogId, userId);
+    const post = await this.postsOrmRepository.createPost(
+      postDTO,
+      blogId,
+      userId,
+    );
 
     const postMapped = modifyPostIntoInitialViewModel(
       post,

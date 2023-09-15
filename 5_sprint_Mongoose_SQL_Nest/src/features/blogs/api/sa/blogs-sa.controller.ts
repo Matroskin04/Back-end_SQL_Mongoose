@@ -34,6 +34,9 @@ import { PostsQueryRepository } from '../../../posts/infrastructure/SQL/query.re
 import { PostsOrmQueryRepository } from '../../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
 import { CreateBlogInputModel } from '../models/input/create-blog.input.model';
 import { CreateBlogCommand } from '../../application/blogger/use-cases/create-blog.use-case';
+import { CreatePostByBlogIdModel } from '../../../posts/api/models/input/create-post.input.model';
+import { PostTypeWithId } from '../../../posts/infrastructure/SQL/repository/posts.types.repositories';
+import { CreatePostCommand } from '../../../posts/application/use-cases/create-post.use-case';
 
 @Controller('/hometask-nest/sa/blogs')
 export class BlogsSAController {
@@ -92,6 +95,20 @@ export class BlogsSAController {
     const result = await this.commandBus.execute(
       new CreateBlogCommand(inputBlogModel, userId),
     );
+    return result;
+  }
+
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @Post(`/:blogId/posts`)
+  async createPostByBlogId(
+    @Param('blogId') blogId: string,
+    @CurrentUserId() userId: string,
+    @Body() inputPostModel: CreatePostByBlogIdModel,
+  ): Promise<PostTypeWithId> {
+    const result = await this.commandBus.execute(
+      new CreatePostCommand(blogId, userId, inputPostModel),
+    );
+    if (!result) throw new NotFoundException();
     return result;
   }
 

@@ -1,11 +1,17 @@
 import { BodyPostByBlogIdType, PostDBType } from './posts.types.repositories';
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Blogs } from '../../../../blogs/domain/blogs.entity';
+import { Posts } from '../../../domain/posts.entity';
 
 @Injectable()
 export class PostsOrmRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Posts)
+    protected postsRepository: Repository<Posts>,
+    @InjectDataSource() protected dataSource: DataSource,
+  ) {}
 
   //SQL
   async createPost(
@@ -13,21 +19,32 @@ export class PostsOrmRepository {
     blogId: string,
     userId: string,
   ): Promise<PostDBType> {
-    const result = await this.dataSource.query(
-      `
-    INSERT INTO public."posts"(
-        "title", "shortDescription", "content", "blogId", "userId")
-        VALUES ($1, $2, $3, $4, $5)
-    RETURNING "id", "title", "shortDescription", "content", "blogId", "userId", "createdAt"`,
-      [
-        postDTO.title,
-        postDTO.shortDescription,
-        postDTO.content,
+    const { title, shortDescription, content } = postDTO;
+    const result = await this.postsRepository
+      .createQueryBuilder()
+      .insert()
+      .values({
+        title,
+        shortDescription,
+        content,
         blogId,
         userId,
-      ],
-    );
-    return result[0];
+      })
+      .returning([
+        'id',
+        'title',
+        'shortDescription',
+        'content',
+        'blogId',
+        'userId',
+        'createdAt',
+      ])
+      .execute();
+
+    return {
+      ...result.raw[0],
+      createdAt: result.raw[0].createdAt.toISOString(),
+    };
   }
 
   async updatePost(
