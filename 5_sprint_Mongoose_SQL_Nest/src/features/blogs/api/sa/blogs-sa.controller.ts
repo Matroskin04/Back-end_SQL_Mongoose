@@ -62,7 +62,7 @@ export class BlogsSAController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @UseGuards(BasicAuthGuard, BlogOwnerByIdGuard)
   @Get(':blogId/posts')
   async getAllPostsOfBlog(
     @Param('blogId') blogId: string,
@@ -91,7 +91,7 @@ export class BlogsSAController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @UseGuards(BasicAuthGuard, BlogOwnerByIdGuard)
   @Post(`/:blogId/posts`)
   async createPostByBlogId(
     @Param('blogId') blogId: string,
@@ -105,7 +105,7 @@ export class BlogsSAController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @UseGuards(BasicAuthGuard, BlogOwnerByIdGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':blogId')
   async updateBlog(
@@ -119,7 +119,7 @@ export class BlogsSAController {
     return;
   }
 
-  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @UseGuards(BasicAuthGuard, BlogOwnerByIdGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':blogId/posts/:postId')
   async updatePostOfBlog(
@@ -135,7 +135,7 @@ export class BlogsSAController {
     return;
   }
 
-  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @UseGuards(BasicAuthGuard, BlogOwnerByIdGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':blogId')
   async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
@@ -144,7 +144,7 @@ export class BlogsSAController {
     return;
   }
 
-  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @UseGuards(BasicAuthGuard, BlogOwnerByIdGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':blogId/posts/:postId')
   async deletePostOfBlog(@Param('postId') postId: string): Promise<void> {
