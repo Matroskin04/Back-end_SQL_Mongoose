@@ -3,6 +3,8 @@ import { BlogsRepository } from '../../../infrastructure/SQL/repository/blogs.re
 import { UsersQueryRepository } from '../../../../users/infrastructure/SQL/query.repository/users.query.repository';
 import { BodyBlogType } from '../../../infrastructure/SQL/repository/blogs-blogger.types.repositories';
 import { CreateBlogDTO } from '../dto/create-blog.dto';
+import { UsersOrmQueryRepository } from '../../../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
+import { BlogsOrmRepository } from '../../../infrastructure/typeORM/repository/blogs-orm.repository';
 
 export class CreateBlogCommand {
   constructor(public blogDTO: BodyBlogType, public userId: string) {}
@@ -11,17 +13,17 @@ export class CreateBlogCommand {
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
   constructor(
-    protected blogsRepository: BlogsRepository,
-    protected usersQueryRepository: UsersQueryRepository,
+    protected blogsOrmRepository: BlogsOrmRepository,
+    protected usersOrmQueryRepository: UsersOrmQueryRepository,
   ) {}
 
   async execute(command: CreateBlogCommand): Promise<CreateBlogDTO> {
     const { blogDTO, userId } = command;
 
-    const user = await this.usersQueryRepository.getUserLoginById(userId);
+    const user = await this.usersOrmQueryRepository.getUserLoginById(userId);
     if (!user) throw new Error('User is not found');
 
-    const result = await this.blogsRepository.createBlog(blogDTO, userId);
+    const result = await this.blogsOrmRepository.createBlog(blogDTO, userId);
     return result;
   }
 }

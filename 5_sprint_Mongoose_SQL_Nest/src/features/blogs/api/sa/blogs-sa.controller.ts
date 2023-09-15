@@ -5,26 +5,42 @@ import {
   HttpCode,
   NotFoundException,
   Param,
+  Post,
   Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { SkipThrottle } from '@nestjs/throttler';
 import { AllBlogsSAOutputModel } from '../models/output/blog-sa.output.model';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { BasicAuthGuard } from '../../../../infrastructure/guards/authorization-guards/basic-auth.guard';
 import { BanInfoInputModel } from '../models/input/ban-info.input.model';
 import { BlogsQueryRepository } from '../../infrastructure/SQL/query.repository/blogs.query.repository';
-import { QueryBlogsInputModel } from '../models/input/queries-blog.input.model';
+import {
+  QueryBlogsInputModel,
+  QueryPostsOfBlogInputModel,
+} from '../models/input/queries-blog.input.model';
 import { CommandBus } from '@nestjs/cqrs';
 import { BindBlogWithUserCommand } from '../../application/sa/use-cases/bind-blog-with-user.use-case';
 import { UpdateBanInfoOfBlogCommand } from '../../application/sa/use-cases/update-ban-info-of-blog.use-case';
+import { BlogsOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
+import { JwtAccessGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
+import { CurrentUserId } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import {
+  BlogOutputModel,
+  PostsOfBlogViewModel,
+} from '../models/output/blog.output.models';
+import { PostsQueryRepository } from '../../../posts/infrastructure/SQL/query.repository/posts.query.repository';
+import { PostsOrmQueryRepository } from '../../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
+import { CreateBlogInputModel } from '../models/input/create-blog.input.model';
+import { CreateBlogCommand } from '../../application/blogger/use-cases/create-blog.use-case';
 
 @Controller('/hometask-nest/sa/blogs')
 export class BlogsSAController {
   constructor(
     protected commandBus: CommandBus,
-    protected blogsPublicQueryRepository: BlogsQueryRepository,
+    protected postsOrmQueryRepository: PostsOrmQueryRepository,
+    protected blogsOrmQueryRepository: BlogsOrmQueryRepository,
   ) {}
 
   @UseGuards(BasicAuthGuard)
@@ -32,7 +48,23 @@ export class BlogsSAController {
   async getAllBlogs(
     @Query() query: QueryBlogsInputModel,
   ): Promise<AllBlogsSAOutputModel> {
-    const result = await this.blogsPublicQueryRepository.getAllBlogsSA(query);
+    const result = await this.blogsOrmQueryRepository.getAllBlogsSA(query);
+    return result;
+  }
+
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @Get(':blogId/posts')
+  async getAllPostsOfBlog(
+    @Param('blogId') blogId: string,
+    @CurrentUserId() userId: string,
+    @Query() query: QueryPostsOfBlogInputModel,
+  ): Promise<PostsOfBlogViewModel> {
+    const result = await this.postsOrmQueryRepository.getAllPostsOfBlog(
+      blogId,
+      query,
+      userId,
+    );
+    if (!result) throw new NotFoundException();
     return result;
   }
 
@@ -50,6 +82,19 @@ export class BlogsSAController {
     return;
   }
 
+  @UseGuards(JwtAccessGuard)
+  @HttpCode(HTTP_STATUS_CODE.CREATED_201)
+  @Post()
+  async createBlog(
+    @Body() inputBlogModel: CreateBlogInputModel,
+    @CurrentUserId() userId: string,
+  ): Promise<BlogOutputModel> {
+    const result = await this.commandBus.execute(
+      new CreateBlogCommand(inputBlogModel, userId),
+    );
+    return result;
+  }
+
   @UseGuards(BasicAuthGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':id/ban')
@@ -64,7 +109,7 @@ export class BlogsSAController {
     return;
   }
 
-  /* @Get(':id')
+  /*@Get(':id')
   async getBlogById(
     @Param('id') blogId: string,
     @Res() res: Response<BlogOutputModels>,

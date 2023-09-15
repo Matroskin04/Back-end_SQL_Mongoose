@@ -58,28 +58,32 @@ export class BlogsOrmQueryRepository {
     const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
       variablesForReturn(query);
 
-    const result = await this.dataSource.query(
-      `
-    SELECT b."id", b."name", b."description", b."websiteUrl", b."createdAt", b."isMembership",
-           b."userId", b."isBanned", b."banDate", u."login" as "userLogin",
-      (SELECT COUNT(*)
-        FROM public."blogs"
-        WHERE "name" ILIKE $1)
-    FROM public."blogs" as b
-        JOIN public."users" as u
-        ON u."id" = b."userId"
-    WHERE "name" ILIKE $1
-        ORDER BY "${sortBy}" ${sortDirection}
-        LIMIT $2 OFFSET $3`,
-      [`%${searchNameTerm}%`, +pageSize, (+pageNumber - 1) * +pageSize],
-    );
+    const result = await this.blogsRepository
+      .createQueryBuilder('b')
+      .select([
+        'b.id',
+        'b.name',
+        'b.description',
+        'b.websiteUrl',
+        'b.createdAt',
+        'b.isMembership',
+      ])
+      .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
+      .andWhere('b.isBanned = false')
+      .orderBy(`CAST(b.${sortBy} AS TEXT) COLLATE "C"`, sortDirection)
+      .limit(+pageSize)
+      .offset((+pageNumber - 1) * +pageSize)
+      .getManyAndCount();
 
     return {
-      pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
+      pagesCount: Math.ceil((result[1] || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: +result[0]?.count,
-      items: result.map((blog) => modifyBlogIntoSaOutputModel(blog)),
+      totalCount: result[1] || 0,
+      items: result[0].map((blog) => ({
+        ...blog,
+        createdAt: blog.createdAt.toISOString(),
+      })),
     };
   }
 

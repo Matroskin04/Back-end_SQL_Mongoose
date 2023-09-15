@@ -3,26 +3,45 @@ import {
   BodyBlogType,
 } from './blogs-blogger.types.repositories';
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Blogs } from '../../../domain/blogs.entity';
 
 @Injectable()
 export class BlogsOrmRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Blogs)
+    protected blogsRepository: Repository<Blogs>,
+    @InjectDataSource() protected dataSource: DataSource,
+  ) {}
 
   async createBlog(
     blogDTO: BodyBlogType,
     userId: string,
   ): Promise<BlogOutputType> {
-    const result = await this.dataSource.query(
-      `
-    INSERT INTO public."blogs"(
-        "name", "description", "websiteUrl", "isMembership", "userId")
-        VALUES ($1, $2, $3, $4, $5)
-    RETURNING "id", "name", "description", "websiteUrl", "createdAt", "isMembership"`,
-      [blogDTO.name, blogDTO.description, blogDTO.websiteUrl, false, userId],
-    );
-    return result[0];
+    const { name, description, websiteUrl } = blogDTO;
+    const result = await this.blogsRepository
+      .createQueryBuilder()
+      .insert()
+      .values({
+        name,
+        description,
+        websiteUrl,
+        isMembership: false,
+        userId,
+      })
+      .updateEntity(false)
+      .returning([
+        'id',
+        'name',
+        'description',
+        'websiteUrl',
+        'createdAt',
+        'isMembership',
+      ])
+      .execute();
+
+    return result.raw[0];
   }
 
   async updateBlog(blogDTO: BodyBlogType, blogId: string): Promise<boolean> {

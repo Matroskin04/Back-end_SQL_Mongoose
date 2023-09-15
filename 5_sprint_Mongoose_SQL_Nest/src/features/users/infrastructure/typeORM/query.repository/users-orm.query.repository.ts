@@ -268,15 +268,14 @@ export class UsersOrmQueryRepository {
   }
 
   async getUserLoginById(userId: string): Promise<string | null> {
-    const result = await this.dataSource.query(
-      `
-    SELECT "login"
-      FROM public."users"
-        WHERE "id" = $1 AND "isDeleted" = false`,
-      [userId],
-    );
-    if (!result[0]) return null;
-    return result[0].login;
+    const user = await this.usersRepository
+      .createQueryBuilder('u')
+      .select('u.login')
+      .where('u.id = :userId', { userId })
+      .andWhere('u.isDeleted = false')
+      .getOne();
+
+    return user?.login ?? null;
   }
 
   async getUserIdByConfirmationCode(

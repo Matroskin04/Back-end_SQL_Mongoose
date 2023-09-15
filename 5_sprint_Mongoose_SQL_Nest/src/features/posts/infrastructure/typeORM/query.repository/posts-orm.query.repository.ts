@@ -114,7 +114,7 @@ export class PostsOrmQueryRepository {
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(query);
 
-    const result1 = await this.postsRepository
+    const result = await this.postsRepository
       .createQueryBuilder('p')
       .select([
         'p.id AS id',
@@ -142,7 +142,7 @@ export class PostsOrmQueryRepository {
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
 
-    const postsInfo = await result1.getRawMany();
+    const postsInfo = await result.getRawMany();
 
     return {
       pagesCount: Math.ceil((+postsInfo[0]?.count || 1) / +pageSize),
@@ -171,49 +171,35 @@ export class PostsOrmQueryRepository {
     postId: string,
     userId: string | null,
   ): Promise<null | PostViewType> {
-    const result = await this.dataSource.query(
-      `
-     SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."createdAt", b."name" as "blogName",
-        
-      (SELECT COUNT(*) as "likesCount"
-       FROM public."posts_likes_info" as li
-            JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi2."userId"
-        WHERE li."likeStatus" = $1 AND li."postId" = p."id" AND bi2."isBanned" = false),
-            
-      (SELECT COUNT(*) as "dislikesCount"
-        FROM public."posts_likes_info" as li
-            JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi2."userId"
-        WHERE li."likeStatus" = $2 AND li."postId" = p."id" AND bi2."isBanned" = false),
-            
-      (SELECT "likeStatus" as "myStatus"
-        FROM public."posts_likes_info" as li
-            JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi2."userId"
-        WHERE li."userId" = $3 AND li."postId" = p."id" AND bi2."isBanned" = false),
-            
-      (SELECT json_agg(to_jsonb("threeLikes")) as "newestLikes"
-        FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
-            JOIN public."users" as u
-                ON u."id" = li."userId"
-            JOIN public."users_ban_info" as bi2
-                ON u."id" = bi2."userId"
-        WHERE li."postId" = p."id" AND li."likeStatus" = $1 AND bi2."isBanned" = false
-        GROUP BY u."login", li."addedAt", li."userId"
-             ORDER BY "addedAt" DESC
-             LIMIT 3) as "threeLikes" )
-            
-    FROM public."posts" as p
-        JOIN public."blogs" as b
-        ON b."id" = p."blogId"
-    WHERE b."isBanned" = false AND p."id" = $4`,
-      [AllLikeStatusEnum.Like, AllLikeStatusEnum.Dislike, userId, postId],
-    );
+    const result = await this.postsRepository
+      .createQueryBuilder('p')
+      .select([
+        'p.id AS id',
+        'p.title AS title',
+        'p.shortDescription AS "shortDescription"',
+        'p.content AS "content"',
+        'p.blogId AS "blogId"',
+        'p.createdAt AS "createdAt"',
+        'b.name AS "blogName"',
+      ])
+      .addSelect((subQuery) => {
+        return subQuery
+          .select('COUNT(*)')
+          .from(Posts, 'p')
+          .leftJoin('p.blog', 'b')
+          .where('b.isBanned = false');
+      }, 'count')
+      .addSelect((qb) => this.likesCountBuilder(qb), 'likesCount')
+      .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
+      .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
+      .addSelect((qb) => this.newestLikesBuilder(qb), 'newestLikes')
+      .leftJoin('p.blog', 'b')
+      .where('b.isBanned = false')
+      .andWhere('p.id = :postId', { postId });
 
-    if (!result[0]) return null;
+    const postInfo = await result.getRawOne();
 
-    return modifyPostIntoViewModel(result[0]);
+    return postInfo ? modifyPostIntoViewModel(postInfo) : null;
   }
 
   async getPostDBInfoById(postId: string): Promise<any> {

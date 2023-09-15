@@ -19,12 +19,12 @@ export type BlogSAViewType = {
 
   isMembership: boolean;
 
-  blogOwnerInfo: {
-    userId: string;
-    userLogin: string;
-  };
-  banInfo: {
-    isBanned: boolean;
-    banDate: string;
-  };
+  // blogOwnerInfo: {
+  //   userId: string;
+  //   userLogin: string;
+  // };
+  // banInfo: {
+  //   isBanned: boolean;
+  //   banDate: string;
+  // };
 };
