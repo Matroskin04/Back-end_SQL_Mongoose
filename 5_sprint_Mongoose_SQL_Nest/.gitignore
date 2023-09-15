@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+# Directories
+db
+
 # Another files
 .env
 testing.mjs
