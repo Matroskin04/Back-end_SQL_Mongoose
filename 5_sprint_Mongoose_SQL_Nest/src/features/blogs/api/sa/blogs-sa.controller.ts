@@ -37,6 +37,8 @@ import { CreateBlogCommand } from '../../application/blogger/use-cases/create-bl
 import { CreatePostByBlogIdModel } from '../../../posts/api/models/input/create-post.input.model';
 import { PostTypeWithId } from '../../../posts/infrastructure/SQL/repository/posts.types.repositories';
 import { CreatePostCommand } from '../../../posts/application/use-cases/create-post.use-case';
+import { UpdateBlogInputModel } from '../models/input/update-blog.input.model';
+import { UpdateBlogCommand } from '../../application/blogger/use-cases/update-blog.use-case';
 
 @Controller('/hometask-nest/sa/blogs')
 export class BlogsSAController {
@@ -71,20 +73,6 @@ export class BlogsSAController {
     return result;
   }
 
-  @UseGuards(BasicAuthGuard)
-  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
-  @Put(':id/bind-with-user/:userId')
-  async bindBlogWithUser(
-    @Param('id') blogId: string,
-    @Param('userId') userId: string,
-  ): Promise<void> {
-    const result = await this.commandBus.execute(
-      new BindBlogWithUserCommand(blogId, userId),
-    );
-    if (!result) throw new NotFoundException();
-    return;
-  }
-
   @UseGuards(JwtAccessGuard)
   @HttpCode(HTTP_STATUS_CODE.CREATED_201)
   @Post()
@@ -112,6 +100,20 @@ export class BlogsSAController {
     return result;
   }
 
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
+  @Put(':blogId')
+  async updateBlog(
+    @Param('blogId') blogId: string,
+    @Body() inputBlogModel: UpdateBlogInputModel,
+  ): Promise<void> {
+    const result = await this.commandBus.execute(
+      new UpdateBlogCommand(inputBlogModel, blogId),
+    );
+    if (!result) throw new NotFoundException();
+    return;
+  }
+
   @UseGuards(BasicAuthGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':id/ban')
@@ -121,6 +123,20 @@ export class BlogsSAController {
   ): Promise<void> {
     const result = await this.commandBus.execute(
       new UpdateBanInfoOfBlogCommand(blogId, inputBanInfoModel.isBanned),
+    );
+    if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
+  @Put(':id/bind-with-user/:userId')
+  async bindBlogWithUser(
+    @Param('id') blogId: string,
+    @Param('userId') userId: string,
+  ): Promise<void> {
+    const result = await this.commandBus.execute(
+      new BindBlogWithUserCommand(blogId, userId),
     );
     if (!result) throw new NotFoundException();
     return;

@@ -45,14 +45,17 @@ export class BlogsOrmRepository {
   }
 
   async updateBlog(blogDTO: BodyBlogType, blogId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    UPDATE public."blogs"
-      SET "name" = $1, "description" = $2, "websiteUrl" = $3
-        WHERE "id" = $4`,
-      [blogDTO.name, blogDTO.description, blogDTO.websiteUrl, blogId],
-    );
-    return result[1] === 1;
+    const result = await this.blogsRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        name: blogDTO.name,
+        description: blogDTO.description,
+        websiteUrl: blogDTO.websiteUrl,
+      })
+      .where('id = :blogId', { blogId })
+      .execute();
+    return result.affected === 1;
   }
 
   async updateBanInfo(blogId: string, banStatus: boolean): Promise<boolean> {

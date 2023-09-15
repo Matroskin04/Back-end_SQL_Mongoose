@@ -95,6 +95,7 @@ import { BlogsOrmQueryRepository } from './features/blogs/infrastructure/typeORM
 import { PostsOrmQueryRepository } from './features/posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
 import { BlogsOrmRepository } from './features/blogs/infrastructure/typeORM/repository/blogs-orm.repository';
 import { PostsOrmRepository } from './features/posts/infrastructure/typeORM/repository/posts-orm.repository';
+import { BlogsSAController } from './features/blogs/api/sa/blogs-sa.controller';
 
 const queryRepositories = [
   // SQL
@@ -206,6 +207,7 @@ const handlers = [
     AuthController,
     BlogsPublicController,
     BlogsBloggerController,
+    BlogsSAController,
     DevicesController,
     PostsController,
     CommentsController,
