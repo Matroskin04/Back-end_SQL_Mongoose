@@ -119,15 +119,23 @@ export class BlogsOrmQueryRepository {
   }
 
   async getBlogByIdPublic(blogId: string): Promise<null | BlogOutputType> {
-    const result = await this.dataSource.query(
-      `
-    SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership"
-      FROM public."blogs"
-        WHERE "id" = $1 AND "isBanned" = false`,
-      [blogId],
-    );
-    if (!result[0]) return null;
-    return result[0];
+    const result = await this.blogsRepository
+      .createQueryBuilder('b')
+      .select([
+        'b.id',
+        'b.name',
+        'b.description',
+        'b.websiteUrl',
+        'b.createdAt',
+        'b.isMembership',
+      ])
+      .where('b.id = :blogId', { blogId })
+      .andWhere('b.isBanned = false')
+      .getOne();
+
+    return result
+      ? { ...result, createdAt: result.createdAt.toISOString() }
+      : null;
   }
 
   async getBlogAllInfoById(
