@@ -81,12 +81,12 @@ export class BlogsOrmRepository {
   }
 
   async deleteSingleBlog(blogId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    DELETE FROM public."blogs"
-      WHERE "id" = $1`,
-      [blogId],
-    );
-    return result[1] === 1;
+    const result = await this.blogsRepository
+      .createQueryBuilder()
+      .delete()
+      .where('id = :blogId', { blogId })
+      .execute();
+
+    return result.affected === 1;
   }
 }

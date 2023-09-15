@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   NotFoundException,
@@ -41,6 +42,8 @@ import { UpdateBlogInputModel } from '../models/input/update-blog.input.model';
 import { UpdateBlogCommand } from '../../application/blogger/use-cases/update-blog.use-case';
 import { UpdatePostByBlogIdInputModel } from '../models/input/update-post-by-blog-id.input.model';
 import { UpdatePostCommand } from '../../../posts/application/use-cases/update-post.use-case';
+import { DeleteBlogCommand } from '../../application/blogger/use-cases/delete-blog.use-case';
+import { DeletePostCommand } from '../../../posts/application/use-cases/delete-post.use-case';
 
 @Controller('/hometask-nest/sa/blogs')
 export class BlogsSAController {
@@ -128,6 +131,24 @@ export class BlogsSAController {
       new UpdatePostCommand(blogId, postId, inputPostModel),
     );
 
+    if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
+  @Delete(':blogId')
+  async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
+    const result = await this.commandBus.execute(new DeleteBlogCommand(blogId));
+    if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
+  @Delete(':blogId/posts/:postId')
+  async deletePostOfBlog(@Param('postId') postId: string): Promise<void> {
+    const result = await this.commandBus.execute(new DeletePostCommand(postId));
     if (!result) throw new NotFoundException();
     return;
   }

@@ -66,12 +66,12 @@ export class PostsOrmRepository {
   }
 
   async deleteSinglePost(postId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    DELETE FROM public."posts"
-      WHERE "id" = $1`,
-      [postId],
-    );
-    return result[1] === 1;
+    const result = await this.postsRepository
+      .createQueryBuilder()
+      .delete()
+      .where('id = :postId', { postId })
+      .execute();
+
+    return result.affected === 1;
   }
 }

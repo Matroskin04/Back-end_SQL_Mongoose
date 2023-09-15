@@ -3,6 +3,7 @@ import { BlogsRepository } from '../../../infrastructure/SQL/repository/blogs.re
 import { UsersQueryRepository } from '../../../../users/infrastructure/SQL/query.repository/users.query.repository';
 import { BodyBlogType } from '../../../infrastructure/SQL/repository/blogs-blogger.types.repositories';
 import { CreateBlogDTO } from '../dto/create-blog.dto';
+import { BlogsOrmRepository } from '../../../infrastructure/typeORM/repository/blogs-orm.repository';
 
 export class DeleteBlogCommand {
   constructor(public id: string) {}
@@ -10,11 +11,11 @@ export class DeleteBlogCommand {
 
 @CommandHandler(DeleteBlogCommand)
 export class DeleteBlogUseCase implements ICommandHandler<DeleteBlogCommand> {
-  constructor(protected blogsRepository: BlogsRepository) {}
+  constructor(protected blogsOrmRepository: BlogsOrmRepository) {}
 
   async execute(command: DeleteBlogCommand): Promise<boolean> {
     const { id } = command;
 
-    return this.blogsRepository.deleteSingleBlog(id);
+    return this.blogsOrmRepository.deleteSingleBlog(id);
   }
 }
