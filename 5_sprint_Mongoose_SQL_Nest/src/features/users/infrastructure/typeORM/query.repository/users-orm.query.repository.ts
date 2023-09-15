@@ -115,7 +115,7 @@ export class UsersOrmQueryRepository {
           );
         }),
       )
-      .orderBy(`CAST(u.${sortBy} AS TEXT) COLLATE "C"`, sortDirection)
+      .orderBy(`u.${sortBy}`, sortDirection)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize)
       .getRawMany();

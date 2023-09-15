@@ -2,12 +2,12 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import {
   BodyPostByBlogIdType,
   PostTypeWithId,
-} from '../../infrastructure/repository/posts.types.repositories';
+} from '../../infrastructure/SQL/repository/posts.types.repositories';
 import { BlogsQueryRepository } from '../../../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 import { modifyPostIntoInitialViewModel } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
-import { PostsRepository } from '../../infrastructure/repository/posts.repository';
+import { PostsRepository } from '../../infrastructure/SQL/repository/posts.repository';
 import { AllLikeStatusType } from '../../../../infrastructure/utils/enums/like-status';
-import { PostsQueryRepository } from '../../infrastructure/query.repository/posts.query.repository';
+import { PostsQueryRepository } from '../../infrastructure/SQL/query.repository/posts.query.repository';
 import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.repository/users.query.repository';
 import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/query.repository/likes-info.query.repository';
 import { LikesInfoRepository } from '../../../likes-info/infrastructure/repository/likes-info.repository';

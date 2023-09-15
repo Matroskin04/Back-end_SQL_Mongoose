@@ -1,0 +1,283 @@
+import {
+  PostPaginationType,
+  PostViewType,
+} from './posts.types.query.repository';
+import { QueryPostInputModel } from '../../../api/models/input/query-post.input.model';
+import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
+import { modifyPostIntoViewModel } from '../../../../../infrastructure/utils/functions/features/posts.functions.helpers';
+import { Injectable } from '@nestjs/common';
+import { QueryBlogsInputModel } from '../../../../blogs/api/models/input/queries-blog.input.model';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
+import { AllLikeStatusEnum } from '../../../../../infrastructure/utils/enums/like-status';
+import { BlogsQueryRepository } from '../../../../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
+import { Posts } from '../../../domain/posts.entity';
+import { PostsLikesInfo } from '../../../domain/posts-likes-info.entity';
+import { UsersBanInfo } from '../../../../users/domain/users-ban-info.entity';
+
+@Injectable()
+export class PostsOrmQueryRepository {
+  constructor(
+    @InjectRepository(Posts)
+    protected postsRepository: Repository<Posts>,
+    @InjectRepository(PostsLikesInfo)
+    protected postsLikesInfoRepository: Repository<PostsLikesInfo>,
+    @InjectDataSource() protected dataSource: DataSource,
+    protected blogsQueryRepository: BlogsQueryRepository,
+  ) {}
+
+  //SQL
+  async getAllPostsOfBlog(
+    blogId: string,
+    query: QueryBlogsInputModel,
+    userId: string | null,
+  ): Promise<null | PostPaginationType> {
+    const blog = await this.blogsQueryRepository.doesBlogExist(blogId);
+    if (!blog) return null;
+
+    const { pageNumber, pageSize, sortBy, sortDirection } =
+      variablesForReturn(query);
+    //todo вынести подзапросы
+    const result = await this.postsRepository
+      .createQueryBuilder('p')
+      .select([
+        'p.id AS id',
+        'p.title AS title',
+        'p.shortDescription AS "shortDescription"',
+        'p.content AS "content"',
+        'p.blogId AS "blogId"',
+        'p.createdAt AS "createdAt"',
+        'b.name AS "blogName"',
+      ])
+      .addSelect((subQuery) => {
+        return subQuery
+          .select('COUNT(*)')
+          .from(Posts, 'p')
+          .leftJoin('p.blog', 'b')
+          .where('b.isBanned = false')
+          .andWhere('b.id = :blogId', { blogId });
+      }, 'count')
+      .addSelect((qb) => this.likesCountBuilder(qb), 'likesCount')
+      .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
+      .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
+      .addSelect((qb) => this.newestLikesBuilder(qb), 'newestLikes')
+      // .leftJoinAndMapMany(
+      //   'p.newestLikes',
+      //   'p.postLikeInfo',
+      //   'li',
+      //   'li."postId" = p."id"',
+      //   (qb) => {
+      //     qb.select(['li.addedAt', 'li.userId', 'u.login'])
+      //       .leftJoin('li.user', 'u')
+      //       .where('li."likeStatus" = :like', { like: AllLikeStatusEnum.Like })
+      //       .orderBy('li.addedAt', 'DESC')
+      //       .limit(3);
+      //   },
+      // )
+      // .leftJoinAndMapMany(
+      //   'p.newestLikes',
+      //   (subQuery) => {
+      //     return subQuery
+      //       .select(['li.addedAt', 'li.userId', 'u.login'])
+      //       .from(PostsLikesInfo, 'li')
+      //       .leftJoin('li.user', 'u')
+      //       .leftJoin('li.post', 'p')
+      //       .where('li."likeStatus" = :like', { like: AllLikeStatusEnum.Like })
+      //       .andWhere('li."postId" = p."id"')
+      //       .orderBy('li.addedAt', 'DESC')
+      //       .limit(3);
+      //   },
+      //   'li',
+      // );
+      .leftJoin('p.blog', 'b')
+      .where('b.isBanned = false')
+      .andWhere('b.id = :blogId', { blogId })
+      .orderBy(`b.${sortBy}`, sortDirection)
+      .limit(+pageSize)
+      .offset((+pageNumber - 1) * +pageSize);
+
+    const postsInfo = await result.getRawMany();
+
+    return {
+      pagesCount: Math.ceil((+postsInfo[0]?.count || 1) / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +postsInfo[0]?.count || 0,
+      items: postsInfo.map((post) => modifyPostIntoViewModel(post)),
+    };
+  }
+
+  async getAllPosts(
+    query: QueryPostInputModel,
+    userId: string | null,
+  ): Promise<PostPaginationType> {
+    const { pageNumber, pageSize, sortBy, sortDirection } =
+      variablesForReturn(query);
+
+    const result1 = await this.postsRepository
+      .createQueryBuilder('p')
+      .select([
+        'p.id AS id',
+        'p.title AS title',
+        'p.shortDescription AS "shortDescription"',
+        'p.content AS "content"',
+        'p.blogId AS "blogId"',
+        'p.createdAt AS "createdAt"',
+        'b.name AS "blogName"',
+      ])
+      .addSelect((subQuery) => {
+        return subQuery
+          .select('COUNT(*)')
+          .from(Posts, 'p')
+          .leftJoin('p.blog', 'b')
+          .where('b.isBanned = false');
+      }, 'count')
+      .addSelect((qb) => this.likesCountBuilder(qb), 'likesCount')
+      .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
+      .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
+      .addSelect((qb) => this.newestLikesBuilder(qb), 'newestLikes')
+      .leftJoin('p.blog', 'b')
+      .where('b.isBanned = false')
+      .orderBy(`b.${sortBy}`, sortDirection)
+      .limit(+pageSize)
+      .offset((+pageNumber - 1) * +pageSize);
+
+    const postsInfo = await result1.getRawMany();
+
+    return {
+      pagesCount: Math.ceil((+postsInfo[0]?.count || 1) / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +postsInfo[0]?.count || 0,
+      items: postsInfo.map((post) => modifyPostIntoViewModel(post)),
+    };
+  }
+
+  async doesPostExist(postId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `
+    SELECT COUNT(*)
+    FROM public."posts" as p
+        JOIN public."blogs" as b
+        ON b."id" = p."blogId"
+    WHERE p."id" = $1 AND b."isBanned" = false`,
+      [postId],
+    );
+
+    return +result[0].count === 1;
+  }
+
+  async getPostByIdView(
+    postId: string,
+    userId: string | null,
+  ): Promise<null | PostViewType> {
+    const result = await this.dataSource.query(
+      `
+     SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."createdAt", b."name" as "blogName",
+        
+      (SELECT COUNT(*) as "likesCount"
+       FROM public."posts_likes_info" as li
+            JOIN public."users_ban_info" as bi2
+            ON li."userId" = bi2."userId"
+        WHERE li."likeStatus" = $1 AND li."postId" = p."id" AND bi2."isBanned" = false),
+            
+      (SELECT COUNT(*) as "dislikesCount"
+        FROM public."posts_likes_info" as li
+            JOIN public."users_ban_info" as bi2
+            ON li."userId" = bi2."userId"
+        WHERE li."likeStatus" = $2 AND li."postId" = p."id" AND bi2."isBanned" = false),
+            
+      (SELECT "likeStatus" as "myStatus"
+        FROM public."posts_likes_info" as li
+            JOIN public."users_ban_info" as bi2
+            ON li."userId" = bi2."userId"
+        WHERE li."userId" = $3 AND li."postId" = p."id" AND bi2."isBanned" = false),
+            
+      (SELECT json_agg(to_jsonb("threeLikes")) as "newestLikes"
+        FROM (SELECT li."addedAt",li."userId", u."login" FROM public."posts_likes_info" as li
+            JOIN public."users" as u
+                ON u."id" = li."userId"
+            JOIN public."users_ban_info" as bi2
+                ON u."id" = bi2."userId"
+        WHERE li."postId" = p."id" AND li."likeStatus" = $1 AND bi2."isBanned" = false
+        GROUP BY u."login", li."addedAt", li."userId"
+             ORDER BY "addedAt" DESC
+             LIMIT 3) as "threeLikes" )
+            
+    FROM public."posts" as p
+        JOIN public."blogs" as b
+        ON b."id" = p."blogId"
+    WHERE b."isBanned" = false AND p."id" = $4`,
+      [AllLikeStatusEnum.Like, AllLikeStatusEnum.Dislike, userId, postId],
+    );
+
+    if (!result[0]) return null;
+
+    return modifyPostIntoViewModel(result[0]);
+  }
+
+  async getPostDBInfoById(postId: string): Promise<any> {
+    const result = await this.dataSource.query(
+      `
+    SELECT "blogId", "userId", "title", "shortDescription", "content", "createdAt"
+      FROM public."posts"
+        WHERE "id" = $1`,
+      [postId],
+    );
+    if (!result[0]) return null;
+    return result[0];
+  }
+
+  private likesCountBuilder(qb: SelectQueryBuilder<any>) {
+    return qb
+      .select('COUNT(*)')
+      .from(PostsLikesInfo, 'li')
+      .leftJoin(UsersBanInfo, 'bi', 'li.userId = bi.userId')
+      .where('li."likeStatus" = :like', { like: AllLikeStatusEnum.Like })
+      .andWhere('li."postId" = p."id"')
+      .andWhere('bi."isBanned" = false');
+  }
+
+  private dislikesCountBuilder(qb: SelectQueryBuilder<any>) {
+    return qb
+      .select('COUNT(*)')
+      .from(PostsLikesInfo, 'li')
+      .leftJoin(UsersBanInfo, 'bi', 'li.userId = bi.userId')
+      .where('li."likeStatus" = :dislike', {
+        dislike: AllLikeStatusEnum.Dislike,
+      })
+      .andWhere('li."postId" = p."id"')
+      .andWhere('bi."isBanned" = false');
+  }
+
+  private myStatusBuilder(qb: SelectQueryBuilder<any>, userId) {
+    return qb
+      .select('li.likeStatus')
+      .from(PostsLikesInfo, 'li')
+      .leftJoin(UsersBanInfo, 'bi', 'li.userId = bi.userId')
+      .where('li."userId" = :userId', { userId })
+      .andWhere('li."postId" = p."id"')
+      .andWhere('bi."isBanned" = false');
+  }
+
+  private newestLikesBuilder(qb: SelectQueryBuilder<any>) {
+    return qb
+      .select('json_agg(to_jsonb("threeLikes")) as "newestLikes"')
+      .from((qb) => {
+        return qb
+          .select([
+            'li."addedAt" AS "addedAt"',
+            'li."userId" AS "userId"',
+            'u."login" AS login',
+          ])
+          .from(PostsLikesInfo, 'li')
+          .leftJoin('li.user', 'u')
+          .leftJoin('u.userBanInfo', 'bi')
+          .where('li."postId" = p."id"')
+          .andWhere('li."likeStatus" = :like', {
+            like: AllLikeStatusEnum.Like,
+          })
+          .andWhere('bi."isBanned" = false');
+      }, 'threeLikes');
+  }
+}
