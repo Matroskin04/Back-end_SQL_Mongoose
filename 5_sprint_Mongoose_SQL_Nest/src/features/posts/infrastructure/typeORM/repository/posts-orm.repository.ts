@@ -17,7 +17,7 @@ export class PostsOrmRepository {
   async createPost(
     postDTO: BodyPostByBlogIdType,
     blogId: string,
-    userId: string,
+    userId: string | null,
   ): Promise<PostDBType> {
     const { title, shortDescription, content } = postDTO;
     const result = await this.postsRepository
@@ -28,7 +28,7 @@ export class PostsOrmRepository {
         shortDescription,
         content,
         blogId,
-        userId,
+        userId: userId ?? undefined,
       })
       .returning([
         'id',

@@ -12,7 +12,7 @@ import { PostsOrmRepository } from '../../infrastructure/typeORM/repository/post
 export class CreatePostCommand {
   constructor(
     public blogId: string,
-    public userId: string,
+    public userId: string | null,
     public postDTO: BodyPostByBlogIdType,
   ) {}
 }

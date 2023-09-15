@@ -32,7 +32,7 @@ export class Posts {
   @ManyToOne(() => Users, (u) => u.post)
   @JoinColumn()
   user: Users;
-  @Column()
+  @Column({ nullable: true })
   userId: string;
 
   @ManyToOne(() => Blogs, (b) => b.post)

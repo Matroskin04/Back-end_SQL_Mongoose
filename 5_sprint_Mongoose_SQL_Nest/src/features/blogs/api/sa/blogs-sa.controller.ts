@@ -62,17 +62,16 @@ export class BlogsSAController {
     return result;
   }
 
-  @UseGuards(BasicAuthGuard, BlogOwnerByIdGuard)
+  @UseGuards(BasicAuthGuard)
   @Get(':blogId/posts')
   async getAllPostsOfBlog(
     @Param('blogId') blogId: string,
-    @CurrentUserId() userId: string,
     @Query() query: QueryPostsOfBlogInputModel,
   ): Promise<PostsOfBlogViewModel> {
     const result = await this.postsOrmQueryRepository.getAllPostsOfBlog(
       blogId,
       query,
-      userId,
+      null,
     );
     if (!result) throw new NotFoundException();
     return result;
@@ -90,21 +89,20 @@ export class BlogsSAController {
     return result;
   }
 
-  @UseGuards(BasicAuthGuard, BlogOwnerByIdGuard)
+  @UseGuards(BasicAuthGuard)
   @Post(`/:blogId/posts`)
   async createPostByBlogId(
     @Param('blogId') blogId: string,
-    @CurrentUserId() userId: string,
     @Body() inputPostModel: CreatePostByBlogIdModel,
   ): Promise<PostTypeWithId> {
     const result = await this.commandBus.execute(
-      new CreatePostCommand(blogId, userId, inputPostModel),
+      new CreatePostCommand(blogId, null, inputPostModel),
     );
     if (!result) throw new NotFoundException();
     return result;
   }
 
-  @UseGuards(BasicAuthGuard, BlogOwnerByIdGuard)
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':blogId')
   async updateBlog(
@@ -118,7 +116,7 @@ export class BlogsSAController {
     return;
   }
 
-  @UseGuards(BasicAuthGuard, BlogOwnerByIdGuard)
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':blogId/posts/:postId')
   async updatePostOfBlog(
@@ -134,7 +132,7 @@ export class BlogsSAController {
     return;
   }
 
-  @UseGuards(BasicAuthGuard, BlogOwnerByIdGuard)
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':blogId')
   async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
@@ -143,7 +141,7 @@ export class BlogsSAController {
     return;
   }
 
-  @UseGuards(BasicAuthGuard, BlogOwnerByIdGuard)
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':blogId/posts/:postId')
   async deletePostOfBlog(@Param('postId') postId: string): Promise<void> {
