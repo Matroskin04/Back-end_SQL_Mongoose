@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PostsController } from './features/posts/api/posts.controller';
-import { PostsQueryRepository } from './features/posts/infrastructure/query.repository/posts.query.repository';
-import { PostsRepository } from './features/posts/infrastructure/repository/posts.repository';
+import { PostsQueryRepository } from './features/posts/infrastructure/SQL/query.repository/posts.query.repository';
+import { PostsRepository } from './features/posts/infrastructure/SQL/repository/posts.repository';
 import { CommentsController } from './features/comments/api/comments.controller';
 import { UsersSaController } from './features/users/api/sa/users-sa.controller';
 import { CommentsQueryRepository } from './features/comments/infrastructure/query.repository/comments.query.repository';
@@ -92,6 +92,9 @@ import { PasswordRecoveryOrmRepository } from './features/users/infrastructure/t
 import { BanInfoOrmRepository } from './features/users/infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
 import { APP_GUARD } from '@nestjs/core';
 import { BlogsOrmQueryRepository } from './features/blogs/infrastructure/typeORM/query.repository/blogs-orm.query.repository';
+import { PostsOrmQueryRepository } from './features/posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
+import { BlogsOrmRepository } from './features/blogs/infrastructure/typeORM/repository/blogs-orm.repository';
+import { PostsOrmRepository } from './features/posts/infrastructure/typeORM/repository/posts-orm.repository';
 
 const queryRepositories = [
   // SQL
@@ -104,6 +107,7 @@ const queryRepositories = [
 
   //ORM
   BlogsOrmQueryRepository,
+  PostsOrmQueryRepository,
   UsersOrmQueryRepository,
   DevicesOrmRepository,
 ];
@@ -122,6 +126,8 @@ const repositories = [
   TestingRepository,
 
   //ORM
+  BlogsOrmRepository,
+  PostsOrmRepository,
   UsersOrmRepository,
   EmailConfirmationOrmRepository,
   PasswordRecoveryOrmRepository,

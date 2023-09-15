@@ -6,7 +6,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
+import { PostsQueryRepository } from '../../../posts/infrastructure/SQL/query.repository/posts.query.repository';
 import { JwtAccessNotStrictGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import { CurrentUserId } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { QueryBlogsInputModel } from '../models/input/queries-blog.input.model';
@@ -18,11 +18,12 @@ import {
 } from '../models/output/blog.output.models';
 import { QueryPostInputModel } from '../../../posts/api/models/input/query-post.input.model';
 import { BlogsOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
+import { PostsOrmQueryRepository } from '../../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
 
 @Controller('/hometask-nest/blogs')
 export class BlogsPublicController {
   constructor(
-    protected postsQueryRepository: PostsQueryRepository,
+    protected postsOrmQueryRepository: PostsOrmQueryRepository,
     protected blogsOrmQueryRepository: BlogsOrmQueryRepository,
   ) {}
 
@@ -48,7 +49,7 @@ export class BlogsPublicController {
     @CurrentUserId() userId: string,
     @Query() query: QueryPostInputModel,
   ): Promise<PostsOfBlogViewModel> {
-    const result = await this.postsQueryRepository.getAllPostsOfBlog(
+    const result = await this.postsOrmQueryRepository.getAllPostsOfBlog(
       blogId,
       query,
       userId,

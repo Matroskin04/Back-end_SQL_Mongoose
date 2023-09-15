@@ -5,7 +5,7 @@ import { CommentsQueryRepository } from '../../infrastructure/query.repository/c
 import { CommentsLikesRepository } from '../../infrastructure/subrepository/comments-likes.repository';
 import { CommentViewType } from '../../infrastructure/repository/comments.types.repositories';
 import { modifyCommentIntoInitialViewModel } from '../../../../infrastructure/utils/functions/features/comments.functions.helpers';
-import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
+import { PostsQueryRepository } from '../../../posts/infrastructure/SQL/query.repository/posts.query.repository';
 import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.repository/users.query.repository';
 
 export class CreateCommentCommand {

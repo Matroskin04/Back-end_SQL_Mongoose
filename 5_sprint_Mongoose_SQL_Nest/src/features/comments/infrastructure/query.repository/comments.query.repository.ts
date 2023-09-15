@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PostsQueryRepository } from '../../../posts/infrastructure/query.repository/posts.query.repository';
+import { PostsQueryRepository } from '../../../posts/infrastructure/SQL/query.repository/posts.query.repository';
 import { CommentViewType } from '../repository/comments.types.repositories';
 import { QueryPostInputModel } from '../../../posts/api/models/input/query-post.input.model';
 import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
