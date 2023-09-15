@@ -78,15 +78,14 @@ export class BlogsSAController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HTTP_STATUS_CODE.CREATED_201)
   @Post()
   async createBlog(
     @Body() inputBlogModel: CreateBlogInputModel,
-    @CurrentUserId() userId: string,
   ): Promise<BlogOutputModel> {
     const result = await this.commandBus.execute(
-      new CreateBlogCommand(inputBlogModel, userId),
+      new CreateBlogCommand(inputBlogModel, null),
     );
     return result;
   }

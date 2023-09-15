@@ -7,7 +7,7 @@ import { UsersOrmQueryRepository } from '../../../../users/infrastructure/typeOR
 import { BlogsOrmRepository } from '../../../infrastructure/typeORM/repository/blogs-orm.repository';
 
 export class CreateBlogCommand {
-  constructor(public blogDTO: BodyBlogType, public userId: string) {}
+  constructor(public blogDTO: BodyBlogType, public userId: string | null) {}
 }
 
 @CommandHandler(CreateBlogCommand)
@@ -20,8 +20,10 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
   async execute(command: CreateBlogCommand): Promise<CreateBlogDTO> {
     const { blogDTO, userId } = command;
 
-    const user = await this.usersOrmQueryRepository.getUserLoginById(userId);
-    if (!user) throw new Error('User is not found');
+    if (userId !== null) {
+      const user = await this.usersOrmQueryRepository.getUserLoginById(userId);
+      if (!user) throw new Error('User is not found');
+    }
 
     const result = await this.blogsOrmRepository.createBlog(blogDTO, userId);
     return result;

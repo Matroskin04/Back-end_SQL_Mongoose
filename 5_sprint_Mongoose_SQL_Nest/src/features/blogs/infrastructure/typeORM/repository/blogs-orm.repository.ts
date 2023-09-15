@@ -17,7 +17,7 @@ export class BlogsOrmRepository {
 
   async createBlog(
     blogDTO: BodyBlogType,
-    userId: string,
+    userId: string | null,
   ): Promise<BlogOutputType> {
     const { name, description, websiteUrl } = blogDTO;
     const result = await this.blogsRepository
@@ -28,7 +28,7 @@ export class BlogsOrmRepository {
         description,
         websiteUrl,
         isMembership: false,
-        userId,
+        userId: userId ?? undefined,
       })
       .updateEntity(false)
       .returning([

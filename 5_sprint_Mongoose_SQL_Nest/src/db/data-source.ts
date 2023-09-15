@@ -6,7 +6,7 @@ export default new DataSource({
   port: 5432,
   username: 'It-Incubator',
   password: 'sa',
-  database: 'BackEnd_course_TypeORM',
+  database: 'backend_course_type_orm',
   synchronize: false,
   entities: ['src/**/*.entity{.ts,.js}'],
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
