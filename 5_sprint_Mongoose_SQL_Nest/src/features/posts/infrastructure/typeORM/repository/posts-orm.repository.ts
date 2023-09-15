@@ -51,14 +51,18 @@ export class PostsOrmRepository {
     postDTO: BodyPostByBlogIdType,
     postId: string,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    UPDATE public."posts"
-      SET "title" = $1, "shortDescription" = $2, "content" = $3
-        WHERE "id" = $4`,
-      [postDTO.title, postDTO.shortDescription, postDTO.content, postId],
-    );
-    return result[1] === 1;
+    const result = await this.postsRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        title: postDTO.title,
+        shortDescription: postDTO.shortDescription,
+        content: postDTO.content,
+      })
+      .where('id = :postId', { postId })
+      .execute();
+
+    return result.affected === 1;
   }
 
   async deleteSinglePost(postId: string): Promise<boolean> {

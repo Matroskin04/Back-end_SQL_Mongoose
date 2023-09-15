@@ -39,6 +39,8 @@ import { PostTypeWithId } from '../../../posts/infrastructure/SQL/repository/pos
 import { CreatePostCommand } from '../../../posts/application/use-cases/create-post.use-case';
 import { UpdateBlogInputModel } from '../models/input/update-blog.input.model';
 import { UpdateBlogCommand } from '../../application/blogger/use-cases/update-blog.use-case';
+import { UpdatePostByBlogIdInputModel } from '../models/input/update-post-by-blog-id.input.model';
+import { UpdatePostCommand } from '../../../posts/application/use-cases/update-post.use-case';
 
 @Controller('/hometask-nest/sa/blogs')
 export class BlogsSAController {
@@ -110,6 +112,22 @@ export class BlogsSAController {
     const result = await this.commandBus.execute(
       new UpdateBlogCommand(inputBlogModel, blogId),
     );
+    if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
+  @Put(':blogId/posts/:postId')
+  async updatePostOfBlog(
+    @Param('blogId') blogId: string,
+    @Param('postId') postId: string,
+    @Body() inputPostModel: UpdatePostByBlogIdInputModel,
+  ): Promise<void> {
+    const result = await this.commandBus.execute(
+      new UpdatePostCommand(blogId, postId, inputPostModel),
+    );
+
     if (!result) throw new NotFoundException();
     return;
   }

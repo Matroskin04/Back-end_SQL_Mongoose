@@ -6,6 +6,7 @@ import {
 import { BlogsQueryRepository } from '../../../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 import { modifyPostIntoInitialViewModel } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { PostsRepository } from '../../infrastructure/SQL/repository/posts.repository';
+import { PostsOrmRepository } from '../../infrastructure/typeORM/repository/posts-orm.repository';
 
 export class UpdatePostCommand {
   constructor(
@@ -17,10 +18,10 @@ export class UpdatePostCommand {
 
 @CommandHandler(UpdatePostCommand)
 export class UpdatePostUseCase implements ICommandHandler<UpdatePostCommand> {
-  constructor(protected postsRepository: PostsRepository) {}
+  constructor(protected postsOrmRepository: PostsOrmRepository) {}
 
   async execute(command: UpdatePostCommand): Promise<boolean> {
     const { postDTO, postId, blogId } = command;
-    return this.postsRepository.updatePost(postDTO, postId);
+    return this.postsOrmRepository.updatePost(postDTO, postId);
   }
 }
