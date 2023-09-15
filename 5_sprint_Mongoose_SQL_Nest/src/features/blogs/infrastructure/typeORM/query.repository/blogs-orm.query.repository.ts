@@ -70,7 +70,7 @@ export class BlogsOrmQueryRepository {
       ])
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
       .andWhere('b.isBanned = false')
-      .orderBy(`CAST(b.${sortBy} AS TEXT) COLLATE "C"`, sortDirection)
+      .orderBy(`b.${sortBy}`, sortDirection)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize)
       .getManyAndCount();
@@ -105,7 +105,7 @@ export class BlogsOrmQueryRepository {
       ])
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
       .andWhere('b.isBanned = false')
-      .orderBy(`CAST(b.${sortBy} AS TEXT) COLLATE "C"`, sortDirection)
+      .orderBy(`b.${sortBy}`, sortDirection)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize)
       .getManyAndCount();

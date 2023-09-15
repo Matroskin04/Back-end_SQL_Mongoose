@@ -57,8 +57,6 @@ export class UsersOrmQueryRepository {
     } = variablesForReturn(query);
 
     //todo order by - insert like variable?
-    //todo how to sort with case sensitive and timestamp separate
-    //CASE WHEN 'u.${sortBy}' = 'u.createdAt' THEN u."createdAt" ELSE CAST(u.${sortBy} AS TEXT) COLLATE "C" END
     const result = await this.usersRepository
       .createQueryBuilder('u')
       .select([
