@@ -30,14 +30,14 @@ export class CommentsOrmRepository {
   }
 
   async updateComment(content: string, commentId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    UPDATE public."comments" 
-      SET "content" = $1
-        WHERE "id" = $2`,
-      [content, commentId],
-    );
-    return result[1] === 1;
+    const result = await this.commentsRepository
+      .createQueryBuilder()
+      .update()
+      .set({ content })
+      .where('id = :commentId', { commentId })
+      .execute();
+
+    return result.affected === 1;
   }
 
   async deleteComment(commentId: string): Promise<boolean> {
