@@ -9,7 +9,6 @@ export async function createCommentTest(
   accessToken,
   content,
 ) {
-  console.log(postId, content, accessToken);
   return request(httpServer)
     .post(`/hometask-nest/posts/${postId}/comments`)
     .set('Authorization', `Bearer ${accessToken}`)

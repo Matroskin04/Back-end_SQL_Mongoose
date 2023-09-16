@@ -411,6 +411,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
 
     it(`+ (200) should return 9 comments of post`, async () => {
       const result = await getCommentsOfPostTest(httpServer, post.id);
+      console.log(result.body);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
         createResponseCommentsOfPostTest(commentsIds, null, null, null, 9),
