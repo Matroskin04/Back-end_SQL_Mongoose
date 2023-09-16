@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException } from '@nestjs/common';
-import { CommentsRepository } from '../../infrastructure/repository/comments.repository';
-import { CommentsQueryRepository } from '../../infrastructure/query.repository/comments.query.repository';
+import { CommentsRepository } from '../../infrastructure/SQL/repository/comments.repository';
+import { CommentsQueryRepository } from '../../infrastructure/SQL/query.repository/comments.query.repository';
 
 export class UpdateCommentCommand {
   constructor(

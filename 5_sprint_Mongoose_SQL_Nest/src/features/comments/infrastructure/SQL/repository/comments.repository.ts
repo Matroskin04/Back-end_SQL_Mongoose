@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CommentDBType } from '../../domain/comments.db.types';
+import { CommentDBType } from '../../../domain/comments.db.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 

@@ -1,3 +1,3 @@
-import { CommentViewType } from '../../../infrastructure/repository/comments.types.repositories';
+import { CommentViewType } from '../../../infrastructure/SQL/repository/comments.types.repositories';
 
 export type CommentOutputModel = CommentViewType;

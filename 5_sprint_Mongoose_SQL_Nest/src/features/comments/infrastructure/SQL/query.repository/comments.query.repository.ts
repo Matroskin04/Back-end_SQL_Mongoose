@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PostsQueryRepository } from '../../../posts/infrastructure/SQL/query.repository/posts.query.repository';
+import { PostsQueryRepository } from '../../../../posts/infrastructure/SQL/query.repository/posts.query.repository';
 import { CommentViewType } from '../repository/comments.types.repositories';
-import { QueryPostInputModel } from '../../../posts/api/models/input/query-post.input.model';
-import { variablesForReturn } from '../../../../infrastructure/utils/functions/variables-for-return.function';
+import { QueryPostInputModel } from '../../../../posts/api/models/input/query-post.input.model';
+import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
 import {
   modifyCommentIntoViewModel,
   modifyCommentsOfBlogger,
-} from '../../../../infrastructure/utils/functions/features/comments.functions.helpers';
+} from '../../../../../infrastructure/utils/functions/features/comments.functions.helpers';
 import {
   CommentDBType,
   CommentOfPostPaginationType,
@@ -14,7 +14,7 @@ import {
 } from './comments.output.types.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { AllLikeStatusEnum } from '../../../../infrastructure/utils/enums/like-status';
+import { AllLikeStatusEnum } from '../../../../../infrastructure/utils/enums/like-status';
 
 @Injectable()
 export class CommentsQueryRepository {

@@ -1,12 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException } from '@nestjs/common';
-import { CommentsRepository } from '../../infrastructure/repository/comments.repository';
-import { CommentsQueryRepository } from '../../infrastructure/query.repository/comments.query.repository';
-import { CommentsLikesRepository } from '../../infrastructure/subrepository/comments-likes.repository';
-import { CommentViewType } from '../../infrastructure/repository/comments.types.repositories';
+import { CommentsRepository } from '../../infrastructure/SQL/repository/comments.repository';
+import { CommentsQueryRepository } from '../../infrastructure/SQL/query.repository/comments.query.repository';
+import { CommentsLikesRepository } from '../../infrastructure/SQL/subrepository/comments-likes.repository';
+import { CommentViewType } from '../../infrastructure/SQL/repository/comments.types.repositories';
 import { modifyCommentIntoInitialViewModel } from '../../../../infrastructure/utils/functions/features/comments.functions.helpers';
 import { PostsQueryRepository } from '../../../posts/infrastructure/SQL/query.repository/posts.query.repository';
 import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.repository/users.query.repository';
+import { PostsOrmQueryRepository } from '../../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
+import { UsersOrmQueryRepository } from '../../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
+import { CommentsOrmRepository } from '../../infrastructure/typeORM/repository/comments-orm.repository';
 
 export class CreateCommentCommand {
   constructor(
@@ -21,9 +24,9 @@ export class CreateCommentUseCase
   implements ICommandHandler<CreateCommentCommand>
 {
   constructor(
-    protected commentsRepository: CommentsRepository,
-    protected postsQueryRepository: PostsQueryRepository,
-    protected usersQueryRepository: UsersQueryRepository,
+    protected commentsOrmRepository: CommentsOrmRepository,
+    protected postsOrmQueryRepository: PostsOrmQueryRepository,
+    protected usersOrmQueryRepository: UsersOrmQueryRepository,
   ) {}
 
   async execute(
@@ -31,17 +34,19 @@ export class CreateCommentUseCase
   ): Promise<null | CommentViewType> {
     const { postId, userId, content } = command;
 
-    const userLogin = await this.usersQueryRepository.getUserLoginById(userId);
+    const userLogin = await this.usersOrmQueryRepository.getUserLoginById(
+      userId,
+    );
     if (!userLogin) {
       return null;
     }
 
-    const post = await this.postsQueryRepository.doesPostExist(postId);
+    const post = await this.postsOrmQueryRepository.doesPostExist(postId);
     if (!post) {
       return null;
     }
 
-    const comment = await this.commentsRepository.createComment(
+    const comment = await this.commentsOrmRepository.createComment(
       content,
       userId,
       postId,

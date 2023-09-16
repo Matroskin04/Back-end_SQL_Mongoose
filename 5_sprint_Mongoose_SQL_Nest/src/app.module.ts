@@ -5,7 +5,7 @@ import { PostsQueryRepository } from './features/posts/infrastructure/SQL/query.
 import { PostsRepository } from './features/posts/infrastructure/SQL/repository/posts.repository';
 import { CommentsController } from './features/comments/api/comments.controller';
 import { UsersSaController } from './features/users/api/sa/users-sa.controller';
-import { CommentsQueryRepository } from './features/comments/infrastructure/query.repository/comments.query.repository';
+import { CommentsQueryRepository } from './features/comments/infrastructure/SQL/query.repository/comments.query.repository';
 import { TestingController } from './features/testing/api/testing.controller';
 import { TestingRepository } from './features/testing/repository/testing.repository';
 import { LocalStrategy } from './infrastructure/strategy/local.strategy';
@@ -19,7 +19,7 @@ import { JwtAccessStrategy } from './infrastructure/strategy/jwt-access.strategy
 import { BasicStrategy } from './infrastructure/strategy/basic.strategy';
 import { LikesInfoQueryRepository } from './features/likes-info/infrastructure/SQL/query.repository/likes-info.query.repository';
 import { LikesInfoRepository } from './features/likes-info/infrastructure/SQL/repository/likes-info.repository';
-import { CommentsRepository } from './features/comments/infrastructure/repository/comments.repository';
+import { CommentsRepository } from './features/comments/infrastructure/SQL/repository/comments.repository';
 import { IsBlogByIdExistsConstraint } from './infrastructure/decorators/posts/blog-id-exists.decorator';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { DevicesController } from './features/devices/api/devices.controller';
@@ -50,7 +50,7 @@ import { UpdateBanInfoOfUserUseCase } from './features/users/application/sa/use-
 import { DeleteDevicesExcludeCurrentUseCase } from './features/devices/application/use-cases/delete-devices-exclude-current.use-case';
 import { DeleteDeviceByIdUseCase } from './features/devices/application/use-cases/delete-device-by-id.use-case';
 import { UsersQueryRepository } from './features/users/infrastructure/SQL/query.repository/users.query.repository';
-import { CommentsLikesRepository } from './features/comments/infrastructure/subrepository/comments-likes.repository';
+import { CommentsLikesRepository } from './features/comments/infrastructure/SQL/subrepository/comments-likes.repository';
 import { IsUserBannedByJWTStrategy } from './infrastructure/strategy/is-user-banned-by-jwt.strategy';
 import { Blogs } from './features/blogs/domain/blogs.entity';
 import { Users } from './features/users/domain/users.entity';
@@ -98,6 +98,8 @@ import { PostsOrmRepository } from './features/posts/infrastructure/typeORM/repo
 import { BlogsSAController } from './features/blogs/api/sa/blogs-sa.controller';
 import { LikesInfoOrmRepository } from './features/likes-info/infrastructure/typeORM/repository/likes-info-orm.repository';
 import { LikesInfoOrmQueryRepository } from './features/likes-info/infrastructure/typeORM/query.repository/likes-info-orm.query.repository';
+import { CommentsOrmRepository } from './features/comments/infrastructure/typeORM/repository/comments-orm.repository';
+import { CommentsOrmQueryRepository } from './features/comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
 
 const queryRepositories = [
   // SQL
@@ -111,6 +113,7 @@ const queryRepositories = [
   //ORM
   BlogsOrmQueryRepository,
   PostsOrmQueryRepository,
+  CommentsOrmQueryRepository,
   UsersOrmQueryRepository,
   LikesInfoOrmQueryRepository,
 ];
@@ -131,6 +134,7 @@ const repositories = [
   //ORM
   BlogsOrmRepository,
   PostsOrmRepository,
+  CommentsOrmRepository,
   UsersOrmRepository,
   EmailConfirmationOrmRepository,
   PasswordRecoveryOrmRepository,
