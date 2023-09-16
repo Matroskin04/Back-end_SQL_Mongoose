@@ -1,18 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Comments } from '../../../domain/comments.entity';
+import { CommentsLikesInfo } from '../../../domain/comments-likes-info.entity';
 
 @Injectable()
 export class CommentsLikesOrmRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(CommentsLikesInfo)
+    protected commentsRepository: Repository<CommentsLikesInfo>,
+    @InjectDataSource() protected dataSource: DataSource,
+  ) {}
 
   async deleteAllLikesInfoOfComment(commentId: string): Promise<void> {
-    const result = await this.dataSource.query(
-      `
-    DELETE FROM public."comments_likes_info"
-        WHERE "commentId" = $1`,
-      [commentId],
-    );
+    const result = await this.commentsRepository
+      .createQueryBuilder()
+      .delete()
+      .where('commentId = :commentId', { commentId })
+      .execute();
     return;
   }
 }

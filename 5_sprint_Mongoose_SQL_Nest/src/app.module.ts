@@ -100,6 +100,7 @@ import { LikesInfoOrmRepository } from './features/likes-info/infrastructure/typ
 import { LikesInfoOrmQueryRepository } from './features/likes-info/infrastructure/typeORM/query.repository/likes-info-orm.query.repository';
 import { CommentsOrmRepository } from './features/comments/infrastructure/typeORM/repository/comments-orm.repository';
 import { CommentsOrmQueryRepository } from './features/comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
+import { CommentsLikesOrmRepository } from './features/comments/infrastructure/typeORM/subrepository/comments-likes-orm.repository';
 
 const queryRepositories = [
   // SQL
@@ -141,6 +142,7 @@ const repositories = [
   BanInfoOrmRepository,
   DevicesOrmRepository,
   LikesInfoOrmRepository,
+  CommentsLikesOrmRepository,
 ];
 const handlers = [
   //auth

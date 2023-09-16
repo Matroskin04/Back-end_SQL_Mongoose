@@ -41,12 +41,12 @@ export class CommentsOrmRepository {
   }
 
   async deleteComment(commentId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    DELETE FROM public."comments" 
-        WHERE "id" = $1`,
-      [commentId],
-    );
-    return result[1] === 1;
+    const result = await this.commentsRepository
+      .createQueryBuilder()
+      .delete()
+      .where('id = :commentId', { commentId })
+      .execute();
+
+    return result.affected === 1;
   }
 }

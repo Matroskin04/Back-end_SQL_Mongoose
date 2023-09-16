@@ -22,12 +22,13 @@ import { CommandBus } from '@nestjs/cqrs';
 import { UpdateCommentCommand } from '../application/use-cases/update-comment.use-case';
 import { DeleteCommentCommand } from '../application/use-cases/delete-comment.use-case';
 import { UpdateCommentLikeStatusCommand } from '../application/use-cases/update-comment-like-status.use-case';
+import { CommentsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/comments-orm.query.repository';
 
 @Controller('/hometask-nest/comments')
 export class CommentsController {
   constructor(
     protected commandBus: CommandBus,
-    protected commentsQueryRepository: CommentsQueryRepository,
+    protected commentsOrmQueryRepositoryc: CommentsOrmQueryRepository,
   ) {}
 
   @UseGuards(JwtAccessNotStrictGuard)
@@ -36,7 +37,7 @@ export class CommentsController {
     @Param('id') commentId: string,
     @CurrentUserId() userId: string | null,
   ): Promise<CommentOutputModel> {
-    const result = await this.commentsQueryRepository.getCommentByIdView(
+    const result = await this.commentsOrmQueryRepositoryc.getCommentByIdView(
       commentId,
       userId,
     );
