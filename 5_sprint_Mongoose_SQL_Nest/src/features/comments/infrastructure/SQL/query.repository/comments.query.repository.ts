@@ -40,9 +40,6 @@ export class CommentsQueryRepository {
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(query);
 
-    // const result = await this.commentsRepository
-    //   .createQueryBuilder('c')
-    //   .select(['c.id', 'c.userId']);
     const result = await this.commentsRepository
       .createQueryBuilder('c')
       .select([
@@ -79,39 +76,26 @@ export class CommentsQueryRepository {
     commentId: string,
     userId: string | null,
   ): Promise<CommentViewType | null> {
-    const commentInfo = await this.dataSource.query(
-      `
-    SELECT c."id", c."userId", c."content", c."createdAt", u."login" as "userLogin",
-        
-      (SELECT COUNT(*) as "likesCount"
-        FROM public."comments_likes_info" as li
-            JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi2."userId"
-        WHERE li."likeStatus" = $1 AND li."commentId" = c."id" AND bi2."isBanned" = false),
-            
-      (SELECT COUNT(*) as "dislikesCount"
-        FROM public."comments_likes_info" as li
-            JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi2."userId"
-        WHERE li."likeStatus" = $2 AND li."commentId" = c."id" AND bi2."isBanned" = false),
-            
-      (SELECT "likeStatus" as "myStatus"
-        FROM public."comments_likes_info" as li
-            JOIN public."users_ban_info" as bi2
-            ON li."userId" = bi2."userId"
-        WHERE li."userId" = $3 AND li."commentId" = c."id" AND bi2."isBanned" = false)
-            
-    FROM public."comments" as c
-        JOIN public."users" as u
-            ON u."id" = c."userId"
-        JOIN public."users_ban_info" as bi
-            ON u."id" = bi."userId"
-    WHERE c."id" = $4 AND bi."isBanned" = false`,
-      [AllLikeStatusEnum.Like, AllLikeStatusEnum.Dislike, userId, commentId],
-    );
+    const result = await this.commentsRepository
+      .createQueryBuilder('c')
+      .select([
+        'c.id AS "id"',
+        'c.userId AS "userId"',
+        'c.content AS "content"',
+        'c.createdAt AS "createdAt"',
+        'u.login AS "userLogin"',
+      ])
+      .addSelect((qb) => this.likesCountBuilder(qb), 'likesCount')
+      .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
+      .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
+      .leftJoin('c.user', 'u')
+      .leftJoin('u.userBanInfo', 'bi')
+      .where('c.id = :commentId', { commentId })
+      .andWhere('bi.isBanned = false');
 
-    if (!commentInfo[0]) return null;
-    return modifyCommentIntoViewModel(commentInfo[0]);
+    const commentInfo = await result.getRawOne();
+
+    return commentInfo ? modifyCommentIntoViewModel(commentInfo) : null;
   }
 
   async getCommentsOfBlogger(

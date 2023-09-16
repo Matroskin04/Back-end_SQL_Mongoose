@@ -16,7 +16,6 @@ import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-gua
 import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { UpdateCommentInputModel } from './models/input/update-comment.input.model';
 import { UpdateCommentLikeStatusInputModel } from './models/input/update-comment-like-status.input.model';
-import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
 import { IsUserBannedByJWTGuard } from '../../../infrastructure/guards/is-user-banned.guard';
 import { CommandBus } from '@nestjs/cqrs';

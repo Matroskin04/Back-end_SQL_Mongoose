@@ -42,7 +42,7 @@ export class UsersOrmQueryRepository {
       .where('u.id = :userId', { userId })
       .getRawOne();
 
-    return userInfo;
+    return userInfo ?? null;
   }
 
   async getAllUsersView(query: UsersQuerySAType): Promise<UsersPaginationType> {
