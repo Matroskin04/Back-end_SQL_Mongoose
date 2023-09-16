@@ -5,6 +5,9 @@ import { CommentsQueryRepository } from '../../infrastructure/SQL/query.reposito
 import { AllLikeStatusType } from '../../../../infrastructure/utils/enums/like-status';
 import { LikesInfoRepository } from '../../../likes-info/infrastructure/SQL/repository/likes-info.repository';
 import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/SQL/query.repository/likes-info.query.repository';
+import { CommentsOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/comments-orm.query.repository';
+import { LikesInfoOrmRepository } from '../../../likes-info/infrastructure/typeORM/repository/likes-info-orm.repository';
+import { LikesInfoOrmQueryRepository } from '../../../likes-info/infrastructure/typeORM/query.repository/likes-info-orm.query.repository';
 
 export class UpdateCommentLikeStatusCommand {
   constructor(
@@ -19,15 +22,15 @@ export class UpdateCommentLikeStatusUseCase
   implements ICommandHandler<UpdateCommentLikeStatusCommand>
 {
   constructor(
-    protected commentsQueryRepository: CommentsQueryRepository,
-    protected likesInfoRepository: LikesInfoRepository,
-    protected likesInfoQueryRepository: LikesInfoQueryRepository,
+    protected commentsOrmQueryRepository: CommentsOrmQueryRepository,
+    protected likesInfoOrmRepository: LikesInfoOrmRepository,
+    protected likesInfoOrmQueryRepository: LikesInfoOrmQueryRepository,
   ) {}
 
   async execute(command: UpdateCommentLikeStatusCommand): Promise<boolean> {
     const { commentId, userId, likeStatus } = command;
 
-    const comment = await this.commentsQueryRepository.getCommentDBInfoById(
+    const comment = await this.commentsOrmQueryRepository.getCommentDBInfoById(
       commentId,
     );
     if (!comment) {
@@ -35,7 +38,7 @@ export class UpdateCommentLikeStatusUseCase
     }
 
     //check of existing LikeInfo
-    const likeInfo = await this.likesInfoQueryRepository.getLikesInfoComment(
+    const likeInfo = await this.likesInfoOrmQueryRepository.getLikesInfoComment(
       commentId,
       userId,
     );
@@ -43,7 +46,7 @@ export class UpdateCommentLikeStatusUseCase
     if (!likeInfo) {
       if (likeStatus === 'None') return true; //If statuses are the same, then just return true
       //Otherwise create like info
-      await this.likesInfoRepository.createLikeInfoOfComment(
+      await this.likesInfoOrmRepository.createLikeInfoOfComment(
         userId,
         commentId,
         likeStatus,
@@ -51,17 +54,18 @@ export class UpdateCommentLikeStatusUseCase
     } else {
       //if new like status = 'None' - then delete info
       if (likeStatus === 'None') {
-        const isDeleted = await this.likesInfoRepository.deleteLikeInfoComment(
-          userId,
-          commentId,
-        );
+        const isDeleted =
+          await this.likesInfoOrmRepository.deleteLikeInfoComment(
+            userId,
+            commentId,
+          );
         if (!isDeleted) {
           throw new Error('Like status of the comment is not deleted');
         }
         return true;
       }
       //if not "None", then change like status
-      const isUpdate = await this.likesInfoRepository.updateCommentLikeInfo(
+      const isUpdate = await this.likesInfoOrmRepository.updateCommentLikeInfo(
         userId,
         commentId,
         likeStatus,

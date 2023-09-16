@@ -10,6 +10,7 @@ import {
 import { Users } from '../../users/domain/users.entity';
 import { Posts } from '../../posts/domain/posts.entity';
 import { Comments } from './comments.entity';
+import { LikeDislikeStatusEnum } from '../../../infrastructure/utils/enums/like-status';
 
 @Entity()
 @Unique(['userId', 'commentId'])
@@ -19,7 +20,7 @@ export class CommentsLikesInfo {
   id: string;
 
   @Column('smallint')
-  likeStatus;
+  likeStatus: LikeDislikeStatusEnum;
 
   @ManyToOne(() => Users, (u) => u.commentLikeInfo)
   @JoinColumn()

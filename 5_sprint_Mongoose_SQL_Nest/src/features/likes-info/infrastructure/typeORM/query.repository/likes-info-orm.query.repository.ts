@@ -6,12 +6,15 @@ import {
   AllLikeStatusEnum,
   AllLikeStatusType,
 } from '../../../../../infrastructure/utils/enums/like-status';
+import { CommentsLikesInfo } from '../../../../comments/domain/comments-likes-info.entity';
 
 @Injectable()
 export class LikesInfoOrmQueryRepository {
   constructor(
     @InjectRepository(PostsLikesInfo)
     protected postsLikesInfoRepository: Repository<PostsLikesInfo>,
+    @InjectRepository(CommentsLikesInfo)
+    protected commentsLikesInfoRepository: Repository<CommentsLikesInfo>,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
@@ -34,15 +37,13 @@ export class LikesInfoOrmQueryRepository {
     commentId: string,
     userId: string,
   ): Promise<string | null> {
-    const result = await this.dataSource.query(
-      `
-      SELECT "likeStatus"
-        FROM public."comments_likes_info"
-      WHERE "commentId" = $1 AND "userId" = $2;`,
-      [commentId, userId],
-    );
+    const result = await this.commentsLikesInfoRepository
+      .createQueryBuilder('li')
+      .select('li.likeStatus')
+      .where('li.commentId = :commentId', { commentId })
+      .andWhere('li.userId = :userId', { userId })
+      .getOne();
 
-    if (!result[0]) return null;
-    return result[0];
+    return result ? AllLikeStatusEnum[result.likeStatus] : null;
   }
 }
