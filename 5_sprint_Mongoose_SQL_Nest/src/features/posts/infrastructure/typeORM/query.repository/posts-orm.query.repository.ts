@@ -155,17 +155,15 @@ export class PostsOrmQueryRepository {
   }
 
   async doesPostExist(postId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    SELECT COUNT(*)
-    FROM public."posts" as p
-        JOIN public."blogs" as b
-        ON b."id" = p."blogId"
-    WHERE p."id" = $1 AND b."isBanned" = false`,
-      [postId],
-    );
+    const result = await this.postsRepository
+      .createQueryBuilder('p')
+      .select()
+      .leftJoin('p.blog', 'b')
+      .where('p.id = :postId', { postId })
+      .andWhere('b.isBanned = false')
+      .getCount();
 
-    return +result[0].count === 1;
+    return result === 1;
   }
 
   async getPostByIdView(

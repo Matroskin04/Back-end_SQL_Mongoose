@@ -9,8 +9,11 @@ import { PostsRepository } from '../../infrastructure/SQL/repository/posts.repos
 import { AllLikeStatusType } from '../../../../infrastructure/utils/enums/like-status';
 import { PostsQueryRepository } from '../../infrastructure/SQL/query.repository/posts.query.repository';
 import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.repository/users.query.repository';
-import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/query.repository/likes-info.query.repository';
-import { LikesInfoRepository } from '../../../likes-info/infrastructure/repository/likes-info.repository';
+import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/SQL/query.repository/likes-info.query.repository';
+import { LikesInfoRepository } from '../../../likes-info/infrastructure/SQL/repository/likes-info.repository';
+import { PostsOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/posts-orm.query.repository';
+import { LikesInfoOrmQueryRepository } from '../../../likes-info/infrastructure/typeORM/query.repository/likes-info-orm.query.repository';
+import { LikesInfoOrmRepository } from '../../../likes-info/infrastructure/typeORM/repository/likes-info-orm.repository';
 
 export class UpdatePostLikeStatusCommand {
   constructor(
@@ -25,20 +28,20 @@ export class UpdatePostLikeStatusUseCase
   implements ICommandHandler<UpdatePostLikeStatusCommand>
 {
   constructor(
-    protected postsQueryRepository: PostsQueryRepository,
-    protected likesInfoQueryRepository: LikesInfoQueryRepository,
-    protected likesInfoRepository: LikesInfoRepository,
+    protected postsOrmQueryRepository: PostsOrmQueryRepository,
+    protected likesInfoOrmQueryRepository: LikesInfoOrmQueryRepository,
+    protected likesInfoOrmRepository: LikesInfoOrmRepository,
   ) {}
 
   async execute(command: UpdatePostLikeStatusCommand): Promise<boolean> {
     const { postId, userId, likeStatus } = command;
 
-    const post = await this.postsQueryRepository.doesPostExist(postId);
+    const post = await this.postsOrmQueryRepository.doesPostExist(postId);
     if (!post) {
       return false;
     }
     //check of existing LikeInfo
-    const likeInfo = await this.likesInfoQueryRepository.getLikesInfoPost(
+    const likeInfo = await this.likesInfoOrmQueryRepository.getLikesInfoPost(
       postId,
       userId,
     );
@@ -46,14 +49,14 @@ export class UpdatePostLikeStatusUseCase
     if (!likeInfo) {
       if (likeStatus === 'None') return true; //Если статусы совпадают, то ничего не делаем
       //Otherwise create like info
-      await this.likesInfoRepository.createLikeInfoOfPost(
+      await this.likesInfoOrmRepository.createLikeInfoOfPost(
         userId,
         postId,
         likeStatus,
       );
     } else {
       //меняем статус лайка
-      const isUpdate = await this.likesInfoRepository.updatePostLikeInfo(
+      const isUpdate = await this.likesInfoOrmRepository.updatePostLikeInfo(
         userId,
         postId,
         likeStatus,

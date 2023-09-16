@@ -3,8 +3,8 @@ import { ForbiddenException } from '@nestjs/common';
 import { CommentsRepository } from '../../infrastructure/repository/comments.repository';
 import { CommentsQueryRepository } from '../../infrastructure/query.repository/comments.query.repository';
 import { AllLikeStatusType } from '../../../../infrastructure/utils/enums/like-status';
-import { LikesInfoRepository } from '../../../likes-info/infrastructure/repository/likes-info.repository';
-import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/query.repository/likes-info.query.repository';
+import { LikesInfoRepository } from '../../../likes-info/infrastructure/SQL/repository/likes-info.repository';
+import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/SQL/query.repository/likes-info.query.repository';
 
 export class UpdateCommentLikeStatusCommand {
   constructor(

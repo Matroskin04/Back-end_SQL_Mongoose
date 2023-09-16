@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Users } from '../../users/domain/users.entity';
 import { Posts } from './posts.entity';
+import { AllLikeStatusEnum } from '../../../infrastructure/utils/enums/like-status';
 
 @Entity()
 @Unique(['userId', 'postId'])
@@ -19,7 +20,7 @@ export class PostsLikesInfo {
   id: string;
 
   @Column('smallint')
-  likeStatus;
+  likeStatus: AllLikeStatusEnum;
 
   @CreateDateColumn()
   addedAt: Date;

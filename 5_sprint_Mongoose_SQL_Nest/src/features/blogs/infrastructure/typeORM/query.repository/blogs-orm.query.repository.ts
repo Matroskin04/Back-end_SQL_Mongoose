@@ -9,7 +9,6 @@ import { variablesForReturn } from '../../../../../infrastructure/utils/function
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { AllBlogsSAViewType } from './blogs-sa.types.query.repository';
-import { modifyBlogIntoSaOutputModel } from '../../../helpers/modify-blog-into-sa-output-model';
 import { Blogs } from '../../../domain/blogs.entity';
 
 @Injectable()

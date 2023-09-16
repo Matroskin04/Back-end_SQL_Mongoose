@@ -17,8 +17,8 @@ import { JwtRefreshStrategy } from './infrastructure/strategy/jwt-refresh.strate
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAccessStrategy } from './infrastructure/strategy/jwt-access.strategy';
 import { BasicStrategy } from './infrastructure/strategy/basic.strategy';
-import { LikesInfoQueryRepository } from './features/likes-info/infrastructure/query.repository/likes-info.query.repository';
-import { LikesInfoRepository } from './features/likes-info/infrastructure/repository/likes-info.repository';
+import { LikesInfoQueryRepository } from './features/likes-info/infrastructure/SQL/query.repository/likes-info.query.repository';
+import { LikesInfoRepository } from './features/likes-info/infrastructure/SQL/repository/likes-info.repository';
 import { CommentsRepository } from './features/comments/infrastructure/repository/comments.repository';
 import { IsBlogByIdExistsConstraint } from './infrastructure/decorators/posts/blog-id-exists.decorator';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -96,6 +96,8 @@ import { PostsOrmQueryRepository } from './features/posts/infrastructure/typeORM
 import { BlogsOrmRepository } from './features/blogs/infrastructure/typeORM/repository/blogs-orm.repository';
 import { PostsOrmRepository } from './features/posts/infrastructure/typeORM/repository/posts-orm.repository';
 import { BlogsSAController } from './features/blogs/api/sa/blogs-sa.controller';
+import { LikesInfoOrmRepository } from './features/likes-info/infrastructure/typeORM/repository/likes-info-orm.repository';
+import { LikesInfoOrmQueryRepository } from './features/likes-info/infrastructure/typeORM/query.repository/likes-info-orm.query.repository';
 
 const queryRepositories = [
   // SQL
@@ -110,7 +112,7 @@ const queryRepositories = [
   BlogsOrmQueryRepository,
   PostsOrmQueryRepository,
   UsersOrmQueryRepository,
-  DevicesOrmRepository,
+  LikesInfoOrmQueryRepository,
 ];
 const repositories = [
   //SQL
@@ -133,6 +135,8 @@ const repositories = [
   EmailConfirmationOrmRepository,
   PasswordRecoveryOrmRepository,
   BanInfoOrmRepository,
+  DevicesOrmRepository,
+  LikesInfoOrmRepository,
 ];
 const handlers = [
   //auth

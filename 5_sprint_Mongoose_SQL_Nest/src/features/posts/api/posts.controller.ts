@@ -113,7 +113,7 @@ export class PostsController {
   ): Promise<string | void> {
     const result = await this.commandBus.execute(
       new UpdatePostLikeStatusCommand(
-        postId.toString(),
+        postId,
         userId,
         inputLikeStatusModel.likeStatus,
       ),
