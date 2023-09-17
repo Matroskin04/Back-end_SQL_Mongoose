@@ -1,6 +1,6 @@
 import { ResponseTypeService } from './types/create-responses-service.types.service';
 
-export const createResponseService = (
+export const createResponseByCodeAndMessage = (
   statusCode: number,
   message: any,
 ): ResponseTypeService => {

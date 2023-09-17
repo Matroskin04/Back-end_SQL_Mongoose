@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { DeviceViewType } from '../../SQL/query.repository/devices.types.query.repository';
+import {
+  DeviceDBType,
+  DeviceViewType,
+} from '../../SQL/query.repository/devices.types.query.repository';
 import { Users } from '../../../../users/domain/users.entity';
 import { Devices } from '../../../domain/devices.entity';
 
@@ -14,17 +17,21 @@ export class DevicesOrmQueryRepository {
   ) {}
 
   //SQL
-  async getDeviceById(deviceId: string): Promise<any | null> {
-    //todo type
-    const result = await this.dataSource.query(
-      `
-    SELECT "id", "ip", "title", "lastActiveDate", "userId", "expirationDate"
-        FROM public."devices"
-        WHERE "id" = $1`,
-      [deviceId],
-    );
-    if (result.length === 0) return null;
-    return result[0];
+  async getDeviceById(deviceId: string): Promise<DeviceDBType | null> {
+    const result = await this.devicesRepository
+      .createQueryBuilder('d')
+      .select([
+        'd.id',
+        'd.ip',
+        'd.title',
+        'd.lastActiveDate',
+        'd.userId',
+        'd.expirationDate',
+      ])
+      .where('d.id = :deviceId', { deviceId })
+      .getOne();
+
+    return result;
   }
 
   async getAllDevicesByUserId(userId: string): Promise<DeviceViewType[] | []> {

@@ -59,14 +59,13 @@ export class DevicesOrmRepository {
   }
 
   async deleteDevicesExcludeCurrent(deviceId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    DELETE FROM public."devices" 
-        WHERE "id" != $1`,
-      [deviceId],
-    );
-    console.log(result);
-    return result[1] > 0;
+    const result = await this.devicesRepository
+      .createQueryBuilder()
+      .delete()
+      .where('id != :deviceId', { deviceId })
+      .execute();
+
+    return result.affected ? result.affected > 0 : false;
   }
 
   async deleteAllDevicesByUserId(userId: string): Promise<boolean> {
