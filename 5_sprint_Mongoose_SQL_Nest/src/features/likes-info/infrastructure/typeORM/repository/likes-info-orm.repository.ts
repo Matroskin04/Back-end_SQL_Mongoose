@@ -46,8 +46,8 @@ export class LikesInfoOrmRepository {
       .createQueryBuilder()
       .update()
       .set({ likeStatus: AllLikeStatusEnum[likeStatus] })
-      .where('li.postId = :postId', { postId })
-      .andWhere('li.userId = :userId', { userId })
+      .where('postId = :postId', { postId })
+      .andWhere('userId = :userId', { userId })
       .execute();
 
     return result.affected === 1;

@@ -262,7 +262,9 @@ export class PostsOrmQueryRepository {
           .andWhere('li."likeStatus" = :like', {
             like: AllLikeStatusEnum.Like,
           })
-          .andWhere('bi."isBanned" = false');
+          .andWhere('bi."isBanned" = false')
+          .orderBy('li."addedAt"', 'DESC')
+          .limit(3);
       }, 'threeLikes');
   }
 }

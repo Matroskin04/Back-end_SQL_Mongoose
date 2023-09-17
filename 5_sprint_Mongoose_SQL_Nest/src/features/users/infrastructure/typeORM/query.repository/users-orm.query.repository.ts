@@ -56,7 +56,6 @@ export class UsersOrmQueryRepository {
       banStatus,
     } = variablesForReturn(query);
 
-    //todo order by - insert like variable?
     const result = await this.usersRepository
       .createQueryBuilder('u')
       .select([
@@ -75,44 +74,19 @@ export class UsersOrmQueryRepository {
           .leftJoin('u.userBanInfo', 'bi')
           .where('u."isDeleted" = false')
           .andWhere(
-            new Brackets((qb) => {
-              qb.where('u."login" ILIKE :login OR u."email" ILIKE :email', {
-                login: `%${searchLoginTerm}%`,
-                email: `%${searchEmailTerm}%`,
-              });
-            }),
+            this.loginAndEmailConditionsBuilder(
+              searchLoginTerm,
+              searchEmailTerm,
+            ),
           )
-          .andWhere(
-            new Brackets((qb) => {
-              qb.where(
-                'bi."isBanned" = :banStatus OR :banStatus::boolean IS NULL',
-                {
-                  banStatus,
-                },
-              );
-            }),
-          );
+          .andWhere(this.BanConditionBuilder(banStatus));
       })
       .leftJoin('u.userBanInfo', 'bi')
       .where('u."isDeleted" = false')
       .andWhere(
-        new Brackets((qb) => {
-          qb.where('u."login" ILIKE :login OR u."email" ILIKE :email', {
-            login: `%${searchLoginTerm}%`,
-            email: `%${searchEmailTerm}%`,
-          });
-        }),
+        this.loginAndEmailConditionsBuilder(searchLoginTerm, searchEmailTerm),
       )
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where(
-            'bi."isBanned" = :banStatus OR :banStatus::boolean IS NULL',
-            {
-              banStatus,
-            },
-          );
-        }),
-      )
+      .andWhere(this.BanConditionBuilder(banStatus))
       .orderBy(`u.${sortBy}`, sortDirection)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize)
@@ -231,7 +205,7 @@ export class UsersOrmQueryRepository {
       .leftJoin('u.userBanInfo', 'bi')
       .where('u.id = :userId AND u."isDeleted" = false', { userId })
       .getRawOne();
-    console.log(userInfo);
+
     return userInfo ?? null;
   }
 
@@ -286,5 +260,22 @@ export class UsersOrmQueryRepository {
       .getOne();
 
     return result?.userId || null;
+  }
+
+  private loginAndEmailConditionsBuilder(searchLoginTerm, searchEmailTerm) {
+    return new Brackets((qb) => {
+      qb.where('u."login" ILIKE :login OR u."email" ILIKE :email', {
+        login: `%${searchLoginTerm}%`,
+        email: `%${searchEmailTerm}%`,
+      });
+    });
+  }
+
+  private BanConditionBuilder(banStatus) {
+    return new Brackets((qb) => {
+      qb.where('bi."isBanned" = :banStatus OR :banStatus::boolean IS NULL', {
+        banStatus,
+      });
+    });
   }
 }
