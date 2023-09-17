@@ -101,6 +101,7 @@ import { LikesInfoOrmQueryRepository } from './features/likes-info/infrastructur
 import { CommentsOrmRepository } from './features/comments/infrastructure/typeORM/repository/comments-orm.repository';
 import { CommentsOrmQueryRepository } from './features/comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
 import { CommentsLikesOrmRepository } from './features/comments/infrastructure/typeORM/subrepository/comments-likes-orm.repository';
+import { DevicesOrmQueryRepository } from './features/devices/infrastructure/typeORM/query.repository/devices-orm.query.repository';
 
 const queryRepositories = [
   // SQL
@@ -115,6 +116,7 @@ const queryRepositories = [
   BlogsOrmQueryRepository,
   PostsOrmQueryRepository,
   CommentsOrmQueryRepository,
+  DevicesOrmQueryRepository,
   UsersOrmQueryRepository,
   LikesInfoOrmQueryRepository,
 ];

@@ -107,7 +107,7 @@ export class UsersOrmQueryRepository {
   ): Promise<BannedUsersOfBlogPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchLoginTerm } =
       variablesForReturn(query);
-    //todo validate input data, bi2 - нужна 2?
+
     const result = await this.dataSource.query(
       `
     SELECT u."id", u."login", bi."isBanned", bi."banReason", bi."banDate",

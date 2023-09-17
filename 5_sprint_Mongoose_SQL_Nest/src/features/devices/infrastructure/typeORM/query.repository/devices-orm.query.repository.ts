@@ -28,13 +28,17 @@ export class DevicesOrmQueryRepository {
   }
 
   async getAllDevicesByUserId(userId: string): Promise<DeviceViewType[] | []> {
-    const result = await this.dataSource.query(
-      `
-    SELECT "id" as "deviceId", "ip", "title", "lastActiveDate"
-        FROM public."devices"
-        WHERE "userId" = $1`,
-      [userId],
-    );
+    const result = await this.devicesRepository
+      .createQueryBuilder('d')
+      .select([
+        'd.id AS "deviceId"',
+        'd.ip AS ip',
+        'd.title AS title',
+        'd.lastActiveDate AS lastActiveDate',
+      ])
+      .where('d.userId = :userId', { userId })
+      .getRawMany();
+
     if (result.length === 0) return [];
     return result;
   }
