@@ -422,63 +422,38 @@ describe('Blogs, Post (SA); /sa', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
-      user = await createCorrectUserTest(httpServer);
-      const result = await loginCorrectUserTest(httpServer);
-      accessToken = result.accessToken;
-
       const blog = await createCorrectBlogTest(httpServer, accessToken);
       correctBlogId = blog.id;
     });
 
-    it(`- (401) jwt access token is incorrect`, async () => {
-      //jwt is incorrect
-      const result = await getAllPostsTest(
+    it(`- (401) sa login is incorrect
+              - (401) sa password is incorrect`, async () => {
+      //sa login is incorrect
+      const result1 = await getAllPostsTest(
         httpServer,
         correctBlogId,
-        'IncorrectJWT',
+        'incorrectLogin',
       );
-      expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
-    });
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
 
-    it(`- (404) should not return posts because blog is not found`, async () => {
-      const result = await getAllPostsTest(httpServer, uuidv4(), accessToken);
-      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
-    });
-
-    it(`- (403) shouldn't return posts if the blog doesn't belong to current user`, async () => {
-      //creates new user
-      const newUser = await createUserTest(
-        httpServer,
-        'user2',
-        correctPass,
-        'email2@gmail.com',
-      );
-      expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-
-      const result1 = await loginUserTest(
-        httpServer,
-        newUser.body.login,
-        correctPass,
-      );
-      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      const accessToken2 = result1.body.accessToken;
-
-      //403 (update blog that doesn't belong this user
+      //sa password is incorrect
       const result2 = await getAllPostsTest(
         httpServer,
         correctBlogId,
-        accessToken2,
+        null,
+        'IncorrectPass',
       );
-      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+    });
+
+    it(`- (404) should not return posts because blog is not found`, async () => {
+      const result = await getAllPostsTest(httpServer, uuidv4());
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
     //todo query + banned
     it(`+ (200) should return empty array of posts`, async () => {
-      const result = await getAllPostsTest(
-        httpServer,
-        correctBlogId,
-        accessToken,
-      );
+      const result = await getAllPostsTest(httpServer, correctBlogId);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(createResponseAllBlogsSaTest([]));
     });
