@@ -7,12 +7,13 @@ import {
 import { UsersQueryRepository } from '../../../features/users/infrastructure/SQL/query.repository/users.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { UsersOrmQueryRepository } from '../../../features/users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 
 @Injectable() //todo validator Constraints
 export class ValidateConfirmationCodeGuard implements CanActivate {
   constructor(
     @InjectDataSource() protected dataSource: DataSource,
-    protected usersQueryRepository: UsersQueryRepository,
+    protected usersOrmQueryRepository: UsersOrmQueryRepository,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -26,25 +27,23 @@ export class ValidateConfirmationCodeGuard implements CanActivate {
         { message: 'Code is incorrect', field: 'code' },
       ]); //Code is incorrect form
 
-    const emailConfirmationInfo = await this.dataSource.query(
-      `
-    SELECT "userId", "isConfirmed", "expirationDate" FROM public."users_email_confirmation"
-        WHERE "confirmationCode" = $1`,
-      [request.body.code],
-    );
+    const emailConfirmationInfo =
+      await this.usersOrmQueryRepository.getEmailConfirmationInfoByCode(
+        request.body.code,
+      );
 
-    if (!emailConfirmationInfo[0]) {
+    if (!emailConfirmationInfo) {
       throw new BadRequestException([
         { message: 'Code is incorrect', field: 'code' },
       ]); //Code is incorrect
     }
 
-    if (+new Date(emailConfirmationInfo[0].expirationDate) < +new Date()) {
+    if (+new Date(emailConfirmationInfo.expirationDate) < +new Date()) {
       throw new BadRequestException([
         { message: 'Code is already expired', field: 'code' },
       ]); //Code is already expired
     }
-    if (emailConfirmationInfo[0].isConfirmed) {
+    if (emailConfirmationInfo.isConfirmed) {
       throw new BadRequestException([
         { message: 'Code is already been applied', field: 'code' },
       ]); //Code is already been applied

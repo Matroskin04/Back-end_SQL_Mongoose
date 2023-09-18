@@ -4,6 +4,7 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DataSource, Repository } from 'typeorm';
 import {
   BannedUsersOfBlogPaginationType,
+  EmailConfirmationInfoType,
   UserBanInfoType,
   UserByRecoveryCodeType,
   UserIdAndConfirmationType,
@@ -152,15 +153,13 @@ export class UsersOrmQueryRepository {
   }
 
   async doesUserExistByLoginEmail(loginOrEmail: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    SELECT COUNT(*)
-        FROM public."users"
-        WHERE "login" = $1 OR "email" = $1
-    `,
-      [loginOrEmail],
-    );
-    return +result[0].count === 1;
+    const result = await this.usersRepository
+      .createQueryBuilder('u')
+      .where('u.login = :loginOrEmail', { loginOrEmail })
+      .andWhere('u.email = :loginOrEmail', { loginOrEmail })
+      .getExists();
+
+    return result;
   }
 
   async getUserByRecoveryCode(
@@ -286,9 +285,21 @@ export class UsersOrmQueryRepository {
   ): Promise<UserIdAndConfirmationType | null> {
     const result = await this.usersEmailConfirmation
       .createQueryBuilder('ec')
-      .select(['ec.isConfirmed', 'ex.userId'])
+      .select(['ec.isConfirmed', 'ec.userId'])
       .leftJoin('user', 'u')
       .where('u.email = :email', { email })
+      .getOne();
+
+    return result;
+  }
+
+  async getEmailConfirmationInfoByCode(
+    code: string,
+  ): Promise<EmailConfirmationInfoType | null> {
+    const result = await this.usersEmailConfirmation
+      .createQueryBuilder('ec')
+      .select(['ec.isConfirmed', 'ec.userId', 'ec.expirationDate'])
+      .where('ec.confirmationCode = :code', { code })
       .getOne();
 
     return result;

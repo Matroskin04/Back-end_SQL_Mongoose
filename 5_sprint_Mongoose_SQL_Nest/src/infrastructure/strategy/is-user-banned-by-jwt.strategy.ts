@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsersQueryRepository } from '../../features/users/infrastructure/SQL/query.repository/users.query.repository';
+import { UsersOrmQueryRepository } from '../../features/users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 
 // todo duplicate logic from jwt strategy
 @Injectable()
@@ -13,7 +14,7 @@ export class IsUserBannedByJWTStrategy extends PassportStrategy(
   Strategy,
   'is-user-banned-by-jwt',
 ) {
-  constructor(protected usersQueryRepository: UsersQueryRepository) {
+  constructor(protected usersOrmQueryRepository: UsersOrmQueryRepository) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -22,7 +23,7 @@ export class IsUserBannedByJWTStrategy extends PassportStrategy(
   }
 
   async validate(payload: any) {
-    const userInfo = await this.usersQueryRepository.getUserWithBanInfoById(
+    const userInfo = await this.usersOrmQueryRepository.getUserWithBanInfoById(
       payload.userId,
     );
     if (!userInfo) throw new UnauthorizedException();

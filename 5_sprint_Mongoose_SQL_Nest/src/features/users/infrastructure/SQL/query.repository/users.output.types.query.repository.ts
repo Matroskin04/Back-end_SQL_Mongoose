@@ -75,3 +75,9 @@ export type UserIdAndConfirmationType = {
   isConfirmed: boolean;
   userId: string;
 };
+
+export type EmailConfirmationInfoType = {
+  isConfirmed: boolean;
+  userId: string;
+  expirationDate: Date;
+};

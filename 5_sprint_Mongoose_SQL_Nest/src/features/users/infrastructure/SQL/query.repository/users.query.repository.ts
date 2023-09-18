@@ -8,6 +8,7 @@ import {
 } from '../helpers/modify-user-into-view-model.helper';
 import {
   BannedUsersOfBlogPaginationType,
+  EmailConfirmationInfoType,
   UserBanInfoType,
   UserByRecoveryCodeType,
   UserIdAndConfirmationType,
@@ -245,6 +246,18 @@ export class UsersQueryRepository {
       JOIN public."users_email_confirmation" ec ON u."id" = ec."userId"
       WHERE u.email = $1`,
       [email],
+    );
+    return result[0] ?? null;
+  }
+
+  async getEmailConfirmationInfoByCode(
+    code: string,
+  ): Promise<EmailConfirmationInfoType | null> {
+    const result = await this.dataSource.query(
+      `
+    SELECT "userId", "isConfirmed", "expirationDate" FROM public."users_email_confirmation"
+        WHERE "confirmationCode" = $1`,
+      [code],
     );
     return result[0] ?? null;
   }
