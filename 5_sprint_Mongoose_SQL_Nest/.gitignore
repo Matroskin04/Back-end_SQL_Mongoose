@@ -3,7 +3,8 @@
 /node_modules
 
 # Directories
-db
+/src/db/
+/src/test/coverage/
 
 # Another files
 .env
