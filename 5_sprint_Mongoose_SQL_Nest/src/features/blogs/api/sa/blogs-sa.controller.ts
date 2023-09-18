@@ -15,7 +15,6 @@ import { AllBlogsSAOutputModel } from '../models/output/blog-sa.output.model';
 import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
 import { BasicAuthGuard } from '../../../../infrastructure/guards/authorization-guards/basic-auth.guard';
 import { BanInfoInputModel } from '../models/input/ban-info.input.model';
-import { BlogsQueryRepository } from '../../infrastructure/SQL/query.repository/blogs.query.repository';
 import {
   QueryBlogsInputModel,
   QueryPostsOfBlogInputModel,
@@ -24,14 +23,10 @@ import { CommandBus } from '@nestjs/cqrs';
 import { BindBlogWithUserCommand } from '../../application/sa/use-cases/bind-blog-with-user.use-case';
 import { UpdateBanInfoOfBlogCommand } from '../../application/sa/use-cases/update-ban-info-of-blog.use-case';
 import { BlogsOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
-import { JwtAccessGuard } from '../../../../infrastructure/guards/authorization-guards/jwt-access.guard';
-import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/blog-owner-by-id.guard';
-import { CurrentUserId } from '../../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import {
   BlogOutputModel,
   PostsOfBlogViewModel,
 } from '../models/output/blog.output.models';
-import { PostsQueryRepository } from '../../../posts/infrastructure/SQL/query.repository/posts.query.repository';
 import { PostsOrmQueryRepository } from '../../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
 import { CreateBlogInputModel } from '../models/input/create-blog.input.model';
 import { CreateBlogCommand } from '../../application/blogger/use-cases/create-blog.use-case';

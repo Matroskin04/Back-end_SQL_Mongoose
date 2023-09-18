@@ -210,7 +210,7 @@ const handlers = [
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
       // url: process.env.POSTGRES_URL + '?sslmode=require',
     }),
     JwtModule.register({}),

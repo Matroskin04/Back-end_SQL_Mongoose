@@ -1,4 +1,4 @@
-import { createUserTest } from '../super-admin/users-sa.helpers';
+import { createUserTest } from '../super-admin/users/users-sa.helpers';
 import { HTTP_STATUS_CODE } from '../../infrastructure/utils/enums/http-status';
 import { loginUserTest } from '../public/auth/auth-public.helpers';
 import { createBlogTest } from '../blogger/blogs/blogs-blogger.helpers';

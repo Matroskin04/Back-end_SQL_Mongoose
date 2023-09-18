@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
-import { startApp } from '../test.utils';
-import { deleteAllDataTest } from '../helpers/delete-all-data.helper';
-import { HTTP_STATUS_CODE } from '../../infrastructure/utils/enums/http-status';
-import { createErrorsMessageTest } from '../helpers/errors-message.helper';
+import { startApp } from '../../test.utils';
+import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import {
   create9UsersSaTest,
   createResponseSingleUserTest,
@@ -12,12 +12,6 @@ import {
   getUsersSaTest,
 } from './users-sa.helpers';
 import { v4 as uuidv4 } from 'uuid';
-import { getBlogByIdPublicTest } from '../public/blogs/blogs-public.helpers';
-import {
-  createResponseAllBlogsTest,
-  deleteBlogBloggerTest,
-} from '../blogger/blogs/blogs-blogger.helpers';
-import { getCurrentUserInfoTest } from '../public/auth/auth-public.helpers';
 
 describe('Users (SA); /sa', () => {
   jest.setTimeout(5 * 60 * 1000);

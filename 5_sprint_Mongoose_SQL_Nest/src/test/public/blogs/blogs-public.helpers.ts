@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { createBlogTest } from '../../blogger/blogs/blogs-blogger.helpers';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
-import { createUserTest } from '../../super-admin/users-sa.helpers';
+import { createUserTest } from '../../super-admin/users/users-sa.helpers';
 import { loginUserTest } from '../auth/auth-public.helpers';
 import { AccessTokensAndUsersIdType } from '../types/blogs.types';
 

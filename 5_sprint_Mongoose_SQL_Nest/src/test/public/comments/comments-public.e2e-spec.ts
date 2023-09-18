@@ -15,7 +15,7 @@ import {
   getCommentTest,
   updateCommentTest,
 } from './comments-public.helpers';
-import { createUserTest } from '../../super-admin/users-sa.helpers';
+import { createUserTest } from '../../super-admin/users/users-sa.helpers';
 import { loginUserTest } from '../auth/auth-public.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { startApp } from '../../test.utils';
