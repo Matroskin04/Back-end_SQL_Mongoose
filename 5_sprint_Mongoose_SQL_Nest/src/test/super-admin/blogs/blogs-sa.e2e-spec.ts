@@ -330,32 +330,40 @@ describe('Blogs, Post (SA); /sa', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
-      user = await createCorrectUserTest(httpServer);
-      const result = await loginCorrectUserTest(httpServer);
-      accessToken = result.accessToken;
-
       const blog = await createCorrectBlogTest(httpServer, accessToken);
       correctBlogId = blog.id;
     });
 
-    it(`- (401) jwt access token is incorrect`, async () => {
-      //jwt is incorrect
-      const result = await createPostTest(
+    it(`- (401) sa login is incorrect
+              - (401) sa password is incorrect`, async () => {
+      //sa login is incorrect
+      const result1 = await createPostTest(
         httpServer,
         correctBlogId,
-        'IncorrectJWT',
         correctTitle,
         correctShortDescription,
         correctPostContent,
+        'incorrectLogin',
       );
-      expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+
+      //sa password is incorrect
+      const result2 = await createPostTest(
+        httpServer,
+        correctBlogId,
+        correctTitle,
+        correctShortDescription,
+        correctPostContent,
+        null,
+        'IncorrectPass',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
     it(`- (404) should not create post because blog doesn't exist with such id`, async () => {
       const result = await createPostTest(
         httpServer,
         uuidv4(),
-        accessToken,
         correctTitle,
         correctShortDescription,
         correctPostContent,
@@ -368,7 +376,6 @@ describe('Blogs, Post (SA); /sa', () => {
       const result1 = await createPostTest(
         httpServer,
         correctBlogId,
-        accessToken,
         titleLength31,
         postShortDescriptionLength101,
         postContentLength1001,
@@ -381,7 +388,6 @@ describe('Blogs, Post (SA); /sa', () => {
       const result2 = await createPostTest(
         httpServer,
         correctBlogId,
-        accessToken,
         null,
         null,
         null,
@@ -392,41 +398,10 @@ describe('Blogs, Post (SA); /sa', () => {
       );
     });
 
-    it(`- (403) shouldn't create post if the blog doesn't belong to current user`, async () => {
-      //creates new user
-      const newUser = await createUserTest(
-        httpServer,
-        'user2',
-        correctPass,
-        'email2@gmail.com',
-      );
-      expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-
-      const result1 = await loginUserTest(
-        httpServer,
-        newUser.body.login,
-        correctPass,
-      );
-      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      const accessToken2 = result1.body.accessToken;
-
-      //403 (update blog that doesn't belong this user
-      const result2 = await createPostTest(
-        httpServer,
-        correctBlogId,
-        accessToken2,
-        correctTitle,
-        correctShortDescription,
-        correctPostContent,
-      );
-      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
-    });
-
     it(`+ (201) should create post`, async () => {
       const result = await createPostTest(
         httpServer,
         correctBlogId,
-        accessToken,
         correctTitle,
         correctShortDescription,
         correctPostContent,
