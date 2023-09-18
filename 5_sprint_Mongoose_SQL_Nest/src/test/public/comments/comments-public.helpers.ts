@@ -47,6 +47,18 @@ export async function updateCommentTest(
     .send({ content });
 }
 
+export async function UpdateStatusLikeOfCommentTest(
+  httpServer,
+  commentId,
+  likeStatus,
+  accessToken,
+) {
+  return request(httpServer)
+    .put(`/hometask-nest/comments/${commentId}/like-status`)
+    .set('Authorization', `Bearer ${accessToken}`)
+    .send({ likeStatus });
+}
+
 export async function deleteCommentTest(httpServer, commentId, accessToken) {
   return request(httpServer)
     .delete(`/hometask-nest/comments/${commentId}`)
