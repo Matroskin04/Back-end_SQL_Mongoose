@@ -181,17 +181,6 @@ describe('Blogs, Post (SA); /sa', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(createResponseAllBlogsSaTest([]));
     });
-
-    // it(`(Addition) + (201) should create 10 blogs
-    //           + (200) should return empty array all (not banned) blogs`, async () => {
-    //   const result1 = creat;
-    //   const result = await getAllBlogsBloggerTest(
-    //     httpServer,
-    //     'IncorrectJWT',
-    //     '',
-    //   );
-    //   expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-    // });
   });
 
   describe(`/blogs/:id (PUT) - update blog by id`, () => {
@@ -206,17 +195,30 @@ describe('Blogs, Post (SA); /sa', () => {
       correctBlogId = blog.id;
     });
 
-    it(`- (401) jwt access token is incorrect`, async () => {
-      //jwt is incorrect
-      const result = await updateBlogSaTest(
+    it(`- (401) sa login is incorrect
+              - (401) sa password is incorrect`, async () => {
+      //sa login is incorrect
+      const result1 = await updateBlogSaTest(
         httpServer,
         correctBlogId,
-        'IncorrectJWT',
         correctBlogName,
         correctDescription,
         correctWebsiteUrl,
+        'incorrectLogin',
       );
-      expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+
+      //sa password is incorrect
+      const result2 = await updateBlogSaTest(
+        httpServer,
+        correctBlogId,
+        correctBlogName,
+        correctDescription,
+        correctWebsiteUrl,
+        null,
+        'IncorrectPass',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
     it(`- (400) values of 'name', 'website' and 'description' are incorrect (large length)
@@ -224,7 +226,6 @@ describe('Blogs, Post (SA); /sa', () => {
       const result1 = await updateBlogSaTest(
         httpServer,
         correctBlogId,
-        accessToken,
         nameLength16,
         blogDescriptionLength501,
         blogWebSiteLength101,
@@ -237,7 +238,6 @@ describe('Blogs, Post (SA); /sa', () => {
       const result2 = await updateBlogSaTest(
         httpServer,
         correctBlogId,
-        accessToken,
         null,
         null,
         'IncorrectURL',
@@ -248,41 +248,10 @@ describe('Blogs, Post (SA); /sa', () => {
       );
     });
 
-    it(`- (403) shouldn't update blog if the blog doesn't belong to current user`, async () => {
-      //creates new user
-      const newUser = await createUserTest(
-        httpServer,
-        'user2',
-        correctPass,
-        'email2@gmail.com',
-      );
-      expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-
-      const result1 = await loginUserTest(
-        httpServer,
-        newUser.body.login,
-        correctPass,
-      );
-      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      const accessToken2 = result1.body.accessToken;
-
-      //403 (update blog that doesn't belong this user
-      const result2 = await updateBlogSaTest(
-        httpServer,
-        correctBlogId,
-        accessToken2,
-        nameLength16,
-        blogDescriptionLength501,
-        blogWebSiteLength101,
-      );
-      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
-    });
-
     it(`- (404) should not update blog because blog is not found with such id`, async () => {
       const result = await updateBlogSaTest(
         httpServer,
         uuidv4(),
-        accessToken,
         correctBlogName,
         correctDescription,
         correctWebsiteUrl,
@@ -294,7 +263,6 @@ describe('Blogs, Post (SA); /sa', () => {
       const result = await updateBlogSaTest(
         httpServer,
         correctBlogId,
-        accessToken,
         correctBlogName,
         correctDescription,
         correctWebsiteUrl,
