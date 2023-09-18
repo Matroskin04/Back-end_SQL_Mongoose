@@ -16,7 +16,7 @@ export async function getPostsPublicTest(httpServer, query?, accessToken?) {
     .query(query ?? '');
 }
 
-export async function UpdateStatusLikeOfPostTest(
+export async function updateStatusLikeOfPostTest(
   httpServer,
   postId,
   likeStatus,

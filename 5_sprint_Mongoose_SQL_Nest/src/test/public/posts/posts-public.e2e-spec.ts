@@ -13,7 +13,7 @@ import {
   createResponseSinglePost,
   getPostByIdPublicTest,
   getPostsPublicTest,
-  UpdateStatusLikeOfPostTest,
+  updateStatusLikeOfPostTest,
 } from './posts-public.helpers';
 import { createAndLogin3UsersTest } from '../blogs/blogs-public.helpers';
 import { createResponseAllPostsTest } from '../blogs/posts-blogs-puclic.helpers';
@@ -577,7 +577,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await UpdateStatusLikeOfPostTest(
+      const result = await updateStatusLikeOfPostTest(
         httpServer,
         post.id,
         'Like',
@@ -587,7 +587,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
     });
 
     it(`- (404) post with such id is not found`, async () => {
-      const result = await UpdateStatusLikeOfPostTest(
+      const result = await updateStatusLikeOfPostTest(
         httpServer,
         uuidv4(),
         'Like',
@@ -597,7 +597,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
     });
 
     it(`- (400) value of likeStatus should be one of 'None'/'Like'/'Dislike'`, async () => {
-      const result = await UpdateStatusLikeOfPostTest(
+      const result = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Incorrect',
@@ -613,7 +613,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
               + (204) should Dislike post by user1
               + (204) should None post by user1`, async () => {
       //Like and check
-      const result1 = await UpdateStatusLikeOfPostTest(
+      const result1 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Like',
@@ -641,7 +641,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //None and check
-      const result2 = await UpdateStatusLikeOfPostTest(
+      const result2 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'None',
@@ -668,7 +668,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //Dislike and check
-      const result3 = await UpdateStatusLikeOfPostTest(
+      const result3 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Dislike',
@@ -696,7 +696,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //None and check
-      const result4 = await UpdateStatusLikeOfPostTest(
+      const result4 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'None',
@@ -728,14 +728,14 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
               + (204) should Dislike 2 times post by user1 (number of Dislikes should increase by 1)
               + (204) should Like post by user1`, async () => {
       //Like and check
-      const result1 = await UpdateStatusLikeOfPostTest(
+      const result1 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Like',
         accessToken1,
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
-      const result12 = await UpdateStatusLikeOfPostTest(
+      const result12 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Like',
@@ -763,14 +763,14 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //Dislike and check
-      const result2 = await UpdateStatusLikeOfPostTest(
+      const result2 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Dislike',
         accessToken1,
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
-      const result22 = await UpdateStatusLikeOfPostTest(
+      const result22 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Dislike',
@@ -798,7 +798,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //Like and check
-      const result3 = await UpdateStatusLikeOfPostTest(
+      const result3 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Like',
@@ -834,7 +834,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
               + (204) should Dislike post by user4 (number of dislikes = 1)
               + (204) should Dislike post by user3 (number of likes = 2, dislikes = 2)`, async () => {
       //Like by user1 and check
-      const result1 = await UpdateStatusLikeOfPostTest(
+      const result1 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Like',
@@ -857,7 +857,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
 
       //Like by user2 and check
-      const result2 = await UpdateStatusLikeOfPostTest(
+      const result2 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Like',
@@ -870,7 +870,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       expect(checkPost2.body.extendedLikesInfo.myStatus).toBe('None');
 
       //Like by user3 and check
-      const result3 = await UpdateStatusLikeOfPostTest(
+      const result3 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Like',
@@ -887,7 +887,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       expect(checkPost3.body.extendedLikesInfo.myStatus).toBe('Like');
 
       //Dislike by user4 and check
-      const result4 = await UpdateStatusLikeOfPostTest(
+      const result4 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Dislike',
@@ -905,7 +905,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       expect(checkPost4.body.extendedLikesInfo.myStatus).toBe('Dislike');
 
       //Dislike by user3 and check
-      const result5 = await UpdateStatusLikeOfPostTest(
+      const result5 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Dislike',
@@ -932,7 +932,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
               + (204) should None and then Like post by user1
               + (200) should return 3 newestLikes (user2,3,4 (newestLikes1 should be equal newestLikes2)`, async () => {
       //Like by user3
-      const result1 = await UpdateStatusLikeOfPostTest(
+      const result1 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Like',
@@ -940,7 +940,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
       //Like by user4
-      const result2 = await UpdateStatusLikeOfPostTest(
+      const result2 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Like',
@@ -958,7 +958,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       ]);
 
       //None by user1
-      const result3 = await UpdateStatusLikeOfPostTest(
+      const result3 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'None',
@@ -969,7 +969,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       expect(checkPost2.body.extendedLikesInfo.likesCount).toBe(3);
 
       //Like by user1
-      const result4 = await UpdateStatusLikeOfPostTest(
+      const result4 = await updateStatusLikeOfPostTest(
         httpServer,
         correctPostId,
         'Like',

@@ -29,7 +29,11 @@ export async function getCommentsOfPostTest(
     .query(query ?? '');
 }
 
-export async function getCommentTest(httpServer, commentId, accessToken?) {
+export async function getCommentByIdPublicTest(
+  httpServer,
+  commentId,
+  accessToken?,
+) {
   return request(httpServer)
     .get(`/hometask-nest/comments/${commentId}`)
     .set('Authorization', `Bearer ${accessToken}`);
@@ -47,7 +51,7 @@ export async function updateCommentTest(
     .send({ content });
 }
 
-export async function UpdateStatusLikeOfCommentTest(
+export async function updateStatusLikeOfCommentTest(
   httpServer,
   commentId,
   likeStatus,
