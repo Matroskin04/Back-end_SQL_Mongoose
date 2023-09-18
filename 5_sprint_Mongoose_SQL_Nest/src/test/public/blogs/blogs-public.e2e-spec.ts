@@ -182,7 +182,7 @@ describe('Blogs (Public); /', () => {
         httpServer,
         'searchNameTerm=irs',
       );
-      console.log(blogsIds[8]);
+
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
         createResponseAllBlogsTest([blogsIds[8]], null, 1, 1, 1, 10),

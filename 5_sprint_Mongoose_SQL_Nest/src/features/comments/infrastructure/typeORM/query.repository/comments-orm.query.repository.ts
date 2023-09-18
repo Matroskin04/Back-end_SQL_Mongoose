@@ -158,8 +158,6 @@ export class CommentsOrmQueryRepository {
       ],
     );
 
-    console.log(commentInfo[0]);
-
     return {
       pagesCount: Math.ceil((+commentInfo[0]?.count || 1) / +pageSize),
       page: +pageNumber,

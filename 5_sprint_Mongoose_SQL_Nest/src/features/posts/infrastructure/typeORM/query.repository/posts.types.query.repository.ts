@@ -19,3 +19,13 @@ export type PostViewType = PostTypeWithId & {
     newestLikes: NewestLikesType;
   };
 };
+
+export type PostDBType = {
+  id: string;
+  blogId: string;
+  userId: string;
+  title: string;
+  shortDescription: string;
+  content: string;
+  createdAt: string;
+};

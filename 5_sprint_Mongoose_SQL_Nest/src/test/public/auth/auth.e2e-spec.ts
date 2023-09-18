@@ -596,7 +596,7 @@ describe('Auth (Public); /auth', () => {
         'newPassword123',
         uuidv4(),
       );
-      console.log(result1.body);
+
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(emailAdapterMock.sendEmailPasswordRecovery).not.toBeCalled();
       expect(result1.body).toEqual(createErrorsMessageTest(['recoveryCode']));

@@ -130,7 +130,6 @@ describe('Comments, Put-like comment, (Public); /', () => {
         newCommentContent,
         accessToken1,
       );
-      console.log(result.body);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 

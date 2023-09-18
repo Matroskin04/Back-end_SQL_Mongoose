@@ -10,12 +10,15 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { AllBlogsSAViewType } from './blogs-sa.types.query.repository';
 import { Blogs } from '../../../domain/blogs.entity';
+import { BannedUsersOfBlog } from '../../../domain/banned-users-of-blog.entity';
 
 @Injectable()
 export class BlogsOrmQueryRepository {
   constructor(
     @InjectRepository(Blogs)
     protected blogsRepository: Repository<Blogs>,
+    @InjectRepository(BannedUsersOfBlog)
+    protected bannedUsersOfBlogRepository: Repository<BannedUsersOfBlog>,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
@@ -165,14 +168,14 @@ export class BlogsOrmQueryRepository {
   }
 
   async isUserBannedForBlog(userId: string, blogId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    SELECT "isBanned" 
-        FROM public."banned_users_of_blog"
-            WHERE "userId" = $1 AND "blogId" = $2`,
-      [userId, blogId],
-    );
-    return !!result[0]?.isBanned;
+    const result = await this.bannedUsersOfBlogRepository
+      .createQueryBuilder('bu')
+      .select('bu.isBanned')
+      .where('userId = :userId', { userId })
+      .andWhere('blogId = :blogId', { blogId })
+      .getOne();
+
+    return !!result?.isBanned;
   }
 
   async doesBlogExist(blogId: string): Promise<boolean> {

@@ -1,11 +1,18 @@
 {
   "preset": "ts-jest",
   "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": "public",
+  "rootDir": "../.",
   "testEnvironment": "node",
   "testRegex": ".*\\.e2e-spec.ts$",
   "resetModules": true,
   "transform": {
     "^.+\\.ts$": "ts-jest"
-  }
+  },
+  "collectCoverageFrom": [
+    "**/*.(t|j)s",
+    "!**/test/**",
+    "!**/infrastructure/**",
+    "!**/db/**"
+  ],
+  "coverageDirectory": "./test/coverage"
 }

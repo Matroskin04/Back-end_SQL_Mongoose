@@ -29,11 +29,7 @@ export class LikesInfoOrmRepository {
       userId,
       postId,
       likeStatus: AllLikeStatusEnum[likeStatus],
-    });
-    // .createQueryBuilder()
-    // .insert()
-    // .values({ userId, postId, likeStatus: AllLikeStatusEnum[likeStatus] })
-    // .execute(); //todo difference save from insert query builder
+    }); //todo difference save from insert query builder
     return;
   }
 

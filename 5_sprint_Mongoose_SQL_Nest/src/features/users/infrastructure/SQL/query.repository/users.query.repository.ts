@@ -10,6 +10,7 @@ import {
   BannedUsersOfBlogPaginationType,
   UserBanInfoType,
   UserByRecoveryCodeType,
+  UserIdAndConfirmationType,
   UsersInfoViewType,
   UsersPaginationType,
   UserWithBanInfoType,
@@ -232,5 +233,19 @@ export class UsersQueryRepository {
       [confirmationCode],
     );
     return result[0].userId;
+  }
+
+  async getEmailConfirmationInfoByEmail(
+    email: string,
+  ): Promise<UserIdAndConfirmationType | null> {
+    const result = await this.dataSource.query(
+      `
+    SELECT ec."isConfirmed", ec."userId"
+      FROM public."users" AS u
+      JOIN public."users_email_confirmation" ec ON u."id" = ec."userId"
+      WHERE u.email = $1`,
+      [email],
+    );
+    return result[0] ?? null;
   }
 }

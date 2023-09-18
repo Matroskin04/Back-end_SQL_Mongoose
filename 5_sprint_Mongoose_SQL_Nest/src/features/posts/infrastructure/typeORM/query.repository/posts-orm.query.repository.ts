@@ -1,4 +1,5 @@
 import {
+  PostDBType,
   PostPaginationType,
   PostViewType,
 } from './posts.types.query.repository';
@@ -38,7 +39,6 @@ export class PostsOrmQueryRepository {
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(query);
 
-    console.log(sortBy);
     const result = await this.postsRepository
       .createQueryBuilder('p')
       .select([
@@ -201,16 +201,24 @@ export class PostsOrmQueryRepository {
     return postInfo ? modifyPostIntoViewModel(postInfo) : null;
   }
 
-  async getPostDBInfoById(postId: string): Promise<any> {
-    const result = await this.dataSource.query(
-      `
-    SELECT "blogId", "userId", "title", "shortDescription", "content", "createdAt"
-      FROM public."posts"
-        WHERE "id" = $1`,
-      [postId],
-    );
-    if (!result[0]) return null;
-    return result[0];
+  async getPostDBInfoById(postId: string): Promise<PostDBType | null> {
+    const result = await this.postsRepository
+      .createQueryBuilder('p')
+      .select([
+        'p.id',
+        'p.blogId',
+        'p.userId',
+        'p.title',
+        'p.shortDescription',
+        'p.content',
+        'p.createdAt',
+      ])
+      .where('p.id = :postId', { postId })
+      .getOne();
+
+    return result
+      ? { ...result, createdAt: result.createdAt.toISOString() }
+      : null;
   }
 
   private likesCountBuilder(qb: SelectQueryBuilder<any>) {

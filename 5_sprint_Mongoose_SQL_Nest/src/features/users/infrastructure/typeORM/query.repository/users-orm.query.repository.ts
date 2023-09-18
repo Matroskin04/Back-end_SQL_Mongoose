@@ -6,6 +6,7 @@ import {
   BannedUsersOfBlogPaginationType,
   UserBanInfoType,
   UserByRecoveryCodeType,
+  UserIdAndConfirmationType,
   UsersInfoViewType,
   UsersPaginationType,
   UserWithBanInfoType,
@@ -233,7 +234,8 @@ export class UsersOrmQueryRepository {
       .createQueryBuilder('u')
       .select()
       .leftJoin('u.userEmailConfirmation', 'ec')
-      .where('u.login = :logOrEmail OR u.email = :logOrEmail', { logOrEmail })
+      .where('u.login = :logOrEmail', { logOrEmail })
+      .orWhere('u.email = :logOrEmail', { logOrEmail })
       .getExists();
 
     return doesExist;
@@ -277,5 +279,18 @@ export class UsersOrmQueryRepository {
         banStatus,
       });
     });
+  }
+
+  async getEmailConfirmationInfoByEmail(
+    email: string,
+  ): Promise<UserIdAndConfirmationType | null> {
+    const result = await this.usersEmailConfirmation
+      .createQueryBuilder('ec')
+      .select(['ec.isConfirmed', 'ex.userId'])
+      .leftJoin('user', 'u')
+      .where('u.email = :email', { email })
+      .getOne();
+
+    return result;
   }
 }

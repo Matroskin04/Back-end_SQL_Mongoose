@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { PostsLikesInfo } from '../../../../posts/domain/posts-likes-info.entity';
-import {
-  AllLikeStatusEnum,
-  AllLikeStatusType,
-} from '../../../../../infrastructure/utils/enums/like-status';
+import { AllLikeStatusEnum } from '../../../../../infrastructure/utils/enums/like-status';
 import { CommentsLikesInfo } from '../../../../comments/domain/comments-likes-info.entity';
 
 @Injectable()

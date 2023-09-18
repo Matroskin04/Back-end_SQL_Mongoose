@@ -71,3 +71,7 @@ export type UserWithPassEmailInfoType = {
   passwordHash: string;
   isConfirmed: string;
 };
+export type UserIdAndConfirmationType = {
+  isConfirmed: boolean;
+  userId: string;
+};

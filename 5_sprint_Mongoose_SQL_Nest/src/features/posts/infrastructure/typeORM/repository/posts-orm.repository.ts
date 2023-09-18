@@ -2,7 +2,6 @@ import { BodyPostByBlogIdType, PostDBType } from './posts.types.repositories';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { Blogs } from '../../../../blogs/domain/blogs.entity';
 import { Posts } from '../../../domain/posts.entity';
 
 @Injectable()
