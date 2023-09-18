@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-export async function createPostTest(
+export async function createPostSaTest(
   httpServer,
   blogId,
   title,
@@ -19,13 +19,13 @@ export async function createPostTest(
     });
 }
 
-export async function getAllPostsTest(httpServer, blogId, saLogin?, saPass?) {
+export async function getAllPostsSaTest(httpServer, blogId, saLogin?, saPass?) {
   return request(httpServer)
     .get(`/hometask-nest/sa/blogs/${blogId}/posts`)
     .auth(saLogin ?? 'admin', saPass ?? 'qwerty');
 }
 
-export async function updatePostTest(
+export async function updatePostSaTest(
   httpServer,
   blogId,
   postId,
@@ -45,7 +45,7 @@ export async function updatePostTest(
     });
 }
 
-export async function deletePostTest(
+export async function deletePostSaTest(
   httpServer,
   blogId,
   postId,
@@ -57,7 +57,7 @@ export async function deletePostTest(
     .auth(saLogin ?? 'admin', saPass ?? 'qwerty');
 }
 
-export function createResponseSinglePost(
+export function createResponseSingleSaPost(
   title,
   shortDescription,
   content,

@@ -13,11 +13,11 @@ import {
 import { createUserTest } from '../users/users-sa.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import {
-  createPostTest,
-  createResponseSinglePost,
-  deletePostTest,
-  getAllPostsTest,
-  updatePostTest,
+  createPostSaTest,
+  createResponseSingleSaPost,
+  deletePostSaTest,
+  getAllPostsSaTest,
+  updatePostSaTest,
 } from './posts-sa.helpers';
 import { getPostByIdPublicTest } from '../../public/posts/posts-public.helpers';
 import { getBlogByIdPublicTest } from '../../public/blogs/blogs-public.helpers';
@@ -287,6 +287,10 @@ describe('Blogs, Post (SA); /sa', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
+      user = await createCorrectUserTest(httpServer);
+      const result = await loginCorrectUserTest(httpServer);
+      accessToken = result.accessToken;
+
       const blog = await createCorrectBlogTest(httpServer, accessToken);
       correctBlogId = blog.id;
     });
@@ -330,6 +334,10 @@ describe('Blogs, Post (SA); /sa', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
+      user = await createCorrectUserTest(httpServer);
+      const result = await loginCorrectUserTest(httpServer);
+      accessToken = result.accessToken;
+
       const blog = await createCorrectBlogTest(httpServer, accessToken);
       correctBlogId = blog.id;
     });
@@ -337,7 +345,7 @@ describe('Blogs, Post (SA); /sa', () => {
     it(`- (401) sa login is incorrect
               - (401) sa password is incorrect`, async () => {
       //sa login is incorrect
-      const result1 = await createPostTest(
+      const result1 = await createPostSaTest(
         httpServer,
         correctBlogId,
         correctTitle,
@@ -348,7 +356,7 @@ describe('Blogs, Post (SA); /sa', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
 
       //sa password is incorrect
-      const result2 = await createPostTest(
+      const result2 = await createPostSaTest(
         httpServer,
         correctBlogId,
         correctTitle,
@@ -361,7 +369,7 @@ describe('Blogs, Post (SA); /sa', () => {
     });
 
     it(`- (404) should not create post because blog doesn't exist with such id`, async () => {
-      const result = await createPostTest(
+      const result = await createPostSaTest(
         httpServer,
         uuidv4(),
         correctTitle,
@@ -373,7 +381,7 @@ describe('Blogs, Post (SA); /sa', () => {
 
     it(`- (400) values of 'title', 'shortDescription' and 'content' are incorrect (large length)
               - (400) values of 'title', 'shortDescription' and 'content' are incorrect (not string)`, async () => {
-      const result1 = await createPostTest(
+      const result1 = await createPostSaTest(
         httpServer,
         correctBlogId,
         titleLength31,
@@ -385,7 +393,7 @@ describe('Blogs, Post (SA); /sa', () => {
         createErrorsMessageTest(['title', 'shortDescription', 'content']),
       );
 
-      const result2 = await createPostTest(
+      const result2 = await createPostSaTest(
         httpServer,
         correctBlogId,
         null,
@@ -399,7 +407,7 @@ describe('Blogs, Post (SA); /sa', () => {
     });
 
     it(`+ (201) should create post`, async () => {
-      const result = await createPostTest(
+      const result = await createPostSaTest(
         httpServer,
         correctBlogId,
         correctTitle,
@@ -408,7 +416,7 @@ describe('Blogs, Post (SA); /sa', () => {
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
       expect(result.body).toEqual(
-        createResponseSinglePost(
+        createResponseSingleSaPost(
           correctTitle,
           correctShortDescription,
           correctPostContent,
@@ -429,7 +437,7 @@ describe('Blogs, Post (SA); /sa', () => {
     it(`- (401) sa login is incorrect
               - (401) sa password is incorrect`, async () => {
       //sa login is incorrect
-      const result1 = await getAllPostsTest(
+      const result1 = await getAllPostsSaTest(
         httpServer,
         correctBlogId,
         'incorrectLogin',
@@ -437,7 +445,7 @@ describe('Blogs, Post (SA); /sa', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
 
       //sa password is incorrect
-      const result2 = await getAllPostsTest(
+      const result2 = await getAllPostsSaTest(
         httpServer,
         correctBlogId,
         null,
@@ -447,13 +455,13 @@ describe('Blogs, Post (SA); /sa', () => {
     });
 
     it(`- (404) should not return posts because blog is not found`, async () => {
-      const result = await getAllPostsTest(httpServer, uuidv4());
+      const result = await getAllPostsSaTest(httpServer, uuidv4());
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
     //todo query + banned
     it(`+ (200) should return empty array of posts`, async () => {
-      const result = await getAllPostsTest(httpServer, correctBlogId);
+      const result = await getAllPostsSaTest(httpServer, correctBlogId);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(createResponseAllBlogsSaTest([]));
     });
@@ -478,26 +486,39 @@ describe('Blogs, Post (SA); /sa', () => {
       correctPostId = post.id;
     });
 
-    it(`- (401) jwt access token is incorrect`, async () => {
-      //jwt is incorrect
-      const result = await updatePostTest(
+    it(`- (401) sa login is incorrect
+              - (401) sa password is incorrect`, async () => {
+      //sa login is incorrect
+      const result1 = await updatePostSaTest(
         httpServer,
         correctBlogId,
         correctPostId,
-        'IncorrectJWT',
         correctTitle,
         correctShortDescription,
         correctPostContent,
+        'incorrectLogin',
       );
-      expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+
+      //sa password is incorrect
+      const result2 = await updatePostSaTest(
+        httpServer,
+        correctBlogId,
+        correctPostId,
+        correctTitle,
+        correctShortDescription,
+        correctPostContent,
+        null,
+        'IncorrectPass',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
     it(`- (404) should not update post because blog is not found with such id
               - (404) should not update post because post is not found with such id`, async () => {
       //blogId is incorrect
-      const result1 = await updatePostTest(
+      const result1 = await updatePostSaTest(
         httpServer,
-        uuidv4(),
         correctPostId,
         accessToken,
         correctTitle,
@@ -506,10 +527,9 @@ describe('Blogs, Post (SA); /sa', () => {
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
       //postId is incorrect
-      const result2 = await updatePostTest(
+      const result2 = await updatePostSaTest(
         httpServer,
         correctBlogId,
-        uuidv4(),
         accessToken,
         correctTitle,
         correctShortDescription,
@@ -518,44 +538,12 @@ describe('Blogs, Post (SA); /sa', () => {
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
-    it(`- (403) shouldn't update post if the blog of this post doesn't belong to current user`, async () => {
-      //creates new user
-      const newUser = await createUserTest(
-        httpServer,
-        'user2',
-        correctPass,
-        'email2@gmail.com',
-      );
-      expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-
-      const result1 = await loginUserTest(
-        httpServer,
-        newUser.body.login,
-        correctPass,
-      );
-      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      const accessToken2 = result1.body.accessToken;
-
-      //403 (update blog that doesn't belong this user
-      const result2 = await updatePostTest(
-        httpServer,
-        correctBlogId,
-        correctPostId,
-        accessToken2,
-        correctTitle,
-        correctShortDescription,
-        correctPostContent,
-      );
-      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
-    });
-
     it(`- (400) values of 'title', 'shortDescription' and 'content' are incorrect (large length)
               - (400) values of 'title', 'shortDescription' and 'content' are incorrect (not string)`, async () => {
-      const result1 = await updatePostTest(
+      const result1 = await updatePostSaTest(
         httpServer,
         correctBlogId,
         correctPostId,
-        accessToken,
         titleLength31,
         postShortDescriptionLength101,
         postContentLength1001,
@@ -565,11 +553,10 @@ describe('Blogs, Post (SA); /sa', () => {
         createErrorsMessageTest(['title', 'shortDescription', 'content']),
       );
 
-      const result2 = await updatePostTest(
+      const result2 = await updatePostSaTest(
         httpServer,
         correctBlogId,
         correctPostId,
-        accessToken,
         null,
         null,
         null,
@@ -581,11 +568,10 @@ describe('Blogs, Post (SA); /sa', () => {
     });
 
     it(`+ (204) should update post`, async () => {
-      const result = await updatePostTest(
+      const result = await updatePostSaTest(
         httpServer,
         correctBlogId,
         correctPostId,
-        accessToken,
         'newTitle',
         'newShortDescription',
         'newContent',
@@ -596,7 +582,7 @@ describe('Blogs, Post (SA); /sa', () => {
       const post = await getPostByIdPublicTest(httpServer, correctPostId);
       expect(post.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(post.body).toEqual(
-        createResponseSinglePost(
+        createResponseSingleSaPost(
           'newTitle',
           'newShortDescription',
           'newContent',
@@ -627,7 +613,7 @@ describe('Blogs, Post (SA); /sa', () => {
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await deletePostTest(
+      const result = await deletePostSaTest(
         httpServer,
         correctBlogId,
         correctPostId,
@@ -639,7 +625,7 @@ describe('Blogs, Post (SA); /sa', () => {
     it(`- (404) should not delete post because blog is not found with such id
               - (404) should not delete post because post is not found with such id`, async () => {
       //blogId is incorrect
-      const result1 = await deletePostTest(
+      const result1 = await deletePostSaTest(
         httpServer,
         uuidv4(),
         correctPostId,
@@ -647,7 +633,7 @@ describe('Blogs, Post (SA); /sa', () => {
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
       //postId is incorrect
-      const result2 = await deletePostTest(
+      const result2 = await deletePostSaTest(
         httpServer,
         correctBlogId,
         uuidv4(),
@@ -675,7 +661,7 @@ describe('Blogs, Post (SA); /sa', () => {
       const accessToken2 = result1.body.accessToken;
 
       //403 (update blog that doesn't belong this user
-      const result2 = await deletePostTest(
+      const result2 = await deletePostSaTest(
         httpServer,
         correctBlogId,
         correctPostId,
@@ -685,7 +671,7 @@ describe('Blogs, Post (SA); /sa', () => {
     });
 
     it(`+ (204) should delete post`, async () => {
-      const result = await deletePostTest(
+      const result = await deletePostSaTest(
         httpServer,
         correctBlogId,
         correctPostId,
