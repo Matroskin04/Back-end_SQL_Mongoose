@@ -4,10 +4,10 @@ import {
   ExecutionContext,
   BadRequestException,
 } from '@nestjs/common';
-import { UsersQueryRepository } from '../../../features/users/infrastructure/SQL/query.repository/users.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { UsersOrmQueryRepository } from '../../../features/users/infrastructure/typeORM/query.repository/users-orm.query.repository';
+import { UsersQueryRepository } from '../../../features/users/infrastructure/SQL/query.repository/users.query.repository';
 
 @Injectable() //todo validator Constraints
 export class ValidateConfirmationCodeGuard implements CanActivate {
@@ -48,7 +48,7 @@ export class ValidateConfirmationCodeGuard implements CanActivate {
         { message: 'Code is already been applied', field: 'code' },
       ]); //Code is already been applied
     }
-    request.userId = emailConfirmationInfo[0].userId;
+    request.userId = emailConfirmationInfo.userId;
 
     return true;
   }

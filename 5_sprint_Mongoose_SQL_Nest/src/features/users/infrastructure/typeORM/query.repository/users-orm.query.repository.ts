@@ -156,7 +156,7 @@ export class UsersOrmQueryRepository {
     const result = await this.usersRepository
       .createQueryBuilder('u')
       .where('u.login = :loginOrEmail', { loginOrEmail })
-      .andWhere('u.email = :loginOrEmail', { loginOrEmail })
+      .orWhere('u.email = :loginOrEmail', { loginOrEmail })
       .getExists();
 
     return result;
@@ -169,7 +169,7 @@ export class UsersOrmQueryRepository {
       .createQueryBuilder('u')
       .select(['u.id as id', 'pc."expirationDate"', 'pc."confirmationCode"'])
       .leftJoin('u.userPasswordRecovery', 'pc')
-      .where('pc.confirmationCode = :recoveryCode', { recoveryCode })
+      .where('pc."confirmationCode" = :recoveryCode', { recoveryCode })
       .getRawOne();
 
     return result ?? null;
@@ -233,8 +233,8 @@ export class UsersOrmQueryRepository {
       .createQueryBuilder('u')
       .select()
       .leftJoin('u.userEmailConfirmation', 'ec')
-      .where('u.login = :logOrEmail', { logOrEmail })
-      .orWhere('u.email = :logOrEmail', { logOrEmail })
+      .where('u."login" = :logOrEmail', { logOrEmail })
+      .orWhere('u."email" = :logOrEmail', { logOrEmail })
       .getExists();
 
     return doesExist;
@@ -243,10 +243,10 @@ export class UsersOrmQueryRepository {
   async getUserLoginById(userId: string): Promise<string | null> {
     const user = await this.usersRepository
       .createQueryBuilder('u')
-      .select('u.login')
+      .select('u."login"')
       .where('u.id = :userId', { userId })
-      .andWhere('u.isDeleted = false')
-      .getOne();
+      .andWhere('u."isDeleted" = false')
+      .getRawOne();
 
     return user?.login ?? null;
   }
@@ -256,11 +256,11 @@ export class UsersOrmQueryRepository {
   ): Promise<string | null> {
     const result = await this.usersEmailConfirmation
       .createQueryBuilder('ec')
-      .select('ec.userId')
-      .where('ec.confirmationCode = :confirmationCode', { confirmationCode })
-      .getOne();
+      .select('ec."userId"')
+      .where('ec."confirmationCode" = :confirmationCode', { confirmationCode })
+      .getRawOne();
 
-    return result?.userId || null;
+    return result?.userId ?? null;
   }
 
   private loginAndEmailConditionsBuilder(searchLoginTerm, searchEmailTerm) {
@@ -285,12 +285,12 @@ export class UsersOrmQueryRepository {
   ): Promise<UserIdAndConfirmationType | null> {
     const result = await this.usersEmailConfirmation
       .createQueryBuilder('ec')
-      .select(['ec.isConfirmed', 'ec.userId'])
-      .leftJoin('user', 'u')
+      .select(['ec."isConfirmed"', 'ec."userId"'])
+      .leftJoin('ec.user', 'u')
       .where('u.email = :email', { email })
-      .getOne();
+      .getRawOne();
 
-    return result;
+    return result ?? null;
   }
 
   async getEmailConfirmationInfoByCode(
@@ -298,10 +298,10 @@ export class UsersOrmQueryRepository {
   ): Promise<EmailConfirmationInfoType | null> {
     const result = await this.usersEmailConfirmation
       .createQueryBuilder('ec')
-      .select(['ec.isConfirmed', 'ec.userId', 'ec.expirationDate'])
-      .where('ec.confirmationCode = :code', { code })
-      .getOne();
+      .select(['ec."isConfirmed"', 'ec."userId"', 'ec."expirationDate"'])
+      .where('ec."confirmationCode" = :code', { code })
+      .getRawOne();
 
-    return result;
+    return result ?? null;
   }
 }

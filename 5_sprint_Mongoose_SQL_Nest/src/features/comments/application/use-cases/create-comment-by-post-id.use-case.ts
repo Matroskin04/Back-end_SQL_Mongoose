@@ -40,7 +40,6 @@ export class CreateCommentUseCase
     if (!userLogin) {
       return null;
     }
-
     const post = await this.postsOrmQueryRepository.doesPostExist(postId);
     if (!post) {
       return null;

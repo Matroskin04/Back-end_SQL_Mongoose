@@ -170,9 +170,9 @@ export class BlogsOrmQueryRepository {
   async isUserBannedForBlog(userId: string, blogId: string): Promise<boolean> {
     const result = await this.bannedUsersOfBlogRepository
       .createQueryBuilder('bu')
-      .select('bu.isBanned')
-      .where('userId = :userId', { userId })
-      .andWhere('blogId = :blogId', { blogId })
+      .select('bu."isBanned"')
+      .where('bu."userId" = :userId', { userId })
+      .andWhere('bu."blogId" = :blogId', { blogId })
       .getOne();
 
     return !!result?.isBanned;

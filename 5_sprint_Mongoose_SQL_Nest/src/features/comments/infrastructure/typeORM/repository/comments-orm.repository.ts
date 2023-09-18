@@ -20,7 +20,7 @@ export class CommentsOrmRepository {
     postId: string,
   ): Promise<CommentDBType> {
     const result = await this.commentsRepository
-      .createQueryBuilder('c')
+      .createQueryBuilder()
       .insert()
       .values({ content, userId, postId })
       .returning(['id', 'content', 'userId', 'postId', 'createdAt'])

@@ -296,6 +296,7 @@ describe('Auth (Public); /auth', () => {
         httpServer,
         freeCorrectEmail,
       );
+
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
       expect(emailAdapterMock.sendEmailConfirmationMessage).toBeCalled();
     });

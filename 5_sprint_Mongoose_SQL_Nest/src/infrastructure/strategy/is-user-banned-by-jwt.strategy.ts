@@ -26,6 +26,7 @@ export class IsUserBannedByJWTStrategy extends PassportStrategy(
     const userInfo = await this.usersOrmQueryRepository.getUserWithBanInfoById(
       payload.userId,
     );
+
     if (!userInfo) throw new UnauthorizedException();
     if (userInfo.isBanned)
       throw new ForbiddenException("You can't do this, because you are baned");

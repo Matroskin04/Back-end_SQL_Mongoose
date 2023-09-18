@@ -61,7 +61,7 @@ export class DevicesRepository {
         WHERE "id" != $1`,
       [deviceId],
     );
-    console.log(result);
+
     return result[1] > 0;
   }
 

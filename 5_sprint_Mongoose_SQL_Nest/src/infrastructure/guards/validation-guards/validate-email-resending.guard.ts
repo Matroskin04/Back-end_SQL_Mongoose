@@ -39,7 +39,7 @@ export class ValidateEmailResendingGuard implements CanActivate {
         },
       ]);
     }
-    request.userId = emailConfirmationInfo[0].userId;
+    request.userId = emailConfirmationInfo.userId;
 
     return true;
   }

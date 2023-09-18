@@ -259,6 +259,7 @@ export class UsersQueryRepository {
         WHERE "confirmationCode" = $1`,
       [code],
     );
+
     return result[0] ?? null;
   }
 }
