@@ -146,6 +146,7 @@ const repositories = [
   LikesInfoOrmRepository,
   CommentsLikesOrmRepository,
 ];
+
 const handlers = [
   //auth
   RegisterUserUseCase,
