@@ -20,7 +20,7 @@ export async function createBlogSaTest(
 
 export async function getAllBlogsSaTest(httpServer, query, saLogin?, saPass?) {
   return request(httpServer)
-    .get(`/hometask-nest/blogger/blogs`)
+    .get(`/hometask-nest/sa/blogs`)
     .auth(saLogin ?? 'admin', saPass ?? 'qwerty')
     .query(query);
 }
@@ -35,7 +35,7 @@ export async function updateBlogSaTest(
   saPass?,
 ) {
   return request(httpServer)
-    .put(`/hometask-nest/blogger/blogs/${blogId}`)
+    .put(`/hometask-nest/sa/blogs/${blogId}`)
     .auth(saLogin ?? 'admin', saPass ?? 'qwerty')
     .send({
       name,
@@ -46,7 +46,7 @@ export async function updateBlogSaTest(
 
 export async function deleteBlogSaTest(httpServer, blogId, saLogin?, saPass?) {
   return request(httpServer)
-    .delete(`/hometask-nest/blogger/blogs/${blogId}`)
+    .delete(`/hometask-nest/sa/blogs/${blogId}`)
     .auth(saLogin ?? 'admin', saPass ?? 'qwerty');
 }
 
