@@ -19,6 +19,10 @@ import { createUserTest } from '../../super-admin/users/users-sa.helpers';
 import { Connection, DataSource } from 'typeorm';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
 import { startApp } from '../../test.utils';
+import {
+  createCorrectUserTest,
+  loginCorrectUserTest,
+} from '../../helpers/chains-of-requests.helpers';
 
 describe('Auth (Public); /auth', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -448,24 +452,11 @@ describe('Auth (Public); /auth', () => {
         .delete('/hometask-nest/testing/all-data')
         .expect(HTTP_STATUS_CODE.NO_CONTENT_204);
       //create user
-      user = await createUserTest(
-        httpServer,
-        freeCorrectLogin,
-        correctPass,
-        freeCorrectEmail,
-      );
-      expect(user.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+      await createCorrectUserTest(httpServer);
       //login user
-      const result = await loginUserTest(
-        httpServer,
-        user.body.login,
-        correctPass,
-      );
-      expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result.body.accessToken).toBeDefined();
-      expect(result.headers['set-cookie'][0]).toBeDefined();
-      pastAccessToken = result.body.accessToken;
-      pastRefreshToken = result.headers['set-cookie'][0];
+      const result = await loginCorrectUserTest(httpServer);
+      pastAccessToken = result.accessToken;
+      pastRefreshToken = result.refreshToken;
     });
 
     it(`- (401) refresh token is invalid`, async () => {
@@ -477,6 +468,9 @@ describe('Auth (Public); /auth', () => {
     });
 
     it(`+ (200) should return new pair of access and refresh tokens`, async () => {
+      //delay for the new token to return
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       const result = await createNewRefreshAccessTokensTest(
         httpServer,
         pastRefreshToken,
@@ -487,13 +481,13 @@ describe('Auth (Public); /auth', () => {
       newAccessToken = result.body.accessToken;
       newRefreshToken = result.headers['set-cookie'][0];
 
-      expect(pastRefreshToken).not.toBe(newRefreshToken); //todo почему иногда не проходит? Одинаковые токены
+      expect(pastRefreshToken).not.toBe(newRefreshToken);
       expect(pastAccessToken).not.toBe(newAccessToken);
     });
 
     //dependent
     it(`- (401) shouldn't logout user because past refresh token was deactivated
-               - (204) should logout user with new refresh token`, async () => {
+              - (204) should logout user with new refresh token`, async () => {
       //refresh token was deactivated
       const result1 = await logoutUserTest(httpServer, pastRefreshToken);
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);

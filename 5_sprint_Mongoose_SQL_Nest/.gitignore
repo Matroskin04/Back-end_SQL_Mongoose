@@ -8,7 +8,7 @@
 
 # Another files
 .env
-testing.mjs
+testing.js
 tests.ts
 
 # Logs

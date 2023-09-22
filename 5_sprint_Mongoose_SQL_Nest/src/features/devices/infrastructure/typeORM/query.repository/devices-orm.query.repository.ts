@@ -5,7 +5,6 @@ import {
   DeviceDBType,
   DeviceViewType,
 } from '../../SQL/query.repository/devices.types.query.repository';
-import { Users } from '../../../../users/domain/users.entity';
 import { Devices } from '../../../domain/devices.entity';
 
 @Injectable()
@@ -21,17 +20,17 @@ export class DevicesOrmQueryRepository {
     const result = await this.devicesRepository
       .createQueryBuilder('d')
       .select([
-        'd.id',
-        'd.ip',
-        'd.title',
-        'd.lastActiveDate',
-        'd.userId',
-        'd.expirationDate',
+        'd."id"',
+        'd."ip"',
+        'd."title"',
+        'd."lastActiveDate"',
+        'd."userId"',
+        'd."expirationDate"',
       ])
       .where('d.id = :deviceId', { deviceId })
-      .getOne();
+      .getRawOne();
 
-    return result;
+    return result ?? null;
   }
 
   async getAllDevicesByUserId(userId: string): Promise<DeviceViewType[] | []> {
@@ -39,9 +38,9 @@ export class DevicesOrmQueryRepository {
       .createQueryBuilder('d')
       .select([
         'd.id AS "deviceId"',
-        'd.ip AS ip',
-        'd.title AS title',
-        'd.lastActiveDate AS lastActiveDate',
+        'd."ip"',
+        'd."title"',
+        'd."lastActiveDate"',
       ])
       .where('d.userId = :userId', { userId })
       .getRawMany();
