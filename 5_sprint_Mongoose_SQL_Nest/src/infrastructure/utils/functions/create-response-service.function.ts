@@ -1,4 +1,4 @@
-import { ResponseTypeService } from './types/create-responses-service.types.service';
+import { ResponseTypeService } from './types/create-responses-service.types';
 
 export const createResponseByCodeAndMessage = (
   statusCode: number,

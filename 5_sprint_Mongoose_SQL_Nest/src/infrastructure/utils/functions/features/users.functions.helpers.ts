@@ -1,4 +1,9 @@
 import { UserViewType } from '../../../../features/users/infrastructure/SQL/query.repository/users.output.types.query.repository';
+import {
+  BannedUserOfBlogType,
+  UserInfoRawType,
+  UserWithBanInfoRawType,
+} from '../types/users.functions.types';
 
 export function modifyUserIntoViewModel(
   userInfo: UserInfoRawType,
@@ -29,30 +34,3 @@ export function modifyBannedUserOfBlogIntoViewModel(
     },
   };
 }
-
-type BannedUserOfBlogType = {
-  id: string;
-  login: string;
-  banInfo: {
-    isBanned: boolean;
-    banDate: string | null;
-    banReason: string | null;
-  };
-};
-
-type UserWithBanInfoRawType = {
-  id: string;
-  login: string;
-  // email: string;
-  // createdAt: string;
-  isBanned: boolean;
-  banDate: string | null;
-  banReason: string | null;
-};
-
-type UserInfoRawType = {
-  id: string;
-  login: string;
-  email: string;
-  createdAt: string;
-};

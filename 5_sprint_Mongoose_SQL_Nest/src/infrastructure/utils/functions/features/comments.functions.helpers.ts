@@ -1,7 +1,7 @@
 import { CommentViewType } from '../../../../features/comments/infrastructure/SQL/repository/comments.types.repositories';
 import { CommentDBType } from '../../../../features/comments/domain/comments.db.types';
 import { StatusOfLike } from '../../../../features/comments/infrastructure/SQL/query.repository/comments.output.types.query.repository';
-import { CommentOfBloggerFuncType } from '../types/comments-functions-types';
+import { CommentOfBloggerFuncType } from '../types/comments.functions.types';
 import { AllLikeStatusEnum, AllLikeStatusType } from '../../enums/like-status';
 
 export function modifyCommentIntoInitialViewModel(

@@ -3,7 +3,7 @@ import {
   VariablesForReturnType,
 } from './types/variables-for-return.types';
 import { QueryBlogsInputModel } from '../../../features/blogs/api/models/input/queries-blog.input.model';
-import { AllQueryParamsTypes } from './types/all-query-params-types';
+import { AllQueryParamsTypes } from './types/all-query-params.types';
 
 export async function variablesForReturnMongo(
   query: AllQueryParamsTypes,
