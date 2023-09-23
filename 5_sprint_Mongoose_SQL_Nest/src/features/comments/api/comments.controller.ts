@@ -46,7 +46,7 @@ export class CommentsController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuard) // todo addition guard 403
+  @UseGuards(JwtAccessGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':id')
   async updateComment(
@@ -82,7 +82,7 @@ export class CommentsController {
     return;
   }
 
-  @UseGuards(JwtAccessGuard) //todo add guard 403
+  @UseGuards(JwtAccessGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':id')
   async deleteComment(

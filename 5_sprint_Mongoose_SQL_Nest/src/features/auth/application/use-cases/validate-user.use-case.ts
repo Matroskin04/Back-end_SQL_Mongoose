@@ -18,7 +18,6 @@ export class ValidateUserUseCase
   ): Promise<UserWithPassEmailInfoDto | false> {
     const { loginOrEmail, password } = command;
 
-    //todo UserWithPassInfoType?)
     const user =
       await this.usersQueryRepository.getUserPassEmailInfoByLoginOrEmail(
         loginOrEmail,

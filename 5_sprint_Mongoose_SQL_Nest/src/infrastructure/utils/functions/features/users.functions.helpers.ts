@@ -1,8 +1,7 @@
-//todo type
-import { UserViewType } from '../query.repository/users.output.types.query.repository';
+import { UserViewType } from '../../../../features/users/infrastructure/SQL/query.repository/users.output.types.query.repository';
 
 export function modifyUserIntoViewModel(
-  userInfo: UserWithBanInfoRawType,
+  userInfo: UserInfoRawType,
 ): UserViewType {
   return {
     id: userInfo.id,
@@ -17,9 +16,8 @@ export function modifyUserIntoViewModel(
   };
 }
 
-//todo type
 export function modifyBannedUserOfBlogIntoViewModel(
-  userInfo,
+  userInfo: UserWithBanInfoRawType,
 ): BannedUserOfBlogType {
   return {
     id: userInfo.id,
@@ -37,17 +35,24 @@ type BannedUserOfBlogType = {
   login: string;
   banInfo: {
     isBanned: boolean;
-    banDate: string;
-    banReason: string;
+    banDate: string | null;
+    banReason: string | null;
   };
 };
 
 type UserWithBanInfoRawType = {
   id: string;
   login: string;
-  email: string;
-  createdAt: string;
+  // email: string;
+  // createdAt: string;
   isBanned: boolean;
   banDate: string | null;
   banReason: string | null;
+};
+
+type UserInfoRawType = {
+  id: string;
+  login: string;
+  email: string;
+  createdAt: string;
 };

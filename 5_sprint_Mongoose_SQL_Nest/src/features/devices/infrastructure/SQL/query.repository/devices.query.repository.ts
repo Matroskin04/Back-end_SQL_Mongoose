@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DeviceViewType } from './devices.types.query.repository';
+import { DeviceDBType, DeviceViewType } from './devices.types.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -8,8 +8,7 @@ export class DevicesQueryRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   //SQL
-  async getDeviceById(deviceId: string): Promise<any | null> {
-    //todo type
+  async getDeviceById(deviceId: string): Promise<DeviceDBType | null> {
     const result = await this.dataSource.query(
       `
     SELECT "id", "ip", "title", "lastActiveDate", "userId", "expirationDate"

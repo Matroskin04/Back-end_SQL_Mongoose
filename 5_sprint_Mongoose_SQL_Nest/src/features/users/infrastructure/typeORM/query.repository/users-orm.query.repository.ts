@@ -20,10 +20,9 @@ import {
 import {
   modifyBannedUserOfBlogIntoViewModel,
   modifyUserIntoViewModel,
-} from '../../SQL/helpers/modify-user-into-view-model.helper';
+} from '../../../../../infrastructure/utils/functions/features/users.functions.helpers';
 import { Users } from '../../../domain/users.entity';
 import { UsersEmailConfirmation } from '../../../domain/users-email-confirmation.entity';
-import { UsersBanInfo } from '../../../domain/users-ban-info.entity';
 
 @Injectable()
 export class UsersOrmQueryRepository {

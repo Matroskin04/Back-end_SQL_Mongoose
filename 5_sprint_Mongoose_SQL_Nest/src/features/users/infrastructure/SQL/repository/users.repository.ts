@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
-@Injectable() //todo для чего этот декоратор
+@Injectable()
 export class UsersRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 

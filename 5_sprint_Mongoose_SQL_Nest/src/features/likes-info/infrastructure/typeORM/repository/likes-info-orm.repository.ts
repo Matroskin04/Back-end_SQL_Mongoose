@@ -29,7 +29,7 @@ export class LikesInfoOrmRepository {
       userId,
       postId,
       likeStatus: AllLikeStatusEnum[likeStatus],
-    }); //todo difference save from insert query builder
+    });
     return;
   }
 

@@ -5,7 +5,7 @@ import { DataSource, Repository } from 'typeorm';
 import {
   modifyBannedUserOfBlogIntoViewModel,
   modifyUserIntoViewModel,
-} from '../helpers/modify-user-into-view-model.helper';
+} from '../../../../../infrastructure/utils/functions/features/users.functions.helpers';
 import {
   BannedUsersOfBlogPaginationType,
   EmailConfirmationInfoType,
@@ -93,7 +93,7 @@ export class UsersQueryRepository {
   ): Promise<BannedUsersOfBlogPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchLoginTerm } =
       variablesForReturn(query);
-    //todo validate input data, bi2 - нужна 2?
+
     const result = await this.dataSource.query(
       `
     SELECT u."id", u."login", bi."isBanned", bi."banReason", bi."banDate",
