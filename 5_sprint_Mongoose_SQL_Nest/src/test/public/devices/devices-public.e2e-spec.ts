@@ -33,9 +33,6 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
     await httpServer.close();
     await app.close();
   });
-  let user;
-  let post;
-  let blog;
   let refreshToken1;
   let refreshToken2;
   let refreshToken1_2;

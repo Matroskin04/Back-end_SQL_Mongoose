@@ -49,7 +49,6 @@ describe('Blogs, Post (SA); /sa', () => {
   });
   let user;
   let accessToken;
-  const correctPass = 'Password1';
 
   //blogs
   let correctBlogId;
@@ -175,7 +174,6 @@ describe('Blogs, Post (SA); /sa', () => {
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
-    //todo query + banned
     it(`+ (200) should return empty array`, async () => {
       const result = await getAllBlogsSaTest(httpServer, '');
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
@@ -463,7 +461,6 @@ describe('Blogs, Post (SA); /sa', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
-    //todo query + banned
     it(`+ (200) should return empty array of posts`, async () => {
       const result = await getAllPostsSaTest(httpServer, correctBlogId);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);

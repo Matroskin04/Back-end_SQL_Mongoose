@@ -1,11 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import { Connection } from 'typeorm';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../../app.module';
 import { v4 as uuidv4 } from 'uuid';
-import { EmailAdapter } from '../../../infrastructure/adapters/email.adapter';
-import { emailAdapterMock } from '../mock.providers/auth.mock.providers';
-import { appSettings } from '../../../app.settings';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
 import {
   createCorrectBlogTest,
@@ -32,28 +26,18 @@ import {
   create9PostsOf3BlogsBy3Users,
   create9PostsOfBlog,
 } from '../posts/posts-public.helpers';
+import { startApp } from '../../test.utils';
 
 describe('Blogs (Public); /', () => {
   jest.setTimeout(5 * 60 * 1000);
   //vars for starting app and testing
   let app: INestApplication;
   let httpServer;
-  let dbConnection: Connection;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(EmailAdapter)
-      .useValue(emailAdapterMock)
-      .compile();
-    dbConnection = moduleFixture.get<Connection>(Connection);
-
-    app = moduleFixture.createNestApplication();
-    appSettings(app); //activate settings for app
-    await app.init();
-
-    httpServer = app.getHttpServer();
+    const info = await startApp();
+    app = info.app;
+    httpServer = info.httpServer;
   });
 
   afterAll(async () => {
@@ -64,12 +48,6 @@ describe('Blogs (Public); /', () => {
   let accessToken1;
   let accessToken2;
   let accessToken3;
-
-  let correctBlogId;
-  const correctBlogName = 'correctName';
-  const correctDescription = 'correctDescription';
-  const correctWebsiteUrl =
-    'https://SoBqgeyargbRK5jx76KYc6XS3qU9LWMJCvbDif9VXOiplGf4-RK0nhw34lvql.zgG73ki0po16f.J4U96ZRvoH3VE_WK';
 
   describe(`/blogs (GET) - get all blogs`, () => {
     let blogsIds;
