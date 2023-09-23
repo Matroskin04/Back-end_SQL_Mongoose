@@ -5,10 +5,8 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersQueryRepository } from '../../features/users/infrastructure/SQL/query.repository/users.query.repository';
 import { UsersOrmQueryRepository } from '../../features/users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 
-// todo duplicate logic from jwt strategy
 @Injectable()
 export class IsUserBannedByJWTStrategy extends PassportStrategy(
   Strategy,

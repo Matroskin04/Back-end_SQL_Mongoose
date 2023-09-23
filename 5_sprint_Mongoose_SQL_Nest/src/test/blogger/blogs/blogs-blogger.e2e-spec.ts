@@ -168,7 +168,6 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
-    //todo query + banned
     it(`+ (200) should return empty array`, async () => {
       const result = await getAllBlogsBloggerTest(httpServer, accessToken, '');
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
@@ -551,7 +550,6 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
     });
 
-    //todo query + banned
     it(`+ (200) should return empty array of posts`, async () => {
       const result = await getAllPostsTest(
         httpServer,

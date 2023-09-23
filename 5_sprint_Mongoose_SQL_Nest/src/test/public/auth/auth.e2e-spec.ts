@@ -44,7 +44,7 @@ describe('Auth (Public); /auth', () => {
     await app.close();
   });
 
-  let busyEmail; //todo как-то организовать
+  let busyEmail;
   let busyLogin;
   const freeCorrectEmail = 'freeEmail@gmail.com';
   const freeCorrectLogin = 'freeLogin';
@@ -59,9 +59,7 @@ describe('Auth (Public); /auth', () => {
     let accessToken;
 
     beforeAll(async () => {
-      await request(httpServer)
-        .delete('/hometask-nest/testing/all-data')
-        .expect(HTTP_STATUS_CODE.NO_CONTENT_204);
+      await deleteAllDataTest(httpServer);
 
       user = await createUserTest(
         httpServer,
@@ -104,9 +102,7 @@ describe('Auth (Public); /auth', () => {
     });
 
     beforeAll(async () => {
-      await request(httpServer)
-        .delete('/hometask-nest/testing/all-data')
-        .expect(HTTP_STATUS_CODE.NO_CONTENT_204);
+      await deleteAllDataTest(httpServer);
     });
 
     it('+ (204) should register user successfully', async () => {
@@ -277,9 +273,7 @@ describe('Auth (Public); /auth', () => {
     });
 
     beforeAll(async () => {
-      await request(httpServer)
-        .delete('/hometask-nest/testing/all-data') //todo dropDB?
-        .expect(HTTP_STATUS_CODE.NO_CONTENT_204);
+      await deleteAllDataTest(httpServer);
 
       //register user
       const result = await registerUserTest(
@@ -366,9 +360,7 @@ describe('Auth (Public); /auth', () => {
     let refreshToken;
 
     beforeAll(async () => {
-      await request(httpServer)
-        .delete('/hometask-nest/testing/all-data')
-        .expect(HTTP_STATUS_CODE.NO_CONTENT_204);
+      await deleteAllDataTest(httpServer);
 
       user = await createUserTest(
         httpServer,
@@ -448,9 +440,7 @@ describe('Auth (Public); /auth', () => {
     let newAccessToken;
 
     beforeAll(async () => {
-      await request(httpServer)
-        .delete('/hometask-nest/testing/all-data')
-        .expect(HTTP_STATUS_CODE.NO_CONTENT_204);
+      await deleteAllDataTest(httpServer);
       //create user
       await createCorrectUserTest(httpServer);
       //login user
@@ -508,9 +498,7 @@ describe('Auth (Public); /auth', () => {
     });
 
     beforeAll(async () => {
-      await request(httpServer)
-        .delete('/hometask-nest/testing/all-data')
-        .expect(HTTP_STATUS_CODE.NO_CONTENT_204);
+      await deleteAllDataTest(httpServer);
 
       //create user
       user = await createUserTest(

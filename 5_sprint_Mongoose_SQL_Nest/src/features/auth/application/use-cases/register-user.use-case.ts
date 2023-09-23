@@ -61,7 +61,6 @@ export class RegisterUserUseCase
         uuidv4(),
         userId,
       );
-      throw new Error();
       await this.banInfoPublicRepository.createBanInfoUser(userId);
 
       // commit transaction now:
