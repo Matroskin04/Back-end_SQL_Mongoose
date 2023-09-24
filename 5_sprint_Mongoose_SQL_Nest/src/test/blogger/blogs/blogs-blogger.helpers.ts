@@ -13,7 +13,8 @@ export async function createBlogTest(
     .send({
       name: name ?? 'correctName',
       description: description ?? 'correctShortDescription',
-      websiteUrl: 'correctContent',
+      websiteUrl:
+        websiteUrl ?? 'https://www.mongodb.com/docs/manual/reference/method',
     });
 }
 
