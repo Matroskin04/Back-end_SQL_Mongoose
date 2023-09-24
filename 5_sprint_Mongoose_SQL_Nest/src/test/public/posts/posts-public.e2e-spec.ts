@@ -71,23 +71,25 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
 
       //create and login 3 users
       const result = await createAndLogin3UsersTest(httpServer);
-      const blog = await createBlogTest(httpServer, result[0].accessToken);
-      const blog1 = await createCorrectBlogTest(
+      const blog1 = await createBlogTest(
         httpServer,
         result[0].accessToken,
+        'Blog 1',
       );
-      const blog2 = await createCorrectBlogTest(
+      const blog2 = await createBlogTest(
         httpServer,
         result[1].accessToken,
+        'blog 2',
       );
-      const blog3 = await createCorrectBlogTest(
+      const blog3 = await createBlogTest(
         httpServer,
         result[2].accessToken,
+        'c blog 3',
       );
       //create 10 blogs by 3 users
       const postsInfo = await create9PostsOf3BlogsBy3Users(
         httpServer,
-        [blog1.id, blog2.id, blog3.id],
+        [blog1.body.id, blog2.body.id, blog3.body.id],
         [result[0].accessToken, result[1].accessToken, result[2].accessToken],
         [result[0].userId, result[1].userId, result[2].userId],
       );
