@@ -3,17 +3,17 @@ import request from 'supertest';
 export async function createBlogTest(
   httpServer,
   accessToken: string,
-  name,
-  description,
-  websiteUrl,
+  name?,
+  description?,
+  websiteUrl?,
 ) {
   return request(httpServer)
     .post(`/hometask-nest/blogger/blogs`)
     .set('Authorization', `Bearer ${accessToken}`)
     .send({
-      name,
-      description,
-      websiteUrl,
+      name: name ?? 'correctName',
+      description: description ?? 'correctShortDescription',
+      websiteUrl: 'correctContent',
     });
 }
 

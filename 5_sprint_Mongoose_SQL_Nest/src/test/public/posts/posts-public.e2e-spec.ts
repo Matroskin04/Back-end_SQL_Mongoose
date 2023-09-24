@@ -26,6 +26,7 @@ import {
 } from '../comments/comments-public.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { startApp } from '../../test.utils';
+import { createBlogTest } from '../../blogger/blogs/blogs-blogger.helpers';
 
 describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -70,6 +71,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
 
       //create and login 3 users
       const result = await createAndLogin3UsersTest(httpServer);
+      const blog = await createBlogTest(httpServer, result[0].accessToken);
       const blog1 = await createCorrectBlogTest(
         httpServer,
         result[0].accessToken,
