@@ -21,6 +21,7 @@ export function createResponseAllPostsTest(
   pagesCount?: number,
   page?: number,
   pageSize?: number,
+  arrOfBlogNames?: Array<string>,
 ) {
   const allPosts: any = [];
   let count = 0;
@@ -33,7 +34,7 @@ export function createResponseAllPostsTest(
       shortDescription: expect.any(String),
       content: expect.any(String),
       blogId: expect.any(String),
-      blogName: expect.any(String),
+      blogName: arrOfBlogNames ? arrOfBlogNames[i] : expect.any(String),
       createdAt: expect.any(String),
       extendedLikesInfo: {
         likesCount: arrOfLikesCount ? arrOfLikesCount[count] : 0,
