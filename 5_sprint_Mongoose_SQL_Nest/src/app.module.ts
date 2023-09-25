@@ -103,6 +103,7 @@ import { CommentsOrmQueryRepository } from './features/comments/infrastructure/t
 import { CommentsLikesOrmRepository } from './features/comments/infrastructure/typeORM/subrepository/comments-likes-orm.repository';
 import { DevicesOrmQueryRepository } from './features/devices/infrastructure/typeORM/query.repository/devices-orm.query.repository';
 import { QuizSaController } from './features/quiz/api/quiz-sa.controller';
+import { QuestionQuiz } from './features/quiz/domain/question-quiz.entity';
 
 const queryRepositories = [
   // SQL
@@ -203,6 +204,7 @@ const handlers = [
       UsersPasswordRecovery,
       UsersEmailConfirmation,
       UsersBanInfo,
+      QuestionQuiz,
     ]),
     TypeOrmModule.forRoot({
       type: 'postgres',

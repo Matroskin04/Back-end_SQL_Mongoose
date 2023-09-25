@@ -1,7 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { startApp } from '../../test.utils';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
-import { createBlogSaTest } from '../blogs/blogs-sa.helpers';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { createQuestionQuizSaTest } from './quiz-sa.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
