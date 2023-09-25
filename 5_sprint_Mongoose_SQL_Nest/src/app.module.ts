@@ -26,8 +26,8 @@ import { DevicesController } from './features/devices/api/devices.controller';
 import { DevicesQueryRepository } from './features/devices/infrastructure/SQL/query.repository/devices.query.repository';
 import { DevicesRepository } from './features/devices/infrastructure/SQL/repository/devices.repository';
 import { JwtAdapter } from './infrastructure/adapters/jwt.adapter';
-import { BlogsPublicController } from './features/blogs/api/public/blogs-public.controller';
-import { BlogsBloggerController } from './features/blogs/api/blogger/blogs-blogger.controller';
+import { BlogsPublicController } from './features/blogs/api/blogs-public.controller';
+import { BlogsBloggerController } from './features/blogs/api/blogs-blogger.controller';
 import { BlogsQueryRepository } from './features/blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 import { BlogsRepository } from './features/blogs/infrastructure/SQL/repository/blogs.repository';
 import { UsersBloggerController } from './features/users/api/blogger/users-blogger.controller';
@@ -95,13 +95,14 @@ import { BlogsOrmQueryRepository } from './features/blogs/infrastructure/typeORM
 import { PostsOrmQueryRepository } from './features/posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
 import { BlogsOrmRepository } from './features/blogs/infrastructure/typeORM/repository/blogs-orm.repository';
 import { PostsOrmRepository } from './features/posts/infrastructure/typeORM/repository/posts-orm.repository';
-import { BlogsSAController } from './features/blogs/api/sa/blogs-sa.controller';
+import { BlogsSAController } from './features/blogs/api/blogs-sa.controller';
 import { LikesInfoOrmRepository } from './features/likes-info/infrastructure/typeORM/repository/likes-info-orm.repository';
 import { LikesInfoOrmQueryRepository } from './features/likes-info/infrastructure/typeORM/query.repository/likes-info-orm.query.repository';
 import { CommentsOrmRepository } from './features/comments/infrastructure/typeORM/repository/comments-orm.repository';
 import { CommentsOrmQueryRepository } from './features/comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
 import { CommentsLikesOrmRepository } from './features/comments/infrastructure/typeORM/subrepository/comments-likes-orm.repository';
 import { DevicesOrmQueryRepository } from './features/devices/infrastructure/typeORM/query.repository/devices-orm.query.repository';
+import { QuizSaController } from './features/quiz/api/quiz-sa.controller';
 
 const queryRepositories = [
   // SQL
@@ -226,6 +227,7 @@ const handlers = [
     CommentsController,
     UsersSaController,
     UsersBloggerController,
+    QuizSaController,
     TestingController,
   ],
   providers: [

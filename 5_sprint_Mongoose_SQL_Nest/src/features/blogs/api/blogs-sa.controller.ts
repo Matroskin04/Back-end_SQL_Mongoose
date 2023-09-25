@@ -11,34 +11,34 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { AllBlogsSAOutputModel } from '../models/output/blog-sa.output.model';
-import { HTTP_STATUS_CODE } from '../../../../infrastructure/utils/enums/http-status';
-import { BasicAuthGuard } from '../../../../infrastructure/guards/authorization-guards/basic-auth.guard';
-import { BanInfoInputModel } from '../models/input/ban-info.input.model';
+import { AllBlogsSAOutputModel } from './models/output/blog-sa.output.model';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { BasicAuthGuard } from '../../../infrastructure/guards/authorization-guards/basic-auth.guard';
+import { BanInfoInputModel } from './models/input/ban-info.input.model';
 import {
   QueryBlogsInputModel,
   QueryPostsOfBlogInputModel,
-} from '../models/input/queries-blog.input.model';
+} from './models/input/queries-blog.input.model';
 import { CommandBus } from '@nestjs/cqrs';
-import { BindBlogWithUserCommand } from '../../application/sa/use-cases/bind-blog-with-user.use-case';
-import { UpdateBanInfoOfBlogCommand } from '../../application/sa/use-cases/update-ban-info-of-blog.use-case';
-import { BlogsOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
+import { BindBlogWithUserCommand } from '../application/sa/use-cases/bind-blog-with-user.use-case';
+import { UpdateBanInfoOfBlogCommand } from '../application/sa/use-cases/update-ban-info-of-blog.use-case';
+import { BlogsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
 import {
   BlogOutputModel,
   PostsOfBlogViewModel,
-} from '../models/output/blog.output.models';
-import { PostsOrmQueryRepository } from '../../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
-import { CreateBlogInputModel } from '../models/input/create-blog.input.model';
-import { CreateBlogCommand } from '../../application/blogger/use-cases/create-blog.use-case';
-import { CreatePostByBlogIdModel } from '../../../posts/api/models/input/create-post.input.model';
-import { PostTypeWithId } from '../../../posts/infrastructure/SQL/repository/posts.types.repositories';
-import { CreatePostCommand } from '../../../posts/application/use-cases/create-post.use-case';
-import { UpdateBlogInputModel } from '../models/input/update-blog.input.model';
-import { UpdateBlogCommand } from '../../application/blogger/use-cases/update-blog.use-case';
-import { UpdatePostByBlogIdInputModel } from '../models/input/update-post-by-blog-id.input.model';
-import { UpdatePostCommand } from '../../../posts/application/use-cases/update-post.use-case';
-import { DeleteBlogCommand } from '../../application/blogger/use-cases/delete-blog.use-case';
-import { DeletePostCommand } from '../../../posts/application/use-cases/delete-post.use-case';
+} from './models/output/blog.output.models';
+import { PostsOrmQueryRepository } from '../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
+import { CreateBlogInputModel } from './models/input/create-blog.input.model';
+import { CreateBlogCommand } from '../application/blogger/use-cases/create-blog.use-case';
+import { CreatePostByBlogIdModel } from '../../posts/api/models/input/create-post.input.model';
+import { PostTypeWithId } from '../../posts/infrastructure/SQL/repository/posts.types.repositories';
+import { CreatePostCommand } from '../../posts/application/use-cases/create-post.use-case';
+import { UpdateBlogInputModel } from './models/input/update-blog.input.model';
+import { UpdateBlogCommand } from '../application/blogger/use-cases/update-blog.use-case';
+import { UpdatePostByBlogIdInputModel } from './models/input/update-post-by-blog-id.input.model';
+import { UpdatePostCommand } from '../../posts/application/use-cases/update-post.use-case';
+import { DeleteBlogCommand } from '../application/blogger/use-cases/delete-blog.use-case';
+import { DeletePostCommand } from '../../posts/application/use-cases/delete-post.use-case';
 
 @Controller('/hometask-nest/sa/blogs')
 export class BlogsSAController {

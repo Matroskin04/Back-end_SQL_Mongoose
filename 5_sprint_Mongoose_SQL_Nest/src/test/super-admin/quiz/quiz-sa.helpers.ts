@@ -12,6 +12,6 @@ export async function createQuestionQuizSaTest(
     .auth(saLogin ?? 'admin', saPass ?? 'qwerty')
     .send({
       body: body ?? '2+2=?',
-      correctAnswers: correctAnswers ?? ['4', 4, 'four', 'четыре'],
+      correctAnswers: correctAnswers ?? ['4', 'four', 'четыре'],
     });
 }
