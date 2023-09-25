@@ -8,10 +8,9 @@ import {
 import { Transform } from 'class-transformer';
 
 export class CreateQuestionQuizInputModel {
-  @Transform(({ value }) => value?.trim())
-  @IsNotEmpty({ message: 'The field shouldn\t be empty' })
-  @IsString({ message: 'It should be a string' })
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @Length(10, 500)
+  @IsString({ message: 'It should be a string' })
   body: string;
 
   @IsArray()

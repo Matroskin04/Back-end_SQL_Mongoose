@@ -2,8 +2,8 @@ import request from 'supertest';
 
 export async function createQuestionQuizSaTest(
   httpServer,
-  body?: null | string,
-  correctAnswers?: null | [],
+  body?,
+  correctAnswers?,
   saLogin?,
   saPass?,
 ) {
