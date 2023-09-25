@@ -104,6 +104,8 @@ import { CommentsLikesOrmRepository } from './features/comments/infrastructure/t
 import { DevicesOrmQueryRepository } from './features/devices/infrastructure/typeORM/query.repository/devices-orm.query.repository';
 import { QuizSaController } from './features/quiz/api/quiz-sa.controller';
 import { QuestionQuiz } from './features/quiz/domain/question-quiz.entity';
+import { CreateQuestionQuizUseCase } from './features/quiz/application/sa/use-cases/create-question-quiz.use-case';
+import { QuizRepository } from './features/quiz/infrastructure/typeORM/repository/quiz.repository';
 
 const queryRepositories = [
   // SQL
@@ -134,6 +136,7 @@ const repositories = [
   LikesInfoRepository,
   PostsRepository,
   UsersRepository,
+  QuizRepository,
   TestingRepository,
 
   //ORM
@@ -185,6 +188,9 @@ const handlers = [
   DeleteDevicesExcludeCurrentUseCase,
   DeleteDeviceByIdUseCase,
   DeleteDevicesByUserIdUseCase,
+
+  //Quiz
+  CreateQuestionQuizUseCase,
 ];
 
 @Module({

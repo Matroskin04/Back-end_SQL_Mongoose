@@ -2,24 +2,24 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { BasicAuthGuard } from '../../../infrastructure/guards/authorization-guards/basic-auth.guard';
 import { CreateQuestionQuizInputModel } from './models/input/create-question-quiz.input.model';
 import { QuestionSaOutputModel } from './models/output/question-sa.output.model';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateQuestionQuizCommand } from '../application/sa/use-cases/create-question-quiz.use-case';
 
 @Controller('/hometask-nest/sa/quiz')
 export class QuizSaController {
-  constructor() {}
+  constructor(protected commandBus: CommandBus) {}
 
   @UseGuards(BasicAuthGuard)
   @Post('questions')
   async createQuestionQuiz(
     @Body() inputQuestionModel: CreateQuestionQuizInputModel,
   ): Promise<QuestionSaOutputModel> {
-    const result = [];
-    return {
-      id: 'string',
-      body: 'string',
-      correctAnswers: ['string'],
-      published: false,
-      createdAt: '2023-09-25T08:14:32.307Z',
-      updatedAt: '2023-09-25T08:14:32.307Z',
-    };
+    const result = await this.commandBus.execute(
+      new CreateQuestionQuizCommand(
+        inputQuestionModel.body,
+        inputQuestionModel.correctAnswers,
+      ),
+    );
+    return result;
   }
 }

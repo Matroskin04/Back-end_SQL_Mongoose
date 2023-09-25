@@ -13,15 +13,15 @@ export class QuestionQuiz {
   @Column({ length: 15 })
   body: string;
 
-  @Column('simple-array')
+  @Column('simple-array', { nullable: true })
   correctAnswers: string[];
 
-  @Column()
+  @Column({ default: false })
   published: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ nullable: true })
   updatedAt: Date;
 }
