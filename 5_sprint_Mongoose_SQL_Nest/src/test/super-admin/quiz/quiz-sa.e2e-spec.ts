@@ -2,7 +2,10 @@ import { INestApplication } from '@nestjs/common';
 import { startApp } from '../../test.utils';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
-import { createQuestionQuizSaTest } from './quiz-sa.helpers';
+import {
+  createQuestionQuizSaTest,
+  createResponseQuestion,
+} from './quiz-sa.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 
 describe('Quiz (SA); /sa/quiz', () => {
@@ -23,6 +26,9 @@ describe('Quiz (SA); /sa/quiz', () => {
     await app.close();
   });
 
+  //correct data question
+  const correctBody = 'Solve: 3 + 3 = ?';
+  const correctAnswers = ['6', 'шесть', 'six'];
   //incorrectData question
   const bodyLength9 = 'a'.repeat(9);
   const bodyLength501 = 'a'.repeat(501);
@@ -91,6 +97,18 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
       expect(result4.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result4.body).toEqual(createErrorsMessageTest(['body']));
+    });
+
+    it(`+ (201) should create question for quiz`, async () => {
+      const result = await createQuestionQuizSaTest(
+        httpServer,
+        correctBody,
+        correctAnswers,
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+      expect(result.body).toEqual(
+        createResponseQuestion(null, correctBody, correctAnswers),
+      );
     });
   });
 });

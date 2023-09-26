@@ -1,6 +1,5 @@
-import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { QuestionQuizDTOType } from '../dto/question.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { QuizRepository } from '../../../infrastructure/typeORM/repository/quiz.repository';
 
 export class CreateQuestionQuizCommand {
