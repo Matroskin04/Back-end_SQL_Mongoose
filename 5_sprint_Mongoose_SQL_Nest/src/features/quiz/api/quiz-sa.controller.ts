@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   HttpCode,
   NotFoundException,
   Param,
@@ -15,6 +16,7 @@ import { CreateQuestionQuizCommand } from '../application/sa/use-cases/create-qu
 import { QuestionSaOutputModel } from './models/output/question-sa.output.model';
 import { UpdateQuestionQuizInputModel } from './models/input/update-question-quiz.input.model';
 import { UpdateQuestionQuizCommand } from '../application/sa/use-cases/update-question-quiz.use-case';
+import { DeleteQuestionQuizCommand } from '../application/sa/use-cases/delete-question-quiz.use-case';
 
 @Controller('/hometask-nest/sa/quiz')
 export class QuizSaController {
@@ -48,6 +50,18 @@ export class QuizSaController {
         inputQuestionModel.correctAnswers,
       ),
     );
+    if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(204)
+  @Delete('questions/:id')
+  async deleteQuestionQuizById(@Param('id') questionId: string): Promise<void> {
+    const result = await this.commandBus.execute(
+      new DeleteQuestionQuizCommand(questionId),
+    );
+
     if (!result) throw new NotFoundException();
     return;
   }
