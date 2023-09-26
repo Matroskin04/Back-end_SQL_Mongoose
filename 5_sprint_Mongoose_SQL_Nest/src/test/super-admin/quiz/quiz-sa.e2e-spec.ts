@@ -7,10 +7,12 @@ import {
   createCorrectQuestionSaTest,
   createQuestionSaTest,
   createResponseQuestion,
+  deleteQuestionSaTest,
   updateQuestionSaTest,
 } from './quiz-sa.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { DataSource } from 'typeorm';
+import { QuestionQuiz } from '../../../features/quiz/domain/question-quiz.entity';
 
 describe('Quiz (SA); /sa/quiz', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -219,16 +221,61 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //check that fields were changed, and updated date was set
-      const updatedQuestion = await dataSource.query(
-        `
-        SELECT "body", "correctAnswers", "updatedAt"
-            FROM public."question_quiz"
-                WHERE "id" = $1`,
-        [correctQuestionId],
+      const updatedQuestion = await dataSource
+        .createQueryBuilder(QuestionQuiz, 'q')
+        .select(['q."body"', 'q."correctAnswers"', 'q."updatedAt"'])
+        .where('q."id" = :id', { id: correctQuestionId })
+        .getRawOne();
+      expect(updatedQuestion.body).toBe('new question body');
+      expect(updatedQuestion.correctAnswers).toBe('new 1,new 2');
+      expect(updatedQuestion.updatedAt).not.toBeNull();
+    });
+  });
+
+  describe(`/questions/:id (DELETE) - delete question`, () => {
+    beforeAll(async () => {
+      await deleteAllDataTest(httpServer);
+
+      questionData = await createCorrectQuestionSaTest(httpServer);
+      correctQuestionId = questionData.id;
+    });
+
+    it(`- (401) sa login is incorrect
+              - (401) sa password is incorrect`, async () => {
+      //sa login is incorrect
+      const result1 = await deleteQuestionSaTest(
+        httpServer,
+        correctQuestionId,
+        'incorrectLogin',
       );
-      expect(updatedQuestion[0].body).toBe('new question body');
-      expect(updatedQuestion[0].correctAnswers).toBe('new 1,new 2');
-      expect(updatedQuestion[0].updatedAt).not.toBeNull();
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+
+      //sa password is incorrect
+      const result2 = await deleteQuestionSaTest(
+        httpServer,
+        correctQuestionId,
+        null,
+        'IncorrectPass',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+    });
+
+    it(`- (404) question with such id doesn't exist`, async () => {
+      const result = await deleteQuestionSaTest(httpServer, uuidv4());
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
+    });
+
+    it(`+ (204) should update question`, async () => {
+      const result = await deleteQuestionSaTest(httpServer, correctQuestionId);
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      //check that deletion is successful
+      const updatedQuestion = await dataSource
+        .createQueryBuilder(QuestionQuiz, 'q')
+        .select()
+        .where('q."id" = :id', { id: correctQuestionId })
+        .getExists();
+      expect(updatedQuestion).toBeFalsy();
     });
   });
 });
