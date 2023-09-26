@@ -22,6 +22,6 @@ export class QuestionQuiz {
   @CreateDateColumn()
   createdAt: Date;
 
-  @CreateDateColumn({ nullable: true })
+  @Column({ nullable: true })
   updatedAt: Date;
 }
