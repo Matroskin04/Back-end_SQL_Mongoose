@@ -36,6 +36,7 @@ export class QuizRepository {
   }
 
   async updateQuestionQuiz(
+    questionId: string,
     body: string,
     correctAnswers: string[],
   ): Promise<boolean> {
@@ -43,6 +44,7 @@ export class QuizRepository {
       .createQueryBuilder()
       .update()
       .set({ body, correctAnswers })
+      .where('id = :questionId', { questionId })
       .execute();
 
     return result.affected === 1;

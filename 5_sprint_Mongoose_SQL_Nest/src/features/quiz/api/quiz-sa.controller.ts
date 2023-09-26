@@ -37,11 +37,12 @@ export class QuizSaController {
   @HttpCode(204)
   @Post('questions/:id')
   async updateQuestionQuizById(
-    @Param('id') id: string,
+    @Param('id') questionId: string,
     @Body() inputQuestionModel: UpdateQuestionQuizInputModel,
   ): Promise<void> {
     const result = await this.commandBus.execute(
       new UpdateQuestionQuizCommand(
+        questionId,
         inputQuestionModel.body,
         inputQuestionModel.correctAnswers,
       ),
