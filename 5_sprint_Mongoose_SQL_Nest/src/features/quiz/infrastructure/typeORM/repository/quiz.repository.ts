@@ -28,8 +28,10 @@ export class QuizRepository {
         'updatedAt',
       ])
       .execute();
-    console.log(result);
 
-    return result.raw[0];
+    return {
+      ...result.raw[0],
+      correctAnswers: result.raw[0].correctAnswers.split(','),
+    };
   }
 }
