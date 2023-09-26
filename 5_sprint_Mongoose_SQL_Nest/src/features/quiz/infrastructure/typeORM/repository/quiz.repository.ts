@@ -28,10 +28,10 @@ export class QuizRepository {
         'updatedAt',
       ])
       .execute();
-
     return {
       ...result.raw[0],
       correctAnswers: result.raw[0].correctAnswers.split(','),
+      createdAt: result.raw[0].createdAt.toString(),
     };
   }
 
@@ -43,7 +43,7 @@ export class QuizRepository {
     const result = await this.questionQuizRepository
       .createQueryBuilder()
       .update()
-      .set({ body, correctAnswers })
+      .set({ body, correctAnswers, updatedAt: () => 'CURRENT_TIMESTAMP' })
       .where('id = :questionId', { questionId })
       .execute();
 

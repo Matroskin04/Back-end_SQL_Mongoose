@@ -10,6 +10,7 @@ import {
   updateQuestionSaTest,
 } from './quiz-sa.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
+import { DataSource } from 'typeorm';
 
 describe('Quiz (SA); /sa/quiz', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -17,11 +18,14 @@ describe('Quiz (SA); /sa/quiz', () => {
   //vars for starting app and testing
   let app: INestApplication;
   let httpServer;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
     const info = await startApp();
     app = info.app;
     httpServer = info.httpServer;
+
+    dataSource = await app.resolve(DataSource);
   });
 
   afterAll(async () => {
@@ -203,6 +207,28 @@ describe('Quiz (SA); /sa/quiz', () => {
         null,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
+    });
+
+    it(`+ (204) should update question`, async () => {
+      const result = await updateQuestionSaTest(
+        httpServer,
+        correctQuestionId,
+        'new question body',
+        ['new 1', 'new 2'],
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      //check that fields were changed, and updated date was set
+      const updatedQuestion = await dataSource.query(
+        `
+        SELECT "body", "correctAnswers", "updatedAt"
+            FROM public."question_quiz"
+                WHERE "id" = $1`,
+        [correctQuestionId],
+      );
+      expect(updatedQuestion[0].body).toBe('new question body');
+      expect(updatedQuestion[0].correctAnswers).toBe('new 1,new 2');
+      expect(updatedQuestion[0].updatedAt).not.toBeNull();
     });
   });
 });
