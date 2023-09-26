@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionQuiz } from '../../../domain/question-quiz.entity';
 import { Repository } from 'typeorm';
-import { QuestionQuizAllInfoType } from './quiz.types.query.repository';
+import {
+  AnswersOfQuestionType,
+  QuestionQuizAllInfoType,
+} from './quiz.types.query.repository';
 
 @Injectable()
 export class QuizQueryRepository {
@@ -12,13 +15,23 @@ export class QuizQueryRepository {
   ) {}
 
   //ADDITION
+  async getQuestionAnswersById(id): Promise<null | AnswersOfQuestionType> {
+    const result = await this.questionQuizRepository
+      .createQueryBuilder('q')
+      .select('q."correctAnswers"')
+      .where('q."id" = :id', { id })
+      .getRawOne();
+
+    return result.correctAnswers ?? result;
+  }
+
   async getQuestionAllInfoById(id): Promise<null | QuestionQuizAllInfoType> {
     const result = await this.questionQuizRepository
       .createQueryBuilder('q')
       .select()
       .where('q."id" = :id', { id })
       .getOne();
-    console.log(result);
+
     return result
       ? {
           ...result,

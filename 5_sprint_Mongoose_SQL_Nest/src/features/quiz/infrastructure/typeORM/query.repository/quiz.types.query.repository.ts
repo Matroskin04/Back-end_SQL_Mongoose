@@ -6,3 +6,5 @@ export type QuestionQuizAllInfoType = {
   createdAt: string;
   updatedAt: string | null;
 };
+
+export type AnswersOfQuestionType = string[];
