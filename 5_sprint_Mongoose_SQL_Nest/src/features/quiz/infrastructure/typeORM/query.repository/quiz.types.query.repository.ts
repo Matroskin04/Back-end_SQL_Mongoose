@@ -7,4 +7,4 @@ export type QuestionQuizAllInfoType = {
   updatedAt: string | null;
 };
 
-export type AnswersOfQuestionType = string[];
+export type AnswersOfQuestionType = { correctAnswers: string[] };

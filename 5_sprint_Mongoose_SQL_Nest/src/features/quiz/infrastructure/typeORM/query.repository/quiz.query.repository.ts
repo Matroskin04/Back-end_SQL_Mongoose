@@ -22,7 +22,7 @@ export class QuizQueryRepository {
       .where('q."id" = :id', { id })
       .getRawOne();
 
-    return result.correctAnswers ?? result;
+    return result;
   }
 
   async getQuestionAllInfoById(id): Promise<null | QuestionQuizAllInfoType> {

@@ -261,6 +261,13 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
+
+    // it(`- (400) `)
+
+    it(`- (404) question with such id doesn't exist`, async () => {
+      const result = await publishQuestionSaTest(httpServer, uuidv4(), true);
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
+    });
   });
 
   describe(`/questions/:id (DELETE) - delete question`, () => {

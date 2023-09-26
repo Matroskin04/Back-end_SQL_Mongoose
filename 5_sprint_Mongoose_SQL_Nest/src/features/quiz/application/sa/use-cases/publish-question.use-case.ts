@@ -20,8 +20,9 @@ export class PublishQuestionUseCase
   async execute(command: PublishQuestionCommand): Promise<boolean> {
     const { id, published } = command;
 
-    const answers = this.quizQueryRepository.getQuestionAnswersById(id);
-    if (!answers)
+    const result1 = await this.quizQueryRepository.getQuestionAnswersById(id);
+    if (!result1) return false;
+    if (!result1.correctAnswers)
       throw new BadRequestException(
         createBodyErrorBadRequest(
           "The question doesn't have any correct answers",
@@ -29,7 +30,10 @@ export class PublishQuestionUseCase
         ),
       );
 
-    const result = await this.quizRepository.publishQuestionQuiz(id, published);
-    return result;
+    const result2 = await this.quizRepository.publishQuestionQuiz(
+      id,
+      published,
+    );
+    return result2;
   }
 }
