@@ -1,6 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { QuizRepository } from '../../../infrastructure/typeORM/repository/quiz.repository';
 import { QuizQueryRepository } from '../../../infrastructure/typeORM/query.repository/quiz.query.repository';
+import { BadRequestException } from '@nestjs/common';
+import { createBodyErrorBadRequest } from '../../../../../infrastructure/utils/functions/create-error-bad-request.function';
 
 export class PublishQuestionCommand {
   constructor(public id: string, public published: boolean) {}
@@ -19,7 +21,13 @@ export class PublishQuestionUseCase
     const { id, published } = command;
 
     const answers = this.quizQueryRepository.getQuestionAnswersById(id);
-    if (!answers) return false;
+    if (!answers)
+      throw new BadRequestException(
+        createBodyErrorBadRequest(
+          "The question doesn't have any correct answers",
+          'correctAnswers',
+        ),
+      );
 
     const result = await this.quizRepository.publishQuestionQuiz(id, published);
     return result;

@@ -109,7 +109,6 @@ import { QuizRepository } from './features/quiz/infrastructure/typeORM/repositor
 import { UpdateQuestionUseCase } from './features/quiz/application/sa/use-cases/update-question.use-case';
 import { DeleteQuestionUseCase } from './features/quiz/application/sa/use-cases/delete-question.use-case';
 import { PublishQuestionUseCase } from './features/quiz/application/sa/use-cases/publish-question.use-case';
-import { DoesAnswersExistConstraint } from './infrastructure/decorators/quiz/does-correct-answers-exist.decorator';
 import { QuizQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/quiz.query.repository';
 
 const queryRepositories = [
@@ -251,7 +250,6 @@ const handlers = [
     ...queryRepositories,
     ...repositories,
     IsBlogByIdExistsConstraint,
-    DoesAnswersExistConstraint,
     //Strategy
     LocalStrategy,
     JwtRefreshStrategy,
