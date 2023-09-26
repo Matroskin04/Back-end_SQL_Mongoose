@@ -98,10 +98,12 @@ export async function createCorrectQuestionSaTest(
     .post(`/hometask-nest/sa/quiz/questions`)
     .auth('admin', 'qwerty')
     .send({
-      body: body ?? 'Solve: 2 + 2 = ?',
-      correctAnswers: correctAnswers ?? ['4', 'four', 'четыре'],
+      body: body === undefined ? 'Solve: 2 + 2 = ?' : null,
+      correctAnswers:
+        correctAnswers === undefined ? ['4', 'four', 'четыре'] : null,
     });
   expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-  expect(result.body).toEqual(createResponseQuestion(null, false));
+  expect(result.body.updatedAt).toBeNull();
+  expect(result.body.published).toBeFalsy();
   return result.body;
 }

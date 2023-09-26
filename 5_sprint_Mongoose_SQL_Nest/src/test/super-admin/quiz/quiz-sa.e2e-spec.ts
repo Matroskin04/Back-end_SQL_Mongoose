@@ -233,11 +233,19 @@ describe('Quiz (SA); /sa/quiz', () => {
   });
 
   describe(`/questions/:id/publish (PUT) - update publish status of a question`, () => {
+    let questionWithoutAnswersId;
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
       questionData = await createCorrectQuestionSaTest(httpServer);
       correctQuestionId = questionData.id;
+
+      const question2 = await createCorrectQuestionSaTest(
+        httpServer,
+        'some interesting question',
+        null,
+      );
+      questionWithoutAnswersId = question2.id;
     });
 
     it(`- (401) sa login is incorrect
@@ -262,7 +270,26 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
-    // it(`- (400) `)
+    it(`- (400) input value of the field 'published' is not boolean,
+              - (400) specified question doesn't have correct answers`, async () => {
+      //value is not boolean
+      const result1 = await publishQuestionSaTest(
+        httpServer,
+        correctQuestionId,
+        'string',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result1.body).toEqual(createErrorsMessageTest(['published']));
+
+      //question doesn't have correct answers
+      const result2 = await publishQuestionSaTest(
+        httpServer,
+        questionWithoutAnswersId,
+        true,
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result2.body).toEqual(createErrorsMessageTest(['correctAnswers']));
+    });
 
     it(`- (404) question with such id doesn't exist`, async () => {
       const result = await publishQuestionSaTest(httpServer, uuidv4(), true);
