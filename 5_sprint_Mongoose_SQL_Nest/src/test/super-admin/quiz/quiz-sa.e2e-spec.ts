@@ -14,7 +14,6 @@ import {
 } from './quiz-sa.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { DataSource } from 'typeorm';
-import { QuestionQuiz } from '../../../features/quiz/domain/question-quiz.entity';
 
 describe('Quiz (SA); /sa/quiz', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -230,6 +229,37 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(updatedQuestion.body).toBe('new question body');
       expect(updatedQuestion.correctAnswers).toBe('new 1,new 2');
       expect(updatedQuestion.updatedAt).not.toBeNull();
+    });
+  });
+
+  describe(`/questions/:id/publish (PUT) - update publish status of a question`, () => {
+    beforeAll(async () => {
+      await deleteAllDataTest(httpServer);
+
+      questionData = await createCorrectQuestionSaTest(httpServer);
+      correctQuestionId = questionData.id;
+    });
+
+    it(`- (401) sa login is incorrect
+              - (401) sa password is incorrect`, async () => {
+      //sa login is incorrect
+      const result1 = await publishQuestionSaTest(
+        httpServer,
+        correctQuestionId,
+        true,
+        'incorrectLogin',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+
+      //sa password is incorrect
+      const result2 = await publishQuestionSaTest(
+        httpServer,
+        correctQuestionId,
+        true,
+        null,
+        'IncorrectPass',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
   });
 
