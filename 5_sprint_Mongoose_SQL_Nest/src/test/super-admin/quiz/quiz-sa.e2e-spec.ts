@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { startApp } from '../../test.utils';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { v4 as uuidv4 } from 'uuid';
 import {
   createCorrectQuestionSaTest,
   createQuestionSaTest,
@@ -29,6 +30,7 @@ describe('Quiz (SA); /sa/quiz', () => {
   });
 
   //correct data question
+  let correctQuestionId;
   let questionData;
   const correctBody = 'Solve: 3 + 3 = ?';
   const correctAnswers = ['6', 'шесть', 'six'];
@@ -118,6 +120,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       await deleteAllDataTest(httpServer);
 
       questionData = await createCorrectQuestionSaTest(httpServer);
+      correctQuestionId = questionData.id;
     });
 
     it(`- (401) sa login is incorrect
@@ -125,6 +128,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       //sa login is incorrect
       const result1 = await updateQuestionSaTest(
         httpServer,
+        correctQuestionId,
         null,
         null,
         'incorrectLogin',
@@ -134,6 +138,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       //sa password is incorrect
       const result2 = await updateQuestionSaTest(
         httpServer,
+        correctQuestionId,
         null,
         null,
         null,
@@ -149,6 +154,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       //body length, answers not array
       const result1 = await updateQuestionSaTest(
         httpServer,
+        correctQuestionId,
         bodyLength501,
         'not an array',
       );
@@ -157,26 +163,46 @@ describe('Quiz (SA); /sa/quiz', () => {
         createErrorsMessageTest(['body', 'correctAnswers']),
       );
       //body length, answers array contains not a string
-      const result2 = await updateQuestionSaTest(httpServer, bodyLength9, [
-        '123',
-        123,
-      ]);
+      const result2 = await updateQuestionSaTest(
+        httpServer,
+        correctQuestionId,
+        bodyLength9,
+        ['123', 123],
+      );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result2.body).toEqual(
         createErrorsMessageTest(['body', 'correctAnswers']),
       );
       //body is not a string, length of array < 1
-      const result3 = await updateQuestionSaTest(httpServer, 123, []);
+      const result3 = await updateQuestionSaTest(
+        httpServer,
+        correctQuestionId,
+        123,
+        [],
+      );
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result3.body).toEqual(
         createErrorsMessageTest(['body', 'correctAnswers']),
       );
       //body length is less than 10 after trim
-      const result4 = await updateQuestionSaTest(httpServer, '              ', [
-        'correct',
-      ]);
+      const result4 = await updateQuestionSaTest(
+        httpServer,
+        correctQuestionId,
+        '              ',
+        ['correct'],
+      );
       expect(result4.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result4.body).toEqual(createErrorsMessageTest(['body']));
+    });
+
+    it(`- (404) question with such id doesn't exist`, async () => {
+      const result = await updateQuestionSaTest(
+        httpServer,
+        uuidv4(),
+        null,
+        null,
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
   });
 });

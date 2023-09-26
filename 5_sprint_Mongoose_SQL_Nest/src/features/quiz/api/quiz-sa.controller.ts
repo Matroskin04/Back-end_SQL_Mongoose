@@ -5,6 +5,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { BasicAuthGuard } from '../../../infrastructure/guards/authorization-guards/basic-auth.guard';
@@ -35,7 +36,7 @@ export class QuizSaController {
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
-  @Post('questions/:id')
+  @Put('questions/:id')
   async updateQuestionQuizById(
     @Param('id') questionId: string,
     @Body() inputQuestionModel: UpdateQuestionQuizInputModel,
