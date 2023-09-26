@@ -106,6 +106,7 @@ import { QuizSaController } from './features/quiz/api/quiz-sa.controller';
 import { QuestionQuiz } from './features/quiz/domain/question-quiz.entity';
 import { CreateQuestionQuizUseCase } from './features/quiz/application/sa/use-cases/create-question-quiz.use-case';
 import { QuizRepository } from './features/quiz/infrastructure/typeORM/repository/quiz.repository';
+import { UpdateQuestionQuizUseCase } from './features/quiz/application/sa/use-cases/update-question-quiz.use-case';
 
 const queryRepositories = [
   // SQL
@@ -191,6 +192,7 @@ const handlers = [
 
   //Quiz
   CreateQuestionQuizUseCase,
+  UpdateQuestionQuizUseCase,
 ];
 
 @Module({

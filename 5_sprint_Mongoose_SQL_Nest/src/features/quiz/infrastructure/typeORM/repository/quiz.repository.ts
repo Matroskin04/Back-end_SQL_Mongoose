@@ -34,4 +34,17 @@ export class QuizRepository {
       correctAnswers: result.raw[0].correctAnswers.split(','),
     };
   }
+
+  async updateQuestionQuiz(
+    body: string,
+    correctAnswers: string[],
+  ): Promise<boolean> {
+    const result = await this.questionQuizRepository
+      .createQueryBuilder()
+      .update()
+      .set({ body, correctAnswers })
+      .execute();
+
+    return result.affected === 1;
+  }
 }

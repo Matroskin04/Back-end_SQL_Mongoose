@@ -13,6 +13,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateQuestionQuizCommand } from '../application/sa/use-cases/create-question-quiz.use-case';
 import { QuestionSaOutputModel } from './models/output/question-sa.output.model';
 import { UpdateQuestionQuizInputModel } from './models/input/update-question-quiz.input.model';
+import { UpdateQuestionQuizCommand } from '../application/sa/use-cases/update-question-quiz.use-case';
 
 @Controller('/hometask-nest/sa/quiz')
 export class QuizSaController {
@@ -39,7 +40,12 @@ export class QuizSaController {
     @Param('id') id: string,
     @Body() inputQuestionModel: UpdateQuestionQuizInputModel,
   ): Promise<void> {
-    const result = false || true;
+    const result = await this.commandBus.execute(
+      new UpdateQuestionQuizCommand(
+        inputQuestionModel.body,
+        inputQuestionModel.correctAnswers,
+      ),
+    );
     if (!result) throw new NotFoundException();
     return;
   }
