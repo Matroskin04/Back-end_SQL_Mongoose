@@ -20,13 +20,14 @@ export async function createQuestionSaTest(
 
 export async function updateQuestionSaTest(
   httpServer,
+  id,
   body?,
   correctAnswers?,
   saLogin?,
   saPass?,
 ) {
   return request(httpServer)
-    .post(`/hometask-nest/sa/quiz/questions`)
+    .put(`/hometask-nest/sa/quiz/questions/${id}`)
     .auth(saLogin ?? 'admin', saPass ?? 'qwerty')
     .send({
       body: body ?? 'Solve: 3 + 3 = ?',
