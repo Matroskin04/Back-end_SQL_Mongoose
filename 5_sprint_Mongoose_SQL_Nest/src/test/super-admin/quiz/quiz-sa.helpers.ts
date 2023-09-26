@@ -1,6 +1,8 @@
 import request from 'supertest';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { QuestionTestType } from './quiz-sa.types';
 
-export async function createQuestionQuizSaTest(
+export async function createQuestionSaTest(
   httpServer,
   body?,
   correctAnswers?,
@@ -16,11 +18,27 @@ export async function createQuestionQuizSaTest(
     });
 }
 
-export function createResponseQuestion(
-  updatedAt?: null,
+export async function updateQuestionSaTest(
+  httpServer,
   body?,
   correctAnswers?,
+  saLogin?,
+  saPass?,
+) {
+  return request(httpServer)
+    .post(`/hometask-nest/sa/quiz/questions`)
+    .auth(saLogin ?? 'admin', saPass ?? 'qwerty')
+    .send({
+      body: body ?? 'Solve: 3 + 3 = ?',
+      correctAnswers: correctAnswers ?? ['6', 'six', 'шесть'],
+    });
+}
+
+export function createResponseQuestion(
+  updatedAt?: null,
   published?,
+  body?,
+  correctAnswers?,
 ) {
   return {
     id: expect.any(String),
@@ -30,4 +48,21 @@ export function createResponseQuestion(
     createdAt: expect.any(String),
     updatedAt: updatedAt ?? expect.any(String),
   };
+}
+
+export async function createCorrectQuestionSaTest(
+  httpServer,
+  body?,
+  correctAnswers?,
+): Promise<QuestionTestType> {
+  const result = await request(httpServer)
+    .post(`/hometask-nest/sa/quiz/questions`)
+    .auth('admin', 'qwerty')
+    .send({
+      body: body ?? 'Solve: 2 + 2 = ?',
+      correctAnswers: correctAnswers ?? ['4', 'four', 'четыре'],
+    });
+  expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+  expect(result.body).toBe(createResponseQuestion(null, false));
+  return result.body;
 }
