@@ -46,7 +46,7 @@ export function createResponseQuestion(
     correctAnswers: correctAnswers ?? expect.any(Array),
     published: published ?? expect.any(Boolean),
     createdAt: expect.any(String),
-    updatedAt: updatedAt ?? expect.any(String),
+    updatedAt: updatedAt === undefined ? expect.any(String) : null,
   };
 }
 
@@ -63,6 +63,6 @@ export async function createCorrectQuestionSaTest(
       correctAnswers: correctAnswers ?? ['4', 'four', 'четыре'],
     });
   expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-  expect(result.body).toBe(createResponseQuestion(null, false));
+  expect(result.body).toEqual(createResponseQuestion(null, false));
   return result.body;
 }
