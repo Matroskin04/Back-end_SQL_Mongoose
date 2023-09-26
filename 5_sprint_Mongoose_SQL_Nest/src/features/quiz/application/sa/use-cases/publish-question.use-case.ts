@@ -1,28 +1,20 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { QuizRepository } from '../../../infrastructure/typeORM/repository/quiz.repository';
 
-export class UpdateQuestionCommand {
-  constructor(
-    public id: string,
-    public body: string,
-    public correctAnswers: string[],
-  ) {}
+export class PublishQuestionCommand {
+  constructor(public id: string, public published: boolean) {}
 }
 
-@CommandHandler(UpdateQuestionCommand)
-export class UpdateQuestionQuizUseCase
-  implements ICommandHandler<UpdateQuestionCommand>
+@CommandHandler(PublishQuestionCommand)
+export class PublishQuestionUseCase
+  implements ICommandHandler<PublishQuestionCommand>
 {
   constructor(protected quizRepository: QuizRepository) {}
 
-  async execute(command: UpdateQuestionCommand): Promise<boolean> {
-    const { id, body, correctAnswers } = command;
+  async execute(command: PublishQuestionCommand): Promise<boolean> {
+    const { id, published } = command;
 
-    const result = await this.quizRepository.updateQuestionQuiz(
-      id,
-      body,
-      correctAnswers,
-    );
+    const result = await this.quizRepository.publishQuestionQuiz(id, published);
 
     return result;
   }

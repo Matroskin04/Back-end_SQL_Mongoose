@@ -10,13 +10,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BasicAuthGuard } from '../../../infrastructure/guards/authorization-guards/basic-auth.guard';
-import { CreateQuestionQuizInputModel } from './models/input/create-question-quiz.input.model';
+import { CreateQuestionInputModel } from './models/input/create-question.input.model';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateQuestionQuizCommand } from '../application/sa/use-cases/create-question-quiz.use-case';
+import { CreateQuestionCommand } from '../application/sa/use-cases/create-question.use-case';
 import { QuestionSaOutputModel } from './models/output/question-sa.output.model';
-import { UpdateQuestionQuizInputModel } from './models/input/update-question-quiz.input.model';
-import { UpdateQuestionQuizCommand } from '../application/sa/use-cases/update-question-quiz.use-case';
-import { DeleteQuestionQuizCommand } from '../application/sa/use-cases/delete-question-quiz.use-case';
+import { UpdateQuestionInputModel } from './models/input/update-question.input.model';
+import { UpdateQuestionCommand } from '../application/sa/use-cases/update-question.use-case';
+import { DeleteQuestionCommand } from '../application/sa/use-cases/delete-question.use-case';
+import { PublishQuestionUseCase } from './models/input/publish-question.input.model';
+import { PublishQuestionCommand } from '../application/sa/use-cases/publish-question.use-case';
 
 @Controller('/hometask-nest/sa/quiz')
 export class QuizSaController {
@@ -24,11 +26,11 @@ export class QuizSaController {
 
   @UseGuards(BasicAuthGuard)
   @Post('questions')
-  async createQuestionQuiz(
-    @Body() inputQuestionModel: CreateQuestionQuizInputModel,
+  async createQuestion(
+    @Body() inputQuestionModel: CreateQuestionInputModel,
   ): Promise<QuestionSaOutputModel> {
     const result = await this.commandBus.execute(
-      new CreateQuestionQuizCommand(
+      new CreateQuestionCommand(
         inputQuestionModel.body,
         inputQuestionModel.correctAnswers,
       ),
@@ -39,12 +41,12 @@ export class QuizSaController {
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   @Put('questions/:id')
-  async updateQuestionQuizById(
+  async updateQuestionById(
     @Param('id') questionId: string,
-    @Body() inputQuestionModel: UpdateQuestionQuizInputModel,
+    @Body() inputQuestionModel: UpdateQuestionInputModel,
   ): Promise<void> {
     const result = await this.commandBus.execute(
-      new UpdateQuestionQuizCommand(
+      new UpdateQuestionCommand(
         questionId,
         inputQuestionModel.body,
         inputQuestionModel.correctAnswers,
@@ -56,10 +58,24 @@ export class QuizSaController {
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
-  @Delete('questions/:id')
-  async deleteQuestionQuizById(@Param('id') questionId: string): Promise<void> {
+  @Put('questions/:id/publish')
+  async publishQuestionById(
+    @Param('id') questionId: string,
+    @Body() inputQuestionModel: PublishQuestionUseCase,
+  ): Promise<void> {
     const result = await this.commandBus.execute(
-      new DeleteQuestionQuizCommand(questionId),
+      new PublishQuestionCommand(questionId, inputQuestionModel.published),
+    );
+    if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(204)
+  @Delete('questions/:id')
+  async deleteQuestionById(@Param('id') questionId: string): Promise<void> {
+    const result = await this.commandBus.execute(
+      new DeleteQuestionCommand(questionId),
     );
 
     if (!result) throw new NotFoundException();

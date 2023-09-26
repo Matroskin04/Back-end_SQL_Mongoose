@@ -35,6 +35,21 @@ export async function updateQuestionSaTest(
     });
 }
 
+export async function publishQuestionSaTest(
+  httpServer,
+  id,
+  published,
+  saLogin?,
+  saPass?,
+) {
+  return request(httpServer)
+    .put(`/hometask-nest/sa/quiz/questions/${id}/publish`)
+    .auth(saLogin ?? 'admin', saPass ?? 'qwerty')
+    .send({
+      published,
+    });
+}
+
 export async function deleteQuestionSaTest(httpServer, id, saLogin?, saPass?) {
   return request(httpServer)
     .delete(`/hometask-nest/sa/quiz/questions/${id}`)

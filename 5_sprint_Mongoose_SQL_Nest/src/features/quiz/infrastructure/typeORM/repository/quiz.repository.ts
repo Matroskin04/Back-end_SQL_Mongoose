@@ -50,6 +50,20 @@ export class QuizRepository {
     return result.affected === 1;
   }
 
+  async publishQuestionQuiz(
+    questionId: string,
+    published: boolean,
+  ): Promise<boolean> {
+    const result = await this.questionQuizRepository
+      .createQueryBuilder()
+      .update()
+      .set({ published })
+      .where('id = :questionId', { questionId })
+      .execute();
+
+    return result.affected === 1;
+  }
+
   async deleteQuestionQuiz(questionId: string): Promise<boolean> {
     const result = await this.questionQuizRepository
       .createQueryBuilder()

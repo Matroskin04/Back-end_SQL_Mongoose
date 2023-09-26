@@ -8,6 +8,7 @@ import {
   createQuestionSaTest,
   createResponseQuestion,
   deleteQuestionSaTest,
+  publishQuestionSaTest,
   updateQuestionSaTest,
 } from './quiz-sa.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
@@ -265,7 +266,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
-    it(`+ (204) should update question`, async () => {
+    it(`+ (204) should delete question`, async () => {
       const result = await deleteQuestionSaTest(httpServer, correctQuestionId);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
@@ -276,6 +277,12 @@ describe('Quiz (SA); /sa/quiz', () => {
         .where('q."id" = :id', { id: correctQuestionId })
         .getExists();
       expect(updatedQuestion).toBeFalsy();
+    });
+
+    it(``, async () => {
+      const a = await createQuestionSaTest(httpServer, '12345678901', null);
+      const result = await publishQuestionSaTest(httpServer, a.body.id, true);
+      console.log(result.body);
     });
   });
 });

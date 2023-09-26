@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export class CreateQuestionQuizInputModel {
+export class CreateQuestionInputModel {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @Length(10, 500)
   @IsString({ message: 'It should be a string' })
