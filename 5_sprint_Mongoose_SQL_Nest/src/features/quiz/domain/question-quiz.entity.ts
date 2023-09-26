@@ -10,7 +10,7 @@ export class QuestionQuiz {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 500 })
+  @Column({ length: 500, nullable: true })
   body: string;
 
   @Column('simple-array', { nullable: true })
