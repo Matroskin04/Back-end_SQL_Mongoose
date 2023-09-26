@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { QuestionTestType } from './quiz-sa.types';
+import { QuestionQuiz } from '../../../features/quiz/domain/question-quiz.entity';
 
 export async function createQuestionSaTest(
   httpServer,
@@ -56,6 +57,22 @@ export async function deleteQuestionSaTest(httpServer, id, saLogin?, saPass?) {
     .auth(saLogin ?? 'admin', saPass ?? 'qwerty');
 }
 
+export async function getQuestionAllInfoTest(dataSource, questionId) {
+  const result = await dataSource
+    .createQueryBuilder(QuestionQuiz, 'q')
+    .select([
+      'q."id"',
+      'q."body"',
+      'q."correctAnswers"',
+      'q."published"',
+      'q."createdAt"',
+      'q."updatedAt"',
+    ])
+    .where('q."id" = :id', { id: questionId })
+    .getRawOne();
+
+  return result ?? null;
+}
 export function createResponseQuestion(
   updatedAt?: null,
   published?,

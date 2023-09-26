@@ -8,6 +8,7 @@ import {
   createQuestionSaTest,
   createResponseQuestion,
   deleteQuestionSaTest,
+  getQuestionAllInfoTest,
   publishQuestionSaTest,
   updateQuestionSaTest,
 } from './quiz-sa.helpers';
@@ -222,11 +223,10 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //check that fields were changed, and updated date was set
-      const updatedQuestion = await dataSource
-        .createQueryBuilder(QuestionQuiz, 'q')
-        .select(['q."body"', 'q."correctAnswers"', 'q."updatedAt"'])
-        .where('q."id" = :id', { id: correctQuestionId })
-        .getRawOne();
+      const updatedQuestion = await getQuestionAllInfoTest(
+        dataSource,
+        correctQuestionId,
+      );
       expect(updatedQuestion.body).toBe('new question body');
       expect(updatedQuestion.correctAnswers).toBe('new 1,new 2');
       expect(updatedQuestion.updatedAt).not.toBeNull();
@@ -271,18 +271,11 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //check that deletion is successful
-      const updatedQuestion = await dataSource
-        .createQueryBuilder(QuestionQuiz, 'q')
-        .select()
-        .where('q."id" = :id', { id: correctQuestionId })
-        .getExists();
-      expect(updatedQuestion).toBeFalsy();
-    });
-
-    it(``, async () => {
-      const a = await createQuestionSaTest(httpServer, '12345678901', null);
-      const result = await publishQuestionSaTest(httpServer, a.body.id, true);
-      console.log(result.body);
+      const updatedQuestion = await getQuestionAllInfoTest(
+        dataSource,
+        correctQuestionId,
+      );
+      expect(updatedQuestion).toBeNull();
     });
   });
 });
