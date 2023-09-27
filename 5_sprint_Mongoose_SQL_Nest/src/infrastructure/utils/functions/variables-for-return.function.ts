@@ -4,6 +4,7 @@ import {
 } from './types/variables-for-return.types';
 import { QueryBlogsInputModel } from '../../../features/blogs/api/models/input/queries-blog.input.model';
 import { AllQueryParamsTypes } from './types/all-query-params.types';
+import { PublishedStatusType } from '../../types/quiz-questions.general.types';
 
 export async function variablesForReturnMongo(
   query: AllQueryParamsTypes,
@@ -49,6 +50,10 @@ export function variablesForReturn(
   if (!query?.banStatus || query?.banStatus === 'all') banStatus = null;
   else banStatus = query?.banStatus === 'banned';
 
+  //quiz
+  const bodySearchTerm: string = query?.bodySearchTerm ?? '';
+  const publishedStatus: PublishedStatusType = query?.publishedStatus ?? 'all';
+
   return {
     pageNumber,
     pageSize,
@@ -58,5 +63,7 @@ export function variablesForReturn(
     searchEmailTerm,
     searchNameTerm,
     banStatus,
+    publishedStatus,
+    bodySearchTerm,
   };
 }

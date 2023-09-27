@@ -1,3 +1,5 @@
+import { PublishedStatusType } from '../../../types/quiz-questions.general.types';
+
 export type VariablesForReturnMongoType = {
   pageNumber: string | number;
   pageSize: string | number;
@@ -14,5 +16,7 @@ export type VariablesForReturnType = {
   searchLoginTerm: string;
   searchEmailTerm: string;
   searchNameTerm: string;
+  bodySearchTerm: string;
   banStatus: null | boolean;
+  publishedStatus: PublishedStatusType;
 };
