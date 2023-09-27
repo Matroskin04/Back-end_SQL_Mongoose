@@ -2,11 +2,13 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   NotFoundException,
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { BasicAuthGuard } from '../../../infrastructure/guards/authorization-guards/basic-auth.guard';
@@ -19,13 +21,17 @@ import { UpdateQuestionCommand } from '../application/sa/use-cases/update-questi
 import { DeleteQuestionCommand } from '../application/sa/use-cases/delete-question.use-case';
 import { PublishQuestionUseCase } from './models/input/publish-question.input.model';
 import { PublishQuestionCommand } from '../application/sa/use-cases/publish-question.use-case';
+import { QueryQuestionsInputModel } from './models/input/query-questions.input.model';
 
-@Controller('/hometask-nest/sa/quiz')
+@Controller('/hometask-nest/sa/quiz/questions')
 export class QuizSaController {
   constructor(protected commandBus: CommandBus) {}
 
   @UseGuards(BasicAuthGuard)
-  @Post('questions')
+  @Get()
+  async getAllQuestions(@Query() query: QueryQuestionsInputModel) {}
+  @UseGuards(BasicAuthGuard)
+  @Post()
   async createQuestion(
     @Body() inputQuestionModel: CreateQuestionInputModel,
   ): Promise<QuestionSaOutputModel> {
@@ -40,7 +46,7 @@ export class QuizSaController {
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
-  @Put('questions/:id')
+  @Put(':id')
   async updateQuestionById(
     @Param('id') questionId: string,
     @Body() inputQuestionModel: UpdateQuestionInputModel,
@@ -58,7 +64,7 @@ export class QuizSaController {
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
-  @Put('questions/:id/publish')
+  @Put(':id/publish')
   async publishQuestionById(
     @Param('id') questionId: string,
     @Body() inputQuestionModel: PublishQuestionUseCase,
@@ -72,7 +78,7 @@ export class QuizSaController {
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
-  @Delete('questions/:id')
+  @Delete(':id')
   async deleteQuestionById(@Param('id') questionId: string): Promise<void> {
     const result = await this.commandBus.execute(
       new DeleteQuestionCommand(questionId),
