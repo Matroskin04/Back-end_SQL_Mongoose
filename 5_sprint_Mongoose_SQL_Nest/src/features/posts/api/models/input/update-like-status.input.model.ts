@@ -1,5 +1,5 @@
-import { AllLikeStatusType } from '../../../../../infrastructure/utils/enums/like-status';
 import { IsEnum } from 'class-validator';
+import { AllLikeStatusType } from '../../../../../infrastructure/types/like-status.general.types';
 
 export class UpdatePostLikeStatusModel {
   @IsEnum(['Like', 'Dislike', 'None'], {

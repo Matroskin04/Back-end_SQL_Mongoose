@@ -1,13 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ForbiddenException } from '@nestjs/common';
-import { CommentsRepository } from '../../infrastructure/SQL/repository/comments.repository';
-import { CommentsQueryRepository } from '../../infrastructure/SQL/query.repository/comments.query.repository';
-import { AllLikeStatusType } from '../../../../infrastructure/utils/enums/like-status';
-import { LikesInfoRepository } from '../../../likes-info/infrastructure/SQL/repository/likes-info.repository';
-import { LikesInfoQueryRepository } from '../../../likes-info/infrastructure/SQL/query.repository/likes-info.query.repository';
 import { CommentsOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/comments-orm.query.repository';
 import { LikesInfoOrmRepository } from '../../../likes-info/infrastructure/typeORM/repository/likes-info-orm.repository';
 import { LikesInfoOrmQueryRepository } from '../../../likes-info/infrastructure/typeORM/query.repository/likes-info-orm.query.repository';
+import { AllLikeStatusType } from '../../../../infrastructure/types/like-status.general.types';
 
 export class UpdateCommentLikeStatusCommand {
   constructor(
