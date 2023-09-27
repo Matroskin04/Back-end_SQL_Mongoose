@@ -295,6 +295,39 @@ describe('Quiz (SA); /sa/quiz', () => {
       const result = await publishQuestionSaTest(httpServer, uuidv4(), true);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
+
+    it(`+ (204) should set true for field 'published' of the question
+              + (204) should set false for field 'published' of the question`, async () => {
+      //published true
+      const result1 = await publishQuestionSaTest(
+        httpServer,
+        correctQuestionId,
+        true,
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      //check that field was changed
+      const updatedQuestion1 = await getQuestionAllInfoTest(
+        dataSource,
+        correctQuestionId,
+      );
+      expect(updatedQuestion1.published).toBeTruthy();
+
+      //published false
+      const result2 = await publishQuestionSaTest(
+        httpServer,
+        correctQuestionId,
+        false,
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+
+      //check that field was changed
+      const updatedQuestion2 = await getQuestionAllInfoTest(
+        dataSource,
+        correctQuestionId,
+      );
+      expect(updatedQuestion2.published).toBeFalsy();
+    });
   });
 
   describe(`/questions/:id (DELETE) - delete question`, () => {
