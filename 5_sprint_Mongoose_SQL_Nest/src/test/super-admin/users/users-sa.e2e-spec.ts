@@ -216,7 +216,7 @@ describe('Users (SA); /sa', () => {
         httpServer,
         'sortDirection=Truncate;',
       );
-      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
     });
   });
