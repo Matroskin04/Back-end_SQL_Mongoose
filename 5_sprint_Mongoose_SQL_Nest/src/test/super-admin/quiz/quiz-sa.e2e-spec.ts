@@ -88,122 +88,61 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
     });
 
-    /*    it(`+ (200) should return 3 posts (query: pageSize=3, pageNumber=2)
-              + (200) should return 4 posts (query: pageSize=5, pageNumber=2)`, async () => {
-      //3 posts
-      const result1 = await getPostsPublicTest(
+    it(`+ (200) should return 3 questions (query: pageSize=3, pageNumber=2)
+              + (200) should return 4 questions (query: pageSize=5, pageNumber=2)`, async () => {
+      //3 questions
+      const result1 = await getAllQuestions(
         httpServer,
         'pageSize=3&&pageNumber=2',
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
-        createResponseAllPostsTest(
-          postsIds.slice(3, 6),
-          null,
-          null,
-          null,
-          9,
-          3,
-          2,
-          3,
-        ),
+        createResponseAllQuestionsTest(questionsIds.slice(3, 6), 9, 3, 2, 3),
       );
 
-      //4 posts
-      const result2 = await getPostsPublicTest(
+      //4 questions
+      const result2 = await getAllQuestions(
         httpServer,
         'pageSize=5&&pageNumber=2',
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
-        createResponseAllPostsTest(
-          postsIds.slice(5),
-          null,
-          null,
-          null,
-          9,
-          2,
-          2,
-          5,
-        ),
+        createResponseAllQuestionsTest(questionsIds.slice(5), 9, 2, 2, 5),
       );
     });
 
-    it(`+ (200) should return 5 posts (query: sortBy=title&&pageSize=5)
-              + (200) should return 5 posts (query: sortBy=content&&pageSize=5)
-              + (200) should return 5 posts (query: sortBy=shortDescription&&pageSize=5)`, async () => {
-      const postsIdsCopy = [...postsIds];
-      //sortBy=name, total 9 posts
-      const result1 = await getPostsPublicTest(
+    it(`+ (200) should return 5 posts (query: sortBy=body&&pageSize=5)
+              + (200) should return 5 posts (query: sortBy=createdAt&&pageSize=5)`, async () => {
+      //sortBy=body, total 9 posts
+      const result1 = await getAllQuestions(
         httpServer,
-        'sortBy=title&&pageSize=5',
+        'sortBy=body&&pageSize=5',
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
-        createResponseAllPostsTest(
-          postsIdsCopy.slice(0, 5),
-          null,
-          null,
-          null,
-          9,
-          2,
-          1,
-          5,
-        ),
+        createResponseAllQuestionsTest(questionsIds.slice(0, 5), 9, 2, 1, 5),
       );
 
-      //sortBy=content, total 9 posts
-      const result2 = await getPostsPublicTest(
+      //sortBy=createdAt, total 9 posts
+      const result2 = await getAllQuestions(
         httpServer,
-        'sortBy=title&&pageSize=5',
+        'sortBy=createdAt&&pageSize=5',
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
-        createResponseAllPostsTest(
-          postsIdsCopy.slice(0, 5),
-          null,
-          null,
-          null,
-          9,
-          2,
-          1,
-          5,
-        ),
-      );
-
-      //sortBy=shortDescription, total 9 posts
-      const result3 = await getPostsPublicTest(
-        httpServer,
-        'sortBy=title&pageSize=5',
-      );
-      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result3.body).toEqual(
-        createResponseAllPostsTest(
-          postsIdsCopy.slice(0, 5),
-          null,
-          null,
-          null,
-          9,
-          2,
-          1,
-          5,
-        ),
+        createResponseAllQuestionsTest(questionsIds.slice(0, 5), 9, 2, 1, 5),
       );
     });
 
-    it(`+ (200) should return 9 posts (query: sortDirection=asc)
-              + (200) should return 9 posts (query: sortBy=id&&sortDirection=desc)
-              + (200) should return 9 posts (query: sortBy=blogName&&sortDirection=desc)`, async () => {
-      const postsIdsCopy = [...postsIds];
-      //sortDirection=asc, total 9 posts
-      const result1 = await getPostsPublicTest(httpServer, 'sortDirection=asc');
+    it(`+ (200) should return 9 questions (query: sortDirection=asc)
+              + (200) should return 9 questions (query: sortBy=id&&sortDirection=desc)
+              + (200) should return 9 questions (query: sortBy=body&&sortDirection=asc)`, async () => {
+      //sortDirection=asc, total 9 questions
+      const result1 = await getAllQuestions(httpServer, 'sortDirection=asc');
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
-        createResponseAllPostsTest(
-          postsIdsCopy.reverse(),
-          null,
-          null,
-          null,
+        createResponseAllQuestionsTest(
+          [...questionsIds].reverse(),
           9,
           1,
           1,
@@ -211,18 +150,15 @@ describe('Quiz (SA); /sa/quiz', () => {
         ),
       );
 
-      //sortBy=id&&sortDirection=desc, total 9 posts
-      const result2 = await getPostsPublicTest(
+      //sortBy=id&&sortDirection=desc, total 9 questions
+      const result2 = await getAllQuestions(
         httpServer,
         'sortBy=id&sortDirection=desc',
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
-        createResponseAllPostsTest(
-          postsIdsCopy.sort().reverse(),
-          null,
-          null,
-          null,
+        createResponseAllQuestionsTest(
+          [...questionsIds].sort().reverse(),
           9,
           1,
           1,
@@ -230,24 +166,20 @@ describe('Quiz (SA); /sa/quiz', () => {
         ),
       );
 
-      //sortBy=blogName&sortDirection=desc, total 9 posts
-      const result3 = await getPostsPublicTest(
+      //sortBy=body&&sortDirection=asc, total 9 questions
+      const result3 = await getAllQuestions(
         httpServer,
-        'sortBy=blogName&sortDirection=desc',
+        'sortBy=body&sortDirection=asc',
       );
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result3.body).toEqual(
-        createResponseAllPostsTest(9, null, null, null, 9, 1, 1, 10, [
-          'c blog 3',
-          'c blog 3',
-          'c blog 3',
-          'blog 2',
-          'blog 2',
-          'blog 2',
-          'Blog 1',
-          'Blog 1',
-          'Blog 1',
-        ]),
+        createResponseAllQuestionsTest(
+          [...questionsIds].reverse(),
+          9,
+          1,
+          1,
+          10,
+        ),
       );
     });
 
@@ -265,7 +197,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
-    });*/
+    });
   });
 
   describe(`/questions (POST) - create new question`, () => {

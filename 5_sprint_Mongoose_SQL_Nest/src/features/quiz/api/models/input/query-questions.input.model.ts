@@ -14,13 +14,13 @@ const valuesOfSortingQuestions = [
 export class QueryQuestionsInputModel extends QueryGeneralParams {
   @ValidateIf((o) => o.sortBy !== undefined)
   @IsIn(valuesOfSortingQuestions)
-  @ValidateIf((o) => o.sortDirection !== undefined)
+  @ValidateIf((o) => o.sortBy !== undefined)
   sortBy?: string;
 
   @IsIn(['all', 'published', 'notPublished'], {
     message: 'The value should be one of these: all, published, notPublished',
   })
-  @ValidateIf((o) => o.sortDirection !== undefined)
+  @ValidateIf((o) => o.publishedStatus !== undefined)
   publishedStatus?: PublishedStatusType;
 
   bodySearchTerm?: string;
