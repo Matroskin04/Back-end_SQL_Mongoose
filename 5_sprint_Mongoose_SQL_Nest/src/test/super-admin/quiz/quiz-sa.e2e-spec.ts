@@ -17,13 +17,7 @@ import {
 } from './quiz-sa.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { DataSource } from 'typeorm';
-import { createAndLogin3UsersTest } from '../../public/blogs/blogs-public.helpers';
-import { createBlogTest } from '../../blogger/blogs/blogs-blogger.helpers';
-import {
-  create9PostsOf3BlogsBy3Users,
-  getPostsPublicTest,
-} from '../../public/posts/posts-public.helpers';
-import { createResponseAllPostsTest } from '../../public/blogs/posts-blogs-puclic.helpers';
+import { getPostsPublicTest } from '../../public/posts/posts-public.helpers';
 
 describe('Quiz (SA); /sa/quiz', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -111,9 +105,9 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
     });
 
-    it(`+ (200) should return 5 posts (query: sortBy=body&&pageSize=5)
-              + (200) should return 5 posts (query: sortBy=createdAt&&pageSize=5)`, async () => {
-      //sortBy=body, total 9 posts
+    it(`+ (200) should return 5 questions (query: sortBy=body&&pageSize=5)
+              + (200) should return 5 questions (query: sortBy=createdAt&&pageSize=5)`, async () => {
+      //sortBy=body, total 9 questions
       const result1 = await getAllQuestions(
         httpServer,
         'sortBy=body&&pageSize=5',
@@ -123,7 +117,7 @@ describe('Quiz (SA); /sa/quiz', () => {
         createResponseAllQuestionsTest(questionsIds.slice(0, 5), 9, 2, 1, 5),
       );
 
-      //sortBy=createdAt, total 9 posts
+      //sortBy=createdAt, total 9 questions
       const result2 = await getAllQuestions(
         httpServer,
         'sortBy=createdAt&&pageSize=5',
@@ -183,20 +177,107 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
     });
 
+    it(`+ (200) should return 1 question (query: bodySearchTerm=irs)
+              + (200) should return 7 questions (query: bodySearchTerm=TH)
+              + (200) should return 4 questions (query: bodySearchTerm=S)`, async () => {
+      //bodySearchTerm=irs, 1 question
+      const result1 = await getAllQuestions(httpServer, 'bodySearchTerm=irs');
+
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllQuestionsTest([questionsIds[7]], 1, 1, 1, 10),
+      );
+
+      //bodySearchTerm=TH, 7 questions
+      const result2 = await getAllQuestions(httpServer, 'bodySearchTerm=TH');
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllQuestionsTest(
+          [...questionsIds.slice(0, 6), questionsIds[8]],
+          7,
+          1,
+          1,
+          10,
+        ),
+      );
+
+      //bodySearchTerm=S, 4 questions
+      const result3 = await getAllQuestions(httpServer, 'bodySearchTerm=V');
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
+        createResponseAllQuestionsTest(
+          questionsIds.filter((e, i) => i === 2),
+          1,
+          1,
+          1,
+          10,
+        ),
+      );
+    });
+
+    it(`(Addition) + (204) should publish 3 questions
+              + (200) should return 9 questions (query: publishedStatus=all)
+              + (200) should return 3 questions (query: publishedStatus=published)
+              + (200) should return 6 questions (query: publishedStatus=notPublished)`, async () => {
+      //publish 3 questions
+      for (const i of questionsIds.slice(0, 3)) {
+        const result = await publishQuestionSaTest(httpServer, i, true);
+        expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
+      }
+
+      //publishedStatus=all, 9 questions
+      const result1 = await getAllQuestions(httpServer, 'publishedStatus=all');
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllQuestionsTest(questionsIds, 9, 1, 1, 10),
+      );
+
+      //publishedStatus=published, 3 questions
+      const result2 = await getAllQuestions(
+        httpServer,
+        'publishedStatus=published',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllQuestionsTest(questionsIds.slice(0, 3), 3, 1, 1, 10),
+      );
+
+      //publishedStatus=notPublished, 6 questions
+      const result3 = await getAllQuestions(
+        httpServer,
+        'publishedStatus=notPublished',
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
+        createResponseAllQuestionsTest(questionsIds.slice(3), 6, 1, 1, 10),
+      );
+    });
+
     it(`- (400) sortBy has incorrect value (query: sortBy=Truncate;)
-              - (400) sortDirection has incorrect value (query: sortDirection=Truncate;)`, async () => {
+              - (400) sortDirection has incorrect value (query: sortDirection=Truncate;)
+              - (400) publishedStatus has incorrect value (query: publishedStatus=Truncate;)`, async () => {
       //status 400
-      const result1 = await getPostsPublicTest(httpServer, 'sortBy=Truncate;');
+      const result1 = await getAllQuestions(httpServer, 'sortBy=Truncate;');
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result1.body).toEqual(createErrorsMessageTest(['sortBy']));
 
       //status 400
-      const result2 = await getPostsPublicTest(
+      const result2 = await getAllQuestions(
         httpServer,
         'sortDirection=Truncate;',
       );
-      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
+
+      //status 400
+      const result3 = await getAllQuestions(
+        httpServer,
+        'publishedStatus=Truncate;',
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result3.body).toEqual(
+        createErrorsMessageTest(['publishedStatus']),
+      );
     });
   });
 
