@@ -22,14 +22,21 @@ import { DeleteQuestionCommand } from '../application/sa/use-cases/delete-questi
 import { PublishQuestionUseCase } from './models/input/publish-question.input.model';
 import { PublishQuestionCommand } from '../application/sa/use-cases/publish-question.use-case';
 import { QueryQuestionsInputModel } from './models/input/query-questions.input.model';
+import { QuizQueryRepository } from '../infrastructure/typeORM/query.repository/quiz.query.repository';
 
 @Controller('/hometask-nest/sa/quiz/questions')
 export class QuizSaController {
-  constructor(protected commandBus: CommandBus) {}
+  constructor(
+    protected commandBus: CommandBus,
+    protected quizQueryRepository: QuizQueryRepository,
+  ) {}
 
   @UseGuards(BasicAuthGuard)
   @Get()
-  async getAllQuestions(@Query() query: QueryQuestionsInputModel) {}
+  async getAllQuestions(@Query() query: QueryQuestionsInputModel) {
+    const result = await this.quizQueryRepository.getAllQuestions(query);
+    return result;
+  }
   @UseGuards(BasicAuthGuard)
   @Post()
   async createQuestion(

@@ -20,11 +20,11 @@ export type QuestionPaginationType = {
 export type AnswersOfQuestionType = { correctAnswers: string[] };
 
 export type QuestionsQueryType = {
-  bodySearchTerm: string;
-  publishedStatus: PublishedStatusType;
-  sortBy: string;
-  sortDirection: 'ASC' | 'DESC';
-  pageSize: number;
-  pageNumber: number;
+  bodySearchTerm?: string;
+  publishedStatus?: PublishedStatusType;
+  sortBy?: string;
+  sortDirection?: 'ASC' | 'DESC';
+  pageSize?: string;
+  pageNumber?: string;
 };
 //todo вынести основные
