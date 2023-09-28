@@ -148,7 +148,6 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
     it(`+ (200) should return 5 posts (query: sortBy=title&&pageSize=5)
               + (200) should return 5 posts (query: sortBy=content&&pageSize=5)
               + (200) should return 5 posts (query: sortBy=shortDescription&&pageSize=5)`, async () => {
-      const postsIdsCopy = [...postsIds];
       //sortBy=name, total 9 posts
       const result1 = await getPostsPublicTest(
         httpServer,
@@ -157,7 +156,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
         createResponseAllPostsTest(
-          postsIdsCopy.slice(0, 5),
+          [...postsIds].slice(0, 5),
           null,
           null,
           null,
@@ -176,7 +175,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
         createResponseAllPostsTest(
-          postsIdsCopy.slice(0, 5),
+          [...postsIds].slice(0, 5),
           null,
           null,
           null,
@@ -195,7 +194,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result3.body).toEqual(
         createResponseAllPostsTest(
-          postsIdsCopy.slice(0, 5),
+          [...postsIds].slice(0, 5),
           null,
           null,
           null,
@@ -210,13 +209,12 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
     it(`+ (200) should return 9 posts (query: sortDirection=asc)
               + (200) should return 9 posts (query: sortBy=id&&sortDirection=desc)
               + (200) should return 9 posts (query: sortBy=blogName&&sortDirection=desc)`, async () => {
-      const postsIdsCopy = [...postsIds];
       //sortDirection=asc, total 9 posts
       const result1 = await getPostsPublicTest(httpServer, 'sortDirection=asc');
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
         createResponseAllPostsTest(
-          postsIdsCopy.reverse(),
+          [...postsIds].reverse(),
           null,
           null,
           null,
@@ -235,7 +233,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
         createResponseAllPostsTest(
-          postsIdsCopy.sort().reverse(),
+          [...postsIds].sort().reverse(),
           null,
           null,
           null,
