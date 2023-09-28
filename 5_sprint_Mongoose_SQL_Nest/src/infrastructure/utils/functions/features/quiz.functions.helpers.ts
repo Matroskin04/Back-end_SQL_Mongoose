@@ -7,6 +7,6 @@ export function modifyQuestionIntoViewModel(question): QuestionQuizAllInfoType {
     correctAnswers: question.correctAnswers,
     published: question.published,
     createdAt: question.createdAt.toString(),
-    updatedAt: question.updatedAt.toString(),
+    updatedAt: question.updatedAt ? null : question.updatedAt.toString(),
   };
 }
