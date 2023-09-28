@@ -5,7 +5,7 @@ export type AllQueryParamsTypes = {
   searchLoginTerm?: string;
   searchEmailTerm?: string;
   bodySearchTerm?: string;
-  publishedStatus: PublishedStatusType;
+  publishedStatus?: PublishedStatusType;
   sortBy?: string;
   sortDirection?: 'ASC' | 'DESC';
   pageNumber?: string | number;

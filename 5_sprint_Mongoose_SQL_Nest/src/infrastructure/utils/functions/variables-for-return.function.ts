@@ -24,6 +24,7 @@ export async function variablesForReturnMongo(
   };
 }
 
+//todo separate function
 export function variablesForReturn(
   query: AllQueryParamsTypes,
 ): VariablesForReturnType {
@@ -52,7 +53,10 @@ export function variablesForReturn(
 
   //quiz
   const bodySearchTerm: string = query?.bodySearchTerm ?? '';
-  const publishedStatus: PublishedStatusType = query?.publishedStatus ?? 'all';
+  let publishedStatus;
+  if (!query?.publishedStatus || query?.publishedStatus === 'all')
+    publishedStatus = null;
+  else publishedStatus = query?.publishedStatus === 'published';
 
   return {
     pageNumber,

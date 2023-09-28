@@ -18,5 +18,5 @@ export type VariablesForReturnType = {
   searchNameTerm: string;
   bodySearchTerm: string;
   banStatus: null | boolean;
-  publishedStatus: PublishedStatusType;
+  publishedStatus: boolean | null;
 };
