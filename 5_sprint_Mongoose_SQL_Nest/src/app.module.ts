@@ -103,7 +103,7 @@ import { CommentsOrmQueryRepository } from './features/comments/infrastructure/t
 import { CommentsLikesOrmRepository } from './features/comments/infrastructure/typeORM/subrepository/comments-likes-orm.repository';
 import { DevicesOrmQueryRepository } from './features/devices/infrastructure/typeORM/query.repository/devices-orm.query.repository';
 import { QuizSaController } from './features/quiz/api/quiz-sa.controller';
-import { QuestionQuiz } from './features/quiz/domain/question-quiz.entity';
+import { QuestionsQuiz } from './features/quiz/domain/question-quiz.entity';
 import { CreateQuestionUseCase } from './features/quiz/application/sa/use-cases/create-question.use-case';
 import { QuizRepository } from './features/quiz/infrastructure/typeORM/repository/quiz.repository';
 import { UpdateQuestionUseCase } from './features/quiz/application/sa/use-cases/update-question.use-case';
@@ -218,7 +218,7 @@ const handlers = [
       UsersPasswordRecovery,
       UsersEmailConfirmation,
       UsersBanInfo,
-      QuestionQuiz,
+      QuestionsQuiz,
     ]),
     TypeOrmModule.forRoot({
       type: 'postgres',
