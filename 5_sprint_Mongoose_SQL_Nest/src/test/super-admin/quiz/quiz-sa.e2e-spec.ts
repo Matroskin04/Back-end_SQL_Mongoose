@@ -4,16 +4,26 @@ import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
 import { v4 as uuidv4 } from 'uuid';
 import {
+  create9Questions,
   createCorrectQuestionSaTest,
   createQuestionSaTest,
+  createResponseAllQuestionsTest,
   createResponseQuestion,
   deleteQuestionSaTest,
+  getAllQuestions,
   getQuestionAllInfoTest,
   publishQuestionSaTest,
   updateQuestionSaTest,
 } from './quiz-sa.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { DataSource } from 'typeorm';
+import { createAndLogin3UsersTest } from '../../public/blogs/blogs-public.helpers';
+import { createBlogTest } from '../../blogger/blogs/blogs-blogger.helpers';
+import {
+  create9PostsOf3BlogsBy3Users,
+  getPostsPublicTest,
+} from '../../public/posts/posts-public.helpers';
+import { createResponseAllPostsTest } from '../../public/blogs/posts-blogs-puclic.helpers';
 
 describe('Quiz (SA); /sa/quiz', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -44,6 +54,219 @@ describe('Quiz (SA); /sa/quiz', () => {
   //incorrectData question
   const bodyLength9 = 'a'.repeat(9);
   const bodyLength501 = 'a'.repeat(501);
+
+  describe(`/questions (GET) - get all questions`, () => {
+    let questionsIds;
+    beforeAll(async () => {
+      await deleteAllDataTest(httpServer);
+
+      //create 9 questions
+      questionsIds = await create9Questions(httpServer);
+    });
+
+    it(`- (401) sa login is incorrect
+              - (401) sa password is incorrect`, async () => {
+      //sa login is incorrect
+      const result1 = await getAllQuestions(httpServer, null, 'incorrectLogin');
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+
+      //sa password is incorrect
+      const result2 = await getAllQuestions(
+        httpServer,
+        null,
+        null,
+        'IncorrectPass',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+    });
+
+    it(`+ (200) should return 9 questions`, async () => {
+      const result = await getAllQuestions(httpServer);
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result.body).toEqual(
+        createResponseAllQuestionsTest(questionsIds, 9),
+      );
+    });
+
+    /*    it(`+ (200) should return 3 posts (query: pageSize=3, pageNumber=2)
+              + (200) should return 4 posts (query: pageSize=5, pageNumber=2)`, async () => {
+      //3 posts
+      const result1 = await getPostsPublicTest(
+        httpServer,
+        'pageSize=3&&pageNumber=2',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllPostsTest(
+          postsIds.slice(3, 6),
+          null,
+          null,
+          null,
+          9,
+          3,
+          2,
+          3,
+        ),
+      );
+
+      //4 posts
+      const result2 = await getPostsPublicTest(
+        httpServer,
+        'pageSize=5&&pageNumber=2',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllPostsTest(
+          postsIds.slice(5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          2,
+          5,
+        ),
+      );
+    });
+
+    it(`+ (200) should return 5 posts (query: sortBy=title&&pageSize=5)
+              + (200) should return 5 posts (query: sortBy=content&&pageSize=5)
+              + (200) should return 5 posts (query: sortBy=shortDescription&&pageSize=5)`, async () => {
+      const postsIdsCopy = [...postsIds];
+      //sortBy=name, total 9 posts
+      const result1 = await getPostsPublicTest(
+        httpServer,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortBy=content, total 9 posts
+      const result2 = await getPostsPublicTest(
+        httpServer,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortBy=shortDescription, total 9 posts
+      const result3 = await getPostsPublicTest(
+        httpServer,
+        'sortBy=title&pageSize=5',
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+    });
+
+    it(`+ (200) should return 9 posts (query: sortDirection=asc)
+              + (200) should return 9 posts (query: sortBy=id&&sortDirection=desc)
+              + (200) should return 9 posts (query: sortBy=blogName&&sortDirection=desc)`, async () => {
+      const postsIdsCopy = [...postsIds];
+      //sortDirection=asc, total 9 posts
+      const result1 = await getPostsPublicTest(httpServer, 'sortDirection=asc');
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.reverse(),
+          null,
+          null,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+
+      //sortBy=id&&sortDirection=desc, total 9 posts
+      const result2 = await getPostsPublicTest(
+        httpServer,
+        'sortBy=id&sortDirection=desc',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.sort().reverse(),
+          null,
+          null,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+
+      //sortBy=blogName&sortDirection=desc, total 9 posts
+      const result3 = await getPostsPublicTest(
+        httpServer,
+        'sortBy=blogName&sortDirection=desc',
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
+        createResponseAllPostsTest(9, null, null, null, 9, 1, 1, 10, [
+          'c blog 3',
+          'c blog 3',
+          'c blog 3',
+          'blog 2',
+          'blog 2',
+          'blog 2',
+          'Blog 1',
+          'Blog 1',
+          'Blog 1',
+        ]),
+      );
+    });
+
+    it(`- (400) sortBy has incorrect value (query: sortBy=Truncate;)
+              - (400) sortDirection has incorrect value (query: sortDirection=Truncate;)`, async () => {
+      //status 400
+      const result1 = await getPostsPublicTest(httpServer, 'sortBy=Truncate;');
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result1.body).toEqual(createErrorsMessageTest(['sortBy']));
+
+      //status 400
+      const result2 = await getPostsPublicTest(
+        httpServer,
+        'sortDirection=Truncate;',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
+    });*/
+  });
 
   describe(`/questions (POST) - create new question`, () => {
     beforeAll(async () => {
