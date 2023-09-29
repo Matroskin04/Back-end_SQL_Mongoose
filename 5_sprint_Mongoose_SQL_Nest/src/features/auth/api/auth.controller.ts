@@ -15,7 +15,7 @@ import {
   UserInfoOutputModel,
   LoginOutputModel,
 } from './models/output/user-info.output.model';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { RegistrationAuthInputModel } from './models/input/registration-auth.input.model';
 import { LocalAuthGuard } from '../../../infrastructure/guards/authorization-guards/local-auth.guard';
 import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';

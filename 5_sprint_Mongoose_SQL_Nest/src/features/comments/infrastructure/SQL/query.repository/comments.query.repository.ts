@@ -14,7 +14,7 @@ import {
 } from './comments.output.types.query.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { AllLikeStatusEnum } from '../../../../../infrastructure/utils/enums/like-status';
+import { AllLikeStatusEnum } from '../../../../../infrastructure/utils/enums/like-status.enums';
 
 @Injectable()
 export class CommentsQueryRepository {

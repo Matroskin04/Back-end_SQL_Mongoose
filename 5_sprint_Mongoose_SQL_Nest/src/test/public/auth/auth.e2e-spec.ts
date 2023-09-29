@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { emailAdapterMock } from '../mock.providers/auth.mock.providers';
 import { v4 as uuidv4 } from 'uuid';
 import {

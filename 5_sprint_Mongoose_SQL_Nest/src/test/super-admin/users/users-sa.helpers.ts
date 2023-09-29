@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { createBlogTest } from '../../blogger/blogs/blogs-blogger.helpers';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 
 export async function createUserTest(
   httpServer,

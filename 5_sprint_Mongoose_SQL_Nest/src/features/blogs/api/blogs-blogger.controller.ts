@@ -26,7 +26,7 @@ import {
 } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { PostsQueryRepository } from '../../posts/infrastructure/SQL/query.repository/posts.query.repository';
 import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { CreatePostByBlogIdModel } from '../../posts/api/models/input/create-post.input.model';

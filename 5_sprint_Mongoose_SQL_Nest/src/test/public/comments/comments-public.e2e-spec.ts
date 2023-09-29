@@ -7,7 +7,7 @@ import {
   createCorrectUserTest,
   loginCorrectUserTest,
 } from '../../helpers/chains-of-requests.helpers';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import {
   createCorrectCommentTest,
   createResponseSingleComment,

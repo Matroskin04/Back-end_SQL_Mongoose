@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { startApp } from '../../test.utils';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { v4 as uuidv4 } from 'uuid';
 import {
   create9Questions,

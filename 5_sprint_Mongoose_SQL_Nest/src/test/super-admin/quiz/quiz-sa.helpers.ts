@@ -1,7 +1,7 @@
 import request from 'supertest';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { QuestionTestType } from './quiz-sa.types';
-import { QuestionsQuiz } from '../../../features/quiz/domain/question-quiz.entity';
+import { QuestionsQuiz } from '../../../features/quiz/domain/questions-quiz.entity';
 import { QuestionPaginationType } from '../../../features/quiz/infrastructure/typeORM/query.repository/quiz.types.query.repository';
 
 export async function getAllQuestions(httpServer, query?, saLogin?, saPass?) {

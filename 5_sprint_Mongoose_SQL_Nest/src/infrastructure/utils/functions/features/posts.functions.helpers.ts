@@ -3,9 +3,8 @@ import {
   PostDBType,
 } from '../../../../features/posts/infrastructure/SQL/repository/posts.types.repositories';
 import { PostViewType } from '../../../../features/posts/infrastructure/SQL/query.repository/posts.types.query.repository';
-import { AllLikeStatusEnum } from '../../enums/like-status';
+import { AllLikeStatusEnum } from '../../enums/like-status.enums';
 import { AllLikeStatusType } from '../../../types/like-status.general.types';
-
 export function modifyPostIntoInitialViewModel(
   post: PostDBType,
   blogName: string,

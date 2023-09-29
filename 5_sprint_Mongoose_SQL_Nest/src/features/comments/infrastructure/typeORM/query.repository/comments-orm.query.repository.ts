@@ -14,7 +14,7 @@ import {
 } from './comments.output.types.query.repository';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
-import { AllLikeStatusEnum } from '../../../../../infrastructure/utils/enums/like-status';
+import { AllLikeStatusEnum } from '../../../../../infrastructure/utils/enums/like-status.enums';
 import { Comments } from '../../../domain/comments.entity';
 import { CommentsLikesInfo } from '../../../domain/comments-likes-info.entity';
 import { UsersBanInfo } from '../../../../users/domain/users-ban-info.entity';

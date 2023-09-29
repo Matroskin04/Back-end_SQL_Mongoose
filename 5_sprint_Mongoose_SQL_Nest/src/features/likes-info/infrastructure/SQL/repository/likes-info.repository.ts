@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AllLikeStatusEnum } from '../../../../../infrastructure/utils/enums/like-status';
+import { AllLikeStatusEnum } from '../../../../../infrastructure/utils/enums/like-status.enums';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import {

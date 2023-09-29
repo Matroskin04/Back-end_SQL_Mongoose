@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Users } from '../../users/domain/users.entity';
 import { Posts } from './posts.entity';
-import { AllLikeStatusEnum } from '../../../infrastructure/utils/enums/like-status';
+import { AllLikeStatusEnum } from '../../../infrastructure/utils/enums/like-status.enums';
 
 @Entity()
 @Unique(['userId', 'postId'])

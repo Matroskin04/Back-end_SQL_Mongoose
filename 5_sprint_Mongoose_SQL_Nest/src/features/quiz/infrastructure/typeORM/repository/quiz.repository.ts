@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { QuestionQuizAllInfoType } from './quiz.types.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { QuestionsQuiz } from '../../../domain/question-quiz.entity';
+import { QuestionsQuiz } from '../../../domain/questions-quiz.entity';
 
 @Injectable()
 export class QuizRepository {

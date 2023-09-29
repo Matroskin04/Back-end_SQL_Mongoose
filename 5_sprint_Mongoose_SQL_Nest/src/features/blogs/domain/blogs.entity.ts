@@ -34,7 +34,7 @@ export class Blogs {
   @Column({ default: false })
   isBanned: boolean;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'timestamp without time zone' })
   banDate: Date | null;
 
   @ManyToOne(() => Users, (u) => u.blog)

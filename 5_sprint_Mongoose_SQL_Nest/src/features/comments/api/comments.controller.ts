@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { CommentOutputModel } from './models/output/comment.output.model';
 import { CommentsQueryRepository } from '../infrastructure/SQL/query.repository/comments.query.repository';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { UpdateCommentInputModel } from './models/input/update-comment.input.model';

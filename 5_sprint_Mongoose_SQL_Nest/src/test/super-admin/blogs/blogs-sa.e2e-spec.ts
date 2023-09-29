@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { loginUserTest } from '../../public/auth/auth-public.helpers';
 import { v4 as uuidv4 } from 'uuid';
 import {

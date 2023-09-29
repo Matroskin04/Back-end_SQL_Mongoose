@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { CommentsAndUsersIdType } from '../types/comments.types';
 import { CreateCorrectCommentTestType } from '../../helpers/types/chains-of-requests.types';
 

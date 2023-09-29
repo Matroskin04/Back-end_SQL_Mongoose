@@ -1,5 +1,5 @@
 import { createUserTest } from '../super-admin/users/users-sa.helpers';
-import { HTTP_STATUS_CODE } from '../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../infrastructure/utils/enums/http-status.enums';
 import { loginUserTest } from '../public/auth/auth-public.helpers';
 import { createBlogTest } from '../blogger/blogs/blogs-blogger.helpers';
 import { createPostTest } from '../blogger/blogs/posts-blogger.helpers';

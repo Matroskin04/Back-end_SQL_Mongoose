@@ -10,7 +10,7 @@ import {
 import { Users } from '../../users/domain/users.entity';
 import { Posts } from '../../posts/domain/posts.entity';
 import { Comments } from './comments.entity';
-import { LikeDislikeStatusEnum } from '../../../infrastructure/utils/enums/like-status';
+import { LikeDislikeStatusEnum } from '../../../infrastructure/utils/enums/like-status.enums';
 
 @Entity()
 @Unique(['userId', 'commentId'])

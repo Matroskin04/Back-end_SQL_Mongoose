@@ -16,6 +16,7 @@ import { BannedUsersOfBlog } from '../../blogs/domain/banned-users-of-blog.entit
 import { PostsLikesInfo } from '../../posts/domain/posts-likes-info.entity';
 import { CommentsLikesInfo } from '../../comments/domain/comments-likes-info.entity';
 import { Devices } from '../../devices/domain/devices.entity';
+import { Quiz } from '../../quiz/domain/quiz.entity';
 
 @Entity()
 export class Users {
@@ -66,4 +67,10 @@ export class Users {
 
   @OneToMany(() => Devices, (d) => d.user)
   device: Devices[];
+
+  @OneToMany(() => Quiz, (q) => q.user1)
+  quiz1: Quiz[];
+
+  @OneToMany(() => Quiz, (q) => q.user2)
+  quiz2: Devices[];
 }

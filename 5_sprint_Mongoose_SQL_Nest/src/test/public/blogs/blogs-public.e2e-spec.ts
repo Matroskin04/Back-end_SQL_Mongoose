@@ -12,7 +12,7 @@ import {
   getAllBlogsPublicTest,
   getBlogByIdPublicTest,
 } from './blogs-public.helpers';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import {
   createResponseAllBlogsTest,
   createResponseSingleBlog,

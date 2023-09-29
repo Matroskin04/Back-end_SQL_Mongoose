@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AllBlogsSAOutputModel } from './models/output/blog-sa.output.model';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { BasicAuthGuard } from '../../../infrastructure/guards/authorization-guards/basic-auth.guard';
 import { BanInfoInputModel } from './models/input/ban-info.input.model';
 import {

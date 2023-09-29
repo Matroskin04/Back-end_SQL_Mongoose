@@ -14,7 +14,7 @@ import {
   deleteDevicesExcludeCurrentTest,
   getDevicesPublicTest,
 } from './devices-public.helpers';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 
 describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
   jest.setTimeout(5 * 60 * 1000);
