@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { QuestionTestType } from './quiz-sa.types';
-import { QuestionsQuiz } from '../../../features/quiz/domain/questions-quiz.entity';
+import { QuestionQuiz } from '../../../features/quiz/domain/question-quiz.entity';
 import { QuestionPaginationType } from '../../../features/quiz/infrastructure/typeORM/query.repository/quiz.types.query.repository';
 
 export async function getAllQuestions(httpServer, query?, saLogin?, saPass?) {
@@ -66,7 +66,7 @@ export async function deleteQuestionSaTest(httpServer, id, saLogin?, saPass?) {
 
 export async function getQuestionAllInfoTest(dataSource, questionId) {
   const result = await dataSource
-    .createQueryBuilder(QuestionsQuiz, 'q')
+    .createQueryBuilder(QuestionQuiz, 'q')
     .select([
       'q."id"',
       'q."body"',

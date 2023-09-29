@@ -4,11 +4,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { QuizStatusEnum } from '../../../infrastructure/utils/enums/quiz.enums';
 import { Users } from '../../users/domain/users.entity';
+import { PostsLikesInfo } from '../../posts/domain/posts-likes-info.entity';
+import { QuestionQuizConnection } from './question-quiz-connection.entity';
 
 @Entity()
 export class Quiz {
@@ -44,7 +47,7 @@ export class Quiz {
   user2: Users;
   @Column({ type: 'uuid', nullable: true })
   userId2: string | null;
-  //
-  // @Column({ type: 'simple-array', nullable: true })
-  // questionId1: string[] | null;
+
+  @OneToMany(() => QuestionQuizConnection, (q) => q.quiz)
+  questionQuizConnection: QuestionQuizConnection[];
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QuestionsQuiz } from '../../../domain/questions-quiz.entity';
+import { QuestionQuiz } from '../../../domain/question-quiz.entity';
 import { Brackets, Repository } from 'typeorm';
 import {
   AnswersOfQuestionType,
@@ -16,8 +16,8 @@ import { modifyQuestionIntoViewModel } from '../../../../../infrastructure/utils
 @Injectable()
 export class QuizQueryRepository {
   constructor(
-    @InjectRepository(QuestionsQuiz)
-    protected questionQuizRepository: Repository<QuestionsQuiz>,
+    @InjectRepository(QuestionQuiz)
+    protected questionQuizRepository: Repository<QuestionQuiz>,
   ) {}
 
   async getAllQuestions(
@@ -46,7 +46,7 @@ export class QuizQueryRepository {
       .addSelect((subQuery) => {
         return subQuery
           .select('COUNT(*)')
-          .from(QuestionsQuiz, 'q')
+          .from(QuestionQuiz, 'q')
           .andWhere(this.publishedConditionBuilder(publishedStatus))
           .andWhere(this.bodyTermConditionBuilder(bodySearchTerm));
       }, 'count')

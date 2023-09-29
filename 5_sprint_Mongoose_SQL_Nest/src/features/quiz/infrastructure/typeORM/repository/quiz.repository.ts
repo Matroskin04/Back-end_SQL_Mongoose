@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { QuestionQuizAllInfoType } from './quiz.types.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { QuestionsQuiz } from '../../../domain/questions-quiz.entity';
+import { QuestionQuiz } from '../../../domain/question-quiz.entity';
 
 @Injectable()
 export class QuizRepository {
   constructor(
-    @InjectRepository(QuestionsQuiz)
-    protected questionQuizRepository: Repository<QuestionsQuiz>,
+    @InjectRepository(QuestionQuiz)
+    protected questionQuizRepository: Repository<QuestionQuiz>,
   ) {}
 
   async createQuestionQuiz(

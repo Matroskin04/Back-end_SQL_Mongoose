@@ -2,11 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { QuestionQuizConnection } from './question-quiz-connection.entity';
 
 @Entity()
-export class QuestionsQuiz {
+export class QuestionQuiz {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -24,4 +26,7 @@ export class QuestionsQuiz {
 
   @Column({ nullable: true, type: 'timestamp without time zone' })
   updatedAt: Date | null;
+
+  @OneToMany(() => QuestionQuizConnection, (q) => q.question)
+  questionQuizConnection: QuestionQuizConnection[];
 }
