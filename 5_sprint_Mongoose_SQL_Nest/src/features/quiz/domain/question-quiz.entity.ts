@@ -11,10 +11,10 @@ export class QuestionsQuiz {
   id: string;
 
   @Column({ length: 500, nullable: true })
-  body: string;
+  body: string | null;
 
   @Column('simple-array', { nullable: true })
-  correctAnswers: string[];
+  correctAnswers: string[] | null;
 
   @Column({ default: false })
   published: boolean;
@@ -22,6 +22,6 @@ export class QuestionsQuiz {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ nullable: true })
-  updatedAt: Date;
+  @Column({ nullable: true, type: 'timestamp without time zone' })
+  updatedAt: Date | null;
 }

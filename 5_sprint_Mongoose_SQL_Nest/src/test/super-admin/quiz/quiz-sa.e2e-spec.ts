@@ -17,7 +17,6 @@ import {
 } from './quiz-sa.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { DataSource } from 'typeorm';
-import { getPostsPublicTest } from '../../public/posts/posts-public.helpers';
 
 describe('Quiz (SA); /sa/quiz', () => {
   jest.setTimeout(5 * 60 * 1000);

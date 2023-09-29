@@ -4,8 +4,8 @@ import { QuizRepository } from '../../../infrastructure/typeORM/repository/quiz.
 export class UpdateQuestionCommand {
   constructor(
     public id: string,
-    public body: string,
-    public correctAnswers: string[],
+    public body: string | null,
+    public correctAnswers: string[] | null,
   ) {}
 }
 

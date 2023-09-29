@@ -35,13 +35,13 @@ export class Blogs {
   isBanned: boolean;
 
   @Column({ nullable: true })
-  banDate: Date;
+  banDate: Date | null;
 
   @ManyToOne(() => Users, (u) => u.blog)
   @JoinColumn()
   user: Users;
   @Column({ nullable: true })
-  userId: string;
+  userId: string | null;
 
   @OneToMany(() => Posts, (p) => p.blog)
   post: Posts[];

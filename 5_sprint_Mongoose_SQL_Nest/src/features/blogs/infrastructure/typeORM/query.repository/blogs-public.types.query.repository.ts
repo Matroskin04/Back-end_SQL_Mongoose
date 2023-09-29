@@ -23,7 +23,7 @@ export type BlogAllInfoOutputType = {
   description: string;
   createdAt: string;
   websiteUrl: string;
-  userId: string;
+  userId: string | null;
   isMembership: boolean;
   isBanned: boolean;
 };

@@ -13,13 +13,13 @@ export class CreateQuestionInputModel {
   @Length(10, 500)
   @IsString({ message: 'It should be a string' })
   @ValidateIf((object, value) => value !== null)
-  body: string;
+  body: string | null;
 
   @IsArray()
   @IsString({ each: true })
   @ArrayMinSize(1)
   @ValidateIf((object, value) => value !== null)
-  correctAnswers: string[];
+  correctAnswers: string[] | null;
 }
 
 //todo в ts не указывать null?

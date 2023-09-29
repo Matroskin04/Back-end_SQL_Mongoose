@@ -3,7 +3,10 @@ import { QuestionQuizDTOType } from '../dto/question.dto';
 import { QuizRepository } from '../../../infrastructure/typeORM/repository/quiz.repository';
 
 export class CreateQuestionCommand {
-  constructor(public body: string, public correctAnswers: string[]) {}
+  constructor(
+    public body: string | null,
+    public correctAnswers: string[] | null,
+  ) {}
 }
 
 @CommandHandler(CreateQuestionCommand)

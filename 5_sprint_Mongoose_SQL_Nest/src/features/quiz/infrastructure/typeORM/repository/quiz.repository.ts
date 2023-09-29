@@ -12,8 +12,8 @@ export class QuizRepository {
   ) {}
 
   async createQuestionQuiz(
-    body: string,
-    correctAnswers: string[],
+    body: string | null,
+    correctAnswers: string[] | null,
   ): Promise<QuestionQuizAllInfoType> {
     const result = await this.questionQuizRepository
       .createQueryBuilder()
@@ -39,8 +39,8 @@ export class QuizRepository {
 
   async updateQuestionQuiz(
     questionId: string,
-    body: string,
-    correctAnswers: string[],
+    body: string | null,
+    correctAnswers: string[] | null,
   ): Promise<boolean> {
     const result = await this.questionQuizRepository
       .createQueryBuilder()
