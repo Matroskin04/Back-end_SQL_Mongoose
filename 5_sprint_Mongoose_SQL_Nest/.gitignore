@@ -3,13 +3,13 @@
 /node_modules
 
 # Directories
-/src/db/
 /src/test/coverage/
 
 # Another files
 .env
 testing.js
 tests.ts
+data-source.ts
 
 # Logs
 logs
