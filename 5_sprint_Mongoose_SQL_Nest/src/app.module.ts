@@ -114,6 +114,7 @@ import { AnswerQuiz } from './features/quiz/domain/answer-quiz.entity';
 import { QuestionQuizConnection } from './features/quiz/domain/question-quiz-connection.entity';
 import { Quiz } from './features/quiz/domain/quiz.entity';
 import { QuizGameInfoAboutUser } from './features/quiz/domain/quiz-game-info-about-user.entity';
+import { QuizPublicController } from './features/quiz/api/quiz-public.controller';
 
 const queryRepositories = [
   // SQL
@@ -252,6 +253,7 @@ const handlers = [
     UsersSaController,
     UsersBloggerController,
     QuizSaController,
+    QuizPublicController,
     TestingController,
   ],
   providers: [
