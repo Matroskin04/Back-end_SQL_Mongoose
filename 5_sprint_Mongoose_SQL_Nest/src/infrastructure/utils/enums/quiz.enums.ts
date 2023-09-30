@@ -3,3 +3,8 @@ export enum QuizStatusEnum {
   'Active',
   'Finished',
 }
+
+export enum QuizAnswerStatusEnum {
+  'Incorrect',
+  'Correct',
+}

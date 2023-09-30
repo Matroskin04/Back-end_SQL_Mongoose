@@ -17,6 +17,7 @@ import { PostsLikesInfo } from '../../posts/domain/posts-likes-info.entity';
 import { CommentsLikesInfo } from '../../comments/domain/comments-likes-info.entity';
 import { Devices } from '../../devices/domain/devices.entity';
 import { Quiz } from '../../quiz/domain/quiz.entity';
+import { AnswerQuiz } from '../../quiz/domain/answer-quiz.entity';
 
 @Entity()
 export class Users {
@@ -46,6 +47,9 @@ export class Users {
 
   @OneToOne(() => UsersBanInfo, (bi) => bi.user)
   userBanInfo: UsersBanInfo;
+
+  @OneToOne(() => AnswerQuiz, (aq) => aq.user)
+  answerQuiz: AnswerQuiz;
 
   @OneToMany(() => Blogs, (b) => b.user)
   blog: Blogs[];

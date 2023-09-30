@@ -1,13 +1,43 @@
-// import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-//
-// @Entity()
-// export class AnswersQuiz {
-//   @PrimaryGeneratedColumn('uuid')
-//   id: string;
-//
-//   @Column({ type: 'uuid', nullable: true })
-//   quiz: string | null;
-//
-//   @Column({ type: 'uuid', nullable: true })
-//   userId1: string | null;
-// }
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { QuizAnswerStatusEnum } from '../../../infrastructure/utils/enums/quiz.enums';
+import { Users } from '../../users/domain/users.entity';
+import { QuestionQuiz } from './question-quiz.entity';
+import { Quiz } from './quiz.entity';
+
+@Entity()
+export class AnswerQuiz {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ type: 'enum', enum: QuizAnswerStatusEnum })
+  answerStatus: QuizAnswerStatusEnum;
+
+  @CreateDateColumn()
+  addedAt: Date;
+
+  @ManyToOne(() => Quiz, (q) => q.answersQuiz)
+  @JoinColumn()
+  quiz: Quiz;
+  @Column()
+  quizId: string;
+
+  @OneToOne(() => Users, (u) => u.answerQuiz)
+  @JoinColumn()
+  user: Users;
+  @Column()
+  userId: string;
+
+  @ManyToOne(() => QuestionQuiz, (q) => q.answersQuiz)
+  @JoinColumn()
+  question: QuestionQuiz;
+  @Column()
+  questionId: string;
+}

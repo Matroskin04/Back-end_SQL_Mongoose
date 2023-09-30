@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { QuestionQuizConnection } from './question-quiz-connection.entity';
+import { AnswerQuiz } from './answer-quiz.entity';
 
 @Entity()
 export class QuestionQuiz {
@@ -28,5 +29,8 @@ export class QuestionQuiz {
   updatedAt: Date | null;
 
   @OneToMany(() => QuestionQuizConnection, (q) => q.question)
-  questionQuizConnection: QuestionQuizConnection[];
+  quiz: QuestionQuizConnection[];
+
+  @OneToMany(() => AnswerQuiz, (aq) => aq.question)
+  answersQuiz: AnswerQuiz[];
 }

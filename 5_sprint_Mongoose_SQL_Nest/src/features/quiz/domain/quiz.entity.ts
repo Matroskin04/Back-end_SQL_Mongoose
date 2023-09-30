@@ -5,24 +5,17 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { QuizStatusEnum } from '../../../infrastructure/utils/enums/quiz.enums';
 import { Users } from '../../users/domain/users.entity';
-import { PostsLikesInfo } from '../../posts/domain/posts-likes-info.entity';
 import { QuestionQuizConnection } from './question-quiz-connection.entity';
+import { AnswerQuiz } from './answer-quiz.entity';
 
 @Entity()
 export class Quiz {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column('smallint')
-  numberAnswers1: number;
-
-  @Column('smallint')
-  numberAnswers2: number;
 
   @Column({ type: 'enum', enum: QuizStatusEnum })
   status: QuizStatusEnum;
@@ -49,5 +42,8 @@ export class Quiz {
   userId2: string | null;
 
   @OneToMany(() => QuestionQuizConnection, (q) => q.quiz)
-  questionQuizConnection: QuestionQuizConnection[];
+  questionsQuiz: QuestionQuizConnection[];
+
+  @OneToMany(() => AnswerQuiz, (aq) => aq.quiz)
+  answersQuiz: AnswerQuiz[];
 }
