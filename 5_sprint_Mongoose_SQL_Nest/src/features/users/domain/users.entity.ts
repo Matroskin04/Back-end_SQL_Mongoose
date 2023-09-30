@@ -18,6 +18,7 @@ import { CommentsLikesInfo } from '../../comments/domain/comments-likes-info.ent
 import { Devices } from '../../devices/domain/devices.entity';
 import { Quiz } from '../../quiz/domain/quiz.entity';
 import { AnswerQuiz } from '../../quiz/domain/answer-quiz.entity';
+import { QuizGameInfoAboutUser } from '../../quiz/domain/quiz-game-info-about-user.entity';
 
 @Entity()
 export class Users {
@@ -50,6 +51,9 @@ export class Users {
 
   @OneToOne(() => AnswerQuiz, (aq) => aq.user)
   answerQuiz: AnswerQuiz;
+
+  @OneToOne(() => QuizGameInfoAboutUser, (qi) => qi.user)
+  quizGameInfoAboutUser: QuizGameInfoAboutUser;
 
   @OneToMany(() => Blogs, (b) => b.user)
   blog: Blogs[];

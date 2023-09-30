@@ -5,12 +5,14 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { QuizStatusEnum } from '../../../infrastructure/utils/enums/quiz.enums';
 import { Users } from '../../users/domain/users.entity';
 import { QuestionQuizConnection } from './question-quiz-connection.entity';
 import { AnswerQuiz } from './answer-quiz.entity';
+import { QuizGameInfoAboutUser } from './quiz-game-info-about-user.entity';
 
 @Entity()
 export class Quiz {
@@ -29,17 +31,20 @@ export class Quiz {
   @Column({ type: 'timestamp without time zone', nullable: true })
   finishGameDate: Date | null;
 
+  @OneToOne(() => QuizGameInfoAboutUser, (qi) => qi.quiz)
+  quizGameInfoAboutUser: QuizGameInfoAboutUser;
+
   @ManyToOne(() => Users, (u) => u.quiz1)
   @JoinColumn()
   user1: Users;
   @Column({ type: 'uuid', nullable: true })
-  userId1: string | null;
+  user1Id: string | null;
 
   @ManyToOne(() => Users, (u) => u.quiz2)
   @JoinColumn()
   user2: Users;
   @Column({ type: 'uuid', nullable: true })
-  userId2: string | null;
+  user2Id: string | null;
 
   @OneToMany(() => QuestionQuizConnection, (q) => q.quiz)
   questionsQuiz: QuestionQuizConnection[];

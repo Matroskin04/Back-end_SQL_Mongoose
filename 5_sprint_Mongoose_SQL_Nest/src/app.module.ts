@@ -103,13 +103,17 @@ import { CommentsOrmQueryRepository } from './features/comments/infrastructure/t
 import { CommentsLikesOrmRepository } from './features/comments/infrastructure/typeORM/subrepository/comments-likes-orm.repository';
 import { DevicesOrmQueryRepository } from './features/devices/infrastructure/typeORM/query.repository/devices-orm.query.repository';
 import { QuizSaController } from './features/quiz/api/quiz-sa.controller';
-import { QuestionsQuiz } from './features/quiz/domain/question-quiz.entity';
+import { QuestionQuiz } from './features/quiz/domain/question-quiz.entity';
 import { CreateQuestionUseCase } from './features/quiz/application/sa/use-cases/create-question.use-case';
 import { QuizRepository } from './features/quiz/infrastructure/typeORM/repository/quiz.repository';
 import { UpdateQuestionUseCase } from './features/quiz/application/sa/use-cases/update-question.use-case';
 import { DeleteQuestionUseCase } from './features/quiz/application/sa/use-cases/delete-question.use-case';
 import { PublishQuestionUseCase } from './features/quiz/application/sa/use-cases/publish-question.use-case';
 import { QuizQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/quiz.query.repository';
+import { AnswerQuiz } from './features/quiz/domain/answer-quiz.entity';
+import { QuestionQuizConnection } from './features/quiz/domain/question-quiz-connection.entity';
+import { Quiz } from './features/quiz/domain/quiz.entity';
+import { QuizGameInfoAboutUser } from './features/quiz/domain/quiz-game-info-about-user.entity';
 
 const queryRepositories = [
   // SQL
@@ -218,7 +222,11 @@ const handlers = [
       UsersPasswordRecovery,
       UsersEmailConfirmation,
       UsersBanInfo,
-      QuestionsQuiz,
+      QuestionQuiz,
+      AnswerQuiz,
+      QuestionQuizConnection,
+      Quiz,
+      QuizGameInfoAboutUser,
     ]),
     TypeOrmModule.forRoot({
       type: 'postgres',
