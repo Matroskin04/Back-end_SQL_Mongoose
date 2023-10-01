@@ -25,11 +25,11 @@ export class Quiz {
   @Column({
     type: 'enum',
     enum: QuizStatusEnum,
-    default: QuizStatusEnum['Active'],
+    default: QuizStatusEnum['PendingSecondPlayer'],
   })
   status: QuizStatusEnum;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   pairCreatedDate: Date;
 
   @Column({ type: 'timestamp without time zone', nullable: true })
