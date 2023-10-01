@@ -20,7 +20,7 @@ export class AnswerQuiz {
   @Column({ type: 'enum', enum: QuizAnswerStatusEnum })
   answerStatus: QuizAnswerStatusEnum;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   addedAt: Date;
 
   @ManyToOne(() => Quiz, (q) => q.answersQuiz)

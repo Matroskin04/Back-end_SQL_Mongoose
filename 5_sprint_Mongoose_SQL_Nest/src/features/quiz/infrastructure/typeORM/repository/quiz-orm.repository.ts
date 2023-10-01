@@ -23,8 +23,12 @@ export class QuizOrmRepository {
     const result = await this.quizRepository
       .createQueryBuilder()
       .update()
-      .set({ status: QuizStatusEnum['Active'], user2Id: userId })
-      .where('status =: quizStatus', {
+      .set({
+        status: QuizStatusEnum['Active'],
+        user2Id: userId,
+        startGameDate: () => 'CURRENT_TIMESTAMP',
+      })
+      .where('status = :quizStatus', {
         quizStatus: QuizStatusEnum['PendingSecondPlayer'],
       })
       .returning([

@@ -80,10 +80,10 @@ export class QuestionsOrmQueryRepository {
     return result;
   }
 
-  async get5RandomQuestions(): Promise<null | { id: string }[]> {
+  async get5RandomQuestions(): Promise<{ id: string }[]> {
     const randomQuestions = await this.questionQuizRepository
       .createQueryBuilder('q')
-      .select('q.id')
+      .select('q."id"')
       .orderBy('RANDOM()')
       .take(5)
       .getRawMany();

@@ -22,7 +22,7 @@ export class QuestionQuiz {
   @Column({ default: false })
   published: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 
   @Column({ nullable: true, type: 'timestamp without time zone' })
