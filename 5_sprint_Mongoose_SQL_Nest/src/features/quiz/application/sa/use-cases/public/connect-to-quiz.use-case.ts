@@ -1,12 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { QuizOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/quiz-orm.query.repository';
+import { QuizOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/quiz/quiz-orm.query.repository';
 import { ForbiddenException } from '@nestjs/common';
-import { QuizOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz-orm.repository';
+import { QuizOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz/quiz-orm.repository';
 import { DataSource } from 'typeorm';
 import { Quiz } from '../../../../domain/quiz.entity';
 import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.entity';
 import { QuestionsOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/questions/questions-orm.query.repository';
 import { QuestionQuizRelationOrmRepository } from '../../../../infrastructure/typeORM/repository/question-quiz-relation-orm.repository';
+import { QuizInfoAboutUserOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz-info-about-user-orm.repository';
 
 export class ConnectToQuizCommand {
   constructor(public userId: string) {}
@@ -21,6 +22,7 @@ export class ConnectToQuizUseCase
     protected questionsOrmQueryRepository: QuestionsOrmQueryRepository,
     protected questionQuizRelationOrmRepository: QuestionQuizRelationOrmRepository,
     protected quizOrmRepository: QuizOrmRepository,
+    protected quizInfoAboutUserOrmRepository: QuizInfoAboutUserOrmRepository,
     protected dataSource: DataSource,
   ) {}
 
@@ -62,8 +64,13 @@ export class ConnectToQuizUseCase
         quizInfo.id,
         questionsIds,
       );
-      //add the second player and dates
-      // await this.quizOrmRepository.
+      //create info about the second player
+      await this.quizInfoAboutUserOrmRepository.createQuizInfoAboutUser(
+        quizInfo.id,
+        userId,
+      );
     }
+
+    return;
   }
 }
