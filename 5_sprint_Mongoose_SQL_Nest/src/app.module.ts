@@ -116,9 +116,10 @@ import { Quiz } from './features/quiz/domain/quiz.entity';
 import { QuizInfoAboutUser } from './features/quiz/domain/quiz-game-info-about-user.entity';
 import { QuizPublicController } from './features/quiz/api/quiz-public.controller';
 import { ConnectToQuizUseCase } from './features/quiz/application/sa/use-cases/public/connect-to-quiz.use-case';
-import { QuizOrmQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/quiz-orm.query.repository';
-import { QuizOrmRepository } from './features/quiz/infrastructure/typeORM/repository/quiz-orm.repository';
+import { QuizOrmQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/quiz/quiz-orm.query.repository';
+import { QuizOrmRepository } from './features/quiz/infrastructure/typeORM/repository/quiz/quiz-orm.repository';
 import { QuestionQuizRelationOrmRepository } from './features/quiz/infrastructure/typeORM/repository/question-quiz-relation-orm.repository';
+import { QuizInfoAboutUserOrmRepository } from './features/quiz/infrastructure/typeORM/repository/quiz-info-about-user-orm.repository';
 
 const queryRepositories = [
   // SQL
@@ -167,6 +168,7 @@ const repositories = [
   CommentsLikesOrmRepository,
   QuizOrmRepository,
   QuestionQuizRelationOrmRepository,
+  QuizInfoAboutUserOrmRepository,
 ];
 
 const handlers = [
