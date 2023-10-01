@@ -9,7 +9,7 @@ import { Quiz } from './quiz.entity';
 import { QuestionQuiz } from './question-quiz.entity';
 
 @Entity()
-export class QuestionQuizConnection {
+export class QuestionQuizRelation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
