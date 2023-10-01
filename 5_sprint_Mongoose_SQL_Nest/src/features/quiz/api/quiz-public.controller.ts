@@ -22,23 +22,24 @@ import { DeleteQuestionCommand } from '../application/sa/use-cases/delete-questi
 import { PublishQuestionUseCase } from './models/input/publish-question.input.model';
 import { PublishQuestionCommand } from '../application/sa/use-cases/publish-question.use-case';
 import { QueryQuestionsInputModel } from './models/input/query-questions.input.model';
-import { QuizQueryRepository } from '../infrastructure/typeORM/query.repository/quiz.query.repository';
+import { QuestionsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/questions-orm.query.repository';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
 import { QuizPublicOutputModel } from './models/output/quiz-public.output.model';
+import { ConnectToQuizCommand } from '../application/sa/use-cases/connect-to-quiz.use-case';
 
 @Controller('/hometask-nest/pair-game-quiz/pairs')
 export class QuizPublicController {
   constructor(
     protected commandBus: CommandBus,
-    protected quizQueryRepository: QuizQueryRepository,
+    protected quizQueryRepository: QuestionsOrmQueryRepository,
   ) {}
   @UseGuards(JwtAccessGuard)
   @Post('connection')
   async connectToQuiz(
     @CurrentUserId() userId: string,
   ): Promise<QuizPublicOutputModel | void> {
-    const result = [];
+    const result = this.commandBus.execute(new ConnectToQuizCommand(userId));
     return;
   }
 }

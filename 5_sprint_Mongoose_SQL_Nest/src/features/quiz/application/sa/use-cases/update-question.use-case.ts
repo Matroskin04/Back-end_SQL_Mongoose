@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { QuizRepository } from '../../../infrastructure/typeORM/repository/quiz.repository';
+import { QuestionsOrmRepository } from '../../../infrastructure/typeORM/repository/questions-orm.repository';
 
 export class UpdateQuestionCommand {
   constructor(
@@ -13,7 +13,7 @@ export class UpdateQuestionCommand {
 export class UpdateQuestionUseCase
   implements ICommandHandler<UpdateQuestionCommand>
 {
-  constructor(protected quizRepository: QuizRepository) {}
+  constructor(protected quizRepository: QuestionsOrmRepository) {}
 
   async execute(command: UpdateQuestionCommand): Promise<boolean> {
     const { id, body, correctAnswers } = command;

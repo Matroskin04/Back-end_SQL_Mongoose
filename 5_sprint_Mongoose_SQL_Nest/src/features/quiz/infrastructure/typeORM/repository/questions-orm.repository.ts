@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { QuestionQuizAllInfoType } from './quiz.types.repository';
+import { QuestionQuizAllInfoType } from './questions.types.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { QuestionQuiz } from '../../../domain/question-quiz.entity';
 
 @Injectable()
-export class QuizRepository {
+export class QuestionsOrmRepository {
   constructor(
     @InjectRepository(QuestionQuiz)
     protected questionQuizRepository: Repository<QuestionQuiz>,

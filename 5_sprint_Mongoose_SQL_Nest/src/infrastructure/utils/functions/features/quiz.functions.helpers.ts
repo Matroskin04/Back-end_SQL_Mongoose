@@ -1,4 +1,4 @@
-import { QuestionQuizAllInfoType } from '../../../../features/quiz/infrastructure/typeORM/repository/quiz.types.repository';
+import { QuestionQuizAllInfoType } from '../../../../features/quiz/infrastructure/typeORM/repository/questions.types.repository';
 
 export function modifyQuestionIntoViewModel(question): QuestionQuizAllInfoType {
   return {

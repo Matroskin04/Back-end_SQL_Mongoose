@@ -6,15 +6,12 @@ import {
 export type QuizPublicOutputModel = {
   id: string;
   firstPlayerProgress: InfoAboutUserQuizType;
-  secondPlayerProgress: InfoAboutUserQuizType;
-  questions: Array<{
-    id: 'string';
-    body: 'string';
-  }>;
+  secondPlayerProgress: InfoAboutUserQuizType | null;
+  questions: QuestionOfQuizType[] | null;
   status: QuizStatusEnum;
   pairCreatedDate: string;
-  startGameDate: string;
-  finishGameDate: string;
+  startGameDate: string | null;
+  finishGameDate: string | null;
 };
 
 type InfoAboutUserQuizType = {
@@ -28,4 +25,9 @@ type InfoAboutUserQuizType = {
     login: string;
   };
   score: number;
+};
+
+type QuestionOfQuizType = {
+  id: string;
+  body: string;
 };

@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { QuizRepository } from '../../../infrastructure/typeORM/repository/quiz.repository';
-import { QuizQueryRepository } from '../../../infrastructure/typeORM/query.repository/quiz.query.repository';
+import { QuestionsOrmRepository } from '../../../infrastructure/typeORM/repository/questions-orm.repository';
+import { QuestionsOrmQueryRepository } from '../../../infrastructure/typeORM/query.repository/questions-orm.query.repository';
 import { BadRequestException } from '@nestjs/common';
 import { createBodyErrorBadRequest } from '../../../../../infrastructure/utils/functions/create-error-bad-request.function';
 
@@ -13,8 +13,8 @@ export class PublishQuestionUseCase
   implements ICommandHandler<PublishQuestionCommand>
 {
   constructor(
-    protected quizRepository: QuizRepository,
-    protected quizQueryRepository: QuizQueryRepository,
+    protected quizRepository: QuestionsOrmRepository,
+    protected quizQueryRepository: QuestionsOrmQueryRepository,
   ) {}
 
   async execute(command: PublishQuestionCommand): Promise<boolean> {

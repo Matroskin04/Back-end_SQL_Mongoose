@@ -105,16 +105,17 @@ import { DevicesOrmQueryRepository } from './features/devices/infrastructure/typ
 import { QuizSaController } from './features/quiz/api/quiz-sa.controller';
 import { QuestionQuiz } from './features/quiz/domain/question-quiz.entity';
 import { CreateQuestionUseCase } from './features/quiz/application/sa/use-cases/create-question.use-case';
-import { QuizRepository } from './features/quiz/infrastructure/typeORM/repository/quiz.repository';
+import { QuestionsOrmRepository } from './features/quiz/infrastructure/typeORM/repository/questions-orm.repository';
 import { UpdateQuestionUseCase } from './features/quiz/application/sa/use-cases/update-question.use-case';
 import { DeleteQuestionUseCase } from './features/quiz/application/sa/use-cases/delete-question.use-case';
 import { PublishQuestionUseCase } from './features/quiz/application/sa/use-cases/publish-question.use-case';
-import { QuizQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/quiz.query.repository';
+import { QuestionsOrmQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/questions-orm.query.repository';
 import { AnswerQuiz } from './features/quiz/domain/answer-quiz.entity';
 import { QuestionQuizConnection } from './features/quiz/domain/question-quiz-connection.entity';
 import { Quiz } from './features/quiz/domain/quiz.entity';
 import { QuizGameInfoAboutUser } from './features/quiz/domain/quiz-game-info-about-user.entity';
 import { QuizPublicController } from './features/quiz/api/quiz-public.controller';
+import { QuizOrmQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/quiz-orm.query.repository';
 
 const queryRepositories = [
   // SQL
@@ -132,7 +133,8 @@ const queryRepositories = [
   DevicesOrmQueryRepository,
   UsersOrmQueryRepository,
   LikesInfoOrmQueryRepository,
-  QuizQueryRepository,
+  QuestionsOrmQueryRepository,
+  QuizOrmQueryRepository,
 ];
 const repositories = [
   //SQL
@@ -146,7 +148,7 @@ const repositories = [
   LikesInfoRepository,
   PostsRepository,
   UsersRepository,
-  QuizRepository,
+  QuestionsOrmRepository,
   TestingRepository,
 
   //ORM
@@ -238,7 +240,7 @@ const handlers = [
       database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: false,
       synchronize: false,
-      url: process.env.POSTGRES_URL + '?sslmode=require',
+      // url: process.env.POSTGRES_URL + '?sslmode=require',
     }),
     JwtModule.register({}),
   ],

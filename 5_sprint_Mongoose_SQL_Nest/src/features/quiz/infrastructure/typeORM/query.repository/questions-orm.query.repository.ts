@@ -7,14 +7,12 @@ import {
   QuestionPaginationType,
   QuestionQuizAllInfoType,
   QuestionsQueryType,
-} from './quiz.types.query.repository';
+} from './questions.types.query.repository';
 import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
-import { Posts } from '../../../../posts/domain/posts.entity';
-import { modifyPostIntoViewModel } from '../../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { modifyQuestionIntoViewModel } from '../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
 
 @Injectable()
-export class QuizQueryRepository {
+export class QuestionsOrmQueryRepository {
   constructor(
     @InjectRepository(QuestionQuiz)
     protected questionQuizRepository: Repository<QuestionQuiz>,
