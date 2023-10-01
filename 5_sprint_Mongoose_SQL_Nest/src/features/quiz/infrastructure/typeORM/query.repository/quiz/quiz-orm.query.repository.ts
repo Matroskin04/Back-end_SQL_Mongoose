@@ -11,6 +11,28 @@ export class QuizOrmQueryRepository {
     protected quizRepository: Repository<Quiz>,
   ) {}
 
+  async getAllInfoOfQuizById(quizId: string): Promise<void> {
+    const result = await this.quizRepository
+      .createQueryBuilder('q')
+      .select([
+        'q."id"',
+        'q."user1Id"',
+        'q."user2Id"',
+        'q."status"',
+        'q."pairCreatedDate"',
+        'q."startGameDate"',
+        'q."finishGameDate"',
+        'u1."login" as "login1"',
+        'u2."login" as "login2"',
+        'gi1."score" as "score1"',
+        'gi2."score" as "score2"',
+      ])
+      .leftJoin('q.user1', 'u1')
+      .leftJoin('q.user2', 'u2')
+      .leftJoin('q.quizGameInfoAboutUser', 'gi1', 'gi."userId" = q."user1Id"')
+      .leftJoin('q.quizGameInfoAboutUser', 'gi2', 'gi."userId" = q."user2Id"');
+  }
+
   //ADDITIONAL
   async haveUserCurrentQuiz(userId: string): Promise<boolean> {
     const result = await this.quizRepository
