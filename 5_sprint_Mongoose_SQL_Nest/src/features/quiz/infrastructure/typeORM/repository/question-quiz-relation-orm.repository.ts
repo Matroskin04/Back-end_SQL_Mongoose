@@ -23,4 +23,19 @@ export class QuestionQuizRelationOrmRepository {
 
     return;
   }
+
+  async create5QuestionQuizRelations(
+    quizId: string,
+    questionsIds: { id: string }[],
+  ): Promise<void> {
+    for (const question of questionsIds) {
+      await this.questionQuizRelationRepository
+        .createQueryBuilder()
+        .insert()
+        .values({ quizId, questionId: question.id })
+        .execute();
+    }
+
+    return;
+  }
 }
