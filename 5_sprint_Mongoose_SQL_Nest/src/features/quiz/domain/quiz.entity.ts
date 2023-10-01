@@ -10,16 +10,23 @@ import {
 } from 'typeorm';
 import { QuizStatusEnum } from '../../../infrastructure/utils/enums/quiz.enums';
 import { Users } from '../../users/domain/users.entity';
-import { QuestionQuizConnection } from './question-quiz-connection.entity';
+import { QuestionQuizRelation } from './question-quiz-relation.entity';
 import { AnswerQuiz } from './answer-quiz.entity';
-import { QuizGameInfoAboutUser } from './quiz-game-info-about-user.entity';
+import { QuizInfoAboutUser } from './quiz-game-info-about-user.entity';
 
 @Entity()
 export class Quiz {
+  constructor(user1Id: string) {
+    this.user1Id = user1Id;
+  }
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: QuizStatusEnum })
+  @Column({
+    type: 'enum',
+    enum: QuizStatusEnum,
+    default: QuizStatusEnum['Active'],
+  })
   status: QuizStatusEnum;
 
   @CreateDateColumn()
@@ -30,9 +37,6 @@ export class Quiz {
 
   @Column({ type: 'timestamp without time zone', nullable: true })
   finishGameDate: Date | null;
-
-  @OneToOne(() => QuizGameInfoAboutUser, (qi) => qi.quiz)
-  quizGameInfoAboutUser: QuizGameInfoAboutUser;
 
   @ManyToOne(() => Users, (u) => u.quiz1)
   @JoinColumn()
@@ -46,8 +50,11 @@ export class Quiz {
   @Column({ type: 'uuid', nullable: true })
   user2Id: string | null;
 
-  @OneToMany(() => QuestionQuizConnection, (q) => q.quiz)
-  questionsQuiz: QuestionQuizConnection[];
+  @OneToOne(() => QuizInfoAboutUser, (qi) => qi.quiz)
+  quizGameInfoAboutUser: QuizInfoAboutUser;
+
+  @OneToMany(() => QuestionQuizRelation, (q) => q.quiz)
+  questionsQuiz: QuestionQuizRelation[];
 
   @OneToMany(() => AnswerQuiz, (aq) => aq.quiz)
   answersQuiz: AnswerQuiz[];

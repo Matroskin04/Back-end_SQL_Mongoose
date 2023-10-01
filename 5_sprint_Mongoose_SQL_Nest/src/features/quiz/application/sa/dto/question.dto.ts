@@ -1,3 +1,3 @@
-import { QuestionQuizAllInfoType } from '../../../infrastructure/typeORM/repository/questions.types.repository';
+import { QuestionQuizAllInfoType } from '../../../infrastructure/typeORM/repository/questions/questions.types.repository';
 
 export type QuestionQuizDTOType = QuestionQuizAllInfoType;

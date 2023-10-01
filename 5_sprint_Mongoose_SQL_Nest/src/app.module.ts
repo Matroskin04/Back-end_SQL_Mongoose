@@ -104,18 +104,21 @@ import { CommentsLikesOrmRepository } from './features/comments/infrastructure/t
 import { DevicesOrmQueryRepository } from './features/devices/infrastructure/typeORM/query.repository/devices-orm.query.repository';
 import { QuizSaController } from './features/quiz/api/quiz-sa.controller';
 import { QuestionQuiz } from './features/quiz/domain/question-quiz.entity';
-import { CreateQuestionUseCase } from './features/quiz/application/sa/use-cases/create-question.use-case';
-import { QuestionsOrmRepository } from './features/quiz/infrastructure/typeORM/repository/questions-orm.repository';
-import { UpdateQuestionUseCase } from './features/quiz/application/sa/use-cases/update-question.use-case';
-import { DeleteQuestionUseCase } from './features/quiz/application/sa/use-cases/delete-question.use-case';
-import { PublishQuestionUseCase } from './features/quiz/application/sa/use-cases/publish-question.use-case';
-import { QuestionsOrmQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/questions-orm.query.repository';
+import { CreateQuestionUseCase } from './features/quiz/application/sa/use-cases/sa/create-question.use-case';
+import { QuestionsOrmRepository } from './features/quiz/infrastructure/typeORM/repository/questions/questions-orm.repository';
+import { UpdateQuestionUseCase } from './features/quiz/application/sa/use-cases/sa/update-question.use-case';
+import { DeleteQuestionUseCase } from './features/quiz/application/sa/use-cases/sa/delete-question.use-case';
+import { PublishQuestionUseCase } from './features/quiz/application/sa/use-cases/sa/publish-question.use-case';
+import { QuestionsOrmQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/questions/questions-orm.query.repository';
 import { AnswerQuiz } from './features/quiz/domain/answer-quiz.entity';
-import { QuestionQuizConnection } from './features/quiz/domain/question-quiz-connection.entity';
+import { QuestionQuizRelation } from './features/quiz/domain/question-quiz-relation.entity';
 import { Quiz } from './features/quiz/domain/quiz.entity';
-import { QuizGameInfoAboutUser } from './features/quiz/domain/quiz-game-info-about-user.entity';
+import { QuizInfoAboutUser } from './features/quiz/domain/quiz-game-info-about-user.entity';
 import { QuizPublicController } from './features/quiz/api/quiz-public.controller';
+import { ConnectToQuizUseCase } from './features/quiz/application/sa/use-cases/public/connect-to-quiz.use-case';
 import { QuizOrmQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/quiz-orm.query.repository';
+import { QuizOrmRepository } from './features/quiz/infrastructure/typeORM/repository/quiz-orm.repository';
+import { QuestionQuizRelationOrmRepository } from './features/quiz/infrastructure/typeORM/repository/question-quiz-relation-orm.repository';
 
 const queryRepositories = [
   // SQL
@@ -162,6 +165,8 @@ const repositories = [
   DevicesOrmRepository,
   LikesInfoOrmRepository,
   CommentsLikesOrmRepository,
+  QuizOrmRepository,
+  QuestionQuizRelationOrmRepository,
 ];
 
 const handlers = [
@@ -201,11 +206,14 @@ const handlers = [
   DeleteDeviceByIdUseCase,
   DeleteDevicesByUserIdUseCase,
 
-  //Quiz
+  //Questions
   CreateQuestionUseCase,
   UpdateQuestionUseCase,
   PublishQuestionUseCase,
   DeleteQuestionUseCase,
+
+  //Quiz
+  ConnectToQuizUseCase,
 ];
 
 @Module({
@@ -227,9 +235,9 @@ const handlers = [
       UsersBanInfo,
       QuestionQuiz,
       AnswerQuiz,
-      QuestionQuizConnection,
+      QuestionQuizRelation,
       Quiz,
-      QuizGameInfoAboutUser,
+      QuizInfoAboutUser,
     ]),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -238,9 +246,9 @@ const handlers = [
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      autoLoadEntities: false,
+      autoLoadEntities: true,
       synchronize: false,
-      // url: process.env.POSTGRES_URL + '?sslmode=require',
+      url: process.env.POSTGRES_URL + '?sslmode=require',
     }),
     JwtModule.register({}),
   ],

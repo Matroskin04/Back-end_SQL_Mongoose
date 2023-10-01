@@ -55,6 +55,7 @@ export class BlogsOrmRepository {
       })
       .where('id = :blogId', { blogId })
       .execute();
+
     return result.affected === 1;
   }
 

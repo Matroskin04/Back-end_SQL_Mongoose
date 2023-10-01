@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { Brackets, Repository } from 'typeorm';
 import { Quiz } from '../../../domain/quiz.entity';
 import { QuizStatusEnum } from '../../../../../infrastructure/utils/enums/quiz.enums';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class QuizOrmQueryRepository {
-  constructor(protected quizRepository: Repository<Quiz>) {}
+  constructor(
+    @InjectRepository(Quiz)
+    protected quizRepository: Repository<Quiz>,
+  ) {}
 
   //ADDITIONAL
   async haveUserCurrentQuiz(userId: string): Promise<boolean> {

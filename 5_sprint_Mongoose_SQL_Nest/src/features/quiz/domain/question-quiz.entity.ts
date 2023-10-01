@@ -5,7 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { QuestionQuizConnection } from './question-quiz-connection.entity';
+import { QuestionQuizRelation } from './question-quiz-relation.entity';
 import { AnswerQuiz } from './answer-quiz.entity';
 
 @Entity()
@@ -28,8 +28,8 @@ export class QuestionQuiz {
   @Column({ nullable: true, type: 'timestamp without time zone' })
   updatedAt: Date | null;
 
-  @OneToMany(() => QuestionQuizConnection, (q) => q.question)
-  quiz: QuestionQuizConnection[];
+  @OneToMany(() => QuestionQuizRelation, (q) => q.question)
+  quiz: QuestionQuizRelation[];
 
   @OneToMany(() => AnswerQuiz, (aq) => aq.question)
   answersQuiz: AnswerQuiz[];

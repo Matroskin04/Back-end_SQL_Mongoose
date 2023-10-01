@@ -1,4 +1,4 @@
-import { PublishedStatusType } from '../../../../../infrastructure/types/quiz-questions.general.types';
+import { PublishedStatusType } from '../../../../../../infrastructure/types/quiz-questions.general.types';
 
 export type QuestionQuizAllInfoType = {
   id: string;

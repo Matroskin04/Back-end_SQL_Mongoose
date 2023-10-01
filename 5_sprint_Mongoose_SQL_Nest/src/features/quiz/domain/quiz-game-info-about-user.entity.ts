@@ -9,14 +9,18 @@ import { Users } from '../../users/domain/users.entity';
 import { Quiz } from './quiz.entity';
 
 @Entity()
-export class QuizGameInfoAboutUser {
+export class QuizInfoAboutUser {
+  constructor(quizId: string, userId: string) {
+    this.quizId = quizId;
+    this.userId = userId;
+  }
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('smallint')
+  @Column({ type: 'smallint', default: 0 })
   numberOfAnswers: number;
 
-  @Column('smallint')
+  @Column({ type: 'smallint', default: 0 })
   score: number;
 
   @OneToOne(() => Quiz, (q) => q.quizGameInfoAboutUser)

@@ -19,6 +19,7 @@ export async function createCorrectUserTest(
     'correctPass',
     'correctEmail@gmail.com',
   );
+  console.log(user.body);
   expect(user.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
 
   return {

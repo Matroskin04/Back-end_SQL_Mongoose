@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { QuestionsOrmRepository } from '../../../infrastructure/typeORM/repository/questions-orm.repository';
-import { QuestionsOrmQueryRepository } from '../../../infrastructure/typeORM/query.repository/questions-orm.query.repository';
+import { QuestionsOrmRepository } from '../../../../infrastructure/typeORM/repository/questions/questions-orm.repository';
+import { QuestionsOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/questions/questions-orm.query.repository';
 import { BadRequestException } from '@nestjs/common';
-import { createBodyErrorBadRequest } from '../../../../../infrastructure/utils/functions/create-error-bad-request.function';
+import { createBodyErrorBadRequest } from '../../../../../../infrastructure/utils/functions/create-error-bad-request.function';
 
 export class PublishQuestionCommand {
   constructor(public id: string, public published: boolean) {}

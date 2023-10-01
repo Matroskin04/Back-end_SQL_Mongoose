@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QuestionQuiz } from '../../../domain/question-quiz.entity';
+import { QuestionQuiz } from '../../../../domain/question-quiz.entity';
 import { Brackets, Repository } from 'typeorm';
 import {
   AnswersOfQuestionType,
@@ -8,8 +8,8 @@ import {
   QuestionQuizAllInfoType,
   QuestionsQueryType,
 } from './questions.types.query.repository';
-import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
-import { modifyQuestionIntoViewModel } from '../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
+import { variablesForReturn } from '../../../../../../infrastructure/utils/functions/variables-for-return.function';
+import { modifyQuestionIntoViewModel } from '../../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
 
 @Injectable()
 export class QuestionsOrmQueryRepository {
@@ -78,6 +78,17 @@ export class QuestionsOrmQueryRepository {
       .getRawOne();
 
     return result;
+  }
+
+  async get5RandomQuestions(): Promise<null | { id: string }[]> {
+    const randomQuestions = await this.questionQuizRepository
+      .createQueryBuilder('q')
+      .select('q.id')
+      .orderBy('RANDOM()')
+      .take(5)
+      .getRawMany();
+
+    return randomQuestions;
   }
 
   async getQuestionAllInfoById(
