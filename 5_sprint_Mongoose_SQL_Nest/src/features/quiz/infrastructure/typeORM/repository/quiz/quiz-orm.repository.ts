@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Quiz } from '../../../domain/quiz.entity';
+import { Quiz } from '../../../../domain/quiz.entity';
 import { Repository } from 'typeorm';
-import { QuizStatusEnum } from '../../../../../infrastructure/utils/enums/quiz.enums';
-import { QuizRawInfoType } from '../query.repository/quiz.types.query.repository';
+import { QuizStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
+import { QuizRawInfoType } from '../../query.repository/quiz/quiz.types.query.repository';
 
 @Injectable()
 export class QuizOrmRepository {

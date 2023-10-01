@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Brackets, Repository } from 'typeorm';
-import { Quiz } from '../../../domain/quiz.entity';
-import { QuizStatusEnum } from '../../../../../infrastructure/utils/enums/quiz.enums';
+import { Quiz } from '../../../../domain/quiz.entity';
+import { QuizStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()

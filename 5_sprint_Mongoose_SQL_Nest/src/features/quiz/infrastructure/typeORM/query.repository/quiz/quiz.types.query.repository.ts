@@ -1,4 +1,4 @@
-import { QuizStatusEnum } from '../../../../../infrastructure/utils/enums/quiz.enums';
+import { QuizStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
 
 export type QuizRawInfoType = {
   id: string;
