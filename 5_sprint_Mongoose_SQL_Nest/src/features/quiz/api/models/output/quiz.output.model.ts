@@ -3,7 +3,7 @@ import {
   QuizStatusEnum,
 } from '../../../../../infrastructure/utils/enums/quiz.enums';
 
-export type QuizPublicOutputModel = {
+export type QuizOutputModel = {
   id: string;
   firstPlayerProgress: InfoAboutUserQuizType;
   secondPlayerProgress: InfoAboutUserQuizType | null;

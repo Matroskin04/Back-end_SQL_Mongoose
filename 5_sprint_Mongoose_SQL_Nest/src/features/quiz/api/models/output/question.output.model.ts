@@ -1,4 +1,4 @@
-export type QuestionSaOutputModel = {
+export type QuestionOutputModel = {
   id: string;
   body: string;
   correctAnswers: string[];
