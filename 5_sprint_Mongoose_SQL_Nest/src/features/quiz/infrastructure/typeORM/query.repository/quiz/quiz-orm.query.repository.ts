@@ -68,7 +68,7 @@ export class QuizOrmQueryRepository {
       .select('json_agg(to_jsonb("fiveQuestions")) as "questions"')
       .from((qb) => {
         return qb
-          .select(['qqr."questionId"', 'q."body"'])
+          .select(['qqr."questionId" as "id"', 'q."body"'])
           .from(QuestionQuizRelation, 'qqr')
           .leftJoin('qqr.question', 'q')
           .where('qqr."quizId" = :quizId', { quizId })
