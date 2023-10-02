@@ -39,12 +39,12 @@ export function modifyQuizIntoViewModel(
     },
     questions: quizInfo.questions ?? [],
     status: QuizStatusEnum[quizInfo.status],
-    pairCreatedDate: quizInfo.pairCreatedDate.toString(),
+    pairCreatedDate: quizInfo.pairCreatedDate.toISOString(),
     startGameDate: quizInfo.startGameDate
-      ? quizInfo.startGameDate.toString()
+      ? quizInfo.startGameDate.toISOString()
       : null,
     finishGameDate: quizInfo.finishGameDate
-      ? quizInfo.finishGameDate.toString()
+      ? quizInfo.finishGameDate.toISOString()
       : null,
   };
 }
