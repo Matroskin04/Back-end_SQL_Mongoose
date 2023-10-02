@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, Repository, SelectQueryBuilder } from 'typeorm';
 import { Quiz } from '../../../../domain/quiz.entity';
 import { QuizStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
 import { InjectRepository } from '@nestjs/typeorm';
+import { QuestionQuizRelation } from '../../../../domain/question-quiz-relation.entity';
+import { QuizViewType } from './quiz.types.query.repository';
+import { modifyQuizIntoViewModel } from '../../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
 
 @Injectable()
 export class QuizOrmQueryRepository {
@@ -11,7 +14,7 @@ export class QuizOrmQueryRepository {
     protected quizRepository: Repository<Quiz>,
   ) {}
 
-  async getAllInfoOfQuizById(quizId: string): Promise<void> {
+  async getAllInfoOfQuizById(quizId: string): Promise<QuizViewType> {
     const result = await this.quizRepository
       .createQueryBuilder('q')
       .select([
@@ -27,10 +30,16 @@ export class QuizOrmQueryRepository {
         'gi1."score" as "score1"',
         'gi2."score" as "score2"',
       ])
+      .addSelect((qb) => this.questionsBuilder(qb, quizId), 'questions')
       .leftJoin('q.user1', 'u1')
       .leftJoin('q.user2', 'u2')
       .leftJoin('q.quizGameInfoAboutUser', 'gi1', 'gi."userId" = q."user1Id"')
-      .leftJoin('q.quizGameInfoAboutUser', 'gi2', 'gi."userId" = q."user2Id"');
+      .leftJoin('q.quizGameInfoAboutUser', 'gi2', 'gi."userId" = q."user2Id"')
+      .where('q."id" = :quizId', { quizId })
+      .getRawMany();
+    console.log(result);
+
+    return modifyQuizIntoViewModel(result[0]);
   }
 
   //ADDITIONAL
@@ -52,5 +61,19 @@ export class QuizOrmQueryRepository {
       .getExists();
 
     return result;
+  }
+
+  //PRIVATE
+  private questionsBuilder(qb: SelectQueryBuilder<any>, quizId: string) {
+    return qb
+      .select('json_agg(to_jsonb("fiveQuestions")) as "questions"')
+      .from((qb) => {
+        return qb
+          .select(['qqr."questionId"', 'q."body"'])
+          .from(QuestionQuizRelation, 'qqr')
+          .leftJoin('qqr.question', 'q')
+          .where('qqr."quizId" = :quizId', { quizId })
+          .limit(5);
+      }, 'fiveQuestions');
   }
 }

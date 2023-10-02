@@ -44,14 +44,16 @@ export class ConnectToQuizUseCase
 
     //if user didn't connect - then create quiz and info about one player
     if (!quizInfo) {
+      let quiz;
       await this.dataSource.manager.transaction(
         async (transactionalEntityManager) => {
-          const quiz = await transactionalEntityManager.save(new Quiz(userId));
+          quiz = await transactionalEntityManager.save(new Quiz(userId));
           await transactionalEntityManager.save(
             new QuizInfoAboutUser(quiz.id, userId),
           );
         },
       );
+      return this.quizOrmQueryRepository.getAllInfoOfQuizById(quiz.id);
     } else {
       //todo validation if questions don't exist
       //if user connected - find 5 random questions
@@ -69,8 +71,8 @@ export class ConnectToQuizUseCase
         quizInfo.id,
         userId,
       );
-    }
 
-    return;
+      return this.quizOrmQueryRepository.getAllInfoOfQuizById(quizInfo.id);
+    }
   }
 }
