@@ -10,6 +10,7 @@ export async function connectPlayerToQuiz(httpServer, accessToken?) {
 
 export function createResponseSingleQuizTest(
   quizStatus?: QuizStatusType,
+  questions?: '5questions' | null,
   quizId?: string | null,
   user1Id?: string | null,
   score1?: number | null,
@@ -32,17 +33,24 @@ export function createResponseSingleQuizTest(
     secondPlayerProgress: {
       answers: [],
       player: {
-        id: user2Id ? expect.any(String) : null,
-        login: login2 ? expect.any(String) : null,
+        id: user2Id ?? null,
+        login: login2 ?? null,
       },
       score: score2 ?? expect.any(Number),
     },
-    questions: [],
+    questions: questions
+      ? expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(String),
+            body: expect.any(String),
+          }),
+        ])
+      : [],
     status: quizStatus ?? expect.any(String),
     pairCreatedDate: expect.stringMatching(regexpISOSString),
     startGameDate:
-      typeof startDate === 'string' ? expect.any(regexpISOSString) : null,
+      startDate === 'string' ? expect.stringMatching(regexpISOSString) : null,
     finishGameDate:
-      typeof finishDate === 'string' ? expect.any(regexpISOSString) : null,
+      finishDate === 'string' ? expect.stringMatching(regexpISOSString) : null,
   };
 }
