@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -23,7 +24,7 @@ export class QuizInfoAboutUser {
   @Column({ type: 'smallint', default: 0 })
   score: number;
 
-  @OneToOne(() => Quiz, (q) => q.quizGameInfoAboutUser)
+  @ManyToOne(() => Quiz, (q) => q.quizGameInfoAboutUser)
   @JoinColumn()
   quiz: Quiz;
   @Column()

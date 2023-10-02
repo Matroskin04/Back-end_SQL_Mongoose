@@ -50,7 +50,7 @@ export class Quiz {
   @Column({ type: 'uuid', nullable: true })
   user2Id: string | null;
 
-  @OneToOne(() => QuizInfoAboutUser, (qi) => qi.quiz)
+  @OneToMany(() => QuizInfoAboutUser, (qi) => qi.quiz)
   quizGameInfoAboutUser: QuizInfoAboutUser;
 
   @OneToMany(() => QuestionQuizRelation, (q) => q.quiz)
