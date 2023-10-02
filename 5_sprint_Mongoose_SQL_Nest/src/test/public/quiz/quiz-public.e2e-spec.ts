@@ -11,7 +11,14 @@ import {
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { updateStatusLikeOfPostTest } from '../posts/posts-public.helpers';
-import { connectPlayerToQuiz } from './quiz-public.helpers';
+import {
+  connectPlayerToQuiz,
+  createResponseSingleQuizTest,
+} from './quiz-public.helpers';
+import {
+  createCorrectUserTest,
+  loginCorrectUserTest,
+} from '../../helpers/chains-of-requests.helpers';
 
 describe('Quiz (SA); /sa/quiz', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -34,6 +41,8 @@ describe('Quiz (SA); /sa/quiz', () => {
     await app.close();
   });
 
+  let accessToken;
+  let user;
   //correct data question
   let correctQuestionId;
   let questionData;
@@ -48,6 +57,10 @@ describe('Quiz (SA); /sa/quiz', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
+      user = await createCorrectUserTest(httpServer);
+      const result = await loginCorrectUserTest(httpServer);
+      accessToken = result.accessToken;
+
       //create 9 questions
       questionsIds = await create9Questions(httpServer);
       //publish them:
@@ -60,6 +73,23 @@ describe('Quiz (SA); /sa/quiz', () => {
       //jwt is incorrect
       const result = await connectPlayerToQuiz(httpServer, 'IncorrectJWT');
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+    });
+
+    it(`+ (200) user should create new quiz`, async () => {
+      const result = await connectPlayerToQuiz(httpServer, accessToken);
+      console.log(result.body);
+
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result.body).toEqual(
+        createResponseSingleQuizTest(
+          'PendingSecondPlayer',
+          null,
+          user.id,
+          0,
+          null,
+          null,
+        ),
+      );
     });
   });
 });

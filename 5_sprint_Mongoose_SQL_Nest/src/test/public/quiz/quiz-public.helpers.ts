@@ -9,13 +9,13 @@ export async function connectPlayerToQuiz(httpServer, accessToken?) {
 
 export function createResponseSingleQuizTest(
   quizStatus?: QuizStatusType,
-  startDate?: null | 'string',
   quizId?: string | null,
   user1Id?: string | null,
   score1?: number | null,
   user2Id?: string | null,
   login2?: string | null,
   score2?: number | null,
+  startDate?: null | 'string',
   finishDate?: null | 'string',
 ) {
   return {
