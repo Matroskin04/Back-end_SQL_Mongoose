@@ -10,7 +10,7 @@ export class TestingRepository {
       await this.dataSource.query(`
       TRUNCATE public."users" CASCADE;
       TRUNCATE public."quiz" CASCADE;
-      TRUNCATE public."questions_quiz" CASCADE;`);
+      TRUNCATE public."question_quiz" CASCADE;`);
     } catch (err) {
       console.log(`The error has occurred: ${err}`);
     }
