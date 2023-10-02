@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  NotFoundException,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -26,10 +27,13 @@ export class QuizPublicController {
 
   @UseGuards(JwtAccessGuard)
   @Get('my-current')
-  async getMyCurrentGame(@CurrentUserId() userId: string) {
+  async getMyCurrentGame(
+    @CurrentUserId() userId: string,
+  ): Promise<QuizOutputModel> {
     const result = await this.quizOrmQueryRepository.getCurrentQuizByUserId(
       userId,
     );
+    if (!result) throw new NotFoundException();
     return result;
   }
 

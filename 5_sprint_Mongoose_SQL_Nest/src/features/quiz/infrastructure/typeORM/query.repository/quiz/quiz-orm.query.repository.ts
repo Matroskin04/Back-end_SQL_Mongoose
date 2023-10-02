@@ -41,7 +41,7 @@ export class QuizOrmQueryRepository {
     return modifyQuizIntoViewModel(result[0]);
   }
 
-  async getCurrentQuizByUserId(userId: string): Promise<QuizViewType> {
+  async getCurrentQuizByUserId(userId: string): Promise<QuizViewType | null> {
     const result = await this.quizRepository
       .createQueryBuilder('q')
       .select([
@@ -75,6 +75,7 @@ export class QuizOrmQueryRepository {
       )
       .getRawMany();
 
+    if (!result[0]) return null;
     return modifyQuizIntoViewModel(result[0]);
   }
 
