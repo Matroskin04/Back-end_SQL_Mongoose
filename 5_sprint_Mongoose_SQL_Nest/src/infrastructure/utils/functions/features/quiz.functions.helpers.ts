@@ -27,7 +27,7 @@ export function modifyQuizIntoViewModel(
         id: quizInfo.user1Id,
         login: quizInfo.login1,
       },
-      score: quizInfo.score1,
+      score: quizInfo.score1 ?? 0,
     },
     secondPlayerProgress: {
       answers: quizInfo.answers2 ?? [],
@@ -35,13 +35,17 @@ export function modifyQuizIntoViewModel(
         id: quizInfo.user2Id,
         login: quizInfo.login2,
       },
-      score: quizInfo.score2,
+      score: quizInfo.score2 ?? 0,
     },
     questions: quizInfo.questions ?? [],
     status: QuizStatusEnum[quizInfo.status],
     pairCreatedDate: quizInfo.pairCreatedDate.toString(),
-    startGameDate: quizInfo.startGameDate.toString(),
-    finishGameDate: quizInfo.finishGameDate.toString(),
+    startGameDate: quizInfo.startGameDate
+      ? quizInfo.startGameDate.toString()
+      : null,
+    finishGameDate: quizInfo.finishGameDate
+      ? quizInfo.finishGameDate.toString()
+      : null,
   };
 }
 

@@ -33,8 +33,8 @@ export class QuizOrmQueryRepository {
       .addSelect((qb) => this.questionsBuilder(qb, quizId), 'questions')
       .leftJoin('q.user1', 'u1')
       .leftJoin('q.user2', 'u2')
-      .leftJoin('q.quizGameInfoAboutUser', 'gi1', 'gi."userId" = q."user1Id"')
-      .leftJoin('q.quizGameInfoAboutUser', 'gi2', 'gi."userId" = q."user2Id"')
+      .leftJoin('q.quizGameInfoAboutUser', 'gi1', 'gi1."userId" = q."user1Id"')
+      .leftJoin('q.quizGameInfoAboutUser', 'gi2', 'gi2."userId" = q."user2Id"')
       .where('q."id" = :quizId', { quizId })
       .getRawMany();
     console.log(result);
