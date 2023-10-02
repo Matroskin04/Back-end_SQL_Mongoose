@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards } from '@nestjs/common';
+import { Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { QuestionsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/questions/questions-orm.query.repository';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
@@ -13,6 +13,7 @@ export class QuizPublicController {
     protected quizQueryRepository: QuestionsOrmQueryRepository,
   ) {}
   @UseGuards(JwtAccessGuard)
+  @HttpCode(200)
   @Post('connection')
   async connectToQuiz(
     @CurrentUserId() userId: string,
