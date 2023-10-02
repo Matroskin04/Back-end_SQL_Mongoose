@@ -1,3 +1,3 @@
-import { QuestionSaOutputModel } from '../../../features/quiz/api/models/output/question-sa.output.model';
+import { QuestionOutputModel } from '../../../features/quiz/api/models/output/question.output.model';
 
-export type QuestionTestType = QuestionSaOutputModel;
+export type QuestionTestType = QuestionOutputModel;

@@ -15,7 +15,7 @@ import { BasicAuthGuard } from '../../../infrastructure/guards/authorization-gua
 import { CreateQuestionInputModel } from './models/input/create-question.input.model';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateQuestionCommand } from '../application/sa/use-cases/sa/create-question.use-case';
-import { QuestionSaOutputModel } from './models/output/question-sa.output.model';
+import { QuestionOutputModel } from './models/output/question.output.model';
 import { UpdateQuestionInputModel } from './models/input/update-question.input.model';
 import { UpdateQuestionCommand } from '../application/sa/use-cases/sa/update-question.use-case';
 import { DeleteQuestionCommand } from '../application/sa/use-cases/sa/delete-question.use-case';
@@ -41,7 +41,7 @@ export class QuizSaController {
   @Post()
   async createQuestion(
     @Body() inputQuestionModel: CreateQuestionInputModel,
-  ): Promise<QuestionSaOutputModel> {
+  ): Promise<QuestionOutputModel> {
     const result = await this.commandBus.execute(
       new CreateQuestionCommand(
         inputQuestionModel.body,
