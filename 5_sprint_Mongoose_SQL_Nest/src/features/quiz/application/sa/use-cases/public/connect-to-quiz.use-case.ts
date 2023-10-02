@@ -53,7 +53,7 @@ export class ConnectToQuizUseCase
           );
         },
       );
-      return this.quizOrmQueryRepository.getAllInfoOfQuizById(quiz.id);
+      return this.quizOrmQueryRepository.getQuizById(quiz.id);
     } else {
       //todo validation if questions don't exist
       //if user connected - find 5 random questions
@@ -73,7 +73,7 @@ export class ConnectToQuizUseCase
         userId,
       );
 
-      return this.quizOrmQueryRepository.getAllInfoOfQuizById(quizInfo.id);
+      return this.quizOrmQueryRepository.getQuizById(quizInfo.id);
     }
   }
 }
