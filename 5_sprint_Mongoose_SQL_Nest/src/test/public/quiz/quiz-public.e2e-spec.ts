@@ -77,8 +77,6 @@ describe('Quiz (SA); /sa/quiz', () => {
 
     it(`+ (200) user should create new quiz`, async () => {
       const result = await connectPlayerToQuiz(httpServer, accessToken);
-      console.log(result.body);
-
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
         createResponseSingleQuizTest(

@@ -37,7 +37,6 @@ export class QuizOrmQueryRepository {
       .leftJoin('q.quizGameInfoAboutUser', 'gi2', 'gi2."userId" = q."user2Id"')
       .where('q."id" = :quizId', { quizId })
       .getRawMany();
-    console.log(result);
 
     return modifyQuizIntoViewModel(result[0]);
   }

@@ -1,5 +1,6 @@
 import request from 'supertest';
 import { QuizStatusType } from '../../../infrastructure/types/quiz-questions.general.types';
+import { regexpISOSString } from '../../helpers/regexp/general-regexp';
 
 export async function connectPlayerToQuiz(httpServer, accessToken?) {
   return request(httpServer)
@@ -38,8 +39,10 @@ export function createResponseSingleQuizTest(
     },
     questions: [],
     status: quizStatus ?? expect.any(String),
-    pairCreatedDate: expect.any(String),
-    startGameDate: typeof startDate === 'string' ? expect.any(String) : null,
-    finishGameDate: typeof finishDate === 'string' ? expect.any(String) : null,
+    pairCreatedDate: expect.stringMatching(regexpISOSString),
+    startGameDate:
+      typeof startDate === 'string' ? expect.any(regexpISOSString) : null,
+    finishGameDate:
+      typeof finishDate === 'string' ? expect.any(regexpISOSString) : null,
   };
 }
