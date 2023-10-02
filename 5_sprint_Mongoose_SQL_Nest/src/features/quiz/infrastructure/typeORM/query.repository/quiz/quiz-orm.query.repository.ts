@@ -47,7 +47,7 @@ export class QuizOrmQueryRepository {
       .createQueryBuilder('q')
       .select()
       .where('q.status = :quizStatus', {
-        quizStatus: QuizStatusEnum['PendingSecondPlayer'],
+        quizStatus: QuizStatusEnum['Active'],
       })
       .andWhere(
         new Brackets((qb) => {
