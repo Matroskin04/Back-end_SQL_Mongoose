@@ -101,7 +101,6 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
 
       const result2 = await connectPlayerToQuiz(httpServer, accessToken2);
-      console.log(result2.body);
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
         createResponseSingleQuizTest(
@@ -116,6 +115,13 @@ describe('Quiz (SA); /sa/quiz', () => {
           'string',
         ),
       );
+    });
+
+    //DEPENDENT
+    it(`- (403) jwt access token is incorrect`, async () => {
+      //jwt is incorrect
+      const result = await connectPlayerToQuiz(httpServer, accessToken1);
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
     });
   });
 });
