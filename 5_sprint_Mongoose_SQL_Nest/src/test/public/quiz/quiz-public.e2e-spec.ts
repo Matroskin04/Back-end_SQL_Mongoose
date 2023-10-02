@@ -4,13 +4,9 @@ import { startApp } from '../../test.utils';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
 import {
   create9Questions,
-  createResponseAllQuestionsTest,
-  getAllQuestions,
   publishQuestionSaTest,
 } from '../../super-admin/quiz/quiz-sa.helpers';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
-import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
-import { updateStatusLikeOfPostTest } from '../posts/posts-public.helpers';
 import {
   connectPlayerToQuiz,
   createResponseSingleQuizTest,
@@ -19,6 +15,8 @@ import {
   createCorrectUserTest,
   loginCorrectUserTest,
 } from '../../helpers/chains-of-requests.helpers';
+import { createUserTest } from '../../super-admin/users/users-sa.helpers';
+import { loginUserTest } from '../auth/auth-public.helpers';
 
 describe('Quiz (SA); /sa/quiz', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -41,8 +39,10 @@ describe('Quiz (SA); /sa/quiz', () => {
     await app.close();
   });
 
-  let accessToken;
-  let user;
+  let accessToken1;
+  let accessToken2;
+  let user1;
+  let user2;
   //correct data question
   let correctQuestionId;
   let questionData;
@@ -57,9 +57,18 @@ describe('Quiz (SA); /sa/quiz', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
-      user = await createCorrectUserTest(httpServer);
-      const result = await loginCorrectUserTest(httpServer);
-      accessToken = result.accessToken;
+      user1 = await createCorrectUserTest(httpServer);
+      const result1 = await loginCorrectUserTest(httpServer);
+      accessToken1 = result1.accessToken;
+
+      user2 = await createUserTest(
+        httpServer,
+        'login2',
+        'password2',
+        'email2@mail.ru',
+      );
+      const result2 = await loginUserTest(httpServer, 'login2', 'password2');
+      accessToken2 = result2.body.accessToken;
 
       //create 9 questions
       questionsIds = await create9Questions(httpServer);
@@ -75,17 +84,36 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
-    it(`+ (200) user should create new quiz`, async () => {
-      const result = await connectPlayerToQuiz(httpServer, accessToken);
-      expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result.body).toEqual(
+    it(`+ (200) user 1 should create new quiz;
+              + (200) user 2 should connect to quiz`, async () => {
+      const result1 = await connectPlayerToQuiz(httpServer, accessToken1);
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
         createResponseSingleQuizTest(
           'PendingSecondPlayer',
           null,
-          user.id,
+          null,
+          user1.id,
           0,
           null,
           null,
+        ),
+      );
+
+      const result2 = await connectPlayerToQuiz(httpServer, accessToken2);
+      console.log(result2.body);
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseSingleQuizTest(
+          'Active',
+          '5questions',
+          null,
+          user1.id,
+          0,
+          user2.body.id,
+          user2.body.login,
+          0,
+          'string',
         ),
       );
     });

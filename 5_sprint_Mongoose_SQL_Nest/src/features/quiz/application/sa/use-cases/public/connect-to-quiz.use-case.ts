@@ -66,6 +66,7 @@ export class ConnectToQuizUseCase
         quizInfo.id,
         questionsIds,
       );
+
       //create info about the second player
       await this.quizInfoAboutUserOrmRepository.createQuizInfoAboutUser(
         quizInfo.id,
