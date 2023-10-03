@@ -12,7 +12,7 @@ export class SendAnswerToQuizCommand {
 }
 
 @CommandHandler(SendAnswerToQuizCommand)
-export class ConnectToQuizUseCase
+export class SendAnswerToQuizUseCase
   implements ICommandHandler<SendAnswerToQuizCommand>
 {
   constructor(
