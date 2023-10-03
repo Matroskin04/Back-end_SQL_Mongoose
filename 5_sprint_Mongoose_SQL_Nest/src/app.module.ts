@@ -120,6 +120,7 @@ import { QuizOrmQueryRepository } from './features/quiz/infrastructure/typeORM/q
 import { QuizOrmRepository } from './features/quiz/infrastructure/typeORM/repository/quiz/quiz-orm.repository';
 import { QuestionQuizRelationOrmRepository } from './features/quiz/infrastructure/typeORM/repository/question-quiz-relation-orm.repository';
 import { QuizInfoAboutUserOrmRepository } from './features/quiz/infrastructure/typeORM/repository/quiz-info-about-user-orm.repository';
+import { SendAnswerToQuizCommand } from './features/quiz/application/sa/use-cases/public/send-answer-to-quiz.use-case';
 
 const queryRepositories = [
   // SQL
@@ -216,6 +217,7 @@ const handlers = [
 
   //Quiz
   ConnectToQuizUseCase,
+  SendAnswerToQuizCommand,
 ];
 
 @Module({

@@ -2,9 +2,15 @@ import request from 'supertest';
 import { QuizStatusType } from '../../../infrastructure/types/quiz-questions.general.types';
 import { regexpISOSString } from '../../helpers/regexp/general-regexp';
 
-export async function connectPlayerToQuiz(httpServer, accessToken?) {
+export async function connectPlayerToQuiz(httpServer, accessToken) {
   return request(httpServer)
     .post(`/hometask-nest/pair-game-quiz/pairs/connection`)
+    .set('Authorization', `Bearer ${accessToken}`);
+}
+
+export async function getMyCurrentQuiz(httpServer, accessToken) {
+  return request(httpServer)
+    .get(`/hometask-nest/pair-game-quiz/pairs/my-current`)
     .set('Authorization', `Bearer ${accessToken}`);
 }
 

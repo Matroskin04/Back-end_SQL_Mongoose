@@ -36,13 +36,13 @@ export class QuizOrmQueryRepository {
       .leftJoin('q.quizGameInfoAboutUser', 'gi1', 'gi1."userId" = q."user1Id"')
       .leftJoin('q.quizGameInfoAboutUser', 'gi2', 'gi2."userId" = q."user2Id"')
       .where('q."id" = :quizId', { quizId })
-      .getRawMany();
+      .getRawOne();
 
-    return modifyQuizIntoViewModel(result[0]);
+    return modifyQuizIntoViewModel(result);
   }
 
   async getCurrentQuizByUserId(userId: string): Promise<QuizViewType | null> {
-    const result = await this.quizRepository
+    const query = await this.quizRepository
       .createQueryBuilder('q')
       .select([
         'q."id"',
@@ -62,9 +62,14 @@ export class QuizOrmQueryRepository {
       .leftJoin('q.user2', 'u2')
       .leftJoin('q.quizGameInfoAboutUser', 'gi1', 'gi1."userId" = q."user1Id"')
       .leftJoin('q.quizGameInfoAboutUser', 'gi2', 'gi2."userId" = q."user2Id"')
-      .where('q.status = :quizStatus', {
-        quizStatus: QuizStatusEnum['Active'],
-      })
+      .where(
+        new Brackets((qb) => {
+          qb.where('q.status = :quizStatus1 OR q.status = :quizStatus2', {
+            quizStatus1: QuizStatusEnum['Active'],
+            quizStatus2: QuizStatusEnum['PendingSecondPlayer'],
+          });
+        }),
+      )
       .andWhere(
         new Brackets((qb) => {
           qb.where('q.user1Id = :userId', { userId }).orWhere(
@@ -72,11 +77,11 @@ export class QuizOrmQueryRepository {
             { userId },
           );
         }),
-      )
-      .getRawMany();
+      );
+    const result = await query.getRawOne();
 
-    if (!result[0]) return null;
-    return modifyQuizIntoViewModel(result[0]);
+    if (!result) return null;
+    return modifyQuizIntoViewModel(result);
   }
 
   //ADDITIONAL
