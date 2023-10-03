@@ -23,8 +23,8 @@ export class DoesQuizBelongsToUserGuard implements CanActivate {
       throw new NotFoundException('Quiz with such id is not found');
 
     if (
-      usersIds?.user2Id !== request.userId &&
-      usersIds?.user2Id !== request.userId
+      usersIds?.user1Id !== request.user.id &&
+      usersIds?.user2Id !== request.user.id
     )
       return false;
     return true;
