@@ -7,7 +7,7 @@ import {
 import { QuizOrmQueryRepository } from '../../../features/quiz/infrastructure/typeORM/query.repository/quiz/quiz-orm.query.repository';
 
 @Injectable()
-export class DoesQuizBelongsToUserGuard implements CanActivate {
+export class IsUserPatricipantInQuizGuard implements CanActivate {
   constructor(protected quizOrmQueryRepository: QuizOrmQueryRepository) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
