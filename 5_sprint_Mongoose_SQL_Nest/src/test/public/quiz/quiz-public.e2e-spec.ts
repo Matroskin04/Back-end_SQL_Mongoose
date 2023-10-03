@@ -191,22 +191,56 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
         accessToken1,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
-      expect(result.body).toEqual(createErrorsMessageTest(['id']));
+      expect(result.body).toEqual(createErrorsMessageTest(['quizId']));
     });
 
     it(`(Addition) + (201) create and login new user
               - (403) the user does not participate is this quiz`, async () => {
-      const user = await createUserTest(
-        httpServer,
-        'login3',
-        'password3',
-        'email3@mail.ru',
-      );
+      await createUserTest(httpServer, 'login3', 'password3', 'email3@mail.ru');
       const logInfo = await loginUserTest(httpServer, 'login3', 'password3');
       const accessToken3 = logInfo.body.accessToken;
       //jwt is incorrect
       const result = await getQuizById(httpServer, quizId, accessToken3);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
+    });
+
+    it(`+ (200) should return current game of user;
+              (Additional) + (200) should connect user2 to the quiz;
+              + (200) should return current game of user;`, async () => {
+      //get current quiz
+      const result1 = await getQuizById(httpServer, quizId, accessToken1);
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseSingleQuizTest(
+          'PendingSecondPlayer',
+          null,
+          null,
+          user1.id,
+          0,
+          null,
+          null,
+        ),
+      );
+
+      //connect user2 to the quiz
+      const result2 = await connectPlayerToQuiz(httpServer, accessToken2);
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      //get current quiz
+      const result3 = await getQuizById(httpServer, quizId, accessToken1);
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
+        createResponseSingleQuizTest(
+          'Active',
+          '5questions',
+          null,
+          user1.id,
+          0,
+          user2.body.id,
+          user2.body.login,
+          0,
+          'string',
+        ),
+      );
     });
   });
 

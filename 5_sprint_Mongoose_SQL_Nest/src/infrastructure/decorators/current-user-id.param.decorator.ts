@@ -3,7 +3,6 @@ import {
   createParamDecorator,
   ExecutionContext,
 } from '@nestjs/common';
-import { createErrorsMessageTest } from '../../test/helpers/errors-message.helper';
 import { createBodyErrorBadRequest } from '../utils/functions/create-error-bad-request.function';
 
 export const CurrentUserId = createParamDecorator(
@@ -37,6 +36,7 @@ export const CurrentUserId = createParamDecorator(
 
       return request.user.id;
     }
+
     return null;
   },
 );

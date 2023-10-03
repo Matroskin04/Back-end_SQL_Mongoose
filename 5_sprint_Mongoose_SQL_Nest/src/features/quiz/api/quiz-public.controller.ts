@@ -18,7 +18,7 @@ import { SendAnswerInputModel } from './models/input/send-answer.input.model';
 import { AnswerOutputModel } from './models/output/answer.output.model';
 import { SendAnswerToQuizCommand } from '../application/sa/use-cases/public/send-answer-to-quiz.use-case';
 import { QuizOrmQueryRepository } from '../infrastructure/typeORM/query.repository/quiz/quiz-orm.query.repository';
-import { DoesQuizBelongsToUserGuard } from '../../../infrastructure/guards/forbidden-guards/does-quiz-belongs-to-user.guard';
+import { IsUserParticipantInQuizGuard } from '../../../infrastructure/guards/forbidden-guards/is-user-participant-in-quiz.guard';
 
 @Controller('/hometask-nest/pair-game-quiz/pairs')
 export class QuizPublicController {
@@ -39,7 +39,7 @@ export class QuizPublicController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuard, DoesQuizBelongsToUserGuard)
+  @UseGuards(JwtAccessGuard, IsUserParticipantInQuizGuard)
   @Get(':quizId')
   async getQuizById(@Param('quizId') quizId: string): Promise<QuizOutputModel> {
     const result = await this.quizOrmQueryRepository.getQuizByIdView(quizId);
