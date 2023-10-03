@@ -38,7 +38,7 @@ export function modifyQuizIntoViewModel(
       score: quizInfo.score2 ?? 0,
     },
     questions: quizInfo.questions ?? [],
-    status: QuizStatusEnum[quizInfo.status],
+    status: QuizStatusEnum[quizInfo.status] as QuizStatusType,
     pairCreatedDate: quizInfo.pairCreatedDate.toISOString(),
     startGameDate: quizInfo.startGameDate
       ? quizInfo.startGameDate.toISOString()
@@ -61,7 +61,7 @@ export type QuizAllInfoRawType = {
   questions: [];
   answers1: [];
   answers2: [];
-  status: QuizStatusType;
+  status: QuizStatusEnum;
   pairCreatedDate: Date;
   startGameDate: Date;
   finishGameDate: Date;

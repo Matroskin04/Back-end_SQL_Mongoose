@@ -9,6 +9,7 @@ import {
   UsersIdsOfQuizType,
 } from './quiz.types.query.repository';
 import { modifyQuizIntoViewModel } from '../../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
+import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
 
 @Injectable()
 export class QuizOrmQueryRepository {
@@ -34,6 +35,8 @@ export class QuizOrmQueryRepository {
         'gi2."score" as "score2"',
       ])
       .addSelect((qb) => this.questionsBuilder(qb), 'questions')
+      .addSelect((qb) => this.answersBuilder(qb, 'user1Id'), 'answers1')
+      .addSelect((qb) => this.answersBuilder(qb, 'user2Id'), 'answers2')
       .leftJoin('q.user1', 'u1')
       .leftJoin('q.user2', 'u2')
       .leftJoin('q.quizGameInfoAboutUser', 'gi1', 'gi1."userId" = q."user1Id"')
@@ -62,6 +65,8 @@ export class QuizOrmQueryRepository {
         'gi2."score" as "score2"',
       ])
       .addSelect((qb) => this.questionsBuilder(qb), 'questions')
+      .addSelect((qb) => this.answersBuilder(qb, 'user1Id'), 'answers1')
+      .addSelect((qb) => this.answersBuilder(qb, 'user2Id'), 'answers2')
       .leftJoin('q.user1', 'u1')
       .leftJoin('q.user2', 'u2')
       .leftJoin('q.quizGameInfoAboutUser', 'gi1', 'gi1."userId" = q."user1Id"')
@@ -130,5 +135,20 @@ export class QuizOrmQueryRepository {
           .where('qqr."quizId" = q."id"')
           .limit(5);
       }, 'fiveQuestions');
+  }
+
+  private answersBuilder(
+    qb: SelectQueryBuilder<any>,
+    userId: 'user1Id' | 'user2Id',
+  ) {
+    return qb
+      .select('json_agg(to_jsonb("answers")) as "allAnswers"')
+      .from((qb) => {
+        return qb
+          .select(['a."questionId"', 'a."answerStatus"', 'a."addedAt"'])
+          .from(AnswerQuiz, 'a')
+          .where('a."quizId" = q."id"')
+          .andWhere(`a."userId" = q."${userId}"`);
+      }, 'answers');
   }
 }
