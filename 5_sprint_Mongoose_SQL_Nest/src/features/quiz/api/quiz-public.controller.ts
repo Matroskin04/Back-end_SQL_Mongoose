@@ -4,19 +4,21 @@ import {
   Get,
   HttpCode,
   NotFoundException,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { QuestionsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/questions/questions-orm.query.repository';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
-import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import { CurrentUserId } from '../../../infrastructure/decorators/current-user-id.param.decorator';
 import { QuizOutputModel } from './models/output/quiz.output.model';
 import { ConnectToQuizCommand } from '../application/sa/use-cases/public/connect-to-quiz.use-case';
 import { SendAnswerInputModel } from './models/input/send-answer.input.model';
 import { AnswerOutputModel } from './models/output/answer.output.model';
 import { SendAnswerToQuizCommand } from '../application/sa/use-cases/public/send-answer-to-quiz.use-case';
 import { QuizOrmQueryRepository } from '../infrastructure/typeORM/query.repository/quiz/quiz-orm.query.repository';
+import { DoesQuizBelongsToUserGuard } from '../../../infrastructure/guards/forbidden-guards/does-quiz-belongs-to-user.guard';
 
 @Controller('/hometask-nest/pair-game-quiz/pairs')
 export class QuizPublicController {
@@ -33,6 +35,15 @@ export class QuizPublicController {
     const result = await this.quizOrmQueryRepository.getCurrentQuizByUserId(
       userId,
     );
+    if (!result) throw new NotFoundException();
+    return result;
+  }
+
+  @UseGuards(JwtAccessGuard, DoesQuizBelongsToUserGuard)
+  @Get(':quizId')
+  async getQuizById(@Param('quizId') quizId: string): Promise<QuizOutputModel> {
+    const result = await this.quizOrmQueryRepository.getQuizByIdView(quizId);
+
     if (!result) throw new NotFoundException();
     return result;
   }

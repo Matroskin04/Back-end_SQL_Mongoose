@@ -4,7 +4,10 @@ import { Quiz } from '../../../../domain/quiz.entity';
 import { QuizStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionQuizRelation } from '../../../../domain/question-quiz-relation.entity';
-import { QuizViewType } from './quiz.types.query.repository';
+import {
+  QuizViewType,
+  UsersIdsOfQuizType,
+} from './quiz.types.query.repository';
 import { modifyQuizIntoViewModel } from '../../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
 
 @Injectable()
@@ -14,7 +17,7 @@ export class QuizOrmQueryRepository {
     protected quizRepository: Repository<Quiz>,
   ) {}
 
-  async getQuizById(quizId: string): Promise<QuizViewType> {
+  async getQuizByIdView(quizId: string): Promise<QuizViewType | null> {
     const result = await this.quizRepository
       .createQueryBuilder('q')
       .select([
@@ -38,6 +41,7 @@ export class QuizOrmQueryRepository {
       .where('q."id" = :quizId', { quizId })
       .getRawOne();
 
+    if (!result) return null;
     return modifyQuizIntoViewModel(result);
   }
 
@@ -85,6 +89,15 @@ export class QuizOrmQueryRepository {
   }
 
   //ADDITIONAL
+  async getUsersOfQuizById(quizId: string): Promise<null | UsersIdsOfQuizType> {
+    const query = await this.quizRepository
+      .createQueryBuilder('q')
+      .select(['q."user1Id"', 'q."user2Id"'])
+      .where('q.id = :quizId', { quizId });
+
+    const result = await query.getRawOne();
+    return result ?? null;
+  }
   async haveUserCurrentQuiz(userId: string): Promise<boolean> {
     const result = await this.quizRepository
       .createQueryBuilder('q')
