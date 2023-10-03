@@ -13,7 +13,7 @@ export const CurrentUserId = createParamDecorator(
     if (request.userId) {
       //check the format of id
       if (
-        /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(
+        !/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(
           request.userId,
         )
       )
@@ -27,8 +27,8 @@ export const CurrentUserId = createParamDecorator(
     if (request.user) {
       //check the format of id
       if (
-        /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(
-          request.userId,
+        !/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(
+          request.user.id,
         )
       )
         throw new BadRequestException(
