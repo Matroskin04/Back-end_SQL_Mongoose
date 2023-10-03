@@ -11,7 +11,9 @@ import {
   connectPlayerToQuiz,
   createResponseSingleQuizTest,
   getMyCurrentQuiz,
+  getQuizById,
 } from './quiz-public.helpers';
+import { v4 as uuidv4 } from 'uuid';
 import {
   createCorrectUserTest,
   loginCorrectUserTest,
@@ -44,6 +46,8 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
   let accessToken2;
   let user1;
   let user2;
+
+  let questionsIds;
   //correct data question
   let correctQuestionId;
   let questionData;
@@ -54,7 +58,6 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
   const bodyLength501 = 'a'.repeat(501);
 
   describe(`/my-current (GET) - get current quiz game of a user`, () => {
-    let questionsIds;
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
@@ -132,6 +135,50 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
           'string',
         ),
       );
+    });
+  });
+
+  describe(`/:quizId (GET) - get a quiz game by id`, () => {
+    let quizId;
+    beforeAll(async () => {
+      await deleteAllDataTest(httpServer);
+
+      user1 = await createCorrectUserTest(httpServer);
+      const result1 = await loginCorrectUserTest(httpServer);
+      accessToken1 = result1.accessToken;
+
+      user2 = await createUserTest(
+        httpServer,
+        'login2',
+        'password2',
+        'email2@mail.ru',
+      );
+      const result2 = await loginUserTest(httpServer, 'login2', 'password2');
+      accessToken2 = result2.body.accessToken;
+
+      //create 9 questions
+      questionsIds = await create9Questions(httpServer);
+      //publish them:
+      for (const id of questionsIds) {
+        await publishQuestionSaTest(httpServer, id, true);
+      }
+
+      //connect to new quiz
+      const result3 = await connectPlayerToQuiz(httpServer, accessToken1);
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      quizId = result3.body.id;
+    });
+
+    it(`- (401) jwt access token is incorrect`, async () => {
+      //jwt is incorrect
+      const result = await getQuizById(httpServer, quizId, 'IncorrectJWT');
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+    });
+
+    it(`- (404) quiz with such id was not found`, async () => {
+      //jwt is incorrect
+      const result = await getQuizById(httpServer, uuidv4(), accessToken1);
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
   });
 
