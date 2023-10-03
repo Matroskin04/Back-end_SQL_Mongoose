@@ -19,4 +19,16 @@ export class QuizInfoAboutUserOrmRepository {
 
     return;
   }
+
+  async incrementUserScore(quizId: string, userId: string): Promise<boolean> {
+    const result = await this.quizInfoAboutUserRepository
+      .createQueryBuilder()
+      .update()
+      .set({ score: () => 'score + 1' })
+      .where('quizId = :quizId', { quizId })
+      .andWhere('userId = : userId', { userId })
+      .execute();
+
+    return result.affected === 1;
+  }
 }

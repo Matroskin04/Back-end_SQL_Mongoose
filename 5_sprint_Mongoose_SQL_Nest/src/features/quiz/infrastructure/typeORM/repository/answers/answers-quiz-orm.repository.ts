@@ -13,22 +13,23 @@ export class AnswersQuizOrmRepository {
   ) {}
 
   async createAnswer(
-    status: QuizAnswerStatusType,
+    status: QuizAnswerStatusEnum,
     quizId: string,
     userId: string,
     questionId: string,
-  ): Promise<void> {
+  ): Promise<{ addedAt: string }> {
     const result = await this.answersQuizRepository
       .createQueryBuilder()
       .insert()
       .values({
-        answerStatus: QuizAnswerStatusEnum[status],
+        answerStatus: status,
         quizId,
         userId,
         questionId,
       })
+      .returning(['"addedAt"'])
       .execute();
 
-    return;
+    return result.raw[0];
   }
 }
