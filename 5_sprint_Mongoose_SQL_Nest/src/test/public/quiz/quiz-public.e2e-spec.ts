@@ -20,6 +20,8 @@ import {
 } from '../../helpers/chains-of-requests.helpers';
 import { createUserTest } from '../../super-admin/users/users-sa.helpers';
 import { loginUserTest } from '../auth/auth-public.helpers';
+import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
+import { ht } from 'date-fns/locale';
 
 describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -179,6 +181,32 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
       //jwt is incorrect
       const result = await getQuizById(httpServer, uuidv4(), accessToken1);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
+    });
+
+    it(`- (400) id has invalid format`, async () => {
+      //jwt is incorrect
+      const result = await getQuizById(
+        httpServer,
+        'incorrect format',
+        accessToken1,
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result.body).toEqual(createErrorsMessageTest(['id']));
+    });
+
+    it(`(Addition) + (201) create and login new user
+              - (403) the user does not participate is this quiz`, async () => {
+      const user = await createUserTest(
+        httpServer,
+        'login3',
+        'password3',
+        'email3@mail.ru',
+      );
+      const logInfo = await loginUserTest(httpServer, 'login3', 'password3');
+      const accessToken3 = logInfo.body.accessToken;
+      //jwt is incorrect
+      const result = await getQuizById(httpServer, quizId, accessToken3);
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
     });
   });
 
