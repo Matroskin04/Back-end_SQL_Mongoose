@@ -12,7 +12,7 @@ export class DoesQuizBelongsToUserGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    if (!request.userId) throw new Error('UserId is not found');
+    if (!request.user?.id) throw new Error('UserId is not found');
     if (!request.params.quizId) throw new Error('QuizId is not found');
 
     const usersIds = await this.quizOrmQueryRepository.getUsersOfQuizById(
