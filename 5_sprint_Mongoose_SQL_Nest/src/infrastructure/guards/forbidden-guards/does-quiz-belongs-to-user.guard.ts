@@ -1,0 +1,32 @@
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  NotFoundException,
+} from '@nestjs/common';
+import { QuizOrmQueryRepository } from '../../../features/quiz/infrastructure/typeORM/query.repository/quiz/quiz-orm.query.repository';
+
+@Injectable()
+export class DoesQuizBelongsToUserGuard implements CanActivate {
+  constructor(protected quizOrmQueryRepository: QuizOrmQueryRepository) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    if (!request.userId) throw new Error('UserId is not found');
+    if (!request.params.quizId) throw new Error('QuizId is not found');
+
+    const usersIds = await this.quizOrmQueryRepository.getUsersOfQuizById(
+      request.params.quizId,
+    );
+
+    if (!usersIds)
+      throw new NotFoundException('Quiz with such id is not found');
+
+    if (
+      usersIds?.user2Id !== request.userId &&
+      usersIds?.user2Id !== request.userId
+    )
+      return false;
+    return true;
+  }
+}
