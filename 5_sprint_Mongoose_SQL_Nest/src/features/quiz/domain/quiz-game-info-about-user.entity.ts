@@ -19,9 +19,6 @@ export class QuizInfoAboutUser {
   id: string;
 
   @Column({ type: 'smallint', default: 0 })
-  numberOfAnswers: number;
-
-  @Column({ type: 'smallint', default: 0 })
   score: number;
 
   @ManyToOne(() => Quiz, (q) => q.quizGameInfoAboutUser)
