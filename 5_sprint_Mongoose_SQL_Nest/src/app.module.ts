@@ -121,6 +121,7 @@ import { QuizOrmRepository } from './features/quiz/infrastructure/typeORM/reposi
 import { QuestionQuizRelationOrmRepository } from './features/quiz/infrastructure/typeORM/repository/question-quiz-relation-orm.repository';
 import { QuizInfoAboutUserOrmRepository } from './features/quiz/infrastructure/typeORM/repository/quiz-info-about-user-orm.repository';
 import { SendAnswerToQuizCommand } from './features/quiz/application/sa/use-cases/public/send-answer-to-quiz.use-case';
+import { QuizInfoAboutUserQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/quiz-info-about-user/quiz-info-about-user.query.repository';
 
 const queryRepositories = [
   // SQL
@@ -140,6 +141,7 @@ const queryRepositories = [
   LikesInfoOrmQueryRepository,
   QuestionsOrmQueryRepository,
   QuizOrmQueryRepository,
+  QuizInfoAboutUserQueryRepository,
 ];
 const repositories = [
   //SQL
