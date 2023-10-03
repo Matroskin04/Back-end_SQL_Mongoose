@@ -14,6 +14,12 @@ export async function getMyCurrentQuiz(httpServer, accessToken) {
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
+export async function getQuizById(httpServer, quizId, accessToken) {
+  return request(httpServer)
+    .get(`/hometask-nest/pair-game-quiz/pairs/${quizId}`)
+    .set('Authorization', `Bearer ${accessToken}`);
+}
+
 export function createResponseSingleQuizTest(
   quizStatus?: QuizStatusType,
   questions?: '5questions' | null,
