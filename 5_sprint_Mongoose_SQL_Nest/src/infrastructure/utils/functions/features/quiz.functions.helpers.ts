@@ -8,7 +8,7 @@ export function modifyQuestionIntoViewModel(question): QuestionQuizAllInfoType {
     id: question.id,
     body: question.body,
     correctAnswers: question.correctAnswers
-      ? question.correctAnswers.split(',')
+      ? question.correctAnswers.split()
       : null,
     published: question.published,
     createdAt: question.createdAt.toISOString(),
