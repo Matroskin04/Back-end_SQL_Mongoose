@@ -36,17 +36,24 @@ export class SendAnswerToQuizUseCase
     if (!activeQuiz.questions || !activeQuiz.secondPlayerProgress)
       throw new Error('Questions or the second player are not found');
 
-    const [answersNumberCurrentUser, answersNumberSecondUser, secondUserId] =
+    const [
+      answersNumberCurrentUser,
+      answersNumberSecondUser,
+      secondUserId,
+      secondUserScore,
+    ] =
       activeQuiz.firstPlayerProgress.player.id === currentUserId
         ? [
             activeQuiz.firstPlayerProgress.score,
             activeQuiz.secondPlayerProgress.score,
             activeQuiz.secondPlayerProgress.player.id,
+            activeQuiz.secondPlayerProgress.score,
           ]
         : [
             activeQuiz.secondPlayerProgress.score,
             activeQuiz.firstPlayerProgress.score,
             activeQuiz.firstPlayerProgress.player.id,
+            activeQuiz.firstPlayerProgress.score,
           ];
 
     //if all answers already exists - then 403 status
@@ -84,7 +91,7 @@ export class SendAnswerToQuizUseCase
     }
     //if it is the last answer:
     if (answersNumberCurrentUser === 4) {
-      if (answersNumberSecondUser === 5) {
+      if (answersNumberSecondUser === 5 || secondUserScore !== 0) {
         const result =
           await this.quizInfoAboutUserOrmRepository.incrementUserScore(
             activeQuiz.id,
