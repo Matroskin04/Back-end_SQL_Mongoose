@@ -60,14 +60,16 @@ export function createResponseSingleQuizTest(
       },
       score: score1 ?? expect.any(Number),
     },
-    secondPlayerProgress: {
-      answers: [],
-      player: {
-        id: user2Id ?? null,
-        login: login2 ?? null,
-      },
-      score: score2 ?? expect.any(Number),
-    },
+    secondPlayerProgress: user2Id
+      ? {
+          answers: [],
+          player: {
+            id: user2Id ?? expect.any(String),
+            login: login2 ?? expect.any(String),
+          },
+          score: score2 ?? expect.any(Number),
+        }
+      : null,
     questions: questions
       ? expect.arrayContaining([
           expect.objectContaining({
@@ -75,7 +77,7 @@ export function createResponseSingleQuizTest(
             body: expect.any(String),
           }),
         ])
-      : [],
+      : null,
     status: quizStatus ?? expect.any(String),
     pairCreatedDate: expect.stringMatching(regexpISOSString),
     startGameDate:

@@ -121,7 +121,7 @@ export async function create9Questions(httpServer): Promise<string[]> {
     const result = await createQuestionSaTest(
       httpServer,
       `Question body ${count} ${i}`,
-      [`${i}`, `${count}`],
+      [`${i}`, `${count}`, 'correctAnswer'],
     );
     expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
     questionsIds.push(result.body.id);

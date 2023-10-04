@@ -53,7 +53,8 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
 
   let questionsIds;
 
-  const answerBody = 'answer';
+  const incorrectAnswer = 'answer';
+  const correctAnswer = 'correctAnswer';
   //correct data question
   let correctQuestionId;
   let questionData;
@@ -117,7 +118,6 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
           null,
           user1.id,
           0,
-          null,
           null,
         ),
       );
@@ -350,7 +350,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
       const result = await sendAnswerTest(
         httpServer,
         'IncorrectJWT',
-        answerBody,
+        correctAnswer,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
@@ -362,7 +362,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
       const result1 = await sendAnswerTest(
         httpServer,
         accessToken1,
-        answerBody,
+        correctAnswer,
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
 
@@ -374,25 +374,81 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
       const result3 = await sendAnswerTest(
         httpServer,
         accessToken1,
-        answerBody,
+        correctAnswer,
       );
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
     });
 
     //DEPENDENT
     it(`(Addition) + (200) user 2 should connect to quiz;
-              + (200) user 2 should send incorrect answer`, async () => {
+              + (200) user 1 should send 3 correct answer;
+              + (200) should return quiz by id;
+              + (200) user 2 should send 2 correct answer;
+              + (200) should return quiz by id;`, async () => {
       //user 2 connect to quiz
       const result1 = await connectPlayerToQuizTest(httpServer, accessToken2);
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
-      const result2 = await sendAnswerTest(
+      for (let i = 0; i < 5; i++) {
+        console.log('start');
+        const answer = i % 2 === 0 ? correctAnswer : incorrectAnswer;
+        const answerStatus = i % 2 === 0 ? 'Correct' : 'Incorrect';
+        //3 correct answers
+        const result = await sendAnswerTest(httpServer, accessToken1, answer);
+        console.log(result.body);
+        expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+        expect(result.body).toEqual(
+          createResponseAnswerTest(null, answerStatus),
+        );
+      }
+      const quizResult1 = await getQuizByIdTest(
         httpServer,
+        result1.body.id,
         accessToken1,
-        answerBody,
       );
-      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result2.body).toEqual(createResponseAnswerTest(null, 'Incorrect'));
+      expect(quizResult1.body).toEqual(
+        createResponseSingleQuizTest(
+          'Active',
+          '5questions',
+          null,
+          user1.body.id,
+          3,
+          user2.body.id,
+          user2.body.login,
+          0,
+          'string',
+        ),
+      );
+
+      for (let i = 0; i < 5; i++) {
+        const answer = i % 2 === 0 ? incorrectAnswer : correctAnswer;
+        const answerStatus = i % 2 === 0 ? 'Incorrect' : 'Correct';
+        //2 correct answers
+        const result = await sendAnswerTest(httpServer, accessToken2, answer);
+        expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+        expect(result.body).toEqual(
+          createResponseAnswerTest(null, answerStatus),
+        );
+      }
+      const quizResult2 = await getQuizByIdTest(
+        httpServer,
+        result1.body.id,
+        accessToken1,
+      );
+      expect(quizResult2.body).toEqual(
+        createResponseSingleQuizTest(
+          'Finished',
+          '5questions',
+          null,
+          user1.body.id,
+          4,
+          user2.body.id,
+          user2.body.login,
+          2,
+          'string',
+          'string',
+        ),
+      );
     });
   });
 });
