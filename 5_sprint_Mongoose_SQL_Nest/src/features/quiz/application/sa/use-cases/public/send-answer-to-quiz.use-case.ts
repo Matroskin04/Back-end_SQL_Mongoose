@@ -30,17 +30,11 @@ export class SendAnswerToQuizUseCase
       userId,
     );
     //check that user has an active game
-    if (!activeQuiz)
+    if (!activeQuiz || !(activeQuiz.status === 'Active'))
       throw new ForbiddenException('Active quiz game is not found');
 
-    if (
-      !activeQuiz.questions ||
-      !(activeQuiz.status === 'Active') ||
-      !activeQuiz.secondPlayerProgress
-    )
-      throw new Error(
-        "Questions are not found or status of quiz is not 'Active'",
-      );
+    if (!activeQuiz.questions || !activeQuiz.secondPlayerProgress)
+      throw new Error('Questions or the second player are not found');
 
     const [answersNumberCurrentUser, answersNumberSecondUser] =
       activeQuiz.firstPlayerProgress.player.id === userId
