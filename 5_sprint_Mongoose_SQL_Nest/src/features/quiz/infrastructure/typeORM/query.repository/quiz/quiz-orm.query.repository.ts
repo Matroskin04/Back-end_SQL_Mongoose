@@ -107,10 +107,14 @@ export class QuizOrmQueryRepository {
     const result = await this.quizRepository
       .createQueryBuilder('q')
       .select()
-      .where('q.status = :quizStatus1 OR q.status = :quizStatus2', {
-        quizStatus1: QuizStatusEnum['Active'],
-        quizStatus2: QuizStatusEnum['PendingSecondPlayer'],
-      })
+      .where(
+        new Brackets((qb) => {
+          qb.where('q.status = :quizStatus1 OR q.status = :quizStatus2', {
+            quizStatus1: QuizStatusEnum['Active'],
+            quizStatus2: QuizStatusEnum['PendingSecondPlayer'],
+          });
+        }),
+      )
       .andWhere(
         new Brackets((qb) => {
           qb.where('q.user1Id = :userId', { userId }).orWhere(
