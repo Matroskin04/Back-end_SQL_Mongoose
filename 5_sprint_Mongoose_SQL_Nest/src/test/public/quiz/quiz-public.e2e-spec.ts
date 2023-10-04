@@ -280,6 +280,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
     });
 
     it(`+ (200) user 1 should create new quiz;
+              - (403) user1 is already participating in active quiz;
               + (200) user 2 should connect to quiz`, async () => {
       const result1 = await connectPlayerToQuizTest(httpServer, accessToken1);
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
@@ -295,9 +296,13 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
         ),
       );
 
-      const result2 = await connectPlayerToQuizTest(httpServer, accessToken2);
-      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result2.body).toEqual(
+      //user is already in active (pending) game
+      const result2 = await connectPlayerToQuizTest(httpServer, accessToken1);
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
+
+      const result3 = await connectPlayerToQuizTest(httpServer, accessToken2);
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
         createResponseSingleQuizTest(
           'Active',
           '5questions',
@@ -313,10 +318,15 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
     });
 
     //DEPENDENT
-    it(`- (403) jwt access token is incorrect`, async () => {
-      //jwt is incorrect
-      const result = await connectPlayerToQuizTest(httpServer, accessToken1);
-      expect(result.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
+    it(`- (403) user1 is already participating in active quiz
+              - (403) user2 is already participating in active quiz`, async () => {
+      //user1
+      const result1 = await connectPlayerToQuizTest(httpServer, accessToken1);
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
+
+      //user2
+      const result2 = await connectPlayerToQuizTest(httpServer, accessToken2);
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
     });
   });
 
