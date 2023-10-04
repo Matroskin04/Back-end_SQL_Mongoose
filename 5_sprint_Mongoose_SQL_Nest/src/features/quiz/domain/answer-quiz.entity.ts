@@ -29,7 +29,7 @@ export class AnswerQuiz {
   @Column()
   quizId: string;
 
-  @OneToOne(() => Users, (u) => u.answerQuiz)
+  @ManyToOne(() => Users, (u) => u.answerQuiz)
   @JoinColumn()
   user: Users;
   @Column()
