@@ -46,14 +46,14 @@ export class SendAnswerToQuizUseCase
     ] =
       activeQuiz.firstPlayerProgress.player.id === currentUserId
         ? [
-            activeQuiz.firstPlayerProgress.answers.length,
-            activeQuiz.secondPlayerProgress.answers.length,
+            activeQuiz.firstPlayerProgress.answers?.length ?? 0,
+            activeQuiz.secondPlayerProgress.answers?.length ?? 0,
             activeQuiz.secondPlayerProgress.player.id,
             activeQuiz.secondPlayerProgress.score,
           ]
         : [
-            activeQuiz.secondPlayerProgress.answers.length,
-            activeQuiz.firstPlayerProgress.answers.length,
+            activeQuiz.secondPlayerProgress.answers?.length ?? 0,
+            activeQuiz.firstPlayerProgress.answers?.length ?? 0,
             activeQuiz.firstPlayerProgress.player.id,
             activeQuiz.firstPlayerProgress.score,
           ];
