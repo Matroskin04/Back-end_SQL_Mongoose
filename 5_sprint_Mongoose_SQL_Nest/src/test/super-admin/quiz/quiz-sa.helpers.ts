@@ -147,7 +147,7 @@ export function createResponseQuestion(
 }
 
 export function createResponseAllQuestionsTest(
-  questionsIds: Array<string> | number,
+  questionsIds: string[] | number,
   totalCount?: number | null,
   pagesCount?: number | null,
   page?: number | null,
@@ -172,5 +172,22 @@ export function createResponseAllQuestionsTest(
     pageSize: pageSize ?? 10,
     totalCount: totalCount ?? 0,
     items: allQuestions,
+  };
+}
+
+export function createResponseSingleQuestionTest(
+  questionsIds: string[] | number,
+  body?: string | null,
+  correctAnswers?: string[] | null,
+  published?: boolean | null,
+  updatedAt?: 'string' | null,
+) {
+  return {
+    id: expect.any(String),
+    body: body ?? expect.any(String),
+    correctAnswers: correctAnswers ?? expect.any(Array),
+    published: published ?? expect.any(Boolean),
+    createdAt: expect.stringMatching(regexpISOSString),
+    updatedAt: updatedAt === 'string' ? expect.any(String) : null,
   };
 }
