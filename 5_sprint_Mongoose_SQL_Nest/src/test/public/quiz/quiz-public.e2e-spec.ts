@@ -401,6 +401,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
           createResponseAnswerTest(null, answerStatus),
         );
       }
+
       const quizResult1 = await getQuizByIdTest(
         httpServer,
         result1.body.id,
@@ -411,7 +412,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
           'Active',
           '5questions',
           null,
-          user1.body.id,
+          user1.id,
           3,
           user2.body.id,
           user2.body.login,
@@ -440,7 +441,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
           'Finished',
           '5questions',
           null,
-          user1.body.id,
+          user1.id,
           4,
           user2.body.id,
           user2.body.login,

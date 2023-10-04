@@ -69,6 +69,7 @@ export class SendAnswerToQuizUseCase
         currentQuestionId,
       );
     if (!correctAnswers) throw new Error('Correct answers is not found');
+
     //validate user's answers
     const isAnswerCorrect =
       correctAnswers.join().split(',').indexOf(answer) > -1;
@@ -79,6 +80,7 @@ export class SendAnswerToQuizUseCase
       currentUserId,
       currentQuestionId,
     );
+
     //if answer is correct - increment score
     if (isAnswerCorrect) {
       const result =
@@ -89,6 +91,7 @@ export class SendAnswerToQuizUseCase
       if (!result)
         throw new Error('Something went wrong while incrementing score');
     }
+
     //if it is the last answer:
     if (answersNumberCurrentUser === 4) {
       if (answersNumberSecondUser === 5 || secondUserScore !== 0) {
@@ -101,7 +104,7 @@ export class SendAnswerToQuizUseCase
           throw new Error('Something went wrong while incrementing score');
       }
     }
-
+    console.log(6);
     return {
       questionId: currentQuestionId,
       answerStatus: QuizAnswerStatusEnum[+isAnswerCorrect],

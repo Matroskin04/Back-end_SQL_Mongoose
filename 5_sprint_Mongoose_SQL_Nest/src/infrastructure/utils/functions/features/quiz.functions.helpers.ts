@@ -29,15 +29,17 @@ export function modifyQuizIntoViewModel(
       },
       score: quizInfo.score1 ?? 0,
     },
-    secondPlayerProgress: {
-      answers: quizInfo.answers2 ?? [],
-      player: {
-        id: quizInfo.user2Id,
-        login: quizInfo.login2,
-      },
-      score: quizInfo.score2 ?? 0,
-    },
-    questions: quizInfo.questions ?? [],
+    secondPlayerProgress: quizInfo.user2Id
+      ? {
+          answers: quizInfo.answers2 ?? [],
+          player: {
+            id: quizInfo.user2Id,
+            login: quizInfo.login2,
+          },
+          score: quizInfo.score2 ?? 0,
+        }
+      : null,
+    questions: quizInfo.questions ?? null,
     status: QuizStatusEnum[quizInfo.status] as QuizStatusType,
     pairCreatedDate: quizInfo.pairCreatedDate.toISOString(),
     startGameDate: quizInfo.startGameDate
