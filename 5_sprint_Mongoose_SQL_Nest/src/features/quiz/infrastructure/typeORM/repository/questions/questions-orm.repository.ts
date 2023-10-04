@@ -31,7 +31,7 @@ export class QuestionsOrmRepository {
     return {
       ...result.raw[0],
       correctAnswers: result.raw[0].correctAnswers
-        ? result.raw[0].correctAnswers.split(',')
+        ? result.raw[0].correctAnswers.split()
         : null,
       createdAt: result.raw[0].createdAt.toISOString(),
     };
