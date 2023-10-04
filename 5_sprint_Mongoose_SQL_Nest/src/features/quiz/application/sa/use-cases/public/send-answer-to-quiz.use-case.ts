@@ -6,6 +6,7 @@ import { DataSource } from 'typeorm';
 import { ForbiddenException } from '@nestjs/common';
 import { AnswersQuizOrmRepository } from '../../../../infrastructure/typeORM/repository/answers/answers-quiz-orm.repository';
 import { QuizAnswerStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
+import { QuizOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz/quiz-orm.repository';
 
 export class SendAnswerToQuizCommand {
   constructor(public currentUserId: string, public answer: string) {}
@@ -17,6 +18,7 @@ export class SendAnswerToQuizUseCase
 {
   constructor(
     protected quizOrmQueryRepository: QuizOrmQueryRepository,
+    protected quizOrmRepository: QuizOrmRepository,
     protected quizInfoAboutUserOrmRepository: QuizInfoAboutUserOrmRepository,
     protected questionsOrmQueryRepository: QuestionsOrmQueryRepository,
     protected answersQuizOrmRepository: AnswersQuizOrmRepository,
@@ -44,14 +46,14 @@ export class SendAnswerToQuizUseCase
     ] =
       activeQuiz.firstPlayerProgress.player.id === currentUserId
         ? [
-            activeQuiz.firstPlayerProgress.score,
-            activeQuiz.secondPlayerProgress.score,
+            activeQuiz.firstPlayerProgress.answers.length,
+            activeQuiz.secondPlayerProgress.answers.length,
             activeQuiz.secondPlayerProgress.player.id,
             activeQuiz.secondPlayerProgress.score,
           ]
         : [
-            activeQuiz.secondPlayerProgress.score,
-            activeQuiz.firstPlayerProgress.score,
+            activeQuiz.secondPlayerProgress.answers.length,
+            activeQuiz.firstPlayerProgress.answers.length,
             activeQuiz.firstPlayerProgress.player.id,
             activeQuiz.firstPlayerProgress.score,
           ];
@@ -91,20 +93,33 @@ export class SendAnswerToQuizUseCase
       if (!result)
         throw new Error('Something went wrong while incrementing score');
     }
-
-    //if it is the last answer:
+    console.log(
+      answersNumberCurrentUser,
+      answersNumberSecondUser,
+      secondUserScore,
+    );
+    //if it is the last answer of user:
     if (answersNumberCurrentUser === 4) {
-      if (answersNumberSecondUser === 5 || secondUserScore !== 0) {
-        const result =
-          await this.quizInfoAboutUserOrmRepository.incrementUserScore(
-            activeQuiz.id,
-            secondUserId,
-          );
+      //if another user is over also, then:
+      if (answersNumberSecondUser === 5) {
+        //change status and finishDate
+        const result = this.quizOrmRepository.finishQuiz(activeQuiz.id);
         if (!result)
-          throw new Error('Something went wrong while incrementing score');
+          throw new Error('Something went wrong while finishing the quiz game');
+
+        if (secondUserScore !== 0) {
+          //increment user's score (if user has more than 0 points
+          const result =
+            await this.quizInfoAboutUserOrmRepository.incrementUserScore(
+              activeQuiz.id,
+              secondUserId,
+            );
+          if (!result)
+            throw new Error('Something went wrong while incrementing score');
+        }
       }
     }
-    console.log(6);
+
     return {
       questionId: currentQuestionId,
       answerStatus: QuizAnswerStatusEnum[+isAnswerCorrect],
