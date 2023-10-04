@@ -465,7 +465,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
       expect(updatedQuestion.body).toBe('new question body');
       expect(updatedQuestion.correctAnswers).toBe('new 1,new 2');
-      expect(updatedQuestion.updatedAt).toBeNull();
+      expect(updatedQuestion.updatedAt).not.toBeNull();
     });
   });
 
@@ -549,6 +549,7 @@ describe('Quiz (SA); /sa/quiz', () => {
         correctQuestionId,
       );
       expect(updatedQuestion1.published).toBeTruthy();
+      expect(updatedQuestion1.updatedAt).not.toBeNull();
 
       //published false
       const result2 = await publishQuestionSaTest(
@@ -564,6 +565,7 @@ describe('Quiz (SA); /sa/quiz', () => {
         correctQuestionId,
       );
       expect(updatedQuestion2.published).toBeFalsy();
+      expect(updatedQuestion2.updatedAt).not.toBeNull();
     });
   });
 
