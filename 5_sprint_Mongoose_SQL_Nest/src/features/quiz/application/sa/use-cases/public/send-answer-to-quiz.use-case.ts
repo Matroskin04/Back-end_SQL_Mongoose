@@ -8,7 +8,7 @@ import { AnswersQuizOrmRepository } from '../../../../infrastructure/typeORM/rep
 import { QuizAnswerStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
 
 export class SendAnswerToQuizCommand {
-  constructor(public userId: string, public answer: string) {}
+  constructor(public currentUserId: string, public answer: string) {}
 }
 
 @CommandHandler(SendAnswerToQuizCommand)
@@ -24,10 +24,10 @@ export class SendAnswerToQuizUseCase
   ) {}
 
   async execute(command: SendAnswerToQuizCommand): Promise<any> {
-    const { userId, answer } = command;
+    const { currentUserId, answer } = command;
 
     const activeQuiz = await this.quizOrmQueryRepository.getCurrentQuizByUserId(
-      userId,
+      currentUserId,
     );
     //check that user has an active game
     if (!activeQuiz || !(activeQuiz.status === 'Active'))
@@ -36,15 +36,17 @@ export class SendAnswerToQuizUseCase
     if (!activeQuiz.questions || !activeQuiz.secondPlayerProgress)
       throw new Error('Questions or the second player are not found');
 
-    const [answersNumberCurrentUser, answersNumberSecondUser] =
-      activeQuiz.firstPlayerProgress.player.id === userId
+    const [answersNumberCurrentUser, answersNumberSecondUser, secondUserId] =
+      activeQuiz.firstPlayerProgress.player.id === currentUserId
         ? [
             activeQuiz.firstPlayerProgress.score,
             activeQuiz.secondPlayerProgress.score,
+            activeQuiz.secondPlayerProgress.player.id,
           ]
         : [
             activeQuiz.secondPlayerProgress.score,
             activeQuiz.firstPlayerProgress.score,
+            activeQuiz.firstPlayerProgress.player.id,
           ];
 
     //if all answers already exists - then 403 status
@@ -67,7 +69,7 @@ export class SendAnswerToQuizUseCase
     const createdAnswer = await this.answersQuizOrmRepository.createAnswer(
       +isAnswerCorrect,
       activeQuiz.id,
-      userId,
+      currentUserId,
       currentQuestionId,
     );
     //if answer is correct - increment score
@@ -75,18 +77,18 @@ export class SendAnswerToQuizUseCase
       const result =
         await this.quizInfoAboutUserOrmRepository.incrementUserScore(
           activeQuiz.id,
-          userId,
+          currentUserId,
         );
       if (!result)
         throw new Error('Something went wrong while incrementing score');
     }
     //if it is the last answer:
     if (answersNumberCurrentUser === 4) {
-      if (answersNumberSecondUser < 5) {
+      if (answersNumberSecondUser === 5) {
         const result =
           await this.quizInfoAboutUserOrmRepository.incrementUserScore(
             activeQuiz.id,
-            userId,
+            secondUserId,
           );
         if (!result)
           throw new Error('Something went wrong while incrementing score');
