@@ -61,7 +61,8 @@ export class SendAnswerToQuizUseCase
       );
     if (!correctAnswers) throw new Error('Correct answers is not found');
     //validate user's answers
-    const isAnswerCorrect = correctAnswers.indexOf(answer) > -1;
+    const isAnswerCorrect =
+      correctAnswers.join().split(',').indexOf(answer) > -1;
     //save answer info
     const createdAnswer = await this.answersQuizOrmRepository.createAnswer(
       +isAnswerCorrect,
