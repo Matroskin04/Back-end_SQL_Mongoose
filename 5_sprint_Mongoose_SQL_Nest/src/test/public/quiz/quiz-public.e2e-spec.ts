@@ -405,7 +405,6 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
         result1.body.id,
         accessToken1,
       );
-      console.log(quizResult1.body);
       expect(quizResult1.body).toEqual(
         createResponseSingleQuizTest(
           'Active',
@@ -441,6 +440,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
         result1.body.id,
         accessToken1,
       );
+      console.log(quizResult2.body);
       expect(quizResult2.body).toEqual(
         createResponseSingleQuizTest(
           'Finished',

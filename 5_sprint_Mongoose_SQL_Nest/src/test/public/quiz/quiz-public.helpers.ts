@@ -38,7 +38,7 @@ export function createResponseAnswerTest(
     questionId: questionId ?? expect.any(String),
     answerStatus:
       answerStatus ?? expect.stringMatching(/^(Correct|Incorrect)$/),
-    addedAt: expect.any(String),
+    addedAt: expect.stringMatching(regexpISOSString),
   };
 }
 export function createResponseSingleQuizTest(
