@@ -22,7 +22,7 @@ export function modifyQuizIntoViewModel(
   return {
     id: quizInfo.id,
     firstPlayerProgress: {
-      answers: quizInfo.answers1 ?? [],
+      answers: quizInfo.answers1 ?? null,
       player: {
         id: quizInfo.user1Id,
         login: quizInfo.login1,
@@ -31,7 +31,7 @@ export function modifyQuizIntoViewModel(
     },
     secondPlayerProgress: quizInfo.user2Id
       ? {
-          answers: quizInfo.answers2 ?? [],
+          answers: quizInfo.answers2 ?? null,
           player: {
             id: quizInfo.user2Id,
             login: quizInfo.login2,

@@ -1,5 +1,8 @@
 import request from 'supertest';
-import { QuizStatusType } from '../../../infrastructure/types/quiz-questions.general.types';
+import {
+  QuizAnswerStatusType,
+  QuizStatusType,
+} from '../../../infrastructure/types/quiz-questions.general.types';
 import { regexpISOSString } from '../../helpers/regexp/general-regexp';
 
 export async function connectPlayerToQuizTest(httpServer, accessToken) {
@@ -48,12 +51,22 @@ export function createResponseSingleQuizTest(
   login2?: string | null,
   score2?: number | null,
   startDate?: null | 'string',
+  answerStatus1?: 'string' | null,
+  answerStatus2?: 'string' | null,
   finishDate?: null | 'string',
 ) {
   return {
     id: quizId ?? expect.any(String),
     firstPlayerProgress: {
-      answers: [],
+      answers: answerStatus1
+        ? expect.arrayContaining([
+            expect.objectContaining({
+              questionId: expect.any(String),
+              answerStatus: expect.toBeOneOf(['Correct', 'Incorrect']),
+              addedAt: expect.stringMatching(regexpISOSString),
+            }),
+          ])
+        : null,
       player: {
         id: user1Id ?? expect.any(String),
         login: expect.any(String),
@@ -62,7 +75,15 @@ export function createResponseSingleQuizTest(
     },
     secondPlayerProgress: user2Id
       ? {
-          answers: [],
+          answers: answerStatus2
+            ? expect.arrayContaining([
+                expect.objectContaining({
+                  questionId: expect.any(String),
+                  answerStatus: expect.toBeOneOf(['Correct', 'Incorrect']),
+                  addedAt: expect.stringMatching(regexpISOSString),
+                }),
+              ])
+            : null,
           player: {
             id: user2Id ?? expect.any(String),
             login: login2 ?? expect.any(String),

@@ -390,12 +390,10 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
       for (let i = 0; i < 5; i++) {
-        console.log('start');
         const answer = i % 2 === 0 ? correctAnswer : incorrectAnswer;
         const answerStatus = i % 2 === 0 ? 'Correct' : 'Incorrect';
         //3 correct answers
         const result = await sendAnswerTest(httpServer, accessToken1, answer);
-        console.log(result.body);
         expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
         expect(result.body).toEqual(
           createResponseAnswerTest(null, answerStatus),
@@ -407,6 +405,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
         result1.body.id,
         accessToken1,
       );
+      console.log(quizResult1.body);
       expect(quizResult1.body).toEqual(
         createResponseSingleQuizTest(
           'Active',
@@ -418,8 +417,14 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
           user2.body.login,
           0,
           'string',
+          'string',
         ),
       );
+      expect(
+        quizResult1.body.firstPlayerProgress.answers.filter(
+          (a) => a.answerStatus === 'Correct',
+        ).length,
+      ).toBe(3);
 
       for (let i = 0; i < 5; i++) {
         const answer = i % 2 === 0 ? incorrectAnswer : correctAnswer;
@@ -446,6 +451,8 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
           user2.body.id,
           user2.body.login,
           2,
+          'string',
+          'string',
           'string',
           'string',
         ),
