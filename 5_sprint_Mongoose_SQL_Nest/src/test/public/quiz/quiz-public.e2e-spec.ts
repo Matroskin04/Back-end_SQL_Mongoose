@@ -8,10 +8,12 @@ import {
 } from '../../super-admin/quiz/quiz-sa.helpers';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import {
-  connectPlayerToQuiz,
+  connectPlayerToQuizTest,
+  createResponseAnswerTest,
   createResponseSingleQuizTest,
-  getMyCurrentQuiz,
-  getQuizById,
+  getMyCurrentQuizTest,
+  getQuizByIdTest,
+  sendAnswerTest,
 } from './quiz-public.helpers';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -50,6 +52,8 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
   let user2;
 
   let questionsIds;
+
+  const answerBody = 'answer';
   //correct data question
   let correctQuestionId;
   let questionData;
@@ -86,13 +90,13 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await getMyCurrentQuiz(httpServer, 'IncorrectJWT');
+      const result = await getMyCurrentQuizTest(httpServer, 'IncorrectJWT');
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
     it(`- (404) no active pair for current user`, async () => {
       //jwt is incorrect
-      const result = await getMyCurrentQuiz(httpServer, accessToken1);
+      const result = await getMyCurrentQuizTest(httpServer, accessToken1);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
@@ -101,10 +105,10 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
               (Additional) + (200) should connect user2 to the quiz;
               + (200) should return current game of user;`, async () => {
       //connect to new quiz
-      const result1 = await connectPlayerToQuiz(httpServer, accessToken1);
+      const result1 = await connectPlayerToQuizTest(httpServer, accessToken1);
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       //get current quiz
-      const result2 = await getMyCurrentQuiz(httpServer, accessToken1);
+      const result2 = await getMyCurrentQuizTest(httpServer, accessToken1);
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
         createResponseSingleQuizTest(
@@ -119,10 +123,10 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
       );
 
       //connect user2 to the quiz
-      const result3 = await connectPlayerToQuiz(httpServer, accessToken2);
+      const result3 = await connectPlayerToQuizTest(httpServer, accessToken2);
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       //get current quiz
-      const result4 = await getMyCurrentQuiz(httpServer, accessToken1);
+      const result4 = await getMyCurrentQuizTest(httpServer, accessToken1);
       expect(result4.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result4.body).toEqual(
         createResponseSingleQuizTest(
@@ -166,26 +170,26 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
       }
 
       //connect to new quiz
-      const result3 = await connectPlayerToQuiz(httpServer, accessToken1);
+      const result3 = await connectPlayerToQuizTest(httpServer, accessToken1);
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       quizId = result3.body.id;
     });
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await getQuizById(httpServer, quizId, 'IncorrectJWT');
+      const result = await getQuizByIdTest(httpServer, quizId, 'IncorrectJWT');
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
     it(`- (404) quiz with such id was not found`, async () => {
       //jwt is incorrect
-      const result = await getQuizById(httpServer, uuidv4(), accessToken1);
+      const result = await getQuizByIdTest(httpServer, uuidv4(), accessToken1);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
     it(`- (400) id has invalid format`, async () => {
       //jwt is incorrect
-      const result = await getQuizById(
+      const result = await getQuizByIdTest(
         httpServer,
         'incorrect format',
         accessToken1,
@@ -200,7 +204,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
       const logInfo = await loginUserTest(httpServer, 'login3', 'password3');
       const accessToken3 = logInfo.body.accessToken;
       //jwt is incorrect
-      const result = await getQuizById(httpServer, quizId, accessToken3);
+      const result = await getQuizByIdTest(httpServer, quizId, accessToken3);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
     });
 
@@ -208,7 +212,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
               (Additional) + (200) should connect user2 to the quiz;
               + (200) should return current game of user;`, async () => {
       //get current quiz
-      const result1 = await getQuizById(httpServer, quizId, accessToken1);
+      const result1 = await getQuizByIdTest(httpServer, quizId, accessToken1);
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
         createResponseSingleQuizTest(
@@ -223,10 +227,10 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
       );
 
       //connect user2 to the quiz
-      const result2 = await connectPlayerToQuiz(httpServer, accessToken2);
+      const result2 = await connectPlayerToQuizTest(httpServer, accessToken2);
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       //get current quiz
-      const result3 = await getQuizById(httpServer, quizId, accessToken1);
+      const result3 = await getQuizByIdTest(httpServer, quizId, accessToken1);
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result3.body).toEqual(
         createResponseSingleQuizTest(
@@ -245,7 +249,6 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
   });
 
   describe(`/connection (POST) - connect user to existing quiz or create new`, () => {
-    let questionsIds;
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
@@ -272,13 +275,13 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await connectPlayerToQuiz(httpServer, 'IncorrectJWT');
+      const result = await connectPlayerToQuizTest(httpServer, 'IncorrectJWT');
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
     it(`+ (200) user 1 should create new quiz;
               + (200) user 2 should connect to quiz`, async () => {
-      const result1 = await connectPlayerToQuiz(httpServer, accessToken1);
+      const result1 = await connectPlayerToQuizTest(httpServer, accessToken1);
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
         createResponseSingleQuizTest(
@@ -292,7 +295,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
         ),
       );
 
-      const result2 = await connectPlayerToQuiz(httpServer, accessToken2);
+      const result2 = await connectPlayerToQuizTest(httpServer, accessToken2);
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
         createResponseSingleQuizTest(
@@ -312,8 +315,85 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
     //DEPENDENT
     it(`- (403) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await connectPlayerToQuiz(httpServer, accessToken1);
+      const result = await connectPlayerToQuizTest(httpServer, accessToken1);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
+    });
+  });
+
+  describe(`/my-current/answers (POST) - send answer to question`, () => {
+    beforeAll(async () => {
+      await deleteAllDataTest(httpServer);
+
+      user1 = await createCorrectUserTest(httpServer);
+      const result1 = await loginCorrectUserTest(httpServer);
+      accessToken1 = result1.accessToken;
+
+      user2 = await createUserTest(
+        httpServer,
+        'login2',
+        'password2',
+        'email2@mail.ru',
+      );
+      const result2 = await loginUserTest(httpServer, 'login2', 'password2');
+      accessToken2 = result2.body.accessToken;
+
+      //create 9 questions
+      questionsIds = await create9Questions(httpServer);
+      //publish them:
+      for (const id of questionsIds) {
+        await publishQuestionSaTest(httpServer, id, true);
+      }
+    });
+
+    it(`- (401) jwt access token is incorrect`, async () => {
+      //jwt is incorrect
+      const result = await sendAnswerTest(
+        httpServer,
+        'IncorrectJWT',
+        answerBody,
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+    });
+
+    it(`- (403) user has not an active quiz game
+              (Addition) + (200) user 1 should create new quiz;
+              - (403) user has not an active quiz game`, async () => {
+      //no active game
+      const result1 = await sendAnswerTest(
+        httpServer,
+        accessToken1,
+        answerBody,
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
+
+      //create new quiz
+      const result2 = await connectPlayerToQuizTest(httpServer, accessToken1);
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+
+      //no active game (only in status pending)
+      const result3 = await sendAnswerTest(
+        httpServer,
+        accessToken1,
+        answerBody,
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
+    });
+
+    //DEPENDENT
+    it(`(Addition) + (200) user 2 should connect to quiz;
+              + (200) user 2 should send incorrect answer`, async () => {
+      //user 2 connect to quiz
+      const result1 = await connectPlayerToQuizTest(httpServer, accessToken2);
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+
+      const result2 = await sendAnswerTest(
+        httpServer,
+        accessToken1,
+        answerBody,
+      );
+      console.log(result2.body);
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(createResponseAnswerTest(null, 'Incorrect'));
     });
   });
 });

@@ -2,24 +2,42 @@ import request from 'supertest';
 import { QuizStatusType } from '../../../infrastructure/types/quiz-questions.general.types';
 import { regexpISOSString } from '../../helpers/regexp/general-regexp';
 
-export async function connectPlayerToQuiz(httpServer, accessToken) {
+export async function connectPlayerToQuizTest(httpServer, accessToken) {
   return request(httpServer)
     .post(`/hometask-nest/pair-game-quiz/pairs/connection`)
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
-export async function getMyCurrentQuiz(httpServer, accessToken) {
+export async function sendAnswerTest(httpServer, accessToken, answer) {
+  return request(httpServer)
+    .post(`/hometask-nest/pair-game-quiz/pairs/my-current/answers`)
+    .set('Authorization', `Bearer ${accessToken}`)
+    .send({ answer });
+}
+
+export async function getMyCurrentQuizTest(httpServer, accessToken) {
   return request(httpServer)
     .get(`/hometask-nest/pair-game-quiz/pairs/my-current`)
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
-export async function getQuizById(httpServer, quizId, accessToken) {
+export async function getQuizByIdTest(httpServer, quizId, accessToken) {
   return request(httpServer)
     .get(`/hometask-nest/pair-game-quiz/pairs/${quizId}`)
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
+export function createResponseAnswerTest(
+  questionId?,
+  answerStatus?: 'Correct' | 'Incorrect',
+) {
+  return {
+    questionId: questionId ?? expect.any(String),
+    answerStatus:
+      answerStatus ?? expect.stringMatching(/^(Correct|Incorrect)$/),
+    addedAt: expect.any(String),
+  };
+}
 export function createResponseSingleQuizTest(
   quizStatus?: QuizStatusType,
   questions?: '5questions' | null,
