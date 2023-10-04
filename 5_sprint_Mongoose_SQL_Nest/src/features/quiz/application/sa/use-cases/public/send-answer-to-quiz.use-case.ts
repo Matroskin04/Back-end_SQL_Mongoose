@@ -93,11 +93,7 @@ export class SendAnswerToQuizUseCase
       if (!result)
         throw new Error('Something went wrong while incrementing score');
     }
-    console.log(
-      answersNumberCurrentUser,
-      answersNumberSecondUser,
-      secondUserScore,
-    );
+
     //if it is the last answer of user:
     if (answersNumberCurrentUser === 4) {
       //if another user is over also, then:
