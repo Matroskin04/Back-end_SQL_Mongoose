@@ -26,7 +26,7 @@ export function modifyQuizIntoViewModel(
         quizInfo.answers1?.map((answer) => ({
           ...answer,
           answerStatus: QuizAnswerStatusEnum[answer.answerStatus],
-          addedAt: answer.addedAt,
+          addedAt: new Date(answer.addedAt).toISOString(),
         })) ?? [],
       player: {
         id: quizInfo.user1Id,
@@ -40,7 +40,7 @@ export function modifyQuizIntoViewModel(
             quizInfo.answers2?.map((answer) => ({
               ...answer,
               answerStatus: QuizAnswerStatusEnum[answer.answerStatus],
-              addedAt: answer.addedAt,
+              addedAt: new Date(answer.addedAt).toISOString(),
             })) ?? [],
           player: {
             id: quizInfo.user2Id,
