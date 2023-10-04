@@ -52,7 +52,7 @@ export class Users {
   @OneToMany(() => AnswerQuiz, (aq) => aq.user)
   answerQuiz: AnswerQuiz;
 
-  @OneToOne(() => QuizInfoAboutUser, (qi) => qi.user)
+  @OneToMany(() => QuizInfoAboutUser, (qi) => qi.user)
   quizGameInfoAboutUser: QuizInfoAboutUser;
 
   @OneToMany(() => Blogs, (b) => b.user)

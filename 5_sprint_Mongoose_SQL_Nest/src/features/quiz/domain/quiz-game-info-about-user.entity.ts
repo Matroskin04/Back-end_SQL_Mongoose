@@ -27,7 +27,7 @@ export class QuizInfoAboutUser {
   @Column()
   quizId: string;
 
-  @OneToOne(() => Users, (u) => u.quizGameInfoAboutUser)
+  @ManyToOne(() => Users, (u) => u.quizGameInfoAboutUser)
   @JoinColumn()
   user: Users;
   @Column()
