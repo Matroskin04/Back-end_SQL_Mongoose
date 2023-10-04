@@ -321,7 +321,6 @@ describe('Users (SA); /sa', () => {
         correctPass,
         'correctEmail@mail.ru',
       );
-      console.log(result2.body);
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result2.body).toEqual(createErrorsMessageTest(['login']));
     });
