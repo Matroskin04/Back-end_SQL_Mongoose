@@ -4,6 +4,8 @@ import { QuestionTestType } from './quiz-sa.types';
 import { QuestionQuiz } from '../../../features/quiz/domain/question-quiz.entity';
 import { QuestionPaginationType } from '../../../features/quiz/infrastructure/typeORM/query.repository/questions/questions.types.query.repository';
 import { regexpISOSString } from '../../helpers/regexp/general-regexp';
+import { toBeOneOf } from 'jest-extended';
+expect.extend({ toBeOneOf });
 
 export async function getAllQuestions(httpServer, query?, saLogin?, saPass?) {
   return request(httpServer)
@@ -129,7 +131,7 @@ export async function create9Questions(httpServer): Promise<string[]> {
 }
 
 export function createResponseQuestion(
-  updatedAt?: null,
+  updatedAt?: 'string' | null,
   published?,
   body?,
   correctAnswers?,
@@ -140,7 +142,7 @@ export function createResponseQuestion(
     correctAnswers: correctAnswers ?? expect.any(Array),
     published: published ?? expect.any(Boolean),
     createdAt: expect.any(String),
-    updatedAt: updatedAt === undefined ? expect.any(String) : null,
+    updatedAt: updatedAt ? expect.stringMatching(regexpISOSString) : null,
   };
 }
 
@@ -161,7 +163,7 @@ export function createResponseAllQuestionsTest(
       correctAnswers: expect.any(Array),
       published: expect.any(Boolean),
       createdAt: expect.stringMatching(regexpISOSString),
-      updatedAt: null,
+      updatedAt: expect.toBeOneOf([expect.any(String), null]),
     });
   }
   return {

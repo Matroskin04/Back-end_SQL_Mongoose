@@ -45,7 +45,7 @@ export class QuestionsOrmRepository {
     const result = await this.questionQuizRepository
       .createQueryBuilder()
       .update()
-      .set({ body, correctAnswers, updatedAt: () => 'CURRENT_TIMESTAMP' })
+      .set({ body, correctAnswers })
       .where('id = :questionId', { questionId })
       .execute();
 

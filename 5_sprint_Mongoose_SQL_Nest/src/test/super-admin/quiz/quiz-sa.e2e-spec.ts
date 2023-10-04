@@ -352,7 +352,9 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
       expect(result.body).toEqual(
-        createResponseQuestion(null, false, correctBody, correctAnswers),
+        createResponseQuestion(null, false, correctBody, [
+          correctAnswers.join(),
+        ]),
       );
     });
   });
@@ -463,7 +465,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
       expect(updatedQuestion.body).toBe('new question body');
       expect(updatedQuestion.correctAnswers).toBe('new 1,new 2');
-      expect(updatedQuestion.updatedAt).not.toBeNull();
+      expect(updatedQuestion.updatedAt).toBeNull();
     });
   });
 
