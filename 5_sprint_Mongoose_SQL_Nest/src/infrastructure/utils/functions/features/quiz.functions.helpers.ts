@@ -27,7 +27,7 @@ export function modifyQuizIntoViewModel(
           ...answer,
           answerStatus: QuizAnswerStatusEnum[answer.answerStatus],
           addedAt: answer.addedAt,
-        })) ?? null,
+        })) ?? [],
       player: {
         id: quizInfo.user1Id,
         login: quizInfo.login1,
@@ -41,7 +41,7 @@ export function modifyQuizIntoViewModel(
               ...answer,
               answerStatus: QuizAnswerStatusEnum[answer.answerStatus],
               addedAt: answer.addedAt,
-            })) ?? null,
+            })) ?? [],
           player: {
             id: quizInfo.user2Id,
             login: quizInfo.login2,

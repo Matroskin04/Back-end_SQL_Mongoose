@@ -66,7 +66,7 @@ export function createResponseSingleQuizTest(
               addedAt: expect.stringMatching(regexpISOSString),
             }),
           ])
-        : null,
+        : [],
       player: {
         id: user1Id ?? expect.any(String),
         login: expect.any(String),
@@ -83,7 +83,7 @@ export function createResponseSingleQuizTest(
                   addedAt: expect.stringMatching(regexpISOSString),
                 }),
               ])
-            : null,
+            : [],
           player: {
             id: user2Id ?? expect.any(String),
             login: login2 ?? expect.any(String),
