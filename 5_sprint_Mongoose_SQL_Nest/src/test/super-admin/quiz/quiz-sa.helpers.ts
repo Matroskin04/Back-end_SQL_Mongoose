@@ -3,6 +3,7 @@ import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-statu
 import { QuestionTestType } from './quiz-sa.types';
 import { QuestionQuiz } from '../../../features/quiz/domain/question-quiz.entity';
 import { QuestionPaginationType } from '../../../features/quiz/infrastructure/typeORM/query.repository/questions/questions.types.query.repository';
+import { regexpISOSString } from '../../helpers/regexp/general-regexp';
 
 export async function getAllQuestions(httpServer, query?, saLogin?, saPass?) {
   return request(httpServer)
@@ -159,7 +160,7 @@ export function createResponseAllQuestionsTest(
       body: expect.any(String),
       correctAnswers: expect.any(Array),
       published: expect.any(Boolean),
-      createdAt: expect.any(String),
+      createdAt: expect.stringMatching(regexpISOSString),
       updatedAt: null,
     });
   }

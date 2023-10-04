@@ -113,8 +113,8 @@ export class QuestionsOrmQueryRepository {
     return result
       ? {
           ...result,
-          createdAt: result.createdAt.toString(),
-          updatedAt: result.updatedAt?.toString() ?? null,
+          createdAt: result.createdAt.toISOString(),
+          updatedAt: result.updatedAt?.toISOString() ?? null,
         }
       : null;
   }

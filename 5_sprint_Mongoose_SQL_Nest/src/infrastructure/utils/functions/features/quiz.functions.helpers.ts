@@ -11,8 +11,8 @@ export function modifyQuestionIntoViewModel(question): QuestionQuizAllInfoType {
       ? question.correctAnswers.split(',')
       : null,
     published: question.published,
-    createdAt: question.createdAt.toString(),
-    updatedAt: question.updatedAt ? question.updatedAt.toString() : null,
+    createdAt: question.createdAt.toISOString(),
+    updatedAt: question.updatedAt ? question.updatedAt.toISOString() : null,
   };
 }
 
