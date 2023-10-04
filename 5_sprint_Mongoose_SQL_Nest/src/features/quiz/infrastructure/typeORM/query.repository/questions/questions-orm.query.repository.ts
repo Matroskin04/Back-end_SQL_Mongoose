@@ -94,11 +94,11 @@ export class QuestionsOrmQueryRepository {
   async getAnswersOfQuestion(questionId: string): Promise<null | string[]> {
     const query = await this.questionQuizRepository
       .createQueryBuilder()
-      .select('correctAnswers')
+      .select('"correctAnswers"')
       .where('id = :questionId', { questionId });
     const result = await query.getRawOne();
 
-    return result?.correctAnswers?.join(',') ?? null;
+    return result?.correctAnswers?.split(',') ?? null;
   }
 
   async getQuestionAllInfoById(

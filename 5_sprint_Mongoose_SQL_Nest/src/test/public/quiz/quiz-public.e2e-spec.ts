@@ -391,7 +391,6 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
         accessToken1,
         answerBody,
       );
-      console.log(result2.body);
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(createResponseAnswerTest(null, 'Incorrect'));
     });
