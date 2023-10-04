@@ -45,4 +45,20 @@ export class QuizOrmRepository {
     if (result.affected === 0) return null;
     return result.raw[0];
   }
+
+  async finishQuiz(quizId: string): Promise<boolean> {
+    const result = await this.quizRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        status: QuizStatusEnum['Finished'],
+        finishGameDate: () => 'CURRENT_TIMESTAMP',
+      })
+      .where('id = :quizId', {
+        quizId,
+      })
+      .execute();
+
+    return result.affected === 1;
+  }
 }
