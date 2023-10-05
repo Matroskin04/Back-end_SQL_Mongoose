@@ -47,7 +47,7 @@ export function modifyCommentIntoViewModel(
   };
 }
 
-//todo type export
+//todo where type export
 type CommentRawInfoType = {
   id: string;
   content: string;

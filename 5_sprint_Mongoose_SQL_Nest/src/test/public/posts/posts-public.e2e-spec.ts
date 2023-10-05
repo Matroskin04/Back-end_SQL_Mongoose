@@ -371,17 +371,15 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result2.body).toEqual(createErrorsMessageTest(['content']));
 
-      //todo another type (boolean) - 500 error instead of 400
-
-      // const result3 = await createCommentTest(
-      //   httpServer,
-      //   post.id,
-      //   accessToken1,
-      //   true,
-      // );
-      // console.log(result3.body);
-      // expect(result3.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
-      // expect(result3.body).toEqual(createErrorsMessageTest(['content']));
+      const result3 = await createCommentTest(
+        httpServer,
+        post.id,
+        accessToken1,
+        true,
+      );
+      console.log(result3.body);
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result3.body).toEqual(createErrorsMessageTest(['content']));
     });
 
     it(`+ (201) should create comment`, async () => {
