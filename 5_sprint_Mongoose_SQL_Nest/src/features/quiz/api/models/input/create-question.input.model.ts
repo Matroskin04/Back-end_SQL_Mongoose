@@ -21,5 +21,3 @@ export class CreateQuestionInputModel {
   @ValidateIf((object, value) => value !== null)
   correctAnswers: string[] | null;
 }
-
-//todo в ts не указывать null?
