@@ -1,8 +1,14 @@
-import {
-  QuizAnswerStatusEnum,
-  QuizStatusEnum,
-} from '../../../../../infrastructure/utils/enums/quiz.enums';
+import { QuizAnswerStatusEnum } from '../../../../../infrastructure/utils/enums/quiz.enums';
 import { QuizStatusType } from '../../../../../infrastructure/types/quiz-questions.general.types';
+
+//todo take out the general types
+export type AllQuizzesOutputModel = {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: Array<QuizOutputModel>;
+};
 
 export type QuizOutputModel = {
   id: string;

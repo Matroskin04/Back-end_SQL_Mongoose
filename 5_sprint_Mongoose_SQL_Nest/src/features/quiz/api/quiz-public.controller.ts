@@ -12,7 +12,10 @@ import { CommandBus } from '@nestjs/cqrs';
 import { QuestionsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/questions/questions-orm.query.repository';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CurrentUserId } from '../../../infrastructure/decorators/current-user-id.param.decorator';
-import { QuizOutputModel } from './models/output/quiz.output.model';
+import {
+  AllQuizzesOutputModel,
+  QuizOutputModel,
+} from './models/output/quiz.output.model';
 import { ConnectToQuizCommand } from '../application/sa/use-cases/public/connect-to-quiz.use-case';
 import { SendAnswerInputModel } from './models/input/send-answer.input.model';
 import { AnswerOutputModel } from './models/output/answer.output.model';
@@ -21,7 +24,7 @@ import { QuizOrmQueryRepository } from '../infrastructure/typeORM/query.reposito
 import { IsUserParticipantInQuizGuard } from '../../../infrastructure/guards/forbidden-guards/is-user-participant-in-quiz.guard';
 import { StatisticOutputModel } from './models/output/statistic.output.model';
 
-@Controller('/hometask-nest/pair-game-quiz/pairs')
+@Controller('/hometask-nest/pair-game-quiz')
 export class QuizPublicController {
   constructor(
     protected commandBus: CommandBus,
@@ -29,7 +32,7 @@ export class QuizPublicController {
   ) {}
 
   @UseGuards(JwtAccessGuard)
-  @Get('my-current')
+  @Get('pairs/my-current')
   async getMyCurrentGame(
     @CurrentUserId() userId: string,
   ): Promise<QuizOutputModel> {
@@ -40,18 +43,8 @@ export class QuizPublicController {
     return result;
   }
 
-  @UseGuards(JwtAccessGuard)
-  @Get('my-statistic')
-  async getMyStatistic(
-    @CurrentUserId() userId: string,
-  ): Promise<StatisticOutputModel> {
-    const result = await this.quizOrmQueryRepository.getMyStatistic(userId);
-    if (!result) throw new NotFoundException();
-    return result;
-  }
-
   @UseGuards(JwtAccessGuard, IsUserParticipantInQuizGuard)
-  @Get(':quizId')
+  @Get('pairs/:quizId')
   async getQuizById(@Param('quizId') quizId: string): Promise<QuizOutputModel> {
     const result = await this.quizOrmQueryRepository.getQuizByIdView(quizId);
 
@@ -60,8 +53,28 @@ export class QuizPublicController {
   }
 
   @UseGuards(JwtAccessGuard)
+  @Get('users/my-statistic')
+  async getMyStatistic(
+    @CurrentUserId() userId: string,
+  ): Promise<StatisticOutputModel> {
+    const result = await this.quizOrmQueryRepository.getMyStatistic(userId);
+    if (!result) throw new NotFoundException();
+    return result;
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('pairs/my')
+  async getAllMyQuizzes(
+    @CurrentUserId() userId: string,
+  ): Promise<AllQuizzesOutputModel> {
+    const result = await this.quizOrmQueryRepository.getAllMyQuizzes(userId);
+    if (!result) throw new NotFoundException();
+    return result;
+  }
+
+  @UseGuards(JwtAccessGuard)
   @HttpCode(200)
-  @Post('connection')
+  @Post('pairs/connection')
   async connectToQuiz(
     @CurrentUserId() userId: string,
   ): Promise<QuizOutputModel> {
@@ -73,7 +86,7 @@ export class QuizPublicController {
 
   @UseGuards(JwtAccessGuard)
   @HttpCode(200)
-  @Post('my-current/answers')
+  @Post('pairs/my-current/answers')
   async sendAnswerToQuiz(
     @Body() inputAnswerModel: SendAnswerInputModel,
     @CurrentUserId() userId: string,
