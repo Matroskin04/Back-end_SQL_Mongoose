@@ -5,6 +5,7 @@ import { QuizStatusEnum } from '../../../../../../infrastructure/utils/enums/qui
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionQuizRelation } from '../../../../domain/question-quiz-relation.entity';
 import {
+  QuizPaginationType,
   QuizViewType,
   StatisticViewType,
   UsersIdsOfQuizType,
@@ -15,6 +16,10 @@ import {
 } from '../../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
 import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
 import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.entity';
+import { Posts } from '../../../../../posts/domain/posts.entity';
+import { QueryPostInputModel } from '../../../../../posts/api/models/input/query-post.input.model';
+import { variablesForReturn } from '../../../../../../infrastructure/utils/functions/variables-for-return.function';
+import { modifyPostIntoViewModel } from '../../../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 
 @Injectable()
 export class QuizOrmQueryRepository {
@@ -140,6 +145,60 @@ export class QuizOrmQueryRepository {
     const result = await query.getRawOne();
 
     return modifyStatisticsIntoViewModel(result, userId);
+  }
+
+  async getAllMyQuizzes(
+    userId: string,
+    queryParam: QueryPostInputModel,
+  ): Promise<QuizPaginationType> {
+    const { pageNumber, pageSize, sortBy, sortDirection } =
+      variablesForReturn(queryParam);
+
+    const query = await this.quizRepository
+      .createQueryBuilder('q')
+      .select([
+        'q."id"',
+        'q."user1Id"',
+        'q."user2Id"',
+        'q."status"',
+        'q."pairCreatedDate"',
+        'q."startGameDate"',
+        'q."finishGameDate"',
+        'u1."login" as "login1"',
+        'u2."login" as "login2"',
+        'gi1."score" as "score1"',
+        'gi2."score" as "score2"',
+      ])
+      .addSelect((subQuery) => {
+        return subQuery
+          .select('COUNT(*)')
+          .from(Quiz, 'q')
+          .where('q.user1Id = :userId', { userId })
+          .orWhere('q.user2Id = :userId', { userId });
+      }, 'count')
+      .addSelect((qb) => this.questionsBuilder(qb), 'questions')
+      .addSelect((qb) => this.answersBuilder(qb, 'user1Id'), 'answers1')
+      .addSelect((qb) => this.answersBuilder(qb, 'user2Id'), 'answers2')
+      .leftJoin('q.user1', 'u1')
+      .leftJoin('q.user2', 'u2')
+      .leftJoin('q.quizGameInfoAboutUser', 'gi1', 'gi1."userId" = q."user1Id"')
+      .leftJoin('q.quizGameInfoAboutUser', 'gi2', 'gi2."userId" = q."user2Id"')
+      .where('q.user1Id = :userId', { userId })
+      .orWhere('q.user2Id = :userId', { userId })
+      .orderBy(`q.${sortBy}`, sortDirection)
+      .orderBy(`q."pairCreatedDate" `, 'DESC')
+      .limit(+pageSize)
+      .offset((+pageNumber - 1) * +pageSize);
+    console.log(query.getQuery());
+    const quizInfo = await query.getRawMany();
+
+    return {
+      pagesCount: Math.ceil((+quizInfo[0]?.count || 1) / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +quizInfo[0]?.count || 0,
+      items: quizInfo.map((quiz) => modifyQuizIntoViewModel(quiz)),
+    };
   }
 
   //ADDITIONAL
