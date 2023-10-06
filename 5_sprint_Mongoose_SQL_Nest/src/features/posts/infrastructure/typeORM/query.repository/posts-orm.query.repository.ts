@@ -62,34 +62,6 @@ export class PostsOrmQueryRepository {
       .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
       .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
       .addSelect((qb) => this.newestLikesBuilder(qb), 'newestLikes')
-      // .leftJoinAndMapMany(
-      //   'p.newestLikes',
-      //   'p.postLikeInfo',
-      //   'li',
-      //   'li."postId" = p."id"',
-      //   (qb) => {
-      //     qb.select(['li.addedAt', 'li.userId', 'u.login'])
-      //       .leftJoin('li.user', 'u')
-      //       .where('li."likeStatus" = :like', { like: AllLikeStatusEnum.Like })
-      //       .orderBy('li.addedAt', 'DESC')
-      //       .limit(3);
-      //   },
-      // )
-      // .leftJoinAndMapMany(
-      //   'p.newestLikes',
-      //   (subQuery) => {
-      //     return subQuery
-      //       .select(['li.addedAt', 'li.userId', 'u.login'])
-      //       .from(PostsLikesInfo, 'li')
-      //       .leftJoin('li.user', 'u')
-      //       .leftJoin('li.post', 'p')
-      //       .where('li."likeStatus" = :like', { like: AllLikeStatusEnum.Like })
-      //       .andWhere('li."postId" = p."id"')
-      //       .orderBy('li.addedAt', 'DESC')
-      //       .limit(3);
-      //   },
-      //   'li',
-      // );
       .leftJoin('p.blog', 'b')
       .where('b.isBanned = false')
       .andWhere('b.id = :blogId', { blogId })
