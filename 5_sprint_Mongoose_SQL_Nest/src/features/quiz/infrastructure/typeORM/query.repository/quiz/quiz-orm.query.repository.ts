@@ -101,7 +101,7 @@ export class QuizOrmQueryRepository {
   async getMyStatistic(userId: string): Promise<StatisticViewType> {
     const query = await this.quizRepository
       .createQueryBuilder('q')
-      .select('COUNT (*)', 'gamesCount')
+      .select('COUNT(*)', 'gamesCount')
       .addSelect('q."user1Id"')
       .addSelect(
         'COUNT(CASE WHEN qi1."score" > qi2."score" THEN 1 ELSE NULL END)',
@@ -134,7 +134,8 @@ export class QuizOrmQueryRepository {
             { userId },
           );
         }),
-      );
+      )
+      .groupBy('q."user1Id"');
 
     const result = await query.getRawOne();
 
