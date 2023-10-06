@@ -29,6 +29,9 @@ export class Quiz {
   })
   status: QuizStatusEnum;
 
+  @Column({ type: 'varchar', default: null }) //userId or draw
+  winner: string | null;
+
   @CreateDateColumn({ type: 'timestamp without time zone' })
   pairCreatedDate: Date;
 
