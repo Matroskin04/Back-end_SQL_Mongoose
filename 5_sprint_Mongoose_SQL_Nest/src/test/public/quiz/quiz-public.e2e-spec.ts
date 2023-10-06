@@ -467,6 +467,9 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
           'string',
         ),
       );
+      // const a = await request(httpServer)
+      //   .get('/hometask-nest/pair-game-quiz/pairs/my')
+      //   .set('Authorization', `Bearer ${accessToken1}`);
     });
     //test that active game is not shown in statistics
   });

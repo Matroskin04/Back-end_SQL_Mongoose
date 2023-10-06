@@ -44,6 +44,20 @@ export class QuizPublicController {
     return result;
   }
 
+  @UseGuards(JwtAccessGuard)
+  @Get('pairs/my')
+  async getAllMyQuizzes(
+    @Query() query: QueryQuizInputModel,
+    @CurrentUserId() userId: string,
+  ): Promise<AllQuizzesOutputModel> {
+    const result = await this.quizOrmQueryRepository.getAllMyQuizzes(
+      userId,
+      query,
+    );
+    if (!result) throw new NotFoundException();
+    return result;
+  }
+
   @UseGuards(JwtAccessGuard, IsUserParticipantInQuizGuard)
   @Get('pairs/:quizId')
   async getQuizById(@Param('quizId') quizId: string): Promise<QuizOutputModel> {
@@ -59,20 +73,6 @@ export class QuizPublicController {
     @CurrentUserId() userId: string,
   ): Promise<StatisticOutputModel> {
     const result = await this.quizOrmQueryRepository.getMyStatistic(userId);
-    if (!result) throw new NotFoundException();
-    return result;
-  }
-
-  @UseGuards(JwtAccessGuard)
-  @Get('pairs/my')
-  async getAllMyQuizzes(
-    @Query() query: QueryQuizInputModel,
-    @CurrentUserId() userId: string,
-  ): Promise<AllQuizzesOutputModel> {
-    const result = await this.quizOrmQueryRepository.getAllMyQuizzes(
-      userId,
-      query,
-    );
     if (!result) throw new NotFoundException();
     return result;
   }

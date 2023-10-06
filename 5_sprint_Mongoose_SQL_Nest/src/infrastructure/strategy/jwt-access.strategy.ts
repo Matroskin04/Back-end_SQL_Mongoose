@@ -1,13 +1,7 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { UsersQueryRepository } from '../../features/users/infrastructure/SQL/query.repository/users.query.repository';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersOrmQueryRepository } from '../../features/users/infrastructure/typeORM/query.repository/users-orm.query.repository';
-import { createBodyErrorBadRequest } from '../utils/functions/create-error-bad-request.function';
 
 @Injectable()
 export class JwtAccessStrategy extends PassportStrategy(
