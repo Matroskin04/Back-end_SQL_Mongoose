@@ -21,7 +21,7 @@ export async function sendAnswerTest(httpServer, accessToken, answer) {
 
 export async function getMyStatisticTest(httpServer, accessToken) {
   return request(httpServer)
-    .get('/hometask-nest/pair-game-quiz/pairs/my')
+    .get('/hometask-nest/pair-game-quiz/users/my-statistic')
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
