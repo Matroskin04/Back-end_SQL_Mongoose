@@ -11,19 +11,6 @@ export class QuestionQuizRelationOrmRepository {
     protected questionQuizRelationRepository: Repository<QuestionQuizRelation>,
   ) {}
 
-  async createQuestionQuizRelation(
-    quizId: string,
-    questionId: string,
-  ): Promise<void> {
-    await this.questionQuizRelationRepository
-      .createQueryBuilder()
-      .insert()
-      .values({ quizId, questionId })
-      .execute();
-
-    return;
-  }
-
   async create5QuestionQuizRelations(
     quizId: string,
     questionsIds: { id: string }[],

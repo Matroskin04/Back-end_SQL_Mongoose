@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionQuizRelation } from '../../../../domain/question-quiz-relation.entity';
 import {
   QuizViewType,
+  StatisticViewType,
   UsersIdsOfQuizType,
 } from './quiz.types.query.repository';
 import { modifyQuizIntoViewModel } from '../../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
@@ -91,6 +92,17 @@ export class QuizOrmQueryRepository {
 
     if (!result) return null;
     return modifyQuizIntoViewModel(result);
+  }
+
+  async getMyStatistic(userId: string): Promise<StatisticViewType> {
+    return {
+      sumScore: 0,
+      avgScores: 0,
+      gamesCount: 0,
+      winsCount: 0,
+      lossesCount: 0,
+      drawsCount: 0,
+    };
   }
 
   //ADDITIONAL

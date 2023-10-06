@@ -3,6 +3,7 @@ import {
   QuizStatusEnum,
 } from '../../../../../../infrastructure/utils/enums/quiz.enums';
 import { QuizStatusType } from '../../../../../../infrastructure/types/quiz-questions.general.types';
+import { StatisticOutputModel } from '../../../../api/models/output/statistic.output.model';
 
 export type UsersIdsOfQuizType = { user1Id: string; user2Id: string | null };
 
@@ -34,3 +35,5 @@ type QuestionOfQuizType = {
   id: string;
   body: string;
 };
+
+export type StatisticViewType = StatisticOutputModel;

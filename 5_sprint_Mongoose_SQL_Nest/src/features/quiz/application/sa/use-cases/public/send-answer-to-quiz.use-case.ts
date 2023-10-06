@@ -4,7 +4,7 @@ import { QuestionsOrmQueryRepository } from '../../../../infrastructure/typeORM/
 import { QuizInfoAboutUserOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz-info-about-user-orm.repository';
 import { DataSource } from 'typeorm';
 import { ForbiddenException } from '@nestjs/common';
-import { AnswersQuizOrmRepository } from '../../../../infrastructure/typeORM/repository/answers/answers-quiz-orm.repository';
+import { AnswersQuizOrmRepository } from '../../../../infrastructure/typeORM/repository/answers-quiz-orm.repository';
 import { QuizAnswerStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
 import { QuizOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz/quiz-orm.repository';
 

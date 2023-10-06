@@ -19,6 +19,7 @@ import { AnswerOutputModel } from './models/output/answer.output.model';
 import { SendAnswerToQuizCommand } from '../application/sa/use-cases/public/send-answer-to-quiz.use-case';
 import { QuizOrmQueryRepository } from '../infrastructure/typeORM/query.repository/quiz/quiz-orm.query.repository';
 import { IsUserParticipantInQuizGuard } from '../../../infrastructure/guards/forbidden-guards/is-user-participant-in-quiz.guard';
+import { StatisticOutputModel } from './models/output/statistic.output.model';
 
 @Controller('/hometask-nest/pair-game-quiz/pairs')
 export class QuizPublicController {
@@ -35,6 +36,16 @@ export class QuizPublicController {
     const result = await this.quizOrmQueryRepository.getCurrentQuizByUserId(
       userId,
     );
+    if (!result) throw new NotFoundException();
+    return result;
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('my-statistic')
+  async getMyStatistic(
+    @CurrentUserId() userId: string,
+  ): Promise<StatisticOutputModel> {
+    const result = await this.quizOrmQueryRepository.getMyStatistic(userId);
     if (!result) throw new NotFoundException();
     return result;
   }
