@@ -24,20 +24,20 @@ export function modifyStatisticsIntoViewModel(
   userId: string,
 ): StatisticViewType {
   return {
-    sumScore: +statistics.sumScore,
-    avgScores: Math.round(statistics.sumScore * 100) / 100,
-    gamesCount: +statistics.gamesCount,
+    sumScore: +statistics.sumScore ?? 0,
+    avgScores: Math.round(statistics.sumScore * 100) / 100 ?? 0,
+    gamesCount: +statistics.gamesCount ?? 0,
     winsCount:
       statistics.user1Id === userId
         ? +statistics.user1IdWins
-        : +statistics.user2IdWins,
+        : +statistics.user2IdWins ?? 0,
     lossesCount:
       statistics.user1Id === userId
         ? +statistics.user2IdWins
-        : +statistics.user1IdWins,
+        : +statistics.user1IdWins ?? 0,
     drawsCount:
       +statistics.gamesCount -
-      (statistics.user1IdWins + statistics.user2IdWins),
+        (statistics.user1IdWins + statistics.user2IdWins) ?? 0,
   };
 }
 

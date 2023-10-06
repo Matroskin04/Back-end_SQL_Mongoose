@@ -9,7 +9,10 @@ import {
   StatisticViewType,
   UsersIdsOfQuizType,
 } from './quiz.types.query.repository';
-import { modifyQuizIntoViewModel } from '../../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
+import {
+  modifyQuizIntoViewModel,
+  modifyStatisticsIntoViewModel,
+} from '../../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
 import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
 import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.entity';
 
@@ -99,6 +102,7 @@ export class QuizOrmQueryRepository {
     const query = await this.quizRepository
       .createQueryBuilder('q')
       .select('COUNT (*)', 'gamesCount')
+      .addSelect('q."user1Id"')
       .addSelect(
         'COUNT(CASE WHEN qi1."score" > qi2."score" THEN 1 ELSE NULL END)',
         'user1IdWins',
@@ -134,14 +138,7 @@ export class QuizOrmQueryRepository {
 
     const result = await query.getRawOne();
 
-    return {
-      sumScore: 0,
-      avgScores: 0,
-      gamesCount: 0,
-      winsCount: 0,
-      lossesCount: 0,
-      drawsCount: 0,
-    };
+    return modifyStatisticsIntoViewModel(result, userId);
   }
 
   //ADDITIONAL
