@@ -129,17 +129,17 @@ export class QuizOrmQueryRepository {
       }, 'sumScore')
       .leftJoin(QuizInfoAboutUser, 'qi1', 'qi1.userId = q.user1Id')
       .leftJoin(QuizInfoAboutUser, 'qi2', 'qi2.userId = q.user2Id')
-      .where('q.status = :quizStatus', {
-        quizStatus: QuizStatusEnum['Finished'],
-      })
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where('q.user1Id = :userId', { userId }).orWhere(
-            'q.user2Id = :userId',
-            { userId },
-          );
-        }),
-      )
+      // .where('q.status = :quizStatus', {
+      //   quizStatus: QuizStatusEnum['Finished'],
+      // })
+      // .andWhere(
+      //   new Brackets((qb) => {
+      //     qb.where('q.user1Id = :userId', { userId }).orWhere(
+      //       'q.user2Id = :userId',
+      //       { userId },
+      //     );
+      //   }),
+      // )
       .groupBy('q."user1Id"');
 
     const result = await query.getRawOne();
