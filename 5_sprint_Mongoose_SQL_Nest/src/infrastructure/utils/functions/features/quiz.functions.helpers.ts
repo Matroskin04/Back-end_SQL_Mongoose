@@ -25,7 +25,9 @@ export function modifyStatisticsIntoViewModel(
 ): StatisticViewType {
   return {
     sumScore: +statistics.sumScore ?? 0,
-    avgScores: Math.round(statistics.sumScore * 100) / 100 ?? 0,
+    avgScores:
+      Math.round((statistics.sumScore / statistics.gamesCount) * 100) / 100 ??
+      0,
     gamesCount: +statistics.gamesCount ?? 0,
     winsCount:
       statistics.user1Id === userId
