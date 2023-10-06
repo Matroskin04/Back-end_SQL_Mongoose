@@ -4,6 +4,7 @@ import {
   QuizStatusType,
 } from '../../../infrastructure/types/quiz-questions.general.types';
 import { regexpISOSString } from '../../helpers/regexp/general-regexp';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 
 export async function connectPlayerToQuizTest(httpServer, accessToken) {
   return request(httpServer)
@@ -18,6 +19,12 @@ export async function sendAnswerTest(httpServer, accessToken, answer) {
     .send({ answer });
 }
 
+export async function getMyStatisticTest(httpServer, accessToken) {
+  return request(httpServer)
+    .get('/hometask-nest/pair-game-quiz/pairs/my')
+    .set('Authorization', `Bearer ${accessToken}`);
+}
+
 export async function getMyCurrentQuizTest(httpServer, accessToken) {
   return request(httpServer)
     .get(`/hometask-nest/pair-game-quiz/pairs/my-current`)
@@ -28,6 +35,22 @@ export async function getQuizByIdTest(httpServer, quizId, accessToken) {
   return request(httpServer)
     .get(`/hometask-nest/pair-game-quiz/pairs/${quizId}`)
     .set('Authorization', `Bearer ${accessToken}`);
+}
+
+export async function add5AnswersToQuizTest(
+  httpServer,
+  accessToken,
+  numberOfCorrect,
+) {
+  const answersArray = new Array(5).fill('Incorrect');
+  answersArray.fill('Correct', 0, numberOfCorrect);
+  //send 5 answers
+  for (const answer of answersArray) {
+    const result = await sendAnswerTest(httpServer, accessToken, answer);
+    expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+  }
+
+  return;
 }
 
 export function createResponseAnswerTest(
