@@ -1,5 +1,8 @@
 import { QuestionQuizAllInfoType } from '../../../../features/quiz/infrastructure/typeORM/repository/questions/questions.types.repository';
-import { QuizViewType } from '../../../../features/quiz/infrastructure/typeORM/query.repository/quiz/quiz.types.query.repository';
+import {
+  QuizViewType,
+  StatisticViewType,
+} from '../../../../features/quiz/infrastructure/typeORM/query.repository/quiz/quiz.types.query.repository';
 import { QuizAnswerStatusEnum, QuizStatusEnum } from '../../enums/quiz.enums';
 import { QuizStatusType } from '../../../types/quiz-questions.general.types';
 
@@ -13,6 +16,28 @@ export function modifyQuestionIntoViewModel(question): QuestionQuizAllInfoType {
     published: question.published,
     createdAt: question.createdAt.toISOString(),
     updatedAt: question.updatedAt ? question.updatedAt.toISOString() : null,
+  };
+}
+
+export function modifyStatisticsIntoViewModel(
+  statistics,
+  userId: string,
+): StatisticViewType {
+  return {
+    sumScore: +statistics.sumScore,
+    avgScores: Math.round(statistics.sumScore * 100) / 100,
+    gamesCount: +statistics.gamesCount,
+    winsCount:
+      statistics.user1Id === userId
+        ? +statistics.user1IdWins
+        : +statistics.user2IdWins,
+    lossesCount:
+      statistics.user1Id === userId
+        ? +statistics.user2IdWins
+        : +statistics.user1IdWins,
+    drawsCount:
+      +statistics.gamesCount -
+      (statistics.user1IdWins + statistics.user2IdWins),
   };
 }
 
