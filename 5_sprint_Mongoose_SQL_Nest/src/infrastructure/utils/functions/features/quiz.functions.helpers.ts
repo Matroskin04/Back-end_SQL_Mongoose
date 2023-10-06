@@ -37,7 +37,7 @@ export function modifyStatisticsIntoViewModel(
         : +statistics.user1IdWins ?? 0,
     drawsCount:
       +statistics.gamesCount -
-        (statistics.user1IdWins + statistics.user2IdWins) ?? 0,
+        (+statistics.user1IdWins + +statistics.user2IdWins) ?? 0,
   };
 }
 
