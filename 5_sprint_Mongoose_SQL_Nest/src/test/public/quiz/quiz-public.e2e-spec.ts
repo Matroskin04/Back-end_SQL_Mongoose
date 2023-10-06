@@ -24,6 +24,7 @@ import { createUserTest } from '../../super-admin/users/users-sa.helpers';
 import { loginUserTest } from '../auth/auth-public.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { ht } from 'date-fns/locale';
+import request from 'supertest';
 
 describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -466,6 +467,10 @@ describe('Quiz (PUBLIC); /pair-game-quiz/pairs', () => {
           'string',
         ),
       );
+
+      const a = await request(httpServer)
+        .get('/hometask-nest/pair-game-quiz/pairs/my-statistic')
+        .set('Authorization', `Bearer ${accessToken1}`);
     });
   });
 });

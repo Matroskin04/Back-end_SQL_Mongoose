@@ -11,6 +11,7 @@ import {
 } from './quiz.types.query.repository';
 import { modifyQuizIntoViewModel } from '../../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
 import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
+import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.entity';
 
 @Injectable()
 export class QuizOrmQueryRepository {
@@ -95,6 +96,44 @@ export class QuizOrmQueryRepository {
   }
 
   async getMyStatistic(userId: string): Promise<StatisticViewType> {
+    const query = await this.quizRepository
+      .createQueryBuilder('q')
+      .select('COUNT (*)', 'gamesCount')
+      .addSelect(
+        'COUNT(CASE WHEN qi1."score" > qi2."score" THEN 1 ELSE NULL END)',
+        'user1IdWins',
+      )
+      .addSelect(
+        'COUNT(CASE WHEN qi2."score" > qi1."score" THEN 1 ELSE NULL END)',
+        'user2IdWins',
+      )
+      .addSelect((qb) => {
+        return qb
+          .select('SUM(qi."score")')
+          .from(Quiz, 'q')
+          .leftJoin(QuizInfoAboutUser, 'qi', 'qi.userId = :userId', {
+            userId,
+          })
+          .where('q.status = :quizStatus', {
+            quizStatus: QuizStatusEnum['Finished'],
+          });
+      }, 'sumScore')
+      .leftJoin(QuizInfoAboutUser, 'qi1', 'qi1.userId = q.user1Id')
+      .leftJoin(QuizInfoAboutUser, 'qi2', 'qi2.userId = q.user2Id')
+      .where('q.status = :quizStatus', {
+        quizStatus: QuizStatusEnum['Finished'],
+      })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('q.user1Id = :userId', { userId }).orWhere(
+            'q.user2Id = :userId',
+            { userId },
+          );
+        }),
+      );
+
+    const result = await query.getRawOne();
+
     return {
       sumScore: 0,
       avgScores: 0,

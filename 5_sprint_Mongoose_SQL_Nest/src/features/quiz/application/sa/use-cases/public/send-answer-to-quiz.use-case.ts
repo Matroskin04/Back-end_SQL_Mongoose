@@ -32,7 +32,7 @@ export class SendAnswerToQuizUseCase
       currentUserId,
     );
     //check that user has an active game
-    if (!activeQuiz || !(activeQuiz.status === 'Active'))
+    if (!activeQuiz || activeQuiz.status !== 'Active')
       throw new ForbiddenException('Active quiz game is not found');
 
     if (!activeQuiz.questions || !activeQuiz.secondPlayerProgress)
@@ -98,7 +98,7 @@ export class SendAnswerToQuizUseCase
     if (answersNumberCurrentUser === 4) {
       //if another user is over also, then:
       if (answersNumberSecondUser === 5) {
-        //change status and finishDate
+        //change status, set winner and finishDate
         const result = this.quizOrmRepository.finishQuiz(activeQuiz.id);
         if (!result)
           throw new Error('Something went wrong while finishing the quiz game');
