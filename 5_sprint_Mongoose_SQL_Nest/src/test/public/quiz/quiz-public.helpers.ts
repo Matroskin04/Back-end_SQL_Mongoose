@@ -43,7 +43,7 @@ export async function add5AnswersToQuizTest(
   numberOfCorrect,
 ) {
   const answersArray = new Array(5).fill('Incorrect');
-  answersArray.fill('Correct', 0, numberOfCorrect);
+  answersArray.fill('correctAnswer', 0, numberOfCorrect);
   //send 5 answers
   for (const answer of answersArray) {
     const result = await sendAnswerTest(httpServer, accessToken, answer);
