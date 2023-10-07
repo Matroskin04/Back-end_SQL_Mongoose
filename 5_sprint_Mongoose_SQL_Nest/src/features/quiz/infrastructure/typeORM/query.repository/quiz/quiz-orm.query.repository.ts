@@ -20,6 +20,7 @@ import { Posts } from '../../../../../posts/domain/posts.entity';
 import { QueryPostInputModel } from '../../../../../posts/api/models/input/query-post.input.model';
 import { variablesForReturn } from '../../../../../../infrastructure/utils/functions/variables-for-return.function';
 import { modifyPostIntoViewModel } from '../../../../../../infrastructure/utils/functions/features/posts.functions.helpers';
+import { regexpUUID } from '../../../../../../infrastructure/utils/regexp/general-regexp';
 
 @Injectable()
 export class QuizOrmQueryRepository {
@@ -104,17 +105,23 @@ export class QuizOrmQueryRepository {
   }
 
   async getMyStatistic(userId: string): Promise<StatisticViewType> {
+    //validation userId
+    if (!regexpUUID.test(userId))
+      throw new Error('UserId has incorrect format');
+
     const query = await this.quizRepository
       .createQueryBuilder('q')
       .select('COUNT(*)', 'gamesCount')
-      .addSelect('q."user1Id"')
       .addSelect(
-        'COUNT(CASE WHEN qi1."score" > qi2."score" THEN 1 ELSE NULL END)',
-        'user1IdWins',
+        `COUNT(CASE WHEN 
+        (qi1."score" > qi2."score" AND qi1."userId" = '${userId}' 
+        OR qi2."score" > qi1."score" AND qi2."userId" = '${userId}') 
+        THEN 1 ELSE NULL END)`,
+        'winsNumber',
       )
       .addSelect(
-        'COUNT(CASE WHEN qi2."score" > qi1."score" THEN 1 ELSE NULL END)',
-        'user2IdWins',
+        'COUNT(CASE WHEN qi2."score" = qi1."score" THEN 1 ELSE NULL END)',
+        'draws',
       )
       .addSelect((qb) => {
         return qb
@@ -123,28 +130,35 @@ export class QuizOrmQueryRepository {
           .leftJoin(QuizInfoAboutUser, 'qi', 'qi.userId = :userId', {
             userId,
           })
-          .where('q.status = :quizStatus', {
+          .where('q.status = :quizStatus AND qi.quizId = q.id', {
             quizStatus: QuizStatusEnum['Finished'],
           });
       }, 'sumScore')
-      .leftJoin(QuizInfoAboutUser, 'qi1', 'qi1.userId = q.user1Id')
-      .leftJoin(QuizInfoAboutUser, 'qi2', 'qi2.userId = q.user2Id')
-      // .where('q.status = :quizStatus', {
-      //   quizStatus: QuizStatusEnum['Finished'],
-      // })
-      // .andWhere(
-      //   new Brackets((qb) => {
-      //     qb.where('q.user1Id = :userId', { userId }).orWhere(
-      //       'q.user2Id = :userId',
-      //       { userId },
-      //     );
-      //   }),
-      // )
-      .groupBy('q."user1Id"');
+      .leftJoin(
+        QuizInfoAboutUser,
+        'qi1',
+        'qi1.userId = q.user1Id AND qi1.quizId = q.id',
+      )
+      .leftJoin(
+        QuizInfoAboutUser,
+        'qi2',
+        'qi2.userId = q.user2Id AND qi2.quizId = q.id',
+      )
+      .where('q.status = :quizStatus', {
+        quizStatus: QuizStatusEnum['Finished'],
+      })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('q.user1Id = :userId', { userId }).orWhere(
+            'q.user2Id = :userId',
+            { userId },
+          );
+        }),
+      );
 
     const result = await query.getRawOne();
 
-    return modifyStatisticsIntoViewModel(result, userId);
+    return modifyStatisticsIntoViewModel(result);
   }
 
   async getAllMyQuizzes(
