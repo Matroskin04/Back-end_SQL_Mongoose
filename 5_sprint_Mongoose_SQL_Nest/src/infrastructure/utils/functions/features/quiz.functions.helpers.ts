@@ -19,27 +19,17 @@ export function modifyQuestionIntoViewModel(question): QuestionQuizAllInfoType {
   };
 }
 
-export function modifyStatisticsIntoViewModel(
-  statistics,
-  userId: string,
-): StatisticViewType {
+export function modifyStatisticsIntoViewModel(statistics): StatisticViewType {
   return {
     sumScore: +statistics.sumScore ?? 0,
     avgScores:
       Math.round((statistics.sumScore / statistics.gamesCount) * 100) / 100 ??
       0,
     gamesCount: +statistics.gamesCount ?? 0,
-    winsCount:
-      statistics.user1Id === userId
-        ? +statistics.user1IdWins
-        : +statistics.user2IdWins ?? 0,
+    winsCount: +statistics.winsNumber ?? 0,
     lossesCount:
-      statistics.user1Id === userId
-        ? +statistics.user2IdWins
-        : +statistics.user1IdWins ?? 0,
-    drawsCount:
-      +statistics.gamesCount -
-        (+statistics.user1IdWins + +statistics.user2IdWins) ?? 0,
+      statistics.gamesCount - statistics.winsNumber - statistics.draws ?? 0,
+    drawsCount: +statistics.draws ?? 0,
   };
 }
 

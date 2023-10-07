@@ -3,7 +3,7 @@ import {
   QuizAnswerStatusType,
   QuizStatusType,
 } from '../../../infrastructure/types/quiz-questions.general.types';
-import { regexpISOSString } from '../../helpers/regexp/general-regexp';
+import { regexpISOSString } from '../../../infrastructure/utils/regexp/general-regexp';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 
 export async function connectPlayerToQuizTest(httpServer, accessToken) {

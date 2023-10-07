@@ -3,7 +3,7 @@ import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-statu
 import { QuestionTestType } from './quiz-sa.types';
 import { QuestionQuiz } from '../../../features/quiz/domain/question-quiz.entity';
 import { QuestionPaginationType } from '../../../features/quiz/infrastructure/typeORM/query.repository/questions/questions.types.query.repository';
-import { regexpISOSString } from '../../helpers/regexp/general-regexp';
+import { regexpISOSString } from '../../../infrastructure/utils/regexp/general-regexp';
 import { toBeOneOf } from 'jest-extended';
 expect.extend({ toBeOneOf });
 
