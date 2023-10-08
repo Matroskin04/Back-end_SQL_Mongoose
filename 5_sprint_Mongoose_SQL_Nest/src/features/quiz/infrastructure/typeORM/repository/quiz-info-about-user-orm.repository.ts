@@ -25,8 +25,13 @@ export class QuizInfoAboutUserOrmRepository {
     return;
   }
 
-  async incrementUserScore(quizId: string, userId: string): Promise<boolean> {
-    const result = await this.quizInfoAboutUserRepository
+  async incrementUserScore(
+    quizId: string,
+    userId: string,
+    quizInfoRepo: Repository<QuizInfoAboutUser> = this
+      .quizInfoAboutUserRepository,
+  ): Promise<boolean> {
+    const result = await quizInfoRepo
       .createQueryBuilder()
       .update()
       .set({ score: () => 'score + 1' })

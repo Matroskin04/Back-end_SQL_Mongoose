@@ -7,6 +7,10 @@ import { ForbiddenException } from '@nestjs/common';
 import { AnswersQuizOrmRepository } from '../../../../infrastructure/typeORM/repository/answers-quiz-orm.repository';
 import { QuizAnswerStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
 import { QuizOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz/quiz-orm.repository';
+import { startTransaction } from '../../../../../../infrastructure/utils/functions/db-helpers/transaction.helpers';
+import { Quiz } from '../../../../domain/quiz.entity';
+import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.entity';
+import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
 
 export class SendAnswerToQuizCommand {
   constructor(public currentUserId: string, public answer: string) {}
@@ -72,54 +76,77 @@ export class SendAnswerToQuizUseCase
       );
     if (!correctAnswers) throw new Error('Correct answers is not found');
 
-    //validate user's answers
-    const isAnswerCorrect =
-      correctAnswers.join().split(',').indexOf(answer) > -1;
-    //save answer info
-    const createdAnswer = await this.answersQuizOrmRepository.createAnswer(
-      +isAnswerCorrect,
-      activeQuiz.id,
-      currentUserId,
-      currentQuestionId,
-    );
+    //start transaction
+    const dataForTransaction = await startTransaction(this.dataSource, [
+      AnswerQuiz,
+      QuizInfoAboutUser,
+      Quiz,
+    ]);
+    try {
+      //validate user's answers
+      const isAnswerCorrect =
+        correctAnswers.join().split(',').indexOf(answer) > -1;
+      //save answer info
+      const createdAnswer = await this.answersQuizOrmRepository.createAnswer(
+        +isAnswerCorrect,
+        activeQuiz.id,
+        currentUserId,
+        currentQuestionId,
+        dataForTransaction.repositories.AnswerQuiz,
+      );
 
-    //if answer is correct - increment score
-    if (isAnswerCorrect) {
-      const result =
-        await this.quizInfoAboutUserOrmRepository.incrementUserScore(
-          activeQuiz.id,
-          currentUserId,
-        );
-      if (!result)
-        throw new Error('Something went wrong while incrementing score');
-    }
-
-    //if it is the last answer of user:
-    if (answersNumberCurrentUser === 4) {
-      //if another user is over also, then:
-      if (answersNumberSecondUser === 5) {
-        //change status, set winner and finishDate
-        const result = this.quizOrmRepository.finishQuiz(activeQuiz.id);
+      //if answer is correct - increment score
+      if (isAnswerCorrect) {
+        const result =
+          await this.quizInfoAboutUserOrmRepository.incrementUserScore(
+            activeQuiz.id,
+            currentUserId,
+            dataForTransaction.repositories.QuizInfoAboutUser,
+          );
         if (!result)
-          throw new Error('Something went wrong while finishing the quiz game');
+          throw new Error('Something went wrong while incrementing score');
+      }
 
-        if (secondUserScore !== 0) {
-          //increment user's score (if user has more than 0 points
-          const result =
-            await this.quizInfoAboutUserOrmRepository.incrementUserScore(
-              activeQuiz.id,
-              secondUserId,
-            );
+      //if it is the last answer of user:
+      if (answersNumberCurrentUser === 4) {
+        //if another user is over also, then:
+        if (answersNumberSecondUser === 5) {
+          //change status, set winner and finishDate
+          const result = this.quizOrmRepository.finishQuiz(
+            activeQuiz.id,
+            dataForTransaction.repositories.Quiz,
+          );
           if (!result)
-            throw new Error('Something went wrong while incrementing score');
+            throw new Error(
+              'Something went wrong while finishing the quiz game',
+            );
+
+          if (secondUserScore !== 0) {
+            //increment user's score (if user has more than 0 points
+            const result =
+              await this.quizInfoAboutUserOrmRepository.incrementUserScore(
+                activeQuiz.id,
+                secondUserId,
+                dataForTransaction.repositories.QuizInfoAboutUser,
+              );
+            if (!result)
+              throw new Error('Something went wrong while incrementing score');
+          }
         }
       }
-    }
+      await dataForTransaction.queryRunner.commitTransaction();
 
-    return {
-      questionId: currentQuestionId,
-      answerStatus: QuizAnswerStatusEnum[+isAnswerCorrect],
-      addedAt: createdAnswer.addedAt,
-    };
+      //return answerView
+      return {
+        questionId: currentQuestionId,
+        answerStatus: QuizAnswerStatusEnum[+isAnswerCorrect],
+        addedAt: createdAnswer.addedAt,
+      };
+    } catch (e) {
+      await dataForTransaction.queryRunner.rollbackTransaction();
+      console.log('Something went wrong', e);
+    } finally {
+      await dataForTransaction.queryRunner.release();
+    }
   }
 }

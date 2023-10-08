@@ -56,7 +56,10 @@ export class QuizOrmRepository {
     return result.raw[0];
   }
 
-  async finishQuiz(quizId: string): Promise<boolean> {
+  async finishQuiz(
+    quizId: string,
+    quizRepository: Repository<Quiz> = this.quizRepository,
+  ): Promise<boolean> {
     const result = await this.quizRepository
       .createQueryBuilder()
       .update()

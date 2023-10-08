@@ -16,8 +16,9 @@ export class AnswersQuizOrmRepository {
     quizId: string,
     userId: string,
     questionId: string,
+    answersQuizRepo: Repository<AnswerQuiz> = this.answersQuizRepository,
   ): Promise<{ addedAt: string }> {
-    const result = await this.answersQuizRepository
+    const result = await answersQuizRepo
       .createQueryBuilder()
       .insert()
       .values({
