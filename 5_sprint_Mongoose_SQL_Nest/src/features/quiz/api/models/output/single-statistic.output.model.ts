@@ -1,4 +1,4 @@
-export type StatisticOutputModel = {
+export type SingleStatisticOutputModel = {
   sumScore: number;
   avgScores: number;
   gamesCount: number;

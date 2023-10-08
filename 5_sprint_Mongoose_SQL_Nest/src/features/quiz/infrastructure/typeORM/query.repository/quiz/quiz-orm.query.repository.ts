@@ -23,6 +23,10 @@ import { modifyPostIntoViewModel } from '../../../../../../infrastructure/utils/
 import { regexpUUID } from '../../../../../../infrastructure/utils/regexp/general-regexp';
 import { Users } from '../../../../../users/domain/users.entity';
 import { startTransaction } from '../../../../../../infrastructure/utils/functions/db-helpers/transaction.helpers';
+import {
+  QueryQuizInputModel,
+  QueryStatisticInputModel,
+} from '../../../../api/models/input/query-quiz.input.model';
 
 @Injectable()
 export class QuizOrmQueryRepository {
@@ -164,9 +168,16 @@ export class QuizOrmQueryRepository {
     return modifyStatisticsIntoViewModel(result);
   }
 
+  async getStatisticOfAllUsers(
+    queryParam: QueryStatisticInputModel,
+  ): Promise<void> {
+    const { pageNumber, pageSize, sort } = variablesForReturn(queryParam);
+    return;
+  }
+
   async getAllMyQuizzes(
     userId: string,
-    queryParam: QueryPostInputModel,
+    queryParam: QueryQuizInputModel,
   ): Promise<QuizPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection } =
       variablesForReturn(queryParam);

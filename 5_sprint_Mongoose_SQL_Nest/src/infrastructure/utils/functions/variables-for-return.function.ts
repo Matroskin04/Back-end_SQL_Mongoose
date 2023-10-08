@@ -58,6 +58,9 @@ export function variablesForReturn(
     publishedStatus = null;
   else publishedStatus = query?.publishedStatus === 'published';
 
+  //statistic
+  const sort = query?.sort ?? 'sort=avgScores desc&sort=sumScore desc';
+
   return {
     pageNumber,
     pageSize,

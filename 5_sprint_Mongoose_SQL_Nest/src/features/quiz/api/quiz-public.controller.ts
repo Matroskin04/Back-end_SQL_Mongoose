@@ -22,8 +22,12 @@ import { AnswerOutputModel } from './models/output/answer.output.model';
 import { SendAnswerToQuizCommand } from '../application/sa/use-cases/public/send-answer-to-quiz.use-case';
 import { QuizOrmQueryRepository } from '../infrastructure/typeORM/query.repository/quiz/quiz-orm.query.repository';
 import { IsUserParticipantInQuizGuard } from '../../../infrastructure/guards/forbidden-guards/is-user-participant-in-quiz.guard';
-import { StatisticOutputModel } from './models/output/statistic.output.model';
-import { QueryQuizInputModel } from './models/input/query-quiz.input.model';
+import { SingleStatisticOutputModel } from './models/output/single-statistic.output.model';
+import {
+  QueryQuizInputModel,
+  QueryStatisticInputModel,
+} from './models/input/query-quiz.input.model';
+import { AllStatisticOutputModel } from './models/output/all-statistics.output.model';
 
 @Controller('/hometask-nest/pair-game-quiz')
 export class QuizPublicController {
@@ -71,9 +75,19 @@ export class QuizPublicController {
   @Get('users/my-statistic')
   async getMyStatistic(
     @CurrentUserId() userId: string,
-  ): Promise<StatisticOutputModel> {
+  ): Promise<SingleStatisticOutputModel> {
     const result = await this.quizOrmQueryRepository.getMyStatistic(userId);
     if (!result) throw new NotFoundException();
+    return result;
+  }
+
+  @Get('users/top')
+  async getStatisticOfAllUsers(
+    @Query() query: QueryStatisticInputModel,
+  ): Promise<AllStatisticOutputModel | void> {
+    const result = await this.quizOrmQueryRepository.getStatisticOfAllUsers(
+      query,
+    );
     return result;
   }
 

@@ -12,6 +12,7 @@ export type VariablesForReturnType = {
   pageNumber: string | number;
   pageSize: string | number;
   sortBy: string;
+  sort?: string;
   sortDirection: 'ASC' | 'DESC';
   searchLoginTerm: string;
   searchEmailTerm: string;
