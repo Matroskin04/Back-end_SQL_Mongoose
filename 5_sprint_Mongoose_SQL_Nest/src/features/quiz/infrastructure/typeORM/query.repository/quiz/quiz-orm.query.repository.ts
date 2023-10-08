@@ -203,7 +203,7 @@ export class QuizOrmQueryRepository {
       .where('q.user1Id = :userId', { userId })
       .orWhere('q.user2Id = :userId', { userId })
       .orderBy(`q.${sortBy}`, sortDirection)
-      .orderBy(`q."pairCreatedDate" `, 'DESC')
+      .addOrderBy(`q."pairCreatedDate"`, 'DESC')
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
 
