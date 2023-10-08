@@ -14,9 +14,11 @@ export class QuestionQuizRelationOrmRepository {
   async create5QuestionQuizRelations(
     quizId: string,
     questionsIds: { id: string }[],
+    questionQuizRepository: Repository<QuestionQuizRelation> = this
+      .questionQuizRelationRepository,
   ): Promise<void> {
     for (const question of questionsIds) {
-      await this.questionQuizRelationRepository
+      await questionQuizRepository
         .createQueryBuilder()
         .insert()
         .values({ quizId, questionId: question.id })

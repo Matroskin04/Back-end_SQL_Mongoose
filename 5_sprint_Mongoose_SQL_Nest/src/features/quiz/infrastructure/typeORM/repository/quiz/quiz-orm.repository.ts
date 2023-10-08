@@ -12,8 +12,18 @@ export class QuizOrmRepository {
     protected quizRepository: Repository<Quiz>,
   ) {}
 
-  async createQuiz(userId: string): Promise<void> {
-    await this.quizRepository.createQueryBuilder().insert().values({});
+  async createQuiz(
+    userId: string,
+    quizRepository: Repository<Quiz> = this.quizRepository,
+  ): Promise<string> {
+    const result = await quizRepository
+      .createQueryBuilder()
+      .insert()
+      .values({ user1Id: userId })
+      .returning('id')
+      .execute();
+
+    return result.raw[0].id;
   }
 
   //todo isolation - 2 requests don't prevent to each other

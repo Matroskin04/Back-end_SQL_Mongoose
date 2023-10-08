@@ -10,8 +10,13 @@ export class QuizInfoAboutUserOrmRepository {
     protected quizInfoAboutUserRepository: Repository<QuizInfoAboutUser>,
   ) {}
 
-  async createQuizInfoAboutUser(quizId: string, userId: string): Promise<void> {
-    await this.quizInfoAboutUserRepository
+  async createQuizInfoAboutUser(
+    quizId: string,
+    userId: string,
+    quizInfoRepo: Repository<QuizInfoAboutUser> = this
+      .quizInfoAboutUserRepository,
+  ): Promise<void> {
+    await quizInfoRepo
       .createQueryBuilder()
       .insert()
       .values({ quizId, userId })

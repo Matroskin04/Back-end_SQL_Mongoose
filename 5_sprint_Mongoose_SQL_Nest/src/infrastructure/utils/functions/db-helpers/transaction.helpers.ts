@@ -14,7 +14,7 @@ export async function startTransaction(
 
   //get repositories:
   for (const entity of entities) {
-    repositories[`${entity}`] = await queryRunner.manager.getRepository(entity);
+    repositories[entity.name] = await queryRunner.manager.getRepository(entity);
   }
 
   // lets now open a new transaction:
