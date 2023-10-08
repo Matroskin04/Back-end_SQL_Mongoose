@@ -515,12 +515,14 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         const result2 = await connectPlayerToQuizTest(httpServer, accessToken2);
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
+        //3 correct answers by user1 (3+1 score)
+        await add5AnswersToQuizTest(httpServer, accessToken1, 3);
+
+        //check that active game is not shown in statistic
         const statistic = await getMyStatisticTest(httpServer, accessToken1);
         expect(statistic.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
         expect(statistic.body).toEqual(createResponseStatisticTest());
 
-        //3 correct answers by user1 (3+1 score)
-        await add5AnswersToQuizTest(httpServer, accessToken1, 3);
         //4 correct answers by user2 (4 score)
         await add5AnswersToQuizTest(httpServer, accessToken2, 4);
       }
