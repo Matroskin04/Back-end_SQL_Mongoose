@@ -33,6 +33,8 @@ export class QuizOrmQueryRepository {
   constructor(
     @InjectRepository(Quiz)
     protected quizRepository: Repository<Quiz>,
+    @InjectRepository(QuizInfoAboutUser)
+    protected quizInfoAboutUserRepository: Repository<QuizInfoAboutUser>,
     protected dataSource: DataSource,
   ) {}
 
@@ -170,9 +172,89 @@ export class QuizOrmQueryRepository {
 
   async getStatisticOfAllUsers(
     queryParam: QueryStatisticInputModel,
-  ): Promise<void> {
+  ): Promise<any> {
     const { pageNumber, pageSize, sort } = variablesForReturn(queryParam);
-    return;
+
+    const query = await this.quizInfoAboutUserRepository
+      .createQueryBuilder('qi')
+      .select(['qi."userId"', 'SUM(qi."score")'])
+      .addSelect((qb) => {
+        return qb
+          .select('COUNT(*)')
+          .from(Quiz, 'q')
+          .where('q.status = :quizStatus', {
+            quizStatus: QuizStatusEnum['Finished'],
+          })
+          .andWhere(
+            new Brackets((qb) => {
+              qb.where('q.user1Id = qi."userId"').orWhere(
+                'q.user2Id = qi."userId"',
+              );
+            }),
+          );
+      }, 'gamesCount')
+      .addSelect((qb) => {
+        return qb
+          .select(
+            `COUNT(CASE WHEN 
+        (scores."score1" > scores."score2" AND scores."userId1" = qi."userId" 
+        OR scores."score2" > scores."score1" AND scores."userId2" = qi."userId") 
+        THEN 1 ELSE NULL END)`,
+          )
+          .from((qb) => {
+            return qb
+              .select([
+                'qi1."userId" as "userId1"',
+                'qi2."userId"  as "userId2"',
+                'qi1."score" as "score1"',
+                'qi2."score" as "score2"',
+              ])
+              .from(Quiz, 'q')
+              .leftJoin(
+                QuizInfoAboutUser,
+                'qi1',
+                'qi1.userId = q.user1Id AND qi1.quizId = q.id',
+              )
+              .leftJoin(
+                QuizInfoAboutUser,
+                'qi2',
+                'qi2.userId = q.user2Id AND qi2.quizId = q.id',
+              )
+              .where('q.status = :quizStatus', {
+                quizStatus: QuizStatusEnum['Finished'],
+              })
+              .andWhere(
+                new Brackets((qb) => {
+                  qb.where('q.user1Id = qi."userId"').orWhere(
+                    'q.user2Id = qi."userId"',
+                  );
+                }),
+              );
+          }, 'scores');
+      }, 'winsCount')
+      .groupBy('qi."userId"');
+
+    console.log(query.getQuery());
+
+    // const query1 = await this.dataSource.createQueryBuilder('qi').from((qb) => {
+    //   qb.select(['qi."quizId"'])
+    //     .from(QuizInfoAboutUser, 'qi')
+    //     .innerJoin(Quiz, 'q', 'q.id = qi."quizId" AND q.status = :quizStatus', {
+    //       quizStatus: QuizStatusEnum['Finished'],
+    //     });
+    // });
+
+    const statisticInfo = await query.getRawMany();
+
+    return {
+      pagesCount: Math.ceil((+statisticInfo[0]?.count || 1) / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +statisticInfo[0]?.count || 0,
+      items: statisticInfo.map((statistic) =>
+        modifyStatisticsIntoViewModel(statistic),
+      ),
+    };
   }
 
   async getAllMyQuizzes(
