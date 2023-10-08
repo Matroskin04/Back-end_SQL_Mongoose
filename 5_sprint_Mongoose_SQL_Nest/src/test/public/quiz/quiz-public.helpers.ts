@@ -31,6 +31,13 @@ export async function getMyCurrentQuizTest(httpServer, accessToken) {
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
+export async function getAllQuizzesTest(httpServer, accessToken, query?) {
+  return request(httpServer)
+    .get(`/hometask-nest/pair-game-quiz/pairs/my`)
+    .set('Authorization', `Bearer ${accessToken}`)
+    .query(query ?? '');
+}
+
 export async function getQuizByIdTest(httpServer, quizId, accessToken) {
   return request(httpServer)
     .get(`/hometask-nest/pair-game-quiz/pairs/${quizId}`)
