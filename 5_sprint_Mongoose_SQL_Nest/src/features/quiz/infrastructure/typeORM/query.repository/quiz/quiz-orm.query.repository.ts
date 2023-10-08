@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Brackets, Repository, SelectQueryBuilder } from 'typeorm';
+import { Brackets, DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { Quiz } from '../../../../domain/quiz.entity';
 import { QuizStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -21,12 +21,15 @@ import { QueryPostInputModel } from '../../../../../posts/api/models/input/query
 import { variablesForReturn } from '../../../../../../infrastructure/utils/functions/variables-for-return.function';
 import { modifyPostIntoViewModel } from '../../../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { regexpUUID } from '../../../../../../infrastructure/utils/regexp/general-regexp';
+import { Users } from '../../../../../users/domain/users.entity';
+import { startTransaction } from '../../../../../../infrastructure/utils/functions/db-helpers/transaction.helpers';
 
 @Injectable()
 export class QuizOrmQueryRepository {
   constructor(
     @InjectRepository(Quiz)
     protected quizRepository: Repository<Quiz>,
+    protected dataSource: DataSource,
   ) {}
 
   async getQuizByIdView(quizId: string): Promise<QuizViewType | null> {
