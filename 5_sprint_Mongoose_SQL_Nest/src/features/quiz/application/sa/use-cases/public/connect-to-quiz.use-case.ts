@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { QuizOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/quiz/quiz-orm.query.repository';
-import { ForbiddenException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { QuizOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz/quiz-orm.repository';
 import { DataSource } from 'typeorm';
 import { Quiz } from '../../../../domain/quiz.entity';
@@ -8,6 +8,9 @@ import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.
 import { QuestionsOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/questions/questions-orm.query.repository';
 import { QuestionQuizRelationOrmRepository } from '../../../../infrastructure/typeORM/repository/question-quiz-relation-orm.repository';
 import { QuizInfoAboutUserOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz-info-about-user-orm.repository';
+import { startTransaction } from '../../../../../../infrastructure/utils/functions/db-helpers/transaction.helpers';
+import { QuestionQuiz } from '../../../../domain/question-quiz.entity';
+import { QuestionQuizRelation } from '../../../../domain/question-quiz-relation.entity';
 
 export class ConnectToQuizCommand {
   constructor(public userId: string) {}
@@ -37,43 +40,76 @@ export class ConnectToQuizUseCase
         'You have already started another quiz, finished it before starting a new',
       );
 
-    //add second player and set starting game date (connect to quiz)
+    //add the second player and set starting game date (connect to quiz)
     const quizInfo = await this.quizOrmRepository.connectSecondPlayerToQuiz(
       userId,
     );
 
     //if user didn't connect - then create quiz and info about one player
     if (!quizInfo) {
-      let quiz;
-      await this.dataSource.manager.transaction(
-        async (transactionalEntityManager) => {
-          quiz = await transactionalEntityManager.save(new Quiz(userId));
-          await transactionalEntityManager.save(
-            new QuizInfoAboutUser(quiz.id, userId),
-          );
-        },
-      );
-      return this.quizOrmQueryRepository.getQuizByIdView(quiz.id);
+      const dataForTransaction = await startTransaction(this.dataSource, [
+        Quiz,
+        QuizInfoAboutUser,
+      ]);
+      try {
+        const quizId = await this.quizOrmRepository.createQuiz(
+          userId,
+          dataForTransaction.repositories.Quiz,
+        );
+        await this.quizInfoAboutUserOrmRepository.createQuizInfoAboutUser(
+          quizId,
+          userId,
+          dataForTransaction.repositories.QuizInfoAboutUser,
+        );
+
+        await dataForTransaction.queryRunner.commitTransaction();
+
+        //return quizView
+        return this.quizOrmQueryRepository.getQuizByIdView(quizId);
+      } catch (e) {
+        await dataForTransaction.queryRunner.rollbackTransaction();
+        console.log('something wrong', e);
+      } finally {
+        await dataForTransaction.queryRunner.release();
+      }
     } else {
-      //todo validation if questions don't exist
       //if user connected - find 5 random questions
       const questionsIds =
         await this.questionsOrmQueryRepository.get5RandomQuestions();
+      if (questionsIds.length < 5)
+        throw new BadRequestException(
+          "There aren't enough questions in the database",
+        );
 
-      //todo create method save and use it for Transaction (pass in this method transactional manager)
-      //then add 5 questions to quiz
-      await this.questionQuizRelationOrmRepository.create5QuestionQuizRelations(
-        quizInfo.id,
-        questionsIds,
-      );
+      const dataForTransaction = await startTransaction(this.dataSource, [
+        QuestionQuizRelation,
+        QuizInfoAboutUser,
+      ]);
+      try {
+        //then add 5 questions to quiz
+        await this.questionQuizRelationOrmRepository.create5QuestionQuizRelations(
+          quizInfo.id,
+          questionsIds,
+          dataForTransaction.repositories.QuestionQuizRelation,
+        );
 
-      //create info about the second player
-      await this.quizInfoAboutUserOrmRepository.createQuizInfoAboutUser(
-        quizInfo.id,
-        userId,
-      );
+        //create info about the second player
+        await this.quizInfoAboutUserOrmRepository.createQuizInfoAboutUser(
+          quizInfo.id,
+          userId,
+          dataForTransaction.repositories.QuizInfoAboutUser,
+        );
 
-      return this.quizOrmQueryRepository.getQuizByIdView(quizInfo.id);
+        await dataForTransaction.queryRunner.commitTransaction();
+
+        //return quizView
+        return this.quizOrmQueryRepository.getQuizByIdView(quizInfo.id);
+      } catch (e) {
+        await dataForTransaction.queryRunner.rollbackTransaction();
+        console.log('something wrong', e);
+      } finally {
+        await dataForTransaction.queryRunner.release();
+      }
     }
   }
 }
