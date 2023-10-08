@@ -64,6 +64,25 @@ export function createResponseAnswerTest(
     addedAt: expect.stringMatching(regexpISOSString),
   };
 }
+
+export function createResponseStatisticTest(
+  sumScore?,
+  avgScores?,
+  gamesCount?,
+  winsCount?,
+  lossesCount?,
+  drawsCount?,
+) {
+  return {
+    sumScore: sumScore ?? 0,
+    avgScores: avgScores ?? 0,
+    gamesCount: gamesCount ?? 0,
+    winsCount: winsCount ?? 0,
+    lossesCount: lossesCount ?? 0,
+    drawsCount: drawsCount ?? 0,
+  };
+}
+
 export function createResponseSingleQuizTest(
   quizStatus?: QuizStatusType,
   questions?: '5questions' | null,
