@@ -25,6 +25,12 @@ export async function getMyStatisticTest(httpServer, accessToken) {
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
+export async function getStatisticOfAllUsers(httpServer, query?) {
+  return request(httpServer)
+    .get('/hometask-nest/pair-game-quiz/users/top')
+    .query(query ?? '');
+}
+
 export async function getMyCurrentQuizTest(httpServer, accessToken) {
   return request(httpServer)
     .get(`/hometask-nest/pair-game-quiz/pairs/my-current`)
