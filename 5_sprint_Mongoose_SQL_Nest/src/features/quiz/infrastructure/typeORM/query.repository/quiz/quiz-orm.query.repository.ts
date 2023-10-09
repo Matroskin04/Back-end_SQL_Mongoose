@@ -397,7 +397,12 @@ export class QuizOrmQueryRepository {
       .addOrderBy(`q."pairCreatedDate"`, 'DESC')
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
-
+    console.log(query.getQuery());
+    try {
+      const quizInfo = await query.getRawMany();
+    } catch (e) {
+      console.log(e);
+    }
     const quizInfo = await query.getRawMany();
 
     return {
