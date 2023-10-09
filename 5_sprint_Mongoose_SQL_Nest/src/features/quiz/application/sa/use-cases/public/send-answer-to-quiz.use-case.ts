@@ -152,6 +152,10 @@ export class SendAnswerToQuizUseCase
           }
           //set 10 seconds while the second user can send answers
           setTimeout(async () => {
+            const dataForTransaction = await startTransaction(this.dataSource, [
+              AnswerQuiz,
+              Quiz,
+            ]);
             //get all answers of the second user in current quiz
             const answersCount =
               await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
