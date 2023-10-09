@@ -11,6 +11,7 @@ import { startTransaction } from '../../../../../../infrastructure/utils/functio
 import { Quiz } from '../../../../domain/quiz.entity';
 import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.entity';
 import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
+import { AnswersQuizOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/answers-quiz-orm.query.repository';
 
 export class SendAnswerToQuizCommand {
   constructor(public currentUserId: string, public answer: string) {}
@@ -26,6 +27,7 @@ export class SendAnswerToQuizUseCase
     protected quizInfoAboutUserOrmRepository: QuizInfoAboutUserOrmRepository,
     protected questionsOrmQueryRepository: QuestionsOrmQueryRepository,
     protected answersQuizOrmRepository: AnswersQuizOrmRepository,
+    protected answersQuizOrmQueryRepository: AnswersQuizOrmQueryRepository,
     protected dataSource: DataSource,
   ) {}
 
@@ -44,6 +46,7 @@ export class SendAnswerToQuizUseCase
 
     const [
       answersNumberCurrentUser,
+      currentUserScore,
       answersNumberSecondUser,
       secondUserId,
       secondUserScore,
@@ -51,12 +54,14 @@ export class SendAnswerToQuizUseCase
       activeQuiz.firstPlayerProgress.player.id === currentUserId
         ? [
             activeQuiz.firstPlayerProgress.answers?.length ?? 0,
+            activeQuiz.firstPlayerProgress.score,
             activeQuiz.secondPlayerProgress.answers?.length ?? 0,
             activeQuiz.secondPlayerProgress.player.id,
             activeQuiz.secondPlayerProgress.score,
           ]
         : [
             activeQuiz.secondPlayerProgress.answers?.length ?? 0,
+            activeQuiz.secondPlayerProgress.score,
             activeQuiz.firstPlayerProgress.answers?.length ?? 0,
             activeQuiz.firstPlayerProgress.player.id,
             activeQuiz.firstPlayerProgress.score,
@@ -109,7 +114,7 @@ export class SendAnswerToQuizUseCase
 
       //if it is the last answer of user:
       if (answersNumberCurrentUser === 4) {
-        //if another user is over also, then:
+        //if another user also finished, then:
         if (answersNumberSecondUser === 5) {
           //change status, set winner and finishDate
           const result = this.quizOrmRepository.finishQuiz(
@@ -132,6 +137,48 @@ export class SendAnswerToQuizUseCase
             if (!result)
               throw new Error('Something went wrong while incrementing score');
           }
+          //if the second user doesn't finish the quiz, then...
+        } else {
+          if (currentUserScore !== 0) {
+            //increment user's score (if user has more than 0 points)
+            const result =
+              await this.quizInfoAboutUserOrmRepository.incrementUserScore(
+                activeQuiz.id,
+                currentUserId,
+                dataForTransaction.repositories.QuizInfoAboutUser,
+              );
+            if (!result)
+              throw new Error('Something went wrong while incrementing score');
+          }
+          //set 10 seconds while the second user can send answers
+          setTimeout(async () => {
+            //get all answers of the second user in current quiz
+            const answersCount =
+              await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
+                secondUserId,
+                activeQuiz.id,
+              );
+            let questionNumber = answersCount;
+            for (let i = 5; i > answersCount; i--) {
+              //if there are less than five answers, then create remaining answers
+              await this.answersQuizOrmRepository.createAnswer(
+                +isAnswerCorrect,
+                activeQuiz.id,
+                secondUserId,
+                activeQuiz.questions![++questionNumber].id,
+                dataForTransaction.repositories.AnswerQuiz,
+              );
+            }
+
+            const result = this.quizOrmRepository.finishQuiz(
+              activeQuiz.id,
+              dataForTransaction.repositories.Quiz,
+            );
+            if (!result)
+              throw new Error(
+                'Something went wrong while finishing the quiz game',
+              );
+          }, 10000);
         }
       }
       await dataForTransaction.queryRunner.commitTransaction();

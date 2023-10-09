@@ -170,7 +170,7 @@ export class QuizOrmQueryRepository {
     queryParam: QueryStatisticInputModel,
   ): Promise<any> {
     const { pageNumber, pageSize, sort } = variablesForReturn(queryParam);
-    console.log(3);
+
     const query = await this.quizInfoAboutUserRepository
       .createQueryBuilder('qi')
       .select([
