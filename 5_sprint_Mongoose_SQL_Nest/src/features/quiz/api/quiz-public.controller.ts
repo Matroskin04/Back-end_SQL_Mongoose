@@ -85,10 +85,11 @@ export class QuizPublicController {
   async getStatisticOfAllUsers(
     @Query() query: QueryStatisticInputModel,
   ): Promise<AllStatisticOutputModel | void> {
-    console.log(123);
+    console.log(1);
     const result = await this.quizOrmQueryRepository.getStatisticOfAllUsers(
       query,
     );
+    console.log(2);
     return result;
   }
 
