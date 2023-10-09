@@ -89,7 +89,7 @@ export class QuizPublicController {
     const result = await this.quizOrmQueryRepository.getStatisticOfAllUsers(
       query,
     );
-    console.log(2);
+
     return result;
   }
 

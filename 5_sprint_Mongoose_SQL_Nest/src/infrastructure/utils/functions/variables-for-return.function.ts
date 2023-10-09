@@ -41,15 +41,12 @@ export function variablesForReturn(
   else publishedStatus = query?.publishedStatus === 'published';
 
   //statistic
-  const sortQuery: string =
-    query?.sort ?? 'sort=avgScores desc&sort=sumScore desc';
+  const sortQuery = query?.sort ?? ['avgScores desc', 'sumScore desc'];
+
   const sort: any = {}; //avgScores desc sumScore desc
-  const sortArray = sortQuery
-    .replaceAll('&', ' ')
-    .replaceAll('sort=', '')
-    .split(' ');
-  for (let i = 0; i < sortArray.length; i = i + 2) {
-    sort[`"${sortArray[i]}"`] = sortArray[i + 1].toUpperCase();
+  for (const i of sortQuery) {
+    const [field, direction] = i.split(' ');
+    sort[`"${field}"`] = direction.toUpperCase();
   }
 
   return {

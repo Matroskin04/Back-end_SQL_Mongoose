@@ -169,9 +169,8 @@ export class QuizOrmQueryRepository {
   async getStatisticOfAllUsers(
     queryParam: QueryStatisticInputModel,
   ): Promise<any> {
-    console.log(3);
     const { pageNumber, pageSize, sort } = variablesForReturn(queryParam);
-    console.log(4);
+
     const query = await this.quizInfoAboutUserRepository
       .createQueryBuilder('qi')
       .select([
@@ -342,7 +341,7 @@ export class QuizOrmQueryRepository {
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
     console.log(query.getQuery());
-    console.log(5);
+
     const statisticInfo = await query.getRawMany();
 
     return {
