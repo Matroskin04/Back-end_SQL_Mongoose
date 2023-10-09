@@ -40,3 +40,10 @@ type QuestionOfQuizType = {
 };
 
 export type StatisticViewType = SingleStatisticOutputModel;
+
+export type StatisticWithUserViewType = SingleStatisticOutputModel & {
+  player: {
+    id: string;
+    login: string;
+  };
+};

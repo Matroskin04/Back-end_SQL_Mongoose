@@ -13,16 +13,12 @@ import {
 import {
   modifyQuizIntoViewModel,
   modifyStatisticsIntoViewModel,
+  modifyStatisticsWithUserIntoViewModel,
 } from '../../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
 import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
 import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.entity';
-import { Posts } from '../../../../../posts/domain/posts.entity';
-import { QueryPostInputModel } from '../../../../../posts/api/models/input/query-post.input.model';
 import { variablesForReturn } from '../../../../../../infrastructure/utils/functions/variables-for-return.function';
-import { modifyPostIntoViewModel } from '../../../../../../infrastructure/utils/functions/features/posts.functions.helpers';
 import { regexpUUID } from '../../../../../../infrastructure/utils/regexp/general-regexp';
-import { Users } from '../../../../../users/domain/users.entity';
-import { startTransaction } from '../../../../../../infrastructure/utils/functions/db-helpers/transaction.helpers';
 import {
   QueryQuizInputModel,
   QueryStatisticInputModel,
@@ -177,7 +173,27 @@ export class QuizOrmQueryRepository {
 
     const query = await this.quizInfoAboutUserRepository
       .createQueryBuilder('qi')
-      .select(['qi."userId"', 'SUM(qi."score")'])
+      .select([
+        'qi."userId"',
+        'SUM(qi."score")  as "sumScore"',
+        'u."login"',
+        'AVG(qi."score")  as "avgScores"',
+      ])
+      .addSelect((qb) => {
+        return qb
+          .select('COUNT(distinct("userId"))')
+          .from(QuizInfoAboutUser, 'qi')
+          .innerJoin(
+            Quiz,
+            'q',
+            `(qi.userId = q.user1Id OR qi.userId = q.user2Id) 
+                  AND qi.quizId = q.id 
+                  AND q.status = :quizStatus`,
+            {
+              quizStatus: QuizStatusEnum['Finished'],
+            },
+          );
+      }, 'count')
       .addSelect((qb) => {
         return qb
           .select('COUNT(*)')
@@ -232,17 +248,99 @@ export class QuizOrmQueryRepository {
               );
           }, 'scores');
       }, 'winsCount')
-      .groupBy('qi."userId"');
-
+      .addSelect((qb) => {
+        return qb
+          .select(
+            `COUNT(CASE WHEN 
+        (scores."score1" < scores."score2" AND scores."userId1" = qi."userId" 
+        OR scores."score2" < scores."score1" AND scores."userId2" = qi."userId") 
+        THEN 1 ELSE NULL END)`,
+          )
+          .from((qb) => {
+            return qb
+              .select([
+                'qi1."userId" as "userId1"',
+                'qi2."userId"  as "userId2"',
+                'qi1."score" as "score1"',
+                'qi2."score" as "score2"',
+              ])
+              .from(Quiz, 'q')
+              .leftJoin(
+                QuizInfoAboutUser,
+                'qi1',
+                'qi1.userId = q.user1Id AND qi1.quizId = q.id',
+              )
+              .leftJoin(
+                QuizInfoAboutUser,
+                'qi2',
+                'qi2.userId = q.user2Id AND qi2.quizId = q.id',
+              )
+              .where('q.status = :quizStatus', {
+                quizStatus: QuizStatusEnum['Finished'],
+              })
+              .andWhere(
+                new Brackets((qb) => {
+                  qb.where('q.user1Id = qi."userId"').orWhere(
+                    'q.user2Id = qi."userId"',
+                  );
+                }),
+              );
+          }, 'scores');
+      }, 'lossesCount')
+      .addSelect((qb) => {
+        return qb
+          .select(
+            `COUNT(CASE WHEN 
+        (scores."score1" = scores."score2")
+        THEN 1 ELSE NULL END)`,
+          )
+          .from((qb) => {
+            return qb
+              .select([
+                'qi1."userId" as "userId1"',
+                'qi2."userId"  as "userId2"',
+                'qi1."score" as "score1"',
+                'qi2."score" as "score2"',
+              ])
+              .from(Quiz, 'q')
+              .leftJoin(
+                QuizInfoAboutUser,
+                'qi1',
+                'qi1.userId = q.user1Id AND qi1.quizId = q.id',
+              )
+              .leftJoin(
+                QuizInfoAboutUser,
+                'qi2',
+                'qi2.userId = q.user2Id AND qi2.quizId = q.id',
+              )
+              .where('q.status = :quizStatus', {
+                quizStatus: QuizStatusEnum['Finished'],
+              })
+              .andWhere(
+                new Brackets((qb) => {
+                  qb.where('q.user1Id = qi."userId"').orWhere(
+                    'q.user2Id = qi."userId"',
+                  );
+                }),
+              );
+          }, 'scores');
+      }, 'drawsCount')
+      .leftJoin('qi.user', 'u')
+      .innerJoin(
+        Quiz,
+        'q',
+        `(qi.userId = q.user1Id OR qi.userId = q.user2Id) 
+                  AND qi.quizId = q.id 
+                  AND q.status = :quizStatus`,
+        {
+          quizStatus: QuizStatusEnum['Finished'],
+        },
+      )
+      .groupBy('qi."userId", u."login"')
+      .orderBy({ '"drawsCount"': 'DESC' })
+      .limit(+pageSize)
+      .offset((+pageNumber - 1) * +pageSize);
     console.log(query.getQuery());
-
-    // const query1 = await this.dataSource.createQueryBuilder('qi').from((qb) => {
-    //   qb.select(['qi."quizId"'])
-    //     .from(QuizInfoAboutUser, 'qi')
-    //     .innerJoin(Quiz, 'q', 'q.id = qi."quizId" AND q.status = :quizStatus', {
-    //       quizStatus: QuizStatusEnum['Finished'],
-    //     });
-    // });
 
     const statisticInfo = await query.getRawMany();
 
@@ -252,7 +350,7 @@ export class QuizOrmQueryRepository {
       pageSize: +pageSize,
       totalCount: +statisticInfo[0]?.count || 0,
       items: statisticInfo.map((statistic) =>
-        modifyStatisticsIntoViewModel(statistic),
+        modifyStatisticsWithUserIntoViewModel(statistic),
       ),
     };
   }
