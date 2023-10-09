@@ -6,24 +6,6 @@ import { QueryBlogsInputModel } from '../../../features/blogs/api/models/input/q
 import { AllQueryParamsTypes } from './types/all-query-params.types';
 import { PublishedStatusType } from '../../types/quiz-questions.general.types';
 
-export async function variablesForReturnMongo(
-  query: AllQueryParamsTypes,
-): Promise<VariablesForReturnMongoType> {
-  const pageNumber = query?.pageNumber ?? 1;
-  const pageSize = query?.pageSize ?? 10;
-  const sortBy = query?.sortBy ?? '_id'; //'createdAt';
-  const sortDirection = query?.sortDirection?.toUpperCase() === 'ASC' ? 1 : -1;
-  const paramSort = { [sortBy]: sortDirection };
-
-  return {
-    pageNumber,
-    pageSize,
-    sortBy,
-    sortDirection,
-    paramSort,
-  };
-}
-
 //todo separate function
 export function variablesForReturn(
   query: AllQueryParamsTypes,
@@ -59,12 +41,22 @@ export function variablesForReturn(
   else publishedStatus = query?.publishedStatus === 'published';
 
   //statistic
-  const sort = query?.sort ?? 'sort=avgScores desc&sort=sumScore desc';
+  const sortQuery: string =
+    query?.sort ?? 'sort=avgScores desc&sort=sumScore desc';
+  const sort: any = {}; //avgScores desc sumScore desc
+  const sortArray = sortQuery
+    .replaceAll('&', ' ')
+    .replaceAll('sort=', '')
+    .split(' ');
+  for (let i = 0; i < sortArray.length; i = i + 2) {
+    sort[`"${sortArray[i]}"`] = sortArray[i + 1].toUpperCase();
+  }
 
   return {
     pageNumber,
     pageSize,
     sortBy,
+    sort,
     sortDirection,
     searchLoginTerm,
     searchEmailTerm,

@@ -12,7 +12,9 @@ export type VariablesForReturnType = {
   pageNumber: string | number;
   pageSize: string | number;
   sortBy: string;
-  sort?: string;
+  sort: {
+    [key in fields]: 'ASC' | 'DESC';
+  };
   sortDirection: 'ASC' | 'DESC';
   searchLoginTerm: string;
   searchEmailTerm: string;
@@ -21,3 +23,11 @@ export type VariablesForReturnType = {
   banStatus: null | boolean;
   publishedStatus: boolean | null;
 };
+
+type fields =
+  | 'sumScore'
+  | 'avgScores'
+  | 'gamesCount'
+  | 'winsCount'
+  | 'lossesCount'
+  | 'drawsCount';

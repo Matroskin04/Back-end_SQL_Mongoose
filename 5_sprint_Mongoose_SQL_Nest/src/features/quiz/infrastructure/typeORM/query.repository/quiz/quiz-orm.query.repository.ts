@@ -337,7 +337,7 @@ export class QuizOrmQueryRepository {
         },
       )
       .groupBy('qi."userId", u."login"')
-      .orderBy({ '"drawsCount"': 'DESC' })
+      .orderBy(sort)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
     console.log(query.getQuery());
