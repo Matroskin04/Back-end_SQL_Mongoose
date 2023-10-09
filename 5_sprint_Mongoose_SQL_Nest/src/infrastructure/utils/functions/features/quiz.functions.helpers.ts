@@ -2,6 +2,7 @@ import { QuestionQuizAllInfoType } from '../../../../features/quiz/infrastructur
 import {
   QuizViewType,
   StatisticViewType,
+  StatisticWithUserViewType,
 } from '../../../../features/quiz/infrastructure/typeORM/query.repository/quiz/quiz.types.query.repository';
 import { QuizAnswerStatusEnum, QuizStatusEnum } from '../../enums/quiz.enums';
 import { QuizStatusType } from '../../../types/quiz-questions.general.types';
@@ -30,6 +31,23 @@ export function modifyStatisticsIntoViewModel(statistics): StatisticViewType {
     lossesCount:
       statistics.gamesCount - statistics.winsNumber - statistics.draws ?? 0,
     drawsCount: +statistics.draws ?? 0,
+  };
+}
+
+export function modifyStatisticsWithUserIntoViewModel(
+  statistics,
+): StatisticWithUserViewType {
+  return {
+    sumScore: +statistics.sumScore ?? 0,
+    avgScores: Math.round(statistics.avgScores * 100) / 100 || 0,
+    gamesCount: +statistics.gamesCount ?? 0,
+    winsCount: +statistics.winsCount ?? 0,
+    lossesCount: +statistics.lossesCount ?? 0,
+    drawsCount: +statistics.drawsCount ?? 0,
+    player: {
+      id: statistics.userId,
+      login: statistics.login,
+    },
   };
 }
 
