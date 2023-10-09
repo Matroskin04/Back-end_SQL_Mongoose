@@ -41,7 +41,8 @@ export function variablesForReturn(
   else publishedStatus = query?.publishedStatus === 'published';
 
   //statistic
-  const sortQuery = query?.sort ?? ['avgScores desc', 'sumScore desc'];
+  let sortQuery = query?.sort ?? ['avgScores desc', 'sumScore desc'];
+  if (typeof sortQuery === 'string') sortQuery = [sortQuery];
 
   const sort: any = {}; //avgScores desc sumScore desc
   for (const i of sortQuery) {
