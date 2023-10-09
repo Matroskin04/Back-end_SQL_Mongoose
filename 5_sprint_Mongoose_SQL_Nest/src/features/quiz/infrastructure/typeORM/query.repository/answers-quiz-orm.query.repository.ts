@@ -14,8 +14,8 @@ export class AnswersQuizOrmQueryRepository {
     const result = await this.answersQuizRepository
       .createQueryBuilder()
       .select()
-      .where('userId = :userId', { userId })
-      .andWhere('quizId = :quizId', { quizId })
+      .where('"userId" = :userId', { userId })
+      .andWhere('"quizId" = :quizId', { quizId })
       .getCount();
     return result;
   }
