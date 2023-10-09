@@ -3,7 +3,10 @@ import {
   QuizAnswerStatusType,
   QuizStatusType,
 } from '../../../infrastructure/types/quiz-questions.general.types';
-import { regexpISOSString } from '../../../infrastructure/utils/regexp/general-regexp';
+import {
+  regexpISOSString,
+  regexpUUID,
+} from '../../../infrastructure/utils/regexp/general-regexp';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 
 export async function connectPlayerToQuizTest(httpServer, accessToken) {
@@ -93,6 +96,43 @@ export function createResponseStatisticTest(
     winsCount: winsCount ?? 0,
     lossesCount: lossesCount ?? 0,
     drawsCount: drawsCount ?? 0,
+  };
+}
+
+export function createResponseAllStatisticTest(
+  totalCount: number,
+  userId?: string[] | null,
+  sumScore?: number[] | null,
+  avgScores?: number[] | null,
+  gamesCount?: number[] | null,
+  winsCount?: number[] | null,
+  lossesCount?: number[] | null,
+  drawsCount?: number[] | null,
+  pagesCount?: number | null,
+  page?: number | null,
+  pageSize?: number | null,
+) {
+  const items: any = [];
+  for (let i = 0; i < totalCount; i++) {
+    items.push({
+      sumScore: sumScore ? sumScore[i] : expect.any(Number),
+      avgScores: avgScores ? avgScores[i] : expect.any(Number),
+      gamesCount: gamesCount ? gamesCount[i] : expect.any(Number),
+      winsCount: winsCount ? winsCount[i] : expect.any(Number),
+      lossesCount: lossesCount ? lossesCount[i] : expect.any(Number),
+      drawsCount: drawsCount ? drawsCount[i] : expect.any(Number),
+      player: {
+        id: userId ? userId[i] : expect.stringMatching(regexpUUID),
+        login: expect.any(String),
+      },
+    });
+  }
+  return {
+    pagesCount: pagesCount ?? 1,
+    page: page ?? 1,
+    pageSize: pageSize ?? 10,
+    totalCount: totalCount ?? 4,
+    items: items,
   };
 }
 
