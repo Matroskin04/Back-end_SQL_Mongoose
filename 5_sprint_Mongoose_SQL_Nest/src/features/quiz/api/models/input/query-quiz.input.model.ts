@@ -22,7 +22,7 @@ export class QueryQuizInputModel extends QueryGeneralParams {
   sortBy?: string;
 }
 
-export class QueryStatisticInputModel extends QueryGeneralParams {
+export class QueryStatisticInputModel {
   sort?: string;
 
   @ValidateIf((o) => o.pageNumber !== undefined)
