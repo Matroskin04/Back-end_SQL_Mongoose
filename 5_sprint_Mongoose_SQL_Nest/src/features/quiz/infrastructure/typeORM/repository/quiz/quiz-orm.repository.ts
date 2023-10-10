@@ -60,7 +60,28 @@ export class QuizOrmRepository {
     quizId: string,
     quizRepository: Repository<Quiz> = this.quizRepository,
   ): Promise<boolean> {
-    const result = await this.quizRepository
+    const result = await quizRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        status: QuizStatusEnum['Finished'],
+        finishGameDate: () => 'CURRENT_TIMESTAMP',
+      })
+      .where('id = :quizId', {
+        quizId,
+      })
+      .execute();
+
+    return result.affected === 1;
+  }
+
+  async setFinishTimeFirstUser(
+    quizId: string,
+    userId: string,
+    timestamp: number,
+    quizRepository: Repository<Quiz> = this.quizRepository,
+  ): Promise<boolean> {
+    const result = await quizRepository
       .createQueryBuilder()
       .update()
       .set({
