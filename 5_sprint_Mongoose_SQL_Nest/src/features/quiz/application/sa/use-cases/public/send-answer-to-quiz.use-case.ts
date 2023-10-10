@@ -3,7 +3,7 @@ import { QuizOrmQueryRepository } from '../../../../infrastructure/typeORM/query
 import { QuestionsOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/questions/questions-orm.query.repository';
 import { QuizInfoAboutUserOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz-info-about-user-orm.repository';
 import { DataSource, Repository } from 'typeorm';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, Injectable, Scope } from '@nestjs/common';
 import { AnswersQuizOrmRepository } from '../../../../infrastructure/typeORM/repository/answers-quiz-orm.repository';
 import { QuizAnswerStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
 import { QuizOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz/quiz-orm.repository';
@@ -13,6 +13,8 @@ import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.
 import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
 import { AnswersQuizOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/answers-quiz-orm.query.repository';
 import { InjectRepository } from '@nestjs/typeorm';
+import { timestamp } from 'rxjs';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 
 export class SendAnswerToQuizCommand {
   constructor(public currentUserId: string, public answer: string) {}
@@ -22,6 +24,8 @@ export class SendAnswerToQuizCommand {
 export class SendAnswerToQuizUseCase
   implements ICommandHandler<SendAnswerToQuizCommand>
 {
+  timestamps: number[] = [];
+  cronInfo = {};
   constructor(
     protected quizOrmQueryRepository: QuizOrmQueryRepository,
     protected quizOrmRepository: QuizOrmRepository,
@@ -29,6 +33,7 @@ export class SendAnswerToQuizUseCase
     protected questionsOrmQueryRepository: QuestionsOrmQueryRepository,
     protected answersQuizOrmRepository: AnswersQuizOrmRepository,
     protected answersQuizOrmQueryRepository: AnswersQuizOrmQueryRepository,
+    private schedulerRegistry: SchedulerRegistry,
     protected dataSource: DataSource,
   ) {}
 
@@ -112,7 +117,6 @@ export class SendAnswerToQuizUseCase
         if (!result)
           throw new Error('Something went wrong while incrementing score');
       }
-
       //if it is the last answer of user:
       if (answersNumberCurrentUser === 4) {
         //if another user also finished, then:
@@ -140,64 +144,16 @@ export class SendAnswerToQuizUseCase
           }
           //if the second user doesn't finish the quiz, then...
         } else {
-          //set 10 seconds while the second user can send answers
-          setTimeout(async () => {
-            //get all answers of the second user in current quiz
-            const answersCount =
-              await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
-                secondUserId,
-                activeQuiz.id,
-              );
-            if (answersCount === 5) return;
-
-            const dataForTransaction = await startTransaction(this.dataSource, [
-              AnswerQuiz,
-              QuizInfoAboutUser,
-              Quiz,
-            ]);
-            try {
-              let questionNumber = answersCount;
-              for (let i = 5; i > answersCount; i--) {
-                //if there are less than five answers, then create remaining answers
-                await this.answersQuizOrmRepository.createAnswer(
-                  +isAnswerCorrect,
-                  activeQuiz.id,
-                  secondUserId,
-                  activeQuiz.questions![questionNumber++].id,
-                  dataForTransaction.repositories.AnswerQuiz,
-                );
-              }
-
-              if (answersCount < 5 && currentUserScore > 0) {
-                //increment user's score (if user has more than 0 points
-                const result =
-                  await this.quizInfoAboutUserOrmRepository.incrementUserScore(
-                    activeQuiz.id,
-                    currentUserId,
-                    dataForTransaction.repositories.QuizInfoAboutUser,
-                  );
-                if (!result)
-                  throw new Error(
-                    'Something went wrong while incrementing score',
-                  );
-              }
-              const result = this.quizOrmRepository.finishQuiz(
-                activeQuiz.id,
-                dataForTransaction.repositories.Quiz,
-              );
-              if (!result)
-                throw new Error(
-                  'Something went wrong while finishing the quiz game',
-                );
-
-              await dataForTransaction.queryRunner.commitTransaction();
-            } catch (e) {
-              await dataForTransaction.queryRunner.rollbackTransaction();
-              console.log('Something went wrong', e);
-            } finally {
-              await dataForTransaction.queryRunner.release();
-            }
-          }, 0);
+          const stamp = Date.now();
+          this.timestamps.push(stamp);
+          this.cronInfo[stamp] = {
+            isAnswerCorrect,
+            currentUserScore,
+            secondUserId,
+            currentUserId,
+            secondUserScore,
+            activeQuiz,
+          };
         }
       }
       await dataForTransaction.queryRunner.commitTransaction();
@@ -213,6 +169,76 @@ export class SendAnswerToQuizUseCase
       console.log('Something went wrong', e);
     } finally {
       await dataForTransaction.queryRunner.release();
+    }
+  }
+
+  @Cron('* * * * * *', { name: 'cron' })
+  private async check() {
+    for (const timestamp of this.timestamps) {
+      if (Date.now() - timestamp > 9000) {
+        // const job = this.schedulerRegistry.getCronJob('cron');
+        // job.stop();
+        console.log(1);
+        const answersCount =
+          await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
+            this.cronInfo[timestamp].secondUserId,
+            this.cronInfo[timestamp].activeQuiz.id,
+          );
+        if (answersCount === 5) return;
+
+        const dataForTransaction = await startTransaction(this.dataSource, [
+          AnswerQuiz,
+          QuizInfoAboutUser,
+          Quiz,
+        ]);
+        try {
+          let questionNumber = answersCount;
+          for (let i = 5; i > answersCount; i--) {
+            //if there are less than five answers, then create remaining answers
+            await this.answersQuizOrmRepository.createAnswer(
+              +this.cronInfo[timestamp].isAnswerCorrect,
+              this.cronInfo[timestamp].activeQuiz.id,
+              this.cronInfo[timestamp].secondUserId,
+              this.cronInfo[timestamp].activeQuiz.questions![questionNumber++]
+                .id,
+              dataForTransaction.repositories.AnswerQuiz,
+            );
+          }
+
+          if (
+            answersCount < 5 &&
+            this.cronInfo[timestamp].currentUserScore > 0
+          ) {
+            //increment user's score (if user has more than 0 points
+            const result =
+              await this.quizInfoAboutUserOrmRepository.incrementUserScore(
+                this.cronInfo[timestamp].activeQuiz.id,
+                this.cronInfo[timestamp].currentUserId,
+                dataForTransaction.repositories.QuizInfoAboutUser,
+              );
+            if (!result)
+              throw new Error('Something went wrong while incrementing score');
+          }
+          const result = this.quizOrmRepository.finishQuiz(
+            this.cronInfo[timestamp].activeQuiz.id,
+            dataForTransaction.repositories.Quiz,
+          );
+          if (!result)
+            throw new Error(
+              'Something went wrong while finishing the quiz game',
+            );
+
+          this.timestamps = this.timestamps.filter((e) => e !== timestamp);
+          delete this.cronInfo[timestamp];
+          await dataForTransaction.queryRunner.commitTransaction();
+        } catch (e) {
+          await dataForTransaction.queryRunner.rollbackTransaction();
+          // job.start();
+          console.log('Something went wrong', e);
+        } finally {
+          await dataForTransaction.queryRunner.release();
+        }
+      }
     }
   }
 }

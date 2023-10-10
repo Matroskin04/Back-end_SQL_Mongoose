@@ -38,8 +38,8 @@ export class Quiz {
   @Column({ type: 'timestamp without time zone', nullable: true })
   finishGameDate: Date | null;
 
-  @Column({ type: 'int', nullable: true })
-  finishTimeFirstUser: number | null;
+  // @Column({ type: 'int', nullable: true })
+  // finishTimeFirstUser: number | null;
 
   @ManyToOne(() => Users, (u) => u.quiz1)
   @JoinColumn()

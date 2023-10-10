@@ -341,7 +341,7 @@ export class QuizOrmQueryRepository {
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
     console.log(query.getQuery());
-    console.log(2);
+
     const statisticInfo = await query.getRawMany();
 
     return {

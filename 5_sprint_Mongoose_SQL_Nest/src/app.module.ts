@@ -120,6 +120,7 @@ import { QuizInfoAboutUserOrmRepository } from './features/quiz/infrastructure/t
 import { SendAnswerToQuizUseCase } from './features/quiz/application/sa/use-cases/public/send-answer-to-quiz.use-case';
 import { AnswersQuizOrmRepository } from './features/quiz/infrastructure/typeORM/repository/answers-quiz-orm.repository';
 import { AnswersQuizOrmQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/answers-quiz-orm.query.repository';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const queryRepositories = [
   // SQL
@@ -226,6 +227,7 @@ const handlers = [
     CqrsModule,
     ThrottlerModule.forRoot(),
     ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forFeature([
       Blogs,
       BannedUsersOfBlog,
