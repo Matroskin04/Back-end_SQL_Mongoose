@@ -59,7 +59,7 @@ export class QuizOrmQueryRepository {
       .leftJoin('q.quizGameInfoAboutUser', 'gi2', 'gi2."userId" = q."user2Id"')
       .where('q."id" = :quizId', { quizId })
       .getRawOne();
-
+    console.log(result);
     if (!result) return null;
     return modifyQuizIntoViewModel(result);
   }
