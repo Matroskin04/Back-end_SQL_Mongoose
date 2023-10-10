@@ -158,7 +158,7 @@ export class SendAnswerToQuizUseCase
 
               for (let i = 5; i > answersCount; i--) {
                 //if there are less than five answers, then create remaining answers
-                const z = await this.answersQuizOrmRepository.createAnswer(
+                await this.answersQuizOrmRepository.createAnswer(
                   +isAnswerCorrect,
                   activeQuiz.id,
                   secondUserId,
@@ -167,30 +167,27 @@ export class SendAnswerToQuizUseCase
                 );
               }
 
-              if (answersCount < 5) {
-                if (currentUserScore > 0) {
-                  //increment user's score (if user has more than 0 points
-                  const result =
-                    await this.quizInfoAboutUserOrmRepository.incrementUserScore(
-                      activeQuiz.id,
-                      currentUserId,
-                      dataForTransaction.repositories.QuizInfoAboutUser,
-                    );
-                  if (!result)
-                    throw new Error(
-                      'Something went wrong while incrementing score',
-                    );
-                }
-
-                const result = this.quizOrmRepository.finishQuiz(
-                  activeQuiz.id,
-                  dataForTransaction.repositories.Quiz,
-                );
+              if (answersCount < 5 && currentUserScore > 0) {
+                //increment user's score (if user has more than 0 points
+                const result =
+                  await this.quizInfoAboutUserOrmRepository.incrementUserScore(
+                    activeQuiz.id,
+                    currentUserId,
+                    dataForTransaction.repositories.QuizInfoAboutUser,
+                  );
                 if (!result)
                   throw new Error(
-                    'Something went wrong while finishing the quiz game',
+                    'Something went wrong while incrementing score',
                   );
               }
+              const result = this.quizOrmRepository.finishQuiz(
+                activeQuiz.id,
+                dataForTransaction.repositories.Quiz,
+              );
+              if (!result)
+                throw new Error(
+                  'Something went wrong while finishing the quiz game',
+                );
 
               await dataForTransaction.queryRunner.commitTransaction();
             } catch (e) {
@@ -199,7 +196,7 @@ export class SendAnswerToQuizUseCase
             } finally {
               await dataForTransaction.queryRunner.release();
             }
-          }, 10000);
+          }, 5000);
         }
       }
       await dataForTransaction.queryRunner.commitTransaction();
