@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { QuizOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/quiz/quiz-orm.query.repository';
 import { QuestionsOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/questions/questions-orm.query.repository';
 import { QuizInfoAboutUserOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz-info-about-user-orm.repository';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { ForbiddenException } from '@nestjs/common';
 import { AnswersQuizOrmRepository } from '../../../../infrastructure/typeORM/repository/answers-quiz-orm.repository';
 import { QuizAnswerStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
@@ -12,6 +12,7 @@ import { Quiz } from '../../../../domain/quiz.entity';
 import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.entity';
 import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
 import { AnswersQuizOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/answers-quiz-orm.query.repository';
+import { InjectRepository } from '@nestjs/typeorm';
 
 export class SendAnswerToQuizCommand {
   constructor(public currentUserId: string, public answer: string) {}
@@ -139,49 +140,65 @@ export class SendAnswerToQuizUseCase
           }
           //if the second user doesn't finish the quiz, then...
         } else {
-          if (currentUserScore !== 0) {
-            //increment user's score (if user has more than 0 points)
-            const result =
-              await this.quizInfoAboutUserOrmRepository.incrementUserScore(
-                activeQuiz.id,
-                currentUserId,
-                dataForTransaction.repositories.QuizInfoAboutUser,
-              );
-            if (!result)
-              throw new Error('Something went wrong while incrementing score');
-          }
           //set 10 seconds while the second user can send answers
           setTimeout(async () => {
             const dataForTransaction = await startTransaction(this.dataSource, [
               AnswerQuiz,
+              QuizInfoAboutUser,
               Quiz,
             ]);
-            //get all answers of the second user in current quiz
-            const answersCount =
-              await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
-                secondUserId,
-                activeQuiz.id,
-              );
-            let questionNumber = answersCount;
-            for (let i = 5; i > answersCount; i--) {
-              //if there are less than five answers, then create remaining answers
-              await this.answersQuizOrmRepository.createAnswer(
-                +isAnswerCorrect,
-                activeQuiz.id,
-                secondUserId,
-                activeQuiz.questions![++questionNumber].id,
-                dataForTransaction.repositories.AnswerQuiz,
-              );
-            }
+            try {
+              //get all answers of the second user in current quiz
+              const answersCount =
+                await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
+                  secondUserId,
+                  activeQuiz.id,
+                );
+              let questionNumber = answersCount;
 
-            const result = this.quizOrmRepository.finishQuiz(
-              activeQuiz.id,
-              dataForTransaction.repositories.Quiz,
-            );
-            if (!result)
-              throw new Error(
-                'Something went wrong while finishing the quiz game',
-              );
+              for (let i = 5; i > answersCount; i--) {
+                //if there are less than five answers, then create remaining answers
+                const z = await this.answersQuizOrmRepository.createAnswer(
+                  +isAnswerCorrect,
+                  activeQuiz.id,
+                  secondUserId,
+                  activeQuiz.questions![questionNumber++].id,
+                  dataForTransaction.repositories.AnswerQuiz,
+                );
+              }
+
+              if (answersCount < 5) {
+                if (currentUserScore > 0) {
+                  //increment user's score (if user has more than 0 points
+                  const result =
+                    await this.quizInfoAboutUserOrmRepository.incrementUserScore(
+                      activeQuiz.id,
+                      currentUserId,
+                      dataForTransaction.repositories.QuizInfoAboutUser,
+                    );
+                  if (!result)
+                    throw new Error(
+                      'Something went wrong while incrementing score',
+                    );
+                }
+
+                const result = this.quizOrmRepository.finishQuiz(
+                  activeQuiz.id,
+                  dataForTransaction.repositories.Quiz,
+                );
+                if (!result)
+                  throw new Error(
+                    'Something went wrong while finishing the quiz game',
+                  );
+              }
+
+              await dataForTransaction.queryRunner.commitTransaction();
+            } catch (e) {
+              await dataForTransaction.queryRunner.rollbackTransaction();
+              console.log('Something went wrong', e);
+            } finally {
+              await dataForTransaction.queryRunner.release();
+            }
           }, 10000);
         }
       }
