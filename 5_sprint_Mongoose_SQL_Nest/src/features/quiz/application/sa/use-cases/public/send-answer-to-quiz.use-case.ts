@@ -142,20 +142,21 @@ export class SendAnswerToQuizUseCase
         } else {
           //set 10 seconds while the second user can send answers
           setTimeout(async () => {
+            //get all answers of the second user in current quiz
+            const answersCount =
+              await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
+                secondUserId,
+                activeQuiz.id,
+              );
+            if (answersCount === 5) return;
+
             const dataForTransaction = await startTransaction(this.dataSource, [
               AnswerQuiz,
               QuizInfoAboutUser,
               Quiz,
             ]);
             try {
-              //get all answers of the second user in current quiz
-              const answersCount =
-                await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
-                  secondUserId,
-                  activeQuiz.id,
-                );
               let questionNumber = answersCount;
-
               for (let i = 5; i > answersCount; i--) {
                 //if there are less than five answers, then create remaining answers
                 await this.answersQuizOrmRepository.createAnswer(
@@ -196,7 +197,7 @@ export class SendAnswerToQuizUseCase
             } finally {
               await dataForTransaction.queryRunner.release();
             }
-          }, 5000);
+          }, 0);
         }
       }
       await dataForTransaction.queryRunner.commitTransaction();

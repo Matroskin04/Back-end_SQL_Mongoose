@@ -877,4 +877,57 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       );
     });
   });
+
+  //Addition, preparation
+  it(`(Additional) + finish 3 quiz by user1 and user2`, async () => {
+    await deleteAllDataTest(httpServer);
+
+    user1 = await createCorrectUserTest(httpServer);
+    const result1 = await loginCorrectUserTest(httpServer);
+    accessToken1 = result1.accessToken;
+    user2 = await createUserTest(
+      httpServer,
+      'login2',
+      'password2',
+      'email2@mail.ru',
+    );
+    const result2 = await loginUserTest(httpServer, 'login2', 'password2');
+    accessToken2 = result2.body.accessToken;
+
+    //create 9 questions
+    questionsIds = await create9Questions(httpServer);
+    //publish them:
+    for (const id of questionsIds) {
+      await publishQuestionSaTest(httpServer, id, true);
+    }
+    //score1: 4, score2: 4, draw
+    {
+      // DRAW
+      //connect to new quiz
+      const result1 = await connectPlayerToQuizTest(httpServer, accessToken1);
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      //connect user2 to the quiz
+      const result2 = await connectPlayerToQuizTest(httpServer, accessToken2);
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+
+      //3 correct answers by user1 (3+1 score)
+      await add5AnswersToQuizTest(httpServer, accessToken1, 3);
+
+      const quiz1 = await getQuizByIdTest(
+        httpServer,
+        result1.body.id,
+        accessToken1,
+      );
+      console.log(quiz1.body);
+
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+
+      const quiz2 = await getQuizByIdTest(
+        httpServer,
+        result1.body.id,
+        accessToken1,
+      );
+      console.log(quiz2.body);
+    }
+  });
 });
