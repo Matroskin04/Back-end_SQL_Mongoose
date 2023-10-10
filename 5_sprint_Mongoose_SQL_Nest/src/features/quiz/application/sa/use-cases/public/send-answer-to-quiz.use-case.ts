@@ -199,7 +199,7 @@ export class SendAnswerToQuizUseCase
             } finally {
               await dataForTransaction.queryRunner.release();
             }
-          }, 10000);
+          }, 5000);
         }
       }
       await dataForTransaction.queryRunner.commitTransaction();
