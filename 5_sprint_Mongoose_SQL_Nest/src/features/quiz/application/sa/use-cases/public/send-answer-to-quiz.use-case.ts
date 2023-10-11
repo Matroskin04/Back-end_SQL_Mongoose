@@ -22,7 +22,7 @@ export class SendAnswerToQuizCommand {
 export class SendAnswerToQuizUseCase
   implements ICommandHandler<SendAnswerToQuizCommand>
 {
-  timestamps: number[] = [];
+  timestamps: { stamp: number; userId: string }[] = [];
   cronInfo = {};
   constructor(
     protected quizOrmQueryRepository: QuizOrmQueryRepository,
@@ -31,7 +31,6 @@ export class SendAnswerToQuizUseCase
     protected questionsOrmQueryRepository: QuestionsOrmQueryRepository,
     protected answersQuizOrmRepository: AnswersQuizOrmRepository,
     protected answersQuizOrmQueryRepository: AnswersQuizOrmQueryRepository,
-    private schedulerRegistry: SchedulerRegistry,
     protected dataSource: DataSource,
   ) {}
 
@@ -140,10 +139,18 @@ export class SendAnswerToQuizUseCase
             if (!result)
               throw new Error('Something went wrong while incrementing score');
           }
+          const index = this.timestamps.findIndex(
+            (e) => (e.userId = currentUserId),
+          );
+          if (index > -1) {
+            console.log(this.timestamps[index]);
+            delete this.cronInfo[this.timestamps[index].stamp];
+            this.timestamps.splice(index, 1);
+          }
           //if the second user doesn't finish the quiz, then...
         } else {
           const stamp = Date.now();
-          this.timestamps.push(stamp);
+          this.timestamps.push({ stamp, userId: currentUserId });
           this.cronInfo[stamp] = {
             isAnswerCorrect,
             currentUserScore,
@@ -172,20 +179,16 @@ export class SendAnswerToQuizUseCase
 
   @Cron('* * * * * *', { name: 'cron' })
   private async checkEndTimeOfQuiz() {
-    for (const timestamp of this.timestamps) {
+    for (const info of this.timestamps) {
+      const timestamp = info.stamp;
       if (Date.now() - timestamp > 8000) {
         // const job = this.schedulerRegistry.getCronJob('cron');
         // job.stop();
-        console.log(
-          this.cronInfo[timestamp].secondUserId,
-          this.cronInfo[timestamp].activeQuiz,
-        );
         const answersCount =
           await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
             this.cronInfo[timestamp].secondUserId,
             this.cronInfo[timestamp].activeQuiz.id,
           );
-        console.log(answersCount);
         if (answersCount === 5) return;
 
         const dataForTransaction = await startTransaction(this.dataSource, [
@@ -231,13 +234,14 @@ export class SendAnswerToQuizUseCase
               'Something went wrong while finishing the quiz game',
             );
 
-          this.timestamps = this.timestamps.filter((e) => e !== timestamp);
+          const index = this.timestamps.findIndex((e) => e.stamp === timestamp);
+          this.timestamps.splice(index, 1);
           delete this.cronInfo[timestamp];
           await dataForTransaction.queryRunner.commitTransaction();
         } catch (e) {
           await dataForTransaction.queryRunner.rollbackTransaction();
           // job.start();
-          console.log('Something went wrong', e);
+          console.log('Something went wrong in cron handler', e);
         } finally {
           await dataForTransaction.queryRunner.release();
         }
