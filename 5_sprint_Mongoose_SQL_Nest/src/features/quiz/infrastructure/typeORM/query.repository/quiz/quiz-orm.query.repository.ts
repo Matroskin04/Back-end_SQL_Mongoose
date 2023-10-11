@@ -340,7 +340,6 @@ export class QuizOrmQueryRepository {
       .orderBy(sort)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
-    console.log(query.getQuery());
 
     const statisticInfo = await query.getRawMany();
 
@@ -397,7 +396,7 @@ export class QuizOrmQueryRepository {
       .addOrderBy(`q."pairCreatedDate"`, 'DESC')
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
-    console.log(query.getQuery());
+
     try {
       const quizInfo = await query.getRawMany();
     } catch (e) {
