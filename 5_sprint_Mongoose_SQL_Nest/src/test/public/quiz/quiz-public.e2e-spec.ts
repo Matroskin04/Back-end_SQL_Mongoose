@@ -8,7 +8,7 @@ import {
 } from '../../super-admin/quiz/quiz-sa.helpers';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import {
-  add5AnswersToQuizTest,
+  addAnswersToQuizTest,
   connectPlayerToQuizTest,
   createResponseAllStatisticTest,
   createResponseAnswerTest,
@@ -292,7 +292,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
         //3 correct answers by user1 (3+1 score)
-        await add5AnswersToQuizTest(httpServer, accessToken1, 3);
+        await addAnswersToQuizTest(httpServer, accessToken1, 3);
 
         //check that active game is not shown in statistic
         const statistic = await getMyStatisticTest(httpServer, accessToken1);
@@ -300,7 +300,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(statistic.body).toEqual(createResponseStatisticTest());
 
         //4 correct answers by user2 (4 score)
-        await add5AnswersToQuizTest(httpServer, accessToken2, 4);
+        await addAnswersToQuizTest(httpServer, accessToken2, 4);
       }
       //score1: 3, score2: 0, winner: user1
       {
@@ -313,9 +313,9 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
         //0 correct answers by user2 (0 score)
-        await add5AnswersToQuizTest(httpServer, accessToken2, 0);
+        await addAnswersToQuizTest(httpServer, accessToken2, 0);
         //3 correct answers by user1 (3 score)
-        await add5AnswersToQuizTest(httpServer, accessToken1, 3);
+        await addAnswersToQuizTest(httpServer, accessToken1, 3);
       }
       //score1: 3, score2: 4, winner: user2
       {
@@ -328,9 +328,9 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
         //2 correct answers by user1 (2+1 score)
-        await add5AnswersToQuizTest(httpServer, accessToken1, 2);
+        await addAnswersToQuizTest(httpServer, accessToken1, 2);
         //5 correct answers by user2 (5 score)
-        await add5AnswersToQuizTest(httpServer, accessToken2, 4);
+        await addAnswersToQuizTest(httpServer, accessToken2, 4);
       }
       //pending
       {
@@ -417,7 +417,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
         //3 correct answers by user1 (3+1 score)
-        await add5AnswersToQuizTest(httpServer, accessToken1, 3);
+        await addAnswersToQuizTest(httpServer, accessToken1, 3);
 
         //check that active game is not shown in statistic
         const statistic = await getMyStatisticTest(httpServer, accessToken1);
@@ -425,7 +425,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(statistic.body).toEqual(createResponseStatisticTest());
 
         //4 correct answers by user2 (4 score)
-        await add5AnswersToQuizTest(httpServer, accessToken2, 4);
+        await addAnswersToQuizTest(httpServer, accessToken2, 4);
       }
       //score1: 3, score2: 0, winner: user1
       {
@@ -438,9 +438,9 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
         //0 correct answers by user2 (0 score)
-        await add5AnswersToQuizTest(httpServer, accessToken2, 0);
+        await addAnswersToQuizTest(httpServer, accessToken2, 0);
         //3 correct answers by user1 (3 score)
-        await add5AnswersToQuizTest(httpServer, accessToken1, 3);
+        await addAnswersToQuizTest(httpServer, accessToken1, 3);
       }
       //score1: 3, score2: 4, winner: user2
       {
@@ -453,9 +453,9 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
         //2 correct answers by user1 (2+1 score)
-        await add5AnswersToQuizTest(httpServer, accessToken1, 2);
+        await addAnswersToQuizTest(httpServer, accessToken1, 2);
         //5 correct answers by user2 (5 score)
-        await add5AnswersToQuizTest(httpServer, accessToken2, 4);
+        await addAnswersToQuizTest(httpServer, accessToken2, 4);
       }
     });
 
@@ -546,7 +546,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
         //3 correct answers by user1 (3+1 score)
-        await add5AnswersToQuizTest(httpServer, accessToken1, 3);
+        await addAnswersToQuizTest(httpServer, accessToken1, 3);
 
         //check that active game is not shown in statistic
         const statistic = await getMyStatisticTest(httpServer, accessToken1);
@@ -554,7 +554,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(statistic.body).toEqual(createResponseStatisticTest());
 
         //4 correct answers by user2 (4 score)
-        await add5AnswersToQuizTest(httpServer, accessToken2, 4);
+        await addAnswersToQuizTest(httpServer, accessToken2, 4);
       }
       //score1: 3, score2: 0, winner: user1
       {
@@ -567,9 +567,9 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
         //0 correct answers by user2 (0 score)
-        await add5AnswersToQuizTest(httpServer, accessToken2, 0);
+        await addAnswersToQuizTest(httpServer, accessToken2, 0);
         //3 correct answers by user1 (3 score)
-        await add5AnswersToQuizTest(httpServer, accessToken1, 3);
+        await addAnswersToQuizTest(httpServer, accessToken1, 3);
       }
       //score1: 3, score2: 4, winner: user2
       {
@@ -582,9 +582,9 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
         //2 correct answers by user1 (2+1 score)
-        await add5AnswersToQuizTest(httpServer, accessToken1, 2);
+        await addAnswersToQuizTest(httpServer, accessToken1, 2);
         //5 correct answers by user2 (5 score)
-        await add5AnswersToQuizTest(httpServer, accessToken2, 4);
+        await addAnswersToQuizTest(httpServer, accessToken2, 4);
       }
     });
     //Addition, preparation
@@ -599,10 +599,10 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
         //2 correct answers by user2 (2+1 score)
-        await add5AnswersToQuizTest(httpServer, accessToken2, 2);
+        await addAnswersToQuizTest(httpServer, accessToken2, 2);
 
         //4 correct answers by user3 (4 score)
-        await add5AnswersToQuizTest(httpServer, accessToken3, 4);
+        await addAnswersToQuizTest(httpServer, accessToken3, 4);
       }
       //score3: 3, score4: 5, winner: user4
       {
@@ -614,9 +614,9 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
         //2 correct answers by user3 (2+1 score)
-        await add5AnswersToQuizTest(httpServer, accessToken3, 2);
+        await addAnswersToQuizTest(httpServer, accessToken3, 2);
         //5 correct answers by user4 (5 score)
-        await add5AnswersToQuizTest(httpServer, accessToken4, 5);
+        await addAnswersToQuizTest(httpServer, accessToken4, 5);
       }
       //score2: 6, score4: 3, winner: user2
       {
@@ -628,9 +628,9 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
         //5 correct answers by user2 (5+1 score)
-        await add5AnswersToQuizTest(httpServer, accessToken2, 5);
+        await addAnswersToQuizTest(httpServer, accessToken2, 5);
         //3 correct answers by user4 (3 score)
-        await add5AnswersToQuizTest(httpServer, accessToken4, 3);
+        await addAnswersToQuizTest(httpServer, accessToken4, 3);
       }
 
       //score: 1) 10; 2) 17; 3) 7; 4) 8;
@@ -661,18 +661,44 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
-      user1 = await createCorrectUserTest(httpServer);
-      const result1 = await loginCorrectUserTest(httpServer);
-      accessToken1 = result1.accessToken;
+      //create and login 4 users
+      {
+        user1 = await createUserTest(
+          httpServer,
+          'login1',
+          'password1',
+          'email1@mail.ru',
+        );
+        const result1 = await loginUserTest(httpServer, 'login1', 'password1');
+        accessToken1 = result1.body.accessToken;
 
-      user2 = await createUserTest(
-        httpServer,
-        'login2',
-        'password2',
-        'email2@mail.ru',
-      );
-      const result2 = await loginUserTest(httpServer, 'login2', 'password2');
-      accessToken2 = result2.body.accessToken;
+        user2 = await createUserTest(
+          httpServer,
+          'login2',
+          'password2',
+          'email2@mail.ru',
+        );
+        const result2 = await loginUserTest(httpServer, 'login2', 'password2');
+        accessToken2 = result2.body.accessToken;
+
+        user3 = await createUserTest(
+          httpServer,
+          'login3',
+          'password3',
+          'email3@mail.ru',
+        );
+        const result3 = await loginUserTest(httpServer, 'login3', 'password3');
+        accessToken3 = result3.body.accessToken;
+
+        user4 = await createUserTest(
+          httpServer,
+          'login4',
+          'password4',
+          'email4@mail.ru',
+        );
+        const result4 = await loginUserTest(httpServer, 'login4', 'password4');
+        accessToken4 = result4.body.accessToken;
+      }
 
       //create 9 questions
       questionsIds = await create9Questions(httpServer);
@@ -743,18 +769,44 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
-      user1 = await createCorrectUserTest(httpServer);
-      const result1 = await loginCorrectUserTest(httpServer);
-      accessToken1 = result1.accessToken;
+      //create and login 4 users
+      {
+        user1 = await createUserTest(
+          httpServer,
+          'login1',
+          'password1',
+          'email1@mail.ru',
+        );
+        const result1 = await loginUserTest(httpServer, 'login1', 'password1');
+        accessToken1 = result1.body.accessToken;
 
-      user2 = await createUserTest(
-        httpServer,
-        'login2',
-        'password2',
-        'email2@mail.ru',
-      );
-      const result2 = await loginUserTest(httpServer, 'login2', 'password2');
-      accessToken2 = result2.body.accessToken;
+        user2 = await createUserTest(
+          httpServer,
+          'login2',
+          'password2',
+          'email2@mail.ru',
+        );
+        const result2 = await loginUserTest(httpServer, 'login2', 'password2');
+        accessToken2 = result2.body.accessToken;
+
+        user3 = await createUserTest(
+          httpServer,
+          'login3',
+          'password3',
+          'email3@mail.ru',
+        );
+        const result3 = await loginUserTest(httpServer, 'login3', 'password3');
+        accessToken3 = result3.body.accessToken;
+
+        user4 = await createUserTest(
+          httpServer,
+          'login4',
+          'password4',
+          'email4@mail.ru',
+        );
+        const result4 = await loginUserTest(httpServer, 'login4', 'password4');
+        accessToken4 = result4.body.accessToken;
+      }
 
       //create 9 questions
       questionsIds = await create9Questions(httpServer);
@@ -808,17 +860,8 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       const result1 = await connectPlayerToQuizTest(httpServer, accessToken2);
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
-      for (let i = 0; i < 5; i++) {
-        const answer = i % 2 === 0 ? correctAnswer : incorrectAnswer;
-        const answerStatus = i % 2 === 0 ? 'Correct' : 'Incorrect';
-        //3 correct answers
-        const result = await sendAnswerTest(httpServer, accessToken1, answer);
-        expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-        expect(result.body).toEqual(
-          createResponseAnswerTest(null, answerStatus),
-        );
-      }
-
+      //3 correct and 2 incorrect answers by user1
+      await addAnswersToQuizTest(httpServer, accessToken1, 3);
       const quizResult1 = await getQuizByIdTest(
         httpServer,
         result1.body.id,
@@ -844,16 +887,8 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         ).length,
       ).toBe(3);
 
-      for (let i = 0; i < 5; i++) {
-        const answer = i % 2 === 0 ? incorrectAnswer : correctAnswer;
-        const answerStatus = i % 2 === 0 ? 'Incorrect' : 'Correct';
-        //2 correct answers
-        const result = await sendAnswerTest(httpServer, accessToken2, answer);
-        expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-        expect(result.body).toEqual(
-          createResponseAnswerTest(null, answerStatus),
-        );
-      }
+      //2 correct and 3 incorrect answers by user2
+      await addAnswersToQuizTest(httpServer, accessToken2, 2);
       const quizResult2 = await getQuizByIdTest(
         httpServer,
         result1.body.id,
@@ -876,58 +911,128 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         ),
       );
     });
-  });
 
-  //Addition, preparation
-  it(`(Additional) + finish 3 quiz by user1 and user2`, async () => {
-    await deleteAllDataTest(httpServer);
-
-    user1 = await createCorrectUserTest(httpServer);
-    const result1 = await loginCorrectUserTest(httpServer);
-    accessToken1 = result1.accessToken;
-    user2 = await createUserTest(
-      httpServer,
-      'login2',
-      'password2',
-      'email2@mail.ru',
-    );
-    const result2 = await loginUserTest(httpServer, 'login2', 'password2');
-    accessToken2 = result2.body.accessToken;
-
-    //create 9 questions
-    questionsIds = await create9Questions(httpServer);
-    //publish them:
-    for (const id of questionsIds) {
-      await publishQuestionSaTest(httpServer, id, true);
-    }
-    //score1: 4, score2: 4, draw
-    {
-      // DRAW
-      //connect to new quiz
+    //checking auto-finishing the quiz
+    it(`+ (200) user 1 and user 2 should start quiz №1;
+              + (200) user 1 should send 3 correct answers;
+              + (200) user 3 and user 4 should start quiz №2;`, async () => {
+      //connect user1 and user2
       const result1 = await connectPlayerToQuizTest(httpServer, accessToken1);
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      //connect user2 to the quiz
       const result2 = await connectPlayerToQuizTest(httpServer, accessToken2);
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
 
-      //3 correct answers by user1 (3+1 score)
-      await add5AnswersToQuizTest(httpServer, accessToken1, 3);
+      //3 correct answers by user1
+      await addAnswersToQuizTest(httpServer, accessToken1, 3, 3);
 
-      const quiz1 = await getQuizByIdTest(
+      //connect user3 and user4
+      const result3 = await connectPlayerToQuizTest(httpServer, accessToken3);
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      const result4 = await connectPlayerToQuizTest(httpServer, accessToken4);
+      expect(result4.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+
+      //2 correct answers by user2
+      await addAnswersToQuizTest(httpServer, accessToken2, 2, 2);
+      //3 correct and 2 incorrect answers by user4
+      await addAnswersToQuizTest(httpServer, accessToken4, 3);
+      //2 correct answers by user1
+      await addAnswersToQuizTest(httpServer, accessToken1, 2, 2);
+
+      const quiz1Res1 = await getQuizByIdTest(
         httpServer,
         result1.body.id,
         accessToken1,
       );
-      console.log(quiz1.body);
+      expect(quiz1Res1.body).toEqual(
+        createResponseSingleQuizTest(
+          'Active',
+          '5questions',
+          null,
+          user1.body.id,
+          5,
+          user2.body.id,
+          null,
+          2,
+          'string',
+          'string',
+          'string',
+        ),
+      );
+      expect(quiz1Res1.body.firstPlayerProgress.answers.length).toBe(5);
+      expect(quiz1Res1.body.secondPlayerProgress.answers.length).toBe(2);
 
+      const quiz2Res1 = await getQuizByIdTest(
+        httpServer,
+        result3.body.id,
+        accessToken3,
+      );
+      expect(quiz2Res1.body).toEqual(
+        createResponseSingleQuizTest(
+          'Active',
+          '5questions',
+          null,
+          user3.body.id,
+          0,
+          user4.body.id,
+          null,
+          3,
+          'string',
+          null,
+          'string',
+        ),
+      );
+      expect(quiz2Res1.body.firstPlayerProgress.answers.length).toBe(0);
+      expect(quiz2Res1.body.secondPlayerProgress.answers.length).toBe(5);
+
+      //1 correct answer by user2
+      await addAnswersToQuizTest(httpServer, accessToken2, 1, 1);
+
+      //waiting 10 secs for auto finishing quiz
       await new Promise((resolve) => setTimeout(resolve, 10000));
 
-      const quiz2 = await getQuizByIdTest(
+      const quiz1Res2 = await getQuizByIdTest(
         httpServer,
         result1.body.id,
         accessToken1,
       );
-      console.log(quiz2.body);
-    }
+      expect(quiz1Res2.body).toEqual(
+        createResponseSingleQuizTest(
+          'Finished',
+          '5questions',
+          null,
+          user1.body.id,
+          6,
+          user2.body.id,
+          null,
+          3,
+          'string',
+          'string',
+          'string',
+          'string',
+        ),
+      );
+
+      const quiz2Res2 = await getQuizByIdTest(
+        httpServer,
+        result3.body.id,
+        accessToken3,
+      );
+      expect(quiz2Res2.body).toEqual(
+        createResponseSingleQuizTest(
+          'Finished',
+          '5questions',
+          null,
+          user3.body.id,
+          0,
+          user4.body.id,
+          null,
+          4,
+          'string',
+          'string',
+          'string',
+          'string',
+        ),
+      );
+    });
   });
 });
