@@ -2,8 +2,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { QuizOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/quiz/quiz-orm.query.repository';
 import { QuestionsOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/questions/questions-orm.query.repository';
 import { QuizInfoAboutUserOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz-info-about-user-orm.repository';
-import { DataSource, Repository } from 'typeorm';
-import { ForbiddenException, Injectable, Scope } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { ForbiddenException } from '@nestjs/common';
 import { AnswersQuizOrmRepository } from '../../../../infrastructure/typeORM/repository/answers-quiz-orm.repository';
 import { QuizAnswerStatusEnum } from '../../../../../../infrastructure/utils/enums/quiz.enums';
 import { QuizOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz/quiz-orm.repository';
@@ -12,9 +12,7 @@ import { Quiz } from '../../../../domain/quiz.entity';
 import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.entity';
 import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
 import { AnswersQuizOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/answers-quiz-orm.query.repository';
-import { InjectRepository } from '@nestjs/typeorm';
-import { timestamp } from 'rxjs';
-import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 
 export class SendAnswerToQuizCommand {
   constructor(public currentUserId: string, public answer: string) {}
@@ -173,17 +171,21 @@ export class SendAnswerToQuizUseCase
   }
 
   @Cron('* * * * * *', { name: 'cron' })
-  private async check() {
+  private async checkEndTimeOfQuiz() {
     for (const timestamp of this.timestamps) {
-      if (Date.now() - timestamp > 9000) {
+      if (Date.now() - timestamp > 8000) {
         // const job = this.schedulerRegistry.getCronJob('cron');
         // job.stop();
-        console.log(1);
+        console.log(
+          this.cronInfo[timestamp].secondUserId,
+          this.cronInfo[timestamp].activeQuiz,
+        );
         const answersCount =
           await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
             this.cronInfo[timestamp].secondUserId,
             this.cronInfo[timestamp].activeQuiz.id,
           );
+        console.log(answersCount);
         if (answersCount === 5) return;
 
         const dataForTransaction = await startTransaction(this.dataSource, [
@@ -196,10 +198,10 @@ export class SendAnswerToQuizUseCase
           for (let i = 5; i > answersCount; i--) {
             //if there are less than five answers, then create remaining answers
             await this.answersQuizOrmRepository.createAnswer(
-              +this.cronInfo[timestamp].isAnswerCorrect,
+              QuizAnswerStatusEnum.Incorrect,
               this.cronInfo[timestamp].activeQuiz.id,
               this.cronInfo[timestamp].secondUserId,
-              this.cronInfo[timestamp].activeQuiz.questions![questionNumber++]
+              this.cronInfo[timestamp].activeQuiz.questions[questionNumber++]
                 .id,
               dataForTransaction.repositories.AnswerQuiz,
             );
@@ -219,6 +221,7 @@ export class SendAnswerToQuizUseCase
             if (!result)
               throw new Error('Something went wrong while incrementing score');
           }
+
           const result = this.quizOrmRepository.finishQuiz(
             this.cronInfo[timestamp].activeQuiz.id,
             dataForTransaction.repositories.Quiz,
