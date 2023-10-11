@@ -53,12 +53,13 @@ export async function getQuizByIdTest(httpServer, quizId, accessToken) {
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
-export async function add5AnswersToQuizTest(
+export async function addAnswersToQuizTest(
   httpServer,
   accessToken,
   numberOfCorrect,
+  numberOfAnswers = 5,
 ) {
-  const answersArray = new Array(5).fill('Incorrect');
+  const answersArray = new Array(numberOfAnswers).fill('Incorrect');
   answersArray.fill('correctAnswer', 0, numberOfCorrect);
   //send 5 answers
   for (const answer of answersArray) {
