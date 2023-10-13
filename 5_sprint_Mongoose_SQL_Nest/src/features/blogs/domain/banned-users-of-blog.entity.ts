@@ -22,8 +22,8 @@ export class BannedUsersOfBlog {
   @Column({ nullable: true })
   banReason: string;
 
-  @CreateDateColumn({ nullable: true })
-  banDate: Date;
+  @CreateDateColumn({ type: 'timestamp without time zone', nullable: true })
+  banDate: Date | null;
 
   @ManyToOne(() => Users, (u) => u.bannedUsersOfBlog)
   @JoinColumn()
