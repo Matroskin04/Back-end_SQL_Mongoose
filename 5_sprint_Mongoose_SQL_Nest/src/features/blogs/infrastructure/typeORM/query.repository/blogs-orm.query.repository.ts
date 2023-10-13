@@ -12,6 +12,9 @@ import { AllBlogsSAViewType } from './blogs-sa.types.query.repository';
 import { Blogs } from '../../../domain/blogs.entity';
 import { BannedUsersOfBlog } from '../../../domain/banned-users-of-blog.entity';
 import { modifyBlogIntoViewSAModel } from '../../../../../infrastructure/utils/functions/features/blog.functions.helpers';
+import { QuizInfoAboutUser } from '../../../../quiz/domain/quiz-game-info-about-user.entity';
+import { Quiz } from '../../../../quiz/domain/quiz.entity';
+import { QuizStatusEnum } from '../../../../../infrastructure/utils/enums/quiz.enums';
 
 @Injectable()
 export class BlogsOrmQueryRepository {
@@ -73,6 +76,13 @@ export class BlogsOrmQueryRepository {
         'b."userId"',
         'u.login as "userLogin"',
       ])
+      .addSelect((qb) => {
+        return qb
+          .select('COUNT(*)')
+          .from(Blogs, 'b')
+          .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
+          .andWhere('b.isBanned = false');
+      }, 'count')
       .leftJoin('b.user', 'u')
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
       .andWhere('b.isBanned = false')
