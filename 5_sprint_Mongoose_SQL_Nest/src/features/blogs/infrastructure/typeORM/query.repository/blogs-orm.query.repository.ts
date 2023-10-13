@@ -56,37 +56,38 @@ export class BlogsOrmQueryRepository {
   }
 
   async getAllBlogsSA(
-    query: QueryBlogsInputModel,
+    queryParams: QueryBlogsInputModel,
   ): Promise<AllBlogsSAViewType> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
-      variablesForReturn(query);
+      variablesForReturn(queryParams);
 
-    const result = await this.blogsRepository
+    const query = await this.blogsRepository
       .createQueryBuilder('b')
       .select([
-        'b.id',
-        'b.name',
-        'b.description',
-        'b.websiteUrl',
-        'b.createdAt',
-        'b.isMembership',
-        'b.userId',
+        'b."id"',
+        'b."name"',
+        'b."description"',
+        'b."websiteUrl"',
+        'b."createdAt"',
+        'b."isMembership"',
+        'b."userId"',
         'u.login as "userLogin"',
       ])
-      .leftJoin('user', 'u')
+      .leftJoin('b.user', 'u')
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
       .andWhere('b.isBanned = false')
       .orderBy(`b.${sortBy}`, sortDirection)
       .limit(+pageSize)
-      .offset((+pageNumber - 1) * +pageSize)
-      .getManyAndCount();
+      .offset((+pageNumber - 1) * +pageSize);
+
+    const result = await query.getRawMany();
 
     return {
-      pagesCount: Math.ceil((result[1] || 1) / +pageSize),
+      pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: result[1] || 0,
-      items: result[0].map((blog) => modifyBlogIntoViewSAModel(blog)),
+      totalCount: +result[0]?.count || 0,
+      items: result.map((blog) => modifyBlogIntoViewSAModel(blog)),
     };
   }
 
