@@ -4,7 +4,7 @@ import {
   ExecutionContext,
   NotFoundException,
 } from '@nestjs/common';
-import { BlogsQueryRepository } from '../../features/blogs/infrastructure/SQL/query.repository/blogs.query.repository';
+import { BlogsQueryRepository } from '../../../features/blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 
 @Injectable()
 export class BlogOwnerByIdGuard implements CanActivate {

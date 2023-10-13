@@ -3,6 +3,9 @@ import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-statu
 import { QuestionTestType } from './quiz-sa.types';
 import { QuestionQuiz } from '../../../features/quiz/domain/question-quiz.entity';
 import { QuestionPaginationType } from '../../../features/quiz/infrastructure/typeORM/query.repository/questions/questions.types.query.repository';
+import { regexpISOSString } from '../../../infrastructure/utils/regexp/general-regexp';
+import { toBeOneOf } from 'jest-extended';
+expect.extend({ toBeOneOf });
 
 export async function getAllQuestions(httpServer, query?, saLogin?, saPass?) {
   return request(httpServer)
@@ -118,7 +121,7 @@ export async function create9Questions(httpServer): Promise<string[]> {
     const result = await createQuestionSaTest(
       httpServer,
       `Question body ${count} ${i}`,
-      [`${i}`, `${count}`],
+      [`${i}`, `${count}`, 'correctAnswer'],
     );
     expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
     questionsIds.push(result.body.id);
@@ -128,7 +131,7 @@ export async function create9Questions(httpServer): Promise<string[]> {
 }
 
 export function createResponseQuestion(
-  updatedAt?: null,
+  updatedAt?: 'string' | null,
   published?,
   body?,
   correctAnswers?,
@@ -139,12 +142,12 @@ export function createResponseQuestion(
     correctAnswers: correctAnswers ?? expect.any(Array),
     published: published ?? expect.any(Boolean),
     createdAt: expect.any(String),
-    updatedAt: updatedAt === undefined ? expect.any(String) : null,
+    updatedAt: updatedAt ? expect.stringMatching(regexpISOSString) : null,
   };
 }
 
 export function createResponseAllQuestionsTest(
-  questionsIds: Array<string> | number,
+  questionsIds: string[] | number,
   totalCount?: number | null,
   pagesCount?: number | null,
   page?: number | null,
@@ -159,8 +162,8 @@ export function createResponseAllQuestionsTest(
       body: expect.any(String),
       correctAnswers: expect.any(Array),
       published: expect.any(Boolean),
-      createdAt: expect.any(String),
-      updatedAt: null,
+      createdAt: expect.stringMatching(regexpISOSString),
+      updatedAt: expect.toBeOneOf([expect.any(String), null]),
     });
   }
   return {
@@ -169,5 +172,22 @@ export function createResponseAllQuestionsTest(
     pageSize: pageSize ?? 10,
     totalCount: totalCount ?? 0,
     items: allQuestions,
+  };
+}
+
+export function createResponseSingleQuestionTest(
+  questionsIds: string[] | number,
+  body?: string | null,
+  correctAnswers?: string[] | null,
+  published?: boolean | null,
+  updatedAt?: 'string' | null,
+) {
+  return {
+    id: expect.any(String),
+    body: body ?? expect.any(String),
+    correctAnswers: correctAnswers ?? expect.any(Array),
+    published: published ?? expect.any(Boolean),
+    createdAt: expect.stringMatching(regexpISOSString),
+    updatedAt: updatedAt === 'string' ? expect.any(String) : null,
   };
 }

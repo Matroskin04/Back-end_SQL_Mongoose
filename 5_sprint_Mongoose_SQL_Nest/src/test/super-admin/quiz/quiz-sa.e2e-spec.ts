@@ -352,7 +352,9 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
       expect(result.body).toEqual(
-        createResponseQuestion(null, false, correctBody, correctAnswers),
+        createResponseQuestion(null, false, correctBody, [
+          correctAnswers.join(),
+        ]),
       );
     });
   });
@@ -547,6 +549,7 @@ describe('Quiz (SA); /sa/quiz', () => {
         correctQuestionId,
       );
       expect(updatedQuestion1.published).toBeTruthy();
+      expect(updatedQuestion1.updatedAt).not.toBeNull();
 
       //published false
       const result2 = await publishQuestionSaTest(
@@ -562,6 +565,7 @@ describe('Quiz (SA); /sa/quiz', () => {
         correctQuestionId,
       );
       expect(updatedQuestion2.published).toBeFalsy();
+      expect(updatedQuestion2.updatedAt).not.toBeNull();
     });
   });
 

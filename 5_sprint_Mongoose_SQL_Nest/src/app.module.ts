@@ -70,10 +70,7 @@ import { DeleteBlogUseCase } from './features/blogs/application/blogger/use-case
 import { BindBlogWithUserUseCase } from './features/blogs/application/sa/use-cases/bind-blog-with-user.use-case';
 import { UpdateBanInfoOfBlogUseCase } from './features/blogs/application/sa/use-cases/update-ban-info-of-blog.use-case';
 import { UpdateCommentUseCase } from './features/comments/application/use-cases/update-comment.use-case';
-import {
-  DeleteCommentCommand,
-  DeleteCommentUseCase,
-} from './features/comments/application/use-cases/delete-comment.use-case';
+import { DeleteCommentUseCase } from './features/comments/application/use-cases/delete-comment.use-case';
 import { CreateCommentUseCase } from './features/comments/application/use-cases/create-comment-by-post-id.use-case';
 import { UpdateCommentLikeStatusUseCase } from './features/comments/application/use-cases/update-comment-like-status.use-case';
 import { CreatePostUseCase } from './features/posts/application/use-cases/create-post.use-case';
@@ -120,7 +117,10 @@ import { QuizOrmQueryRepository } from './features/quiz/infrastructure/typeORM/q
 import { QuizOrmRepository } from './features/quiz/infrastructure/typeORM/repository/quiz/quiz-orm.repository';
 import { QuestionQuizRelationOrmRepository } from './features/quiz/infrastructure/typeORM/repository/question-quiz-relation-orm.repository';
 import { QuizInfoAboutUserOrmRepository } from './features/quiz/infrastructure/typeORM/repository/quiz-info-about-user-orm.repository';
-import { SendAnswerToQuizCommand } from './features/quiz/application/sa/use-cases/public/send-answer-to-quiz.use-case';
+import { SendAnswerToQuizUseCase } from './features/quiz/application/sa/use-cases/public/send-answer-to-quiz.use-case';
+import { AnswersQuizOrmRepository } from './features/quiz/infrastructure/typeORM/repository/answers-quiz-orm.repository';
+import { AnswersQuizOrmQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/answers-quiz-orm.query.repository';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const queryRepositories = [
   // SQL
@@ -140,6 +140,7 @@ const queryRepositories = [
   LikesInfoOrmQueryRepository,
   QuestionsOrmQueryRepository,
   QuizOrmQueryRepository,
+  AnswersQuizOrmQueryRepository,
 ];
 const repositories = [
   //SQL
@@ -170,6 +171,7 @@ const repositories = [
   QuizOrmRepository,
   QuestionQuizRelationOrmRepository,
   QuizInfoAboutUserOrmRepository,
+  AnswersQuizOrmRepository,
 ];
 
 const handlers = [
@@ -217,7 +219,7 @@ const handlers = [
 
   //Quiz
   ConnectToQuizUseCase,
-  SendAnswerToQuizCommand,
+  SendAnswerToQuizUseCase,
 ];
 
 @Module({
@@ -225,6 +227,7 @@ const handlers = [
     CqrsModule,
     ThrottlerModule.forRoot(),
     ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forFeature([
       Blogs,
       BannedUsersOfBlog,

@@ -19,9 +19,6 @@ export class QuizInfoAboutUser {
   id: string;
 
   @Column({ type: 'smallint', default: 0 })
-  numberOfAnswers: number;
-
-  @Column({ type: 'smallint', default: 0 })
   score: number;
 
   @ManyToOne(() => Quiz, (q) => q.quizGameInfoAboutUser)
@@ -30,7 +27,7 @@ export class QuizInfoAboutUser {
   @Column()
   quizId: string;
 
-  @OneToOne(() => Users, (u) => u.quizGameInfoAboutUser)
+  @ManyToOne(() => Users, (u) => u.quizGameInfoAboutUser)
   @JoinColumn()
   user: Users;
   @Column()

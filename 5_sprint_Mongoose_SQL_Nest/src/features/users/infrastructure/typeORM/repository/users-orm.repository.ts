@@ -54,7 +54,7 @@ export class UsersOrmRepository {
       .set({ passwordHash: newPasswordHash })
       .where('id = :userId', { userId })
       .execute();
-    console.log(result);
+
     return result.affected === 1;
   }
 

@@ -49,10 +49,10 @@ export class Users {
   @OneToOne(() => UsersBanInfo, (bi) => bi.user)
   userBanInfo: UsersBanInfo;
 
-  @OneToOne(() => AnswerQuiz, (aq) => aq.user)
+  @OneToMany(() => AnswerQuiz, (aq) => aq.user)
   answerQuiz: AnswerQuiz;
 
-  @OneToOne(() => QuizInfoAboutUser, (qi) => qi.user)
+  @OneToMany(() => QuizInfoAboutUser, (qi) => qi.user)
   quizGameInfoAboutUser: QuizInfoAboutUser;
 
   @OneToMany(() => Blogs, (b) => b.user)

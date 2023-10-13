@@ -12,8 +12,18 @@ export class QuizOrmRepository {
     protected quizRepository: Repository<Quiz>,
   ) {}
 
-  async createQuiz(userId: string): Promise<void> {
-    await this.quizRepository.createQueryBuilder().insert().values({});
+  async createQuiz(
+    userId: string,
+    quizRepository: Repository<Quiz> = this.quizRepository,
+  ): Promise<string> {
+    const result = await quizRepository
+      .createQueryBuilder()
+      .insert()
+      .values({ user1Id: userId })
+      .returning('id')
+      .execute();
+
+    return result.raw[0].id;
   }
 
   //todo isolation - 2 requests don't prevent to each other
@@ -45,4 +55,42 @@ export class QuizOrmRepository {
     if (result.affected === 0) return null;
     return result.raw[0];
   }
+
+  async finishQuiz(
+    quizId: string,
+    quizRepository: Repository<Quiz> = this.quizRepository,
+  ): Promise<boolean> {
+    const result = await quizRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        status: QuizStatusEnum['Finished'],
+        finishGameDate: () => 'CURRENT_TIMESTAMP',
+      })
+      .where('id = :quizId', {
+        quizId,
+      })
+      .execute();
+
+    return result.affected === 1;
+  }
+
+  // async setFinishTimeFirstUser(
+  //   quizId: string,
+  //   timestamp: number,
+  //   quizRepository: Repository<Quiz> = this.quizRepository,
+  // ): Promise<boolean> {
+  //   const result = await quizRepository
+  //     .createQueryBuilder()
+  //     .update()
+  //     .set({
+  //       finishTimeFirstUser: timestamp,
+  //     })
+  //     .where('id = :quizId', {
+  //       quizId,
+  //     })
+  //     .execute();
+  //
+  //   return result.affected === 1;
+  // }
 }

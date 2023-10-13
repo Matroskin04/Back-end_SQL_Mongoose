@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { PostsQueryRepository } from '../../posts/infrastructure/SQL/query.repository/posts.query.repository';
 import { JwtAccessNotStrictGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access-not-strict.guard';
-import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import { CurrentUserId } from '../../../infrastructure/decorators/current-user-id.param.decorator';
 import { QueryBlogsInputModel } from './models/input/queries-blog.input.model';
 import { BlogsQueryRepository } from '../infrastructure/SQL/query.repository/blogs.query.repository';
 import {

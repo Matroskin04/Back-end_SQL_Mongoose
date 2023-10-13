@@ -91,6 +91,16 @@ export class QuestionsOrmQueryRepository {
     return randomQuestions;
   }
 
+  async getAnswersOfQuestion(questionId: string): Promise<null | string[]> {
+    const query = await this.questionQuizRepository
+      .createQueryBuilder()
+      .select('"correctAnswers"')
+      .where('id = :questionId', { questionId });
+    const result = await query.getRawOne();
+
+    return result?.correctAnswers?.split(',') ?? null;
+  }
+
   async getQuestionAllInfoById(
     id: string,
   ): Promise<null | QuestionQuizAllInfoType> {
@@ -103,8 +113,8 @@ export class QuestionsOrmQueryRepository {
     return result
       ? {
           ...result,
-          createdAt: result.createdAt.toString(),
-          updatedAt: result.updatedAt?.toString() ?? null,
+          createdAt: result.createdAt.toISOString(),
+          updatedAt: result.updatedAt?.toISOString() ?? null,
         }
       : null;
   }

@@ -10,13 +10,35 @@ export class QuizInfoAboutUserOrmRepository {
     protected quizInfoAboutUserRepository: Repository<QuizInfoAboutUser>,
   ) {}
 
-  async createQuizInfoAboutUser(quizId: string, userId: string): Promise<void> {
-    await this.quizInfoAboutUserRepository
+  async createQuizInfoAboutUser(
+    quizId: string,
+    userId: string,
+    quizInfoRepo: Repository<QuizInfoAboutUser> = this
+      .quizInfoAboutUserRepository,
+  ): Promise<void> {
+    await quizInfoRepo
       .createQueryBuilder()
       .insert()
       .values({ quizId, userId })
       .execute();
 
     return;
+  }
+
+  async incrementUserScore(
+    quizId: string,
+    userId: string,
+    quizInfoRepo: Repository<QuizInfoAboutUser> = this
+      .quizInfoAboutUserRepository,
+  ): Promise<boolean> {
+    const result = await quizInfoRepo
+      .createQueryBuilder()
+      .update()
+      .set({ score: () => 'score + 1' })
+      .where('quizId = :quizId', { quizId })
+      .andWhere('userId = :userId', { userId })
+      .execute();
+
+    return result.affected === 1;
   }
 }

@@ -18,7 +18,7 @@ import {
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { RegistrationAuthInputModel } from './models/input/registration-auth.input.model';
 import { LocalAuthGuard } from '../../../infrastructure/guards/authorization-guards/local-auth.guard';
-import { CurrentUserId } from '../../../infrastructure/decorators/auth/current-user-id.param.decorator';
+import { CurrentUserId } from '../../../infrastructure/decorators/current-user-id.param.decorator';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { ValidateConfirmationCodeGuard } from '../../../infrastructure/guards/validation-guards/validate-confirmation-code.guard';
 import { ValidateEmailResendingGuard } from '../../../infrastructure/guards/validation-guards/validate-email-resending.guard';
@@ -29,7 +29,7 @@ import { TitleOfDevice } from '../../../infrastructure/decorators/auth/title-of-
 import { JwtRefreshGuard } from '../../../infrastructure/guards/authorization-guards/jwt-refresh.guard';
 import { RefreshToken } from '../../../infrastructure/decorators/auth/refresh-token-param.decorator';
 import { JwtAdapter } from '../../../infrastructure/adapters/jwt.adapter';
-import { IsUserBannedByLoginOrEmailGuard } from '../../../infrastructure/guards/is-user-banned.guard';
+import { IsUserBannedByLoginOrEmailGuard } from '../../../infrastructure/guards/forbidden-guards/is-user-banned.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { RegisterUserCommand } from '../application/use-cases/register-user.use-case';
 import { ConfirmEmailCommand } from '../application/use-cases/confirm-email.use-case';

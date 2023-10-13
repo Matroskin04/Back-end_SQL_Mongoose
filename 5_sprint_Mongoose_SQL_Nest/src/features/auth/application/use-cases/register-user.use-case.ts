@@ -7,7 +7,6 @@ import { EmailConfirmationOrmRepository } from '../../../users/infrastructure/ty
 import { PasswordRecoveryOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/password-recovery-orm.public.repository';
 import { BanInfoOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
 import { DataSource } from 'typeorm';
-import dataSource from '../../../../db/data-source';
 
 export class RegisterUserCommand {
   constructor(

@@ -650,6 +650,7 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
         correctPostId,
         accessToken1,
       );
+
       expect(checkPost1.body).toEqual(
         createResponseSinglePost(
           correctPostId,

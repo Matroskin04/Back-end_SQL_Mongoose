@@ -31,9 +31,9 @@ export class QuestionsOrmRepository {
     return {
       ...result.raw[0],
       correctAnswers: result.raw[0].correctAnswers
-        ? result.raw[0].correctAnswers.split(',')
+        ? result.raw[0].correctAnswers.split()
         : null,
-      createdAt: result.raw[0].createdAt.toString(),
+      createdAt: result.raw[0].createdAt.toISOString(),
     };
   }
 
@@ -59,7 +59,7 @@ export class QuestionsOrmRepository {
     const result = await this.questionQuizRepository
       .createQueryBuilder()
       .update()
-      .set({ published })
+      .set({ published, updatedAt: () => 'CURRENT_TIMESTAMP' })
       .where('id = :questionId', { questionId })
       .execute();
 
