@@ -122,9 +122,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
         'IncorrectURL',
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
-      expect(result2.body).toEqual(
-        createErrorsMessageTest(['name', 'description', 'websiteUrl']),
-      );
+      expect(result2.body).toEqual(createErrorsMessageTest(['websiteUrl']));
     });
 
     it(`+ (201) should create blog`, async () => {

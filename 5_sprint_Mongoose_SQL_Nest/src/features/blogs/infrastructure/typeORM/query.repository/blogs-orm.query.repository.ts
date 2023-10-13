@@ -11,6 +11,7 @@ import { DataSource, Repository } from 'typeorm';
 import { AllBlogsSAViewType } from './blogs-sa.types.query.repository';
 import { Blogs } from '../../../domain/blogs.entity';
 import { BannedUsersOfBlog } from '../../../domain/banned-users-of-blog.entity';
+import { modifyBlogIntoViewSAModel } from '../../../../../infrastructure/utils/functions/features/blog.functions.helpers';
 
 @Injectable()
 export class BlogsOrmQueryRepository {
@@ -69,7 +70,10 @@ export class BlogsOrmQueryRepository {
         'b.websiteUrl',
         'b.createdAt',
         'b.isMembership',
+        'b.userId',
+        'u.login as "userLogin"',
       ])
+      .leftJoin('user', 'u')
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
       .andWhere('b.isBanned = false')
       .orderBy(`b.${sortBy}`, sortDirection)
@@ -82,10 +86,7 @@ export class BlogsOrmQueryRepository {
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: result[1] || 0,
-      items: result[0].map((blog) => ({
-        ...blog,
-        createdAt: blog.createdAt.toISOString(),
-      })),
+      items: result[0].map((blog) => modifyBlogIntoViewSAModel(blog)),
     };
   }
 

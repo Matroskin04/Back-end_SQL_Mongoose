@@ -129,29 +129,6 @@ export class BlogsSAController {
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
-  @Delete(':blogId')
-  async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
-    const result = await this.commandBus.execute(new DeleteBlogCommand(blogId));
-    if (!result) throw new NotFoundException();
-    return;
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
-  @Delete(':blogId/posts/:postId')
-  async deletePostOfBlog(
-    @Param('postId') postId: string,
-    @Param('blogId') blogId: string,
-  ): Promise<void> {
-    const result = await this.commandBus.execute(
-      new DeletePostCommand(postId, blogId),
-    );
-    if (!result) throw new NotFoundException();
-    return;
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':id/ban')
   async updateBanInfoOfBlog(
     @Param('id') blogId: string,
@@ -173,6 +150,29 @@ export class BlogsSAController {
   ): Promise<void> {
     const result = await this.commandBus.execute(
       new BindBlogWithUserCommand(blogId, userId),
+    );
+    if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
+  @Delete(':blogId')
+  async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
+    const result = await this.commandBus.execute(new DeleteBlogCommand(blogId));
+    if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
+  @Delete(':blogId/posts/:postId')
+  async deletePostOfBlog(
+    @Param('postId') postId: string,
+    @Param('blogId') blogId: string,
+  ): Promise<void> {
+    const result = await this.commandBus.execute(
+      new DeletePostCommand(postId, blogId),
     );
     if (!result) throw new NotFoundException();
     return;
