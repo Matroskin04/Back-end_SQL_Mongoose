@@ -96,12 +96,12 @@ export class UsersOrmRepository {
     userId: string,
     blogId: string,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    DELETE FROM public."banned_users_of_blog" 
-        WHERE "userId" = $1 AND "blogId" = $2;`,
-      [userId, blogId],
-    );
-    return result[1] === 1;
+    const result = await this.bannedUsersOfBlogRepository
+      .createQueryBuilder()
+      .delete()
+      .where('userId = :userId', { userId })
+      .andWhere('blogId = :blogId', { blogId })
+      .execute();
+    return result.affected === 1;
   }
 }
