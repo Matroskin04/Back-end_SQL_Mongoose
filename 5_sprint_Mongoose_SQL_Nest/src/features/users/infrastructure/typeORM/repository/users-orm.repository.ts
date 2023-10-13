@@ -3,12 +3,18 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Users } from '../../../domain/users.entity';
 import { UserIdAndDateType } from '../../SQL/repository/users.types.repository';
+import { BannedUsersOfBlog } from '../../../../blogs/domain/banned-users-of-blog.entity';
+import { UsersBanInfo } from '../../../domain/users-ban-info.entity';
 
 @Injectable() //todo для чего этот декоратор
 export class UsersOrmRepository {
   constructor(
     @InjectRepository(Users)
     protected usersRepository: Repository<Users>,
+    @InjectRepository(BannedUsersOfBlog)
+    protected bannedUsersOfBlogRepository: Repository<BannedUsersOfBlog>,
+    @InjectRepository(UsersBanInfo)
+    protected usersBanInfoRepository: Repository<UsersBanInfo>,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
@@ -34,13 +40,11 @@ export class UsersOrmRepository {
     banReason: string,
     banStatus: boolean,
   ): Promise<void> {
-    const result = await this.dataSource.query(
-      `
-    INSERT INTO public."banned_users_of_blog"(
-        "userId", "blogId", "isBanned", "banReason")
-        VALUES ($1, $2, $3, $4);`,
-      [userId, blogId, banStatus, banReason],
-    );
+    const result = await this.bannedUsersOfBlogRepository
+      .createQueryBuilder()
+      .insert()
+      .values({ userId, blogId, isBanned: banStatus, banReason })
+      .execute();
     return;
   }
 
@@ -63,14 +67,18 @@ export class UsersOrmRepository {
     isBanned: boolean,
     banReason: string,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    UPDATE public."users_ban_info" 
-      SET "isBanned" = $1, "banReason" = $2, "banDate" = CASE WHEN $1 = true THEN now() ELSE NULL END
-      WHERE "userId" = $3`,
-      [isBanned, isBanned ? banReason : null, userId],
-    );
-    return result[1] === 1;
+    const result = await this.usersBanInfoRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        isBanned,
+        banReason,
+        banDate: isBanned ? () => 'CURRENT_TIMESTAMP' : null,
+      })
+      .where('userId = :userId', { userId })
+      .execute();
+
+    return result.affected === 1;
   }
 
   async deleteUserById(userId: string): Promise<boolean> {
