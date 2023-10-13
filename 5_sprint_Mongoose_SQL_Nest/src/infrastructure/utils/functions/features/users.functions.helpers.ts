@@ -13,11 +13,11 @@ export function modifyUserIntoViewModel(
     login: userInfo.login,
     email: userInfo.email,
     createdAt: userInfo.createdAt,
-    // banInfo: {
-    //   isBanned: userInfo.isBanned,
-    //   banDate: userInfo.banDate,
-    //   banReason: userInfo.banReason,
-    // },
+    banInfo: {
+      isBanned: userInfo.isBanned,
+      banDate: userInfo.banDate,
+      banReason: userInfo.banReason,
+    },
   };
 }
 

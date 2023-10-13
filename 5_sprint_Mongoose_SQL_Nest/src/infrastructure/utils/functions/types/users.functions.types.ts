@@ -23,4 +23,7 @@ export type UserInfoRawType = {
   login: string;
   email: string;
   createdAt: string;
+  isBanned: boolean;
+  banDate: null | string;
+  banReason: null | string;
 };
