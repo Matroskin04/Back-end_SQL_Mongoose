@@ -11,7 +11,6 @@ import {
   addAnswersToQuizTest,
   connectPlayerToQuizTest,
   createResponseAllStatisticTest,
-  createResponseAnswerTest,
   createResponseSingleQuizTest,
   createResponseStatisticTest,
   getAllQuizzesTest,
@@ -63,16 +62,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
   let questionsIds;
   let quizId;
 
-  const incorrectAnswer = 'answer';
   const correctAnswer = 'correctAnswer';
-  //correct data question
-  let correctQuestionId;
-  let questionData;
-  const correctBody = 'Solve: 3 + 3 = ?';
-  const correctAnswers = ['6', 'шесть', 'six'];
-  //incorrectData question
-  const bodyLength9 = 'a'.repeat(9);
-  const bodyLength501 = 'a'.repeat(501);
 
   describe(`/pairs/my-current (GET) - get current quiz game of a user`, () => {
     beforeAll(async () => {
