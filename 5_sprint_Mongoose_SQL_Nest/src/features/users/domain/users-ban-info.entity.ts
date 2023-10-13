@@ -18,7 +18,7 @@ export class UsersBanInfo {
   banReason: string;
 
   @Column({ nullable: true })
-  banDate: Date;
+  banDate: Date | null;
 
   @OneToOne(() => Users, (u) => u.userBanInfo)
   @JoinColumn()

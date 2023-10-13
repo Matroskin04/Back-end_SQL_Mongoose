@@ -185,8 +185,8 @@ export class BlogsOrmQueryRepository {
       .select('bu."isBanned"')
       .where('bu."userId" = :userId', { userId })
       .andWhere('bu."blogId" = :blogId', { blogId })
-      .getOne();
-
+      .getRawOne();
+    console.log('isUserBanned', result);
     return !!result?.isBanned;
   }
 
