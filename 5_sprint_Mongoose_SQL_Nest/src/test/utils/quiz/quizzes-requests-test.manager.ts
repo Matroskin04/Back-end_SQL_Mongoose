@@ -79,7 +79,7 @@ export const quizzesRequestsTestManager = {
     const questionsIds: any = [];
     let count = 1;
     for (const i of questionNumber) {
-      const result = await this.createQuestionSaTest(
+      const result = await this.createQuestionSa(
         httpServer,
         `Question body ${count} ${i}`,
         [`${i}`, `${count}`, 'correctAnswer'],
