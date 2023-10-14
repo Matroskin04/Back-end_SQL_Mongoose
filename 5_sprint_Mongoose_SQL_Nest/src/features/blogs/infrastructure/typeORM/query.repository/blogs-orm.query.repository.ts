@@ -75,6 +75,8 @@ export class BlogsOrmQueryRepository {
         'b."isMembership"',
         'b."userId"',
         'u.login as "userLogin"',
+        'b."isBanned"',
+        'b."banDate"',
       ])
       .addSelect((qb) => {
         return qb

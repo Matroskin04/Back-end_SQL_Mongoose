@@ -10,5 +10,9 @@ export function modifyBlogIntoViewSAModel(blog) {
       userId: blog.userId,
       userLogin: blog.userLogin,
     },
+    banInfo: {
+      isBanned: blog.isBanned,
+      banDate: blog.banDate,
+    },
   };
 }

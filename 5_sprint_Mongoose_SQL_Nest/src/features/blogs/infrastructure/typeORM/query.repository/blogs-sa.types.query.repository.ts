@@ -23,8 +23,8 @@ export type BlogSAViewType = {
     userId: string;
     userLogin: string;
   };
-  // banInfo: {
-  //   isBanned: boolean;
-  //   banDate: string;
-  // };
+  banInfo: {
+    isBanned: boolean;
+    banDate: string;
+  };
 };
