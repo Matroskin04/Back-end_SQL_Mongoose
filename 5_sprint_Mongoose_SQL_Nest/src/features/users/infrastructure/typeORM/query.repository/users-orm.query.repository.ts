@@ -127,36 +127,14 @@ export class UsersOrmQueryRepository {
         'count',
       )
       .leftJoin('bi.user', 'u')
-      .where('u.login ILIKE :searchLoginTerm', { searchLoginTerm })
-      .andWhere('bi.blogId = :blogId', { blogId })
-      .andWhere('u.isDeleted = false')
-      .orderBy(`u.${sortBy}`, sortDirection)
+      .where('u.login ILIKE :loginTerm', { loginTerm: `%${searchLoginTerm}%` })
+      .andWhere('bi."blogId" = :blogId', { blogId })
+      .andWhere('u."isDeleted" = false')
+      .orderBy(`u."${sortBy}"`, sortDirection)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
 
     const result = await query.getRawMany();
-
-    // const result = await this.dataSource.query(
-    //   `
-    // SELECT u."id", u."login", bi."isBanned", bi."banReason", bi."banDate",
-    //     (SELECT COUNT(*)
-    //         FROM public."banned_users_of_blog" as bi2
-    //             JOIN public."users" as u2
-    //             ON u2."id" = bi2."userId"
-    //     WHERE u2."login" ILIKE $1 AND bi2."blogId" = $2 AND u."isDeleted" = false)
-    // FROM public."banned_users_of_blog" as bi
-    //     JOIN public."users" as u
-    //     ON u."id" = bi."userId"
-    // WHERE u."login" ILIKE $1 AND bi."blogId" = $2 AND u."isDeleted" = false
-    //     ORDER BY "${sortBy}" ${sortDirection}
-    //     LIMIT $3 OFFSET $4;`,
-    //   [
-    //     `%${searchLoginTerm}%`,
-    //     blogId,
-    //     +pageSize,
-    //     (+pageNumber - 1) * +pageSize,
-    //   ],
-    // );
 
     return {
       pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
@@ -340,8 +318,8 @@ export class UsersOrmQueryRepository {
       .select('COUNT(*)')
       .from(BannedUsersOfBlog, 'bi')
       .leftJoin('bi.user', 'u')
-      .where('u.login ILIKE :searchLoginTerm', { searchLoginTerm })
-      .andWhere('bi.blogId = :blogId', { blogId })
-      .andWhere('u.isDeleted = false');
+      .where('u.login ILIKE :loginTerm', { loginTerm: `%${searchLoginTerm}%` })
+      .andWhere('bi."blogId" = :blogId', { blogId })
+      .andWhere('u."isDeleted" = false');
   }
 }
