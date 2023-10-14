@@ -1,6 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BlogsRepository } from '../../../infrastructure/SQL/repository/blogs.repository';
 import { UsersQueryRepository } from '../../../../users/infrastructure/SQL/query.repository/users.query.repository';
+import { BlogsOrmRepository } from '../../../infrastructure/typeORM/repository/blogs-orm.repository';
+import { UsersOrmQueryRepository } from '../../../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 
 export class BindBlogWithUserCommand {
   constructor(public blogId: string, public userId: string) {}
@@ -11,19 +13,19 @@ export class BindBlogWithUserUseCase
   implements ICommandHandler<BindBlogWithUserCommand>
 {
   constructor(
-    protected usersQueryRepository: UsersQueryRepository,
-    protected blogsRepository: BlogsRepository,
+    protected usersOrmQueryRepository: UsersOrmQueryRepository,
+    protected blogsOrmRepository: BlogsOrmRepository,
   ) {}
 
   async execute(command: BindBlogWithUserCommand): Promise<boolean> {
     const { userId, blogId } = command;
 
-    const user = await this.usersQueryRepository.getUserLoginById(userId);
+    const user = await this.usersOrmQueryRepository.getUserLoginById(userId);
     if (!user) {
       return false;
     }
 
-    const isUpdate = await this.blogsRepository.updateUserInfoOfBlog(
+    const isUpdate = await this.blogsOrmRepository.updateUserInfoOfBlog(
       blogId,
       userId,
     );

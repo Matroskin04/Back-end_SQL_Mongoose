@@ -71,14 +71,14 @@ export class BlogsOrmRepository {
   }
 
   async updateUserInfoOfBlog(blogId: string, userId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    UPDATE public."blogs"
-      SET "userId" = $1
-        WHERE "id" = $2`,
-      [userId, blogId],
-    );
-    return result[1] === 1;
+    const result = await this.blogsRepository
+      .createQueryBuilder()
+      .update()
+      .set({ userId })
+      .where('id = :blogId', { blogId })
+      .execute();
+
+    return result.affected === 1;
   }
 
   async deleteSingleBlog(blogId: string): Promise<boolean> {
