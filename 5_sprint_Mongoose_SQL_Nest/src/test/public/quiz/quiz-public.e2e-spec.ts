@@ -2,10 +2,6 @@ import { INestApplication } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { startApp } from '../../test.utils';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
-import {
-  create9Questions,
-  publishQuestionSaTest,
-} from '../../super-admin/quiz/quiz-sa.helpers';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import {
   addAnswersToQuizTest,
@@ -28,6 +24,7 @@ import {
 import { createUserTest } from '../../super-admin/users/users-sa.helpers';
 import { loginUserTest } from '../auth/auth-public.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
+import { quizzesRequestsTestManager } from '../../utils/quiz/quizzes-requests-test.manager';
 
 describe('Quiz (PUBLIC); /pair-game-quiz', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -82,10 +79,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       accessToken2 = result2.body.accessToken;
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
     });
 
@@ -162,10 +165,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       accessToken2 = result2.body.accessToken;
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
 
       //connect to new quiz
@@ -265,10 +274,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       accessToken2 = result2.body.accessToken;
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
       //create 3 finished games and 1 pending
       //score1: 4, score2: 4, draw
@@ -380,10 +395,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       accessToken2 = result2.body.accessToken;
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
     });
 
@@ -516,10 +537,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       }
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
     });
 
@@ -691,10 +718,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       }
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
     });
 
@@ -799,10 +832,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       }
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
     });
 

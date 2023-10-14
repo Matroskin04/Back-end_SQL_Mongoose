@@ -3,20 +3,10 @@ import { startApp } from '../../test.utils';
 import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  create9Questions,
-  createCorrectQuestionSaTest,
-  createQuestionSaTest,
-  createResponseAllQuestionsTest,
-  createResponseQuestion,
-  deleteQuestionSaTest,
-  getAllQuestions,
-  getQuestionAllInfoTest,
-  publishQuestionSaTest,
-  updateQuestionSaTest,
-} from './quiz-sa.helpers';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import { DataSource } from 'typeorm';
+import { quizzesRequestsTestManager } from '../../utils/quiz/quizzes-requests-test.manager';
+import { quizzesResponsesTestManager } from '../../utils/quiz/quizzes-responses-test.manager';
 
 describe('Quiz (SA); /sa/quiz', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -54,17 +44,23 @@ describe('Quiz (SA); /sa/quiz', () => {
       await deleteAllDataTest(httpServer);
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
     });
 
     it(`- (401) sa login is incorrect
               - (401) sa password is incorrect`, async () => {
       //sa login is incorrect
-      const result1 = await getAllQuestions(httpServer, null, 'incorrectLogin');
+      const result1 = await quizzesRequestsTestManager.getAllQuestionsSa(
+        httpServer,
+        null,
+        'incorrectLogin',
+      );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
 
       //sa password is incorrect
-      const result2 = await getAllQuestions(
+      const result2 = await quizzesRequestsTestManager.getAllQuestionsSa(
         httpServer,
         null,
         null,
@@ -74,56 +70,85 @@ describe('Quiz (SA); /sa/quiz', () => {
     });
 
     it(`+ (200) should return 9 questions`, async () => {
-      const result = await getAllQuestions(httpServer);
+      const result = await quizzesRequestsTestManager.getAllQuestionsSa(
+        httpServer,
+      );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
-        createResponseAllQuestionsTest(questionsIds, 9),
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
+          questionsIds,
+          9,
+        ),
       );
     });
 
     it(`+ (200) should return 3 questions (query: pageSize=3, pageNumber=2)
               + (200) should return 4 questions (query: pageSize=5, pageNumber=2)`, async () => {
       //3 questions
-      const result1 = await getAllQuestions(
+      const result1 = await quizzesRequestsTestManager.getAllQuestionsSa(
         httpServer,
         'pageSize=3&&pageNumber=2',
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
-        createResponseAllQuestionsTest(questionsIds.slice(3, 6), 9, 3, 2, 3),
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
+          questionsIds.slice(3, 6),
+          9,
+          3,
+          2,
+          3,
+        ),
       );
 
       //4 questions
-      const result2 = await getAllQuestions(
+      const result2 = await quizzesRequestsTestManager.getAllQuestionsSa(
         httpServer,
         'pageSize=5&&pageNumber=2',
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
-        createResponseAllQuestionsTest(questionsIds.slice(5), 9, 2, 2, 5),
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
+          questionsIds.slice(5),
+          9,
+          2,
+          2,
+          5,
+        ),
       );
     });
 
     it(`+ (200) should return 5 questions (query: sortBy=body&&pageSize=5)
               + (200) should return 5 questions (query: sortBy=createdAt&&pageSize=5)`, async () => {
       //sortBy=body, total 9 questions
-      const result1 = await getAllQuestions(
+      const result1 = await quizzesRequestsTestManager.getAllQuestionsSa(
         httpServer,
         'sortBy=body&&pageSize=5',
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
-        createResponseAllQuestionsTest(questionsIds.slice(0, 5), 9, 2, 1, 5),
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
+          questionsIds.slice(0, 5),
+          9,
+          2,
+          1,
+          5,
+        ),
       );
 
       //sortBy=createdAt, total 9 questions
-      const result2 = await getAllQuestions(
+      const result2 = await quizzesRequestsTestManager.getAllQuestionsSa(
         httpServer,
         'sortBy=createdAt&&pageSize=5',
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
-        createResponseAllQuestionsTest(questionsIds.slice(0, 5), 9, 2, 1, 5),
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
+          questionsIds.slice(0, 5),
+          9,
+          2,
+          1,
+          5,
+        ),
       );
     });
 
@@ -131,10 +156,13 @@ describe('Quiz (SA); /sa/quiz', () => {
               + (200) should return 9 questions (query: sortBy=id&&sortDirection=desc)
               + (200) should return 9 questions (query: sortBy=body&&sortDirection=asc)`, async () => {
       //sortDirection=asc, total 9 questions
-      const result1 = await getAllQuestions(httpServer, 'sortDirection=asc');
+      const result1 = await quizzesRequestsTestManager.getAllQuestionsSa(
+        httpServer,
+        'sortDirection=asc',
+      );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
-        createResponseAllQuestionsTest(
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
           [...questionsIds].reverse(),
           9,
           1,
@@ -144,13 +172,13 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
 
       //sortBy=id&&sortDirection=desc, total 9 questions
-      const result2 = await getAllQuestions(
+      const result2 = await quizzesRequestsTestManager.getAllQuestionsSa(
         httpServer,
         'sortBy=id&sortDirection=desc',
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
-        createResponseAllQuestionsTest(
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
           [...questionsIds].sort().reverse(),
           9,
           1,
@@ -160,13 +188,13 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
 
       //sortBy=body&&sortDirection=asc, total 9 questions
-      const result3 = await getAllQuestions(
+      const result3 = await quizzesRequestsTestManager.getAllQuestionsSa(
         httpServer,
         'sortBy=body&sortDirection=asc',
       );
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result3.body).toEqual(
-        createResponseAllQuestionsTest(
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
           [...questionsIds].reverse(),
           9,
           1,
@@ -180,18 +208,30 @@ describe('Quiz (SA); /sa/quiz', () => {
               + (200) should return 7 questions (query: bodySearchTerm=TH)
               + (200) should return 4 questions (query: bodySearchTerm=S)`, async () => {
       //bodySearchTerm=irs, 1 question
-      const result1 = await getAllQuestions(httpServer, 'bodySearchTerm=irs');
+      const result1 = await quizzesRequestsTestManager.getAllQuestionsSa(
+        httpServer,
+        'bodySearchTerm=irs',
+      );
 
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
-        createResponseAllQuestionsTest([questionsIds[7]], 1, 1, 1, 10),
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
+          [questionsIds[7]],
+          1,
+          1,
+          1,
+          10,
+        ),
       );
 
       //bodySearchTerm=TH, 7 questions
-      const result2 = await getAllQuestions(httpServer, 'bodySearchTerm=TH');
+      const result2 = await quizzesRequestsTestManager.getAllQuestionsSa(
+        httpServer,
+        'bodySearchTerm=TH',
+      );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
-        createResponseAllQuestionsTest(
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
           [...questionsIds.slice(0, 6), questionsIds[8]],
           7,
           1,
@@ -201,10 +241,13 @@ describe('Quiz (SA); /sa/quiz', () => {
       );
 
       //bodySearchTerm=S, 4 questions
-      const result3 = await getAllQuestions(httpServer, 'bodySearchTerm=V');
+      const result3 = await quizzesRequestsTestManager.getAllQuestionsSa(
+        httpServer,
+        'bodySearchTerm=V',
+      );
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result3.body).toEqual(
-        createResponseAllQuestionsTest(
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
           questionsIds.filter((e, i) => i === 2),
           1,
           1,
@@ -220,35 +263,60 @@ describe('Quiz (SA); /sa/quiz', () => {
               + (200) should return 6 questions (query: publishedStatus=notPublished)`, async () => {
       //publish 3 questions
       for (const i of questionsIds.slice(0, 3)) {
-        const result = await publishQuestionSaTest(httpServer, i, true);
+        const result = await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          i,
+          true,
+        );
         expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
       }
 
       //publishedStatus=all, 9 questions
-      const result1 = await getAllQuestions(httpServer, 'publishedStatus=all');
+      const result1 = await quizzesRequestsTestManager.getAllQuestionsSa(
+        httpServer,
+        'publishedStatus=all',
+      );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
-        createResponseAllQuestionsTest(questionsIds, 9, 1, 1, 10),
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
+          questionsIds,
+          9,
+          1,
+          1,
+          10,
+        ),
       );
 
       //publishedStatus=published, 3 questions
-      const result2 = await getAllQuestions(
+      const result2 = await quizzesRequestsTestManager.getAllQuestionsSa(
         httpServer,
         'publishedStatus=published',
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
-        createResponseAllQuestionsTest(questionsIds.slice(0, 3), 3, 1, 1, 10),
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
+          questionsIds.slice(0, 3),
+          3,
+          1,
+          1,
+          10,
+        ),
       );
 
       //publishedStatus=notPublished, 6 questions
-      const result3 = await getAllQuestions(
+      const result3 = await quizzesRequestsTestManager.getAllQuestionsSa(
         httpServer,
         'publishedStatus=notPublished',
       );
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result3.body).toEqual(
-        createResponseAllQuestionsTest(questionsIds.slice(3), 6, 1, 1, 10),
+        quizzesResponsesTestManager.createResponseAllQuestionsSa(
+          questionsIds.slice(3),
+          6,
+          1,
+          1,
+          10,
+        ),
       );
     });
 
@@ -256,12 +324,15 @@ describe('Quiz (SA); /sa/quiz', () => {
               - (400) sortDirection has incorrect value (query: sortDirection=Truncate;)
               - (400) publishedStatus has incorrect value (query: publishedStatus=Truncate;)`, async () => {
       //status 400
-      const result1 = await getAllQuestions(httpServer, 'sortBy=Truncate;');
+      const result1 = await quizzesRequestsTestManager.getAllQuestionsSa(
+        httpServer,
+        'sortBy=Truncate;',
+      );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result1.body).toEqual(createErrorsMessageTest(['sortBy']));
 
       //status 400
-      const result2 = await getAllQuestions(
+      const result2 = await quizzesRequestsTestManager.getAllQuestionsSa(
         httpServer,
         'sortDirection=Truncate;',
       );
@@ -269,7 +340,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
 
       //status 400
-      const result3 = await getAllQuestions(
+      const result3 = await quizzesRequestsTestManager.getAllQuestionsSa(
         httpServer,
         'publishedStatus=Truncate;',
       );
@@ -288,7 +359,7 @@ describe('Quiz (SA); /sa/quiz', () => {
     it(`- (401) sa login is incorrect
               - (401) sa password is incorrect`, async () => {
       //sa login is incorrect
-      const result1 = await createQuestionSaTest(
+      const result1 = await quizzesRequestsTestManager.createQuestionSa(
         httpServer,
         null,
         null,
@@ -297,7 +368,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
 
       //sa password is incorrect
-      const result2 = await createQuestionSaTest(
+      const result2 = await quizzesRequestsTestManager.createQuestionSa(
         httpServer,
         null,
         null,
@@ -312,7 +383,7 @@ describe('Quiz (SA); /sa/quiz', () => {
               - (400) incorrect body (should be a string) and correctAnswers (length should be > 0)
               - (400) incorrect body (the length should not be less 10 after trim)`, async () => {
       //body length, answers not array
-      const result1 = await createQuestionSaTest(
+      const result1 = await quizzesRequestsTestManager.createQuestionSa(
         httpServer,
         bodyLength501,
         'not an array',
@@ -322,39 +393,49 @@ describe('Quiz (SA); /sa/quiz', () => {
         createErrorsMessageTest(['body', 'correctAnswers']),
       );
       //body length, answers array contains not a string
-      const result2 = await createQuestionSaTest(httpServer, bodyLength9, [
-        '123',
-        123,
-      ]);
+      const result2 = await quizzesRequestsTestManager.createQuestionSa(
+        httpServer,
+        bodyLength9,
+        ['123', 123],
+      );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result2.body).toEqual(
         createErrorsMessageTest(['body', 'correctAnswers']),
       );
       //body is not a string, length of array < 1
-      const result3 = await createQuestionSaTest(httpServer, 123, []);
+      const result3 = await quizzesRequestsTestManager.createQuestionSa(
+        httpServer,
+        123,
+        [],
+      );
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result3.body).toEqual(
         createErrorsMessageTest(['body', 'correctAnswers']),
       );
       //body length is less than 10 after trim
-      const result4 = await createQuestionSaTest(httpServer, '              ', [
-        'correct',
-      ]);
+      const result4 = await quizzesRequestsTestManager.createQuestionSa(
+        httpServer,
+        '              ',
+        ['correct'],
+      );
       expect(result4.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result4.body).toEqual(createErrorsMessageTest(['body']));
     });
 
     it(`+ (201) should create question for quiz`, async () => {
-      const result = await createQuestionSaTest(
+      const result = await quizzesRequestsTestManager.createQuestionSa(
         httpServer,
         correctBody,
         correctAnswers,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
       expect(result.body).toEqual(
-        createResponseQuestion(null, false, correctBody, [
-          correctAnswers.join(),
-        ]),
+        quizzesResponsesTestManager.createResponseSaQuestion(
+          null,
+          false,
+          correctBody,
+          [correctAnswers.join()],
+        ),
       );
     });
   });
@@ -363,14 +444,16 @@ describe('Quiz (SA); /sa/quiz', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
-      questionData = await createCorrectQuestionSaTest(httpServer);
+      questionData = await quizzesRequestsTestManager.createCorrectQuestionSa(
+        httpServer,
+      );
       correctQuestionId = questionData.id;
     });
 
     it(`- (401) sa login is incorrect
               - (401) sa password is incorrect`, async () => {
       //sa login is incorrect
-      const result1 = await updateQuestionSaTest(
+      const result1 = await quizzesRequestsTestManager.updateQuestionSa(
         httpServer,
         correctQuestionId,
         null,
@@ -380,7 +463,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
 
       //sa password is incorrect
-      const result2 = await updateQuestionSaTest(
+      const result2 = await quizzesRequestsTestManager.updateQuestionSa(
         httpServer,
         correctQuestionId,
         null,
@@ -396,7 +479,7 @@ describe('Quiz (SA); /sa/quiz', () => {
               - (400) incorrect body (should be a string) and correctAnswers (length should be > 0)
               - (400) incorrect body (the length should not be less 10 after trim)`, async () => {
       //body length, answers not array
-      const result1 = await updateQuestionSaTest(
+      const result1 = await quizzesRequestsTestManager.updateQuestionSa(
         httpServer,
         correctQuestionId,
         bodyLength501,
@@ -407,7 +490,7 @@ describe('Quiz (SA); /sa/quiz', () => {
         createErrorsMessageTest(['body', 'correctAnswers']),
       );
       //body length, answers array contains not a string
-      const result2 = await updateQuestionSaTest(
+      const result2 = await quizzesRequestsTestManager.updateQuestionSa(
         httpServer,
         correctQuestionId,
         bodyLength9,
@@ -418,7 +501,7 @@ describe('Quiz (SA); /sa/quiz', () => {
         createErrorsMessageTest(['body', 'correctAnswers']),
       );
       //body is not a string, length of array < 1
-      const result3 = await updateQuestionSaTest(
+      const result3 = await quizzesRequestsTestManager.updateQuestionSa(
         httpServer,
         correctQuestionId,
         123,
@@ -429,7 +512,7 @@ describe('Quiz (SA); /sa/quiz', () => {
         createErrorsMessageTest(['body', 'correctAnswers']),
       );
       //body length is less than 10 after trim
-      const result4 = await updateQuestionSaTest(
+      const result4 = await quizzesRequestsTestManager.updateQuestionSa(
         httpServer,
         correctQuestionId,
         '              ',
@@ -440,7 +523,7 @@ describe('Quiz (SA); /sa/quiz', () => {
     });
 
     it(`- (404) question with such id doesn't exist`, async () => {
-      const result = await updateQuestionSaTest(
+      const result = await quizzesRequestsTestManager.updateQuestionSa(
         httpServer,
         uuidv4(),
         null,
@@ -450,7 +533,7 @@ describe('Quiz (SA); /sa/quiz', () => {
     });
 
     it(`+ (204) should update question`, async () => {
-      const result = await updateQuestionSaTest(
+      const result = await quizzesRequestsTestManager.updateQuestionSa(
         httpServer,
         correctQuestionId,
         'new question body',
@@ -459,10 +542,11 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //check that fields were changed, and updated date was set
-      const updatedQuestion = await getQuestionAllInfoTest(
-        dataSource,
-        correctQuestionId,
-      );
+      const updatedQuestion =
+        await quizzesRequestsTestManager.getQuestionAllInfo(
+          dataSource,
+          correctQuestionId,
+        );
       expect(updatedQuestion.body).toBe('new question body');
       expect(updatedQuestion.correctAnswers).toBe('new 1,new 2');
       expect(updatedQuestion.updatedAt).not.toBeNull();
@@ -474,21 +558,24 @@ describe('Quiz (SA); /sa/quiz', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
-      questionData = await createCorrectQuestionSaTest(httpServer);
+      questionData = await quizzesRequestsTestManager.createCorrectQuestionSa(
+        httpServer,
+      );
       correctQuestionId = questionData.id;
 
-      const question2 = await createCorrectQuestionSaTest(
-        httpServer,
-        'some interesting question',
-        null,
-      );
+      const question2 =
+        await quizzesRequestsTestManager.createCorrectQuestionSa(
+          httpServer,
+          'some interesting question',
+          null,
+        );
       questionWithoutAnswersId = question2.id;
     });
 
     it(`- (401) sa login is incorrect
               - (401) sa password is incorrect`, async () => {
       //sa login is incorrect
-      const result1 = await publishQuestionSaTest(
+      const result1 = await quizzesRequestsTestManager.publishQuestionSa(
         httpServer,
         correctQuestionId,
         true,
@@ -497,7 +584,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
 
       //sa password is incorrect
-      const result2 = await publishQuestionSaTest(
+      const result2 = await quizzesRequestsTestManager.publishQuestionSa(
         httpServer,
         correctQuestionId,
         true,
@@ -510,7 +597,7 @@ describe('Quiz (SA); /sa/quiz', () => {
     it(`- (400) input value of the field 'published' is not boolean,
               - (400) specified question doesn't have correct answers`, async () => {
       //value is not boolean
-      const result1 = await publishQuestionSaTest(
+      const result1 = await quizzesRequestsTestManager.publishQuestionSa(
         httpServer,
         correctQuestionId,
         'string',
@@ -519,7 +606,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result1.body).toEqual(createErrorsMessageTest(['published']));
 
       //question doesn't have correct answers
-      const result2 = await publishQuestionSaTest(
+      const result2 = await quizzesRequestsTestManager.publishQuestionSa(
         httpServer,
         questionWithoutAnswersId,
         true,
@@ -529,14 +616,18 @@ describe('Quiz (SA); /sa/quiz', () => {
     });
 
     it(`- (404) question with such id doesn't exist`, async () => {
-      const result = await publishQuestionSaTest(httpServer, uuidv4(), true);
+      const result = await quizzesRequestsTestManager.publishQuestionSa(
+        httpServer,
+        uuidv4(),
+        true,
+      );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
     it(`+ (204) should set true for field 'published' of the question
               + (204) should set false for field 'published' of the question`, async () => {
       //published true
-      const result1 = await publishQuestionSaTest(
+      const result1 = await quizzesRequestsTestManager.publishQuestionSa(
         httpServer,
         correctQuestionId,
         true,
@@ -544,15 +635,16 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //check that field was changed
-      const updatedQuestion1 = await getQuestionAllInfoTest(
-        dataSource,
-        correctQuestionId,
-      );
+      const updatedQuestion1 =
+        await quizzesRequestsTestManager.getQuestionAllInfo(
+          dataSource,
+          correctQuestionId,
+        );
       expect(updatedQuestion1.published).toBeTruthy();
       expect(updatedQuestion1.updatedAt).not.toBeNull();
 
       //published false
-      const result2 = await publishQuestionSaTest(
+      const result2 = await quizzesRequestsTestManager.publishQuestionSa(
         httpServer,
         correctQuestionId,
         false,
@@ -560,10 +652,11 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //check that field was changed
-      const updatedQuestion2 = await getQuestionAllInfoTest(
-        dataSource,
-        correctQuestionId,
-      );
+      const updatedQuestion2 =
+        await quizzesRequestsTestManager.getQuestionAllInfo(
+          dataSource,
+          correctQuestionId,
+        );
       expect(updatedQuestion2.published).toBeFalsy();
       expect(updatedQuestion2.updatedAt).not.toBeNull();
     });
@@ -573,14 +666,16 @@ describe('Quiz (SA); /sa/quiz', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
-      questionData = await createCorrectQuestionSaTest(httpServer);
+      questionData = await quizzesRequestsTestManager.createCorrectQuestionSa(
+        httpServer,
+      );
       correctQuestionId = questionData.id;
     });
 
     it(`- (401) sa login is incorrect
               - (401) sa password is incorrect`, async () => {
       //sa login is incorrect
-      const result1 = await deleteQuestionSaTest(
+      const result1 = await quizzesRequestsTestManager.deleteQuestionSa(
         httpServer,
         correctQuestionId,
         'incorrectLogin',
@@ -588,7 +683,7 @@ describe('Quiz (SA); /sa/quiz', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
 
       //sa password is incorrect
-      const result2 = await deleteQuestionSaTest(
+      const result2 = await quizzesRequestsTestManager.deleteQuestionSa(
         httpServer,
         correctQuestionId,
         null,
@@ -598,19 +693,26 @@ describe('Quiz (SA); /sa/quiz', () => {
     });
 
     it(`- (404) question with such id doesn't exist`, async () => {
-      const result = await deleteQuestionSaTest(httpServer, uuidv4());
+      const result = await quizzesRequestsTestManager.deleteQuestionSa(
+        httpServer,
+        uuidv4(),
+      );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
     it(`+ (204) should delete question`, async () => {
-      const result = await deleteQuestionSaTest(httpServer, correctQuestionId);
+      const result = await quizzesRequestsTestManager.deleteQuestionSa(
+        httpServer,
+        correctQuestionId,
+      );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //check that deletion is successful
-      const updatedQuestion = await getQuestionAllInfoTest(
-        dataSource,
-        correctQuestionId,
-      );
+      const updatedQuestion =
+        await quizzesRequestsTestManager.getQuestionAllInfo(
+          dataSource,
+          correctQuestionId,
+        );
       expect(updatedQuestion).toBeNull();
     });
   });
