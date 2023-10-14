@@ -82,12 +82,10 @@ export class BlogsOrmQueryRepository {
         return qb
           .select('COUNT(*)')
           .from(Blogs, 'b')
-          .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
-          .andWhere('b.isBanned = false');
+          .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` });
       }, 'count')
       .leftJoin('b.user', 'u')
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
-      .andWhere('b.isBanned = false')
       .orderBy(`b.${sortBy}`, sortDirection)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
