@@ -1,16 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
-import { loginUserTest } from '../../public/auth/auth-public.helpers';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  createBlogSaTest,
-  createResponseAllBlogsSaTest,
-  createResponseSingleBlogSa,
-  deleteBlogSaTest,
-  getAllBlogsSaTest,
-  updateBlogSaTest,
-} from './blogs-sa.helpers';
-import { createUserTest } from '../users/users-sa.helpers';
+import { blogsRequestsTestManager } from '../../utils/blogs/blogs-requests-test.manager';
 import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
 import {
   createPostSaTest,
@@ -29,6 +20,7 @@ import {
   loginCorrectUserTest,
 } from '../../helpers/chains-of-requests.helpers';
 import { startApp } from '../../test.utils';
+import { blogsResponsesTestManager } from '../../utils/blogs/blogs-responses-test.manager';
 
 describe('Blogs, Post (SA); /sa', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -85,7 +77,7 @@ describe('Blogs, Post (SA); /sa', () => {
     it(`- (401) sa login is incorrect
               - (401) sa password is incorrect`, async () => {
       //sa login is incorrect
-      const result1 = await createBlogSaTest(
+      const result1 = await blogsRequestsTestManager.createBlogSa(
         httpServer,
         correctBlogName,
         correctDescription,
@@ -95,7 +87,7 @@ describe('Blogs, Post (SA); /sa', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
 
       //sa password is incorrect
-      const result2 = await createBlogSaTest(
+      const result2 = await blogsRequestsTestManager.createBlogSa(
         httpServer,
         correctBlogName,
         correctDescription,
@@ -108,7 +100,7 @@ describe('Blogs, Post (SA); /sa', () => {
 
     it(`- (400) values of 'name', 'website' and 'description' are incorrect (large length)
               - (400) values of 'name' (not string), 'website' (incorrect format) and 'description' (not string) are incorrect`, async () => {
-      const result1 = await createBlogSaTest(
+      const result1 = await blogsRequestsTestManager.createBlogSa(
         httpServer,
         nameLength16,
         blogDescriptionLength501,
@@ -119,7 +111,7 @@ describe('Blogs, Post (SA); /sa', () => {
         createErrorsMessageTest(['name', 'description', 'websiteUrl']),
       );
 
-      const result2 = await createBlogSaTest(
+      const result2 = await blogsRequestsTestManager.createBlogSa(
         httpServer,
         null,
         null,
@@ -132,7 +124,7 @@ describe('Blogs, Post (SA); /sa', () => {
     });
 
     it(`+ (201) should create blog`, async () => {
-      const result = await createBlogSaTest(
+      const result = await blogsRequestsTestManager.createBlogSa(
         httpServer,
         correctBlogName,
         correctDescription,
@@ -140,7 +132,7 @@ describe('Blogs, Post (SA); /sa', () => {
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
       expect(result.body).toEqual(
-        createResponseSingleBlogSa(
+        blogsResponsesTestManager.createResponseSaSingleBlog(
           result.body.id,
           correctBlogName,
           correctDescription,
@@ -161,11 +153,15 @@ describe('Blogs, Post (SA); /sa', () => {
     it(`- (401) sa login is incorrect
               - (401) sa password is incorrect`, async () => {
       //sa login is incorrect
-      const result1 = await getAllBlogsSaTest(httpServer, '', 'incorrectLogin');
+      const result1 = await blogsRequestsTestManager.getAllBlogsSa(
+        httpServer,
+        '',
+        'incorrectLogin',
+      );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
 
       //sa password is incorrect
-      const result2 = await getAllBlogsSaTest(
+      const result2 = await blogsRequestsTestManager.getAllBlogsSa(
         httpServer,
         '',
         null,
@@ -175,9 +171,14 @@ describe('Blogs, Post (SA); /sa', () => {
     });
 
     it(`+ (200) should return empty array`, async () => {
-      const result = await getAllBlogsSaTest(httpServer, '');
+      const result = await blogsRequestsTestManager.getAllBlogsSa(
+        httpServer,
+        '',
+      );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result.body).toEqual(createResponseAllBlogsSaTest([]));
+      expect(result.body).toEqual(
+        blogsResponsesTestManager.createResponseSaAllBlogs([]),
+      );
     });
   });
 
@@ -196,7 +197,7 @@ describe('Blogs, Post (SA); /sa', () => {
     it(`- (401) sa login is incorrect
               - (401) sa password is incorrect`, async () => {
       //sa login is incorrect
-      const result1 = await updateBlogSaTest(
+      const result1 = await blogsRequestsTestManager.updateBlogSa(
         httpServer,
         correctBlogId,
         correctBlogName,
@@ -207,7 +208,7 @@ describe('Blogs, Post (SA); /sa', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
 
       //sa password is incorrect
-      const result2 = await updateBlogSaTest(
+      const result2 = await blogsRequestsTestManager.updateBlogSa(
         httpServer,
         correctBlogId,
         correctBlogName,
@@ -221,7 +222,7 @@ describe('Blogs, Post (SA); /sa', () => {
 
     it(`- (400) values of 'name', 'website' and 'description' are incorrect (large length)
               - (400) values of 'name' (not string), 'website' (incorrect format) and 'description' (not string) are incorrect`, async () => {
-      const result1 = await updateBlogSaTest(
+      const result1 = await blogsRequestsTestManager.updateBlogSa(
         httpServer,
         correctBlogId,
         nameLength16,
@@ -233,7 +234,7 @@ describe('Blogs, Post (SA); /sa', () => {
         createErrorsMessageTest(['name', 'description', 'websiteUrl']),
       );
 
-      const result2 = await updateBlogSaTest(
+      const result2 = await blogsRequestsTestManager.updateBlogSa(
         httpServer,
         correctBlogId,
         null,
@@ -247,7 +248,7 @@ describe('Blogs, Post (SA); /sa', () => {
     });
 
     it(`- (404) should not update blog because blog is not found with such id`, async () => {
-      const result = await updateBlogSaTest(
+      const result = await blogsRequestsTestManager.updateBlogSa(
         httpServer,
         uuidv4(),
         correctBlogName,
@@ -258,7 +259,7 @@ describe('Blogs, Post (SA); /sa', () => {
     });
 
     it(`+ (204) should update blog`, async () => {
-      const result = await updateBlogSaTest(
+      const result = await blogsRequestsTestManager.updateBlogSa(
         httpServer,
         correctBlogId,
         correctBlogName,
@@ -271,7 +272,7 @@ describe('Blogs, Post (SA); /sa', () => {
       const blog = await getBlogByIdPublicTest(httpServer, correctBlogId);
       expect(blog.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(blog.body).toEqual(
-        createResponseSingleBlogSa(
+        blogsResponsesTestManager.createResponseSaSingleBlog(
           correctBlogId,
           correctBlogName,
           correctDescription,
@@ -296,7 +297,7 @@ describe('Blogs, Post (SA); /sa', () => {
     it(`- (401) sa login is incorrect
               - (401) sa password is incorrect`, async () => {
       //sa login is incorrect
-      const result1 = await deleteBlogSaTest(
+      const result1 = await blogsRequestsTestManager.deleteBlogSa(
         httpServer,
         correctBlogId,
         'incorrectLogin',
@@ -304,7 +305,7 @@ describe('Blogs, Post (SA); /sa', () => {
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
 
       //sa password is incorrect
-      const result2 = await deleteBlogSaTest(
+      const result2 = await blogsRequestsTestManager.deleteBlogSa(
         httpServer,
         correctBlogId,
         null,
@@ -314,12 +315,18 @@ describe('Blogs, Post (SA); /sa', () => {
     });
 
     it(`- (404) should not delete blog because blog doesn't exist with such id`, async () => {
-      const result = await deleteBlogSaTest(httpServer, uuidv4());
+      const result = await blogsRequestsTestManager.deleteBlogSa(
+        httpServer,
+        uuidv4(),
+      );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
     it(`+ (204) should delete blog`, async () => {
-      const result = await deleteBlogSaTest(httpServer, correctBlogId);
+      const result = await blogsRequestsTestManager.deleteBlogSa(
+        httpServer,
+        correctBlogId,
+      );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
 
       //check that blog is deleted
@@ -464,7 +471,9 @@ describe('Blogs, Post (SA); /sa', () => {
     it(`+ (200) should return empty array of posts`, async () => {
       const result = await getAllPostsSaTest(httpServer, correctBlogId);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result.body).toEqual(createResponseAllBlogsSaTest([]));
+      expect(result.body).toEqual(
+        blogsResponsesTestManager.createResponseSaAllBlogs([]),
+      );
     });
   });
 
