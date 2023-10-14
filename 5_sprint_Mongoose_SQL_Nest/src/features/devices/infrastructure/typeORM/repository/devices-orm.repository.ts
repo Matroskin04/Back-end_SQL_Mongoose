@@ -69,12 +69,12 @@ export class DevicesOrmRepository {
   }
 
   async deleteAllDevicesByUserId(userId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    DELETE FROM public."devices"
-        WHERE "userId" = $1 `,
-      [userId],
-    );
-    return result[1] > 0;
+    const result = await this.devicesRepository
+      .createQueryBuilder()
+      .delete()
+      .where('userId = :userId', { userId })
+      .execute();
+
+    return result.affected ? result.affected > 0 : false;
   }
 }
