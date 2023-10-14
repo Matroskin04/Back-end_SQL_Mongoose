@@ -1,5 +1,4 @@
 import request from 'supertest';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { RouterPaths } from '../router-paths';
 
 export const blogsRequestsTestManager = {
