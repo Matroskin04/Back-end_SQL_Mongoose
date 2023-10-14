@@ -126,7 +126,7 @@ export class CommentsOrmQueryRepository {
       .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
       .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
       .leftJoin('c.user', 'u')
-      .leftJoin('u."userBanInfo"', 'bi')
+      .leftJoin(UsersBanInfo, 'bi', 'u.id = bi."userId"')
       .leftJoin('c.post', 'p')
       .leftJoin('p.blog', 'b')
       .where('b."userId" = :userId', { userId })
