@@ -43,13 +43,15 @@ import { CreatePostCommand } from '../../posts/application/use-cases/create-post
 import { UpdatePostCommand } from '../../posts/application/use-cases/update-post.use-case';
 import { DeletePostCommand } from '../../posts/application/use-cases/delete-post.use-case';
 import { CommentsOrmQueryRepository } from '../../comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
+import { PostsOrmQueryRepository } from '../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
+import { BlogsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
 
 @Controller('/hometask-nest/blogger/blogs')
 export class BlogsBloggerController {
   constructor(
     protected commandBus: CommandBus,
-    protected blogsQueryRepository: BlogsQueryRepository,
-    protected postsQueryRepository: PostsQueryRepository,
+    protected blogsOrmQueryRepository: BlogsOrmQueryRepository,
+    protected postsOrmQueryRepository: PostsOrmQueryRepository,
     protected commentsOrmQueryRepository: CommentsOrmQueryRepository,
   ) {}
 
@@ -59,7 +61,7 @@ export class BlogsBloggerController {
     @Query() query: QueryBlogsInputModel,
     @CurrentUserId() userId: string,
   ): Promise<BlogsOutputModel> {
-    const result = await this.blogsQueryRepository.getAllBlogsOfBlogger(
+    const result = await this.blogsOrmQueryRepository.getAllBlogsOfBlogger(
       query,
       userId.toString(),
     );
@@ -73,7 +75,7 @@ export class BlogsBloggerController {
     @CurrentUserId() userId: string,
     @Query() query: QueryPostsOfBlogInputModel,
   ): Promise<PostsOfBlogViewModel> {
-    const result = await this.postsQueryRepository.getAllPostsOfBlog(
+    const result = await this.postsOrmQueryRepository.getAllPostsOfBlog(
       blogId,
       query,
       userId,

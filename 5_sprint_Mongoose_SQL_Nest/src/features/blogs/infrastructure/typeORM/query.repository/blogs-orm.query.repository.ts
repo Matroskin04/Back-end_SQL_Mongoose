@@ -7,7 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { QueryBlogsInputModel } from '../../../api/models/input/queries-blog.input.model';
 import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { AllBlogsSAViewType } from './blogs-sa.types.query.repository';
 import { Blogs } from '../../../domain/blogs.entity';
 import { BannedUsersOfBlog } from '../../../domain/banned-users-of-blog.entity';
@@ -27,24 +27,45 @@ export class BlogsOrmQueryRepository {
   ) {}
 
   async getAllBlogsOfBlogger(
-    query: QueryBlogsInputModel,
+    queryParams: QueryBlogsInputModel,
     userId: string,
   ): Promise<BlogPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
-      variablesForReturn(query);
+      variablesForReturn(queryParams);
 
-    const result = await this.dataSource.query(
-      `
-    SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership",
-      (SELECT COUNT(*)
-        FROM public."blogs"
-        WHERE "name" ILIKE $1 AND "userId" = $2)
-    FROM public."blogs"
-        WHERE "name" ILIKE $1 AND "userId" = $2
-            ORDER BY "${sortBy}" ${sortDirection}
-            LIMIT $3 OFFSET $4`,
-      [`%${searchNameTerm}%`, userId, +pageSize, (+pageNumber - 1) * +pageSize],
-    );
+    const query = await this.blogsRepository
+      .createQueryBuilder('b')
+      .select([
+        'b."id"',
+        'b."name"',
+        'b."description"',
+        'b."websiteUrl"',
+        'b."createdAt"',
+        'b."isMembership"',
+      ])
+      .addSelect(
+        (qb) => this.blogsOfBloggerCountBuilder(qb, searchNameTerm, userId),
+        'count',
+      )
+      .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
+      .andWhere('b.userId = :userId', { userId })
+      .orderBy(`b.${sortBy}`, sortDirection)
+      .limit(+pageSize)
+      .offset((+pageNumber - 1) * +pageSize);
+
+    const result = await query.getRawMany();
+    // const result = await this.dataSource.query(
+    //   `
+    // SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership",
+    //   (SELECT COUNT(*)
+    //     FROM public."blogs"
+    //     WHERE "name" ILIKE $1 AND "userId" = $2)
+    // FROM public."blogs"
+    //     WHERE "name" ILIKE $1 AND "userId" = $2
+    //         ORDER BY "${sortBy}" ${sortDirection}
+    //         LIMIT $3 OFFSET $4`,
+    //   [`%${searchNameTerm}%`, userId, +pageSize, (+pageNumber - 1) * +pageSize],
+    // );
 
     return {
       pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
@@ -78,12 +99,7 @@ export class BlogsOrmQueryRepository {
         'b."isBanned"',
         'b."banDate"',
       ])
-      .addSelect((qb) => {
-        return qb
-          .select('COUNT(*)')
-          .from(Blogs, 'b')
-          .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` });
-      }, 'count')
+      .addSelect((qb) => this.allBlogsCountBuilder(qb, searchNameTerm), 'count')
       .leftJoin('b.user', 'u')
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
       .orderBy(`b.${sortBy}`, sortDirection)
@@ -199,5 +215,27 @@ export class BlogsOrmQueryRepository {
       [blogId],
     );
     return +result[0].count === 1;
+  }
+
+  private allBlogsCountBuilder(
+    qb: SelectQueryBuilder<Blogs>,
+    searchNameTerm: string,
+  ) {
+    return qb
+      .select('COUNT(*)')
+      .from(Blogs, 'b')
+      .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` });
+  }
+
+  private blogsOfBloggerCountBuilder(
+    qb: SelectQueryBuilder<Blogs>,
+    searchNameTerm: string,
+    userId: string,
+  ) {
+    return qb
+      .select('COUNT(*)')
+      .from(Blogs, 'b')
+      .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
+      .andWhere('b.userId = :userId', { userId });
   }
 }
