@@ -60,14 +60,14 @@ export class BlogsOrmRepository {
   }
 
   async updateBanInfo(blogId: string, banStatus: boolean): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `
-    UPDATE public."blogs"
-      SET "isBanned" = $1, "banDate" = now()
-        WHERE "id" = $2`,
-      [banStatus, blogId],
-    );
-    return result[1] === 1;
+    const result = await this.blogsRepository
+      .createQueryBuilder()
+      .update()
+      .set({ isBanned: banStatus, banDate: () => 'CURRENT_TIMESTAMP' })
+      .where('id = :blogId', { blogId })
+      .execute();
+
+    return result.affected === 1;
   }
 
   async updateUserInfoOfBlog(blogId: string, userId: string): Promise<boolean> {
