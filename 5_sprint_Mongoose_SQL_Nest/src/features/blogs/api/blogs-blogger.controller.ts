@@ -42,6 +42,7 @@ import { DeleteBlogCommand } from '../application/blogger/use-cases/delete-blog.
 import { CreatePostCommand } from '../../posts/application/use-cases/create-post.use-case';
 import { UpdatePostCommand } from '../../posts/application/use-cases/update-post.use-case';
 import { DeletePostCommand } from '../../posts/application/use-cases/delete-post.use-case';
+import { CommentsOrmQueryRepository } from '../../comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
 
 @Controller('/hometask-nest/blogger/blogs')
 export class BlogsBloggerController {
@@ -49,7 +50,7 @@ export class BlogsBloggerController {
     protected commandBus: CommandBus,
     protected blogsQueryRepository: BlogsQueryRepository,
     protected postsQueryRepository: PostsQueryRepository,
-    protected commentsQueryRepository: CommentsQueryRepository,
+    protected commentsOrmQueryRepository: CommentsOrmQueryRepository,
   ) {}
 
   @UseGuards(JwtAccessGuard)
@@ -87,7 +88,7 @@ export class BlogsBloggerController {
     @CurrentUserId() userId: string,
     @Query() query: QueryCommentsOfBlogInputModel,
   ) {
-    const result = await this.commentsQueryRepository.getCommentsOfBlogger(
+    const result = await this.commentsOrmQueryRepository.getCommentsOfBlogger(
       query,
       userId,
     );

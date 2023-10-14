@@ -49,7 +49,7 @@ export class CommentsOrmQueryRepository {
         'c.createdAt AS "createdAt"',
         'u.login AS "userLogin"',
       ])
-      .addSelect((qb) => this.commentsCountBuilder(qb, postId), 'count')
+      .addSelect((qb) => this.commentsOfPostCountBuilder(qb, postId), 'count')
       .addSelect((qb) => this.likesCountBuilder(qb), 'likesCount')
       .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
       .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
@@ -99,65 +99,90 @@ export class CommentsOrmQueryRepository {
   }
 
   async getCommentsOfBlogger(
-    query: QueryPostInputModel,
+    queryParams: QueryPostInputModel,
     userId: string,
   ): Promise<CommentsOfBloggerPaginationType | null> {
     const { pageNumber, pageSize, sortBy, sortDirection } =
-      variablesForReturn(query);
+      variablesForReturn(queryParams);
 
-    const allComments = await this.dataSource.query(
-      `
-    SELECT "userId" FROM "comments" WHERE "userId" = $1`,
-      [userId],
-    );
+    const query = await this.commentsRepository
+      .createQueryBuilder('c')
+      .select([
+        'c."id"',
+        'c."userId"',
+        'c."content"',
+        'c."createdAt"',
+        'u."login" as "userLogin"',
+        'p."id" as "postId"',
+        'p."title"',
+        'p."blogId"',
+        'b."name" as "blogName"',
+      ])
+      .addSelect(
+        (qb) => this.commentsOfBloggerCountBuilder(qb, userId),
+        'count',
+      )
+      .addSelect((qb) => this.likesCountBuilder(qb), 'likesCount')
+      .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
+      .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
+      .leftJoin('c.user', 'u')
+      .leftJoin('u."userBanInfo"', 'bi')
+      .leftJoin('c.post', 'p')
+      .leftJoin('p.blog', 'b')
+      .where('b."userId" = :userId', { userId })
+      .andWhere('bi.isBanned = false')
+      .orderBy(`c.${sortBy}`, sortDirection)
+      .limit(+pageSize)
+      .offset((+pageNumber - 1) * +pageSize);
 
-    const commentInfo = await this.dataSource.query(
-      `
-    SELECT c."id", c."userId", c."content", c."createdAt", u."login" as "userLogin", 
-           p."id" as "postId", p."title", p."blogId", b."name" as "blogName",
-      (SELECT COUNT(*)
-        FROM public."comments"
-            JOIN public."posts" as p
-                ON p."id" = c."postId"
-            JOIN public."blogs" as b
-                ON b."id" = p."blogId"
-            JOIN public."users_ban_info" as bi
-                ON u."id" = bi."userId"
-        WHERE b."userId" = $1 AND bi."isBanned" = false),
+    // const commentInfo = await this.dataSource.query(
+    //   `
+    // SELECT c."id", c."userId", c."content", c."createdAt", u."login" as "userLogin",
+    //        p."id" as "postId", p."title", p."blogId", b."name" as "blogName",
+    //   (SELECT COUNT(*)
+    //     FROM public."comments"
+    //         JOIN public."posts" as p
+    //             ON p."id" = c."postId"
+    //         JOIN public."blogs" as b
+    //             ON b."id" = p."blogId"
+    //         JOIN public."users_ban_info" as bi
+    //             ON u."id" = bi."userId"
+    //     WHERE b."userId" = $1 AND bi."isBanned" = false),
+    //
+    //   (SELECT COUNT(*) as "likesCount"
+    //     FROM public."comments_likes_info" as li
+    //         WHERE li."likeStatus" = $2 AND li."commentId" = c."id"),
+    //
+    //   (SELECT COUNT(*) as "dislikesCount"
+    //     FROM public."comments_likes_info" as li
+    //         WHERE li."likeStatus" = $3 AND li."commentId" = c."id"),
+    //
+    //   (SELECT "likeStatus" as "myStatus"
+    //     FROM public."comments_likes_info" as li
+    //         WHERE li."userId" = $1 AND li."commentId" = c."id")
+    //
+    // FROM public."comments" as c
+    //     JOIN public."users" as u
+    //         ON u."id" = c."userId"
+    //     JOIN public."posts" as p
+    //         ON p."id" = c."postId"
+    //     JOIN public."blogs" as b
+    //         ON b."id" = p."blogId"
+    //     JOIN public."users_ban_info" as bi
+    //             ON u."id" = bi."userId"
+    // WHERE b."userId" = $1 AND bi."isBanned" = false
+    //     ORDER BY "${sortBy}" ${sortDirection}
+    //     LIMIT $4 OFFSET $5`,
+    //   [
+    //     userId,
+    //     AllLikeStatusEnum.Like,
+    //     AllLikeStatusEnum.Dislike,
+    //     +pageSize,
+    //     (+pageNumber - 1) * +pageSize,
+    //   ],
+    // );
 
-      (SELECT COUNT(*) as "likesCount"
-        FROM public."comments_likes_info" as li
-            WHERE li."likeStatus" = $2 AND li."commentId" = c."id"),
-
-      (SELECT COUNT(*) as "dislikesCount"
-        FROM public."comments_likes_info" as li
-            WHERE li."likeStatus" = $3 AND li."commentId" = c."id"),
-
-      (SELECT "likeStatus" as "myStatus"
-        FROM public."comments_likes_info" as li
-            WHERE li."userId" = $1 AND li."commentId" = c."id")
-
-    FROM public."comments" as c
-        JOIN public."users" as u
-            ON u."id" = c."userId"
-        JOIN public."posts" as p
-            ON p."id" = c."postId"
-        JOIN public."blogs" as b
-            ON b."id" = p."blogId"
-        JOIN public."users_ban_info" as bi
-                ON u."id" = bi."userId"
-    WHERE b."userId" = $1 AND bi."isBanned" = false
-        ORDER BY "${sortBy}" ${sortDirection}
-        LIMIT $4 OFFSET $5`,
-      [
-        userId,
-        AllLikeStatusEnum.Like,
-        AllLikeStatusEnum.Dislike,
-        +pageSize,
-        (+pageNumber - 1) * +pageSize,
-      ],
-    );
-
+    const commentInfo = await query.getRawMany();
     return {
       pagesCount: Math.ceil((+commentInfo[0]?.count || 1) / +pageSize),
       page: +pageNumber,
@@ -180,11 +205,27 @@ export class CommentsOrmQueryRepository {
       : null;
   }
 
-  private commentsCountBuilder(qb: SelectQueryBuilder<any>, postId) {
+  private commentsOfPostCountBuilder(
+    qb: SelectQueryBuilder<any>,
+    postId: string,
+  ) {
     return qb
       .select('COUNT(*)')
       .from(Comments, 'c')
-      .where('c.postId = :postId', { postId });
+      .where('c.postId = :postId', { postId })
+      .andWhere('bi.isBanned = false');
+  }
+
+  private commentsOfBloggerCountBuilder(
+    qb: SelectQueryBuilder<any>,
+    userId: string,
+  ) {
+    return qb
+      .select('COUNT(*)')
+      .from(Comments, 'c')
+      .innerJoin('c.post', 'p')
+      .innerJoin('p.blog', 'b', 'b.userId = :userId', { userId })
+      .andWhere('bi.isBanned = false');
   }
 
   private likesCountBuilder(qb: SelectQueryBuilder<any>) {
