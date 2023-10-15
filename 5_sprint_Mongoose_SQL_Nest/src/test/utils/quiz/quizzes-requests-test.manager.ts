@@ -7,7 +7,7 @@ import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-statu
 export const quizzesRequestsTestManager = {
   getAllQuestionsSa: async function (httpServer, query?, saLogin?, saPass?) {
     return request(httpServer)
-      .get(`/hometask-nest/sa/quiz/questions`)
+      .get(RouterPaths.questionsSa)
       .auth(saLogin ?? 'admin', saPass ?? 'qwerty')
       .query(query ?? '');
   },
@@ -37,7 +37,7 @@ export const quizzesRequestsTestManager = {
     saPass?,
   ) {
     return request(httpServer)
-      .post(`/hometask-nest/sa/quiz/questions`)
+      .post(RouterPaths.questionsSa)
       .auth(saLogin ?? 'admin', saPass ?? 'qwerty')
       .send({
         body: body ?? 'Solve: 2 + 2 = ?',
@@ -51,7 +51,7 @@ export const quizzesRequestsTestManager = {
     correctAnswers?,
   ): Promise<QuestionTestType> {
     const result = await request(httpServer)
-      .post(`/hometask-nest/sa/quiz/questions`)
+      .post(RouterPaths.questionsSa)
       .auth('admin', 'qwerty')
       .send({
         body: body === undefined ? 'Solve: 2 + 2 = ?' : null,
@@ -100,7 +100,7 @@ export const quizzesRequestsTestManager = {
     saPass?,
   ) {
     return request(httpServer)
-      .put(`/hometask-nest/sa/quiz/questions/${id}`)
+      .put(RouterPaths.questionsSa + `/${id}`)
       .auth(saLogin ?? 'admin', saPass ?? 'qwerty')
       .send({
         body: body ?? 'Solve: 3 + 3 = ?',
@@ -116,7 +116,7 @@ export const quizzesRequestsTestManager = {
     saPass?,
   ) {
     return request(httpServer)
-      .put(`/hometask-nest/sa/quiz/questions/${id}/publish`)
+      .put(RouterPaths.questionsSa + `/${id}/publish`)
       .auth(saLogin ?? 'admin', saPass ?? 'qwerty')
       .send({
         published,
@@ -125,7 +125,7 @@ export const quizzesRequestsTestManager = {
 
   deleteQuestionSa: async function (httpServer, id, saLogin?, saPass?) {
     return request(httpServer)
-      .delete(`/hometask-nest/sa/quiz/questions/${id}`)
+      .delete(RouterPaths.questionsSa + `/${id}`)
       .auth(saLogin ?? 'admin', saPass ?? 'qwerty');
   },
 };
