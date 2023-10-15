@@ -1,9 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { startApp } from '../../test.utils';
-import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
+import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { v4 as uuidv4 } from 'uuid';
-import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
+import { createErrorsMessageTest } from '../../utils/general/errors-message.helper';
 import { DataSource } from 'typeorm';
 import { quizzesRequestsTestManager } from '../../utils/quiz/quizzes-requests-test.manager';
 import { quizzesResponsesTestManager } from '../../utils/quiz/quizzes-responses-test.manager';

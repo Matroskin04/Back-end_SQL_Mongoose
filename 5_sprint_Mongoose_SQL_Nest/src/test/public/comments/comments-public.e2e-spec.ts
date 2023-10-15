@@ -1,12 +1,12 @@
 import { INestApplication } from '@nestjs/common';
-import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
+import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
 import { v4 as uuidv4 } from 'uuid';
 import {
   createCorrectBlogTest,
   createCorrectPostTest,
   createCorrectUserTest,
   loginCorrectUserTest,
-} from '../../helpers/chains-of-requests.helpers';
+} from '../../utils/general/chains-of-requests.helpers';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import {
   createCorrectCommentTest,
@@ -16,11 +16,11 @@ import {
   updateCommentTest,
   updateStatusLikeOfCommentTest,
 } from './comments-public.helpers';
-import { createUserTest } from '../../super-admin/users/users-sa.helpers';
 import { loginUserTest } from '../auth/auth-public.helpers';
-import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
+import { createErrorsMessageTest } from '../../utils/general/errors-message.helper';
 import { startApp } from '../../test.utils';
 import { createAndLogin3UsersTest } from '../blogs/blogs-public.helpers';
+import { usersRequestsTestManager } from '../../utils/users/users-requests-test.manager';
 
 describe('Comments, Put-like comment, (Public); /', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -135,7 +135,7 @@ describe('Comments, Put-like comment, (Public); /', () => {
 
     it(`- (403) shouldn't update comment if it doesn't belong to current user`, async () => {
       //creates new user
-      const newUser = await createUserTest(
+      const newUser = await usersRequestsTestManager.createUserSa(
         httpServer,
         'user2',
         correctPass,
@@ -236,7 +236,7 @@ describe('Comments, Put-like comment, (Public); /', () => {
 
     it(`- (403) shouldn't delete comment if it doesn't belong to current user`, async () => {
       //creates new user
-      const newUser = await createUserTest(
+      const newUser = await usersRequestsTestManager.createUserSa(
         httpServer,
         'user2',
         correctPass,

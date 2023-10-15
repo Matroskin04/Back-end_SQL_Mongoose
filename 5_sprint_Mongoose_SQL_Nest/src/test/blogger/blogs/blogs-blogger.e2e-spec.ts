@@ -2,18 +2,8 @@ import { INestApplication } from '@nestjs/common';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { loginUserTest } from '../../public/auth/auth-public.helpers';
 import { v4 as uuidv4 } from 'uuid';
+import { createErrorsMessageTest } from '../../utils/general/errors-message.helper';
 import {
-  createBlogTest,
-  createResponseAllBlogsTest,
-  createResponseSingleBlog,
-  deleteBlogBloggerTest,
-  getAllBlogsBloggerTest,
-  updateBlogBloggerTest,
-} from './blogs-blogger.helpers';
-import { createUserTest } from '../../super-admin/users/users-sa.helpers';
-import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
-import {
-  createPostTest,
   createResponseSinglePost,
   deletePostTest,
   getAllPostsTest,
@@ -21,19 +11,23 @@ import {
 } from './posts-blogger.helpers';
 import { getPostByIdPublicTest } from '../../public/posts/posts-public.helpers';
 import { getBlogByIdPublicTest } from '../../public/blogs/blogs-public.helpers';
-import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
+import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
 import {
   createCorrectBlogTest,
   createCorrectPostTest,
   createCorrectUserTest,
   loginCorrectUserTest,
-} from '../../helpers/chains-of-requests.helpers';
+} from '../../utils/general/chains-of-requests.helpers';
 import { getAllCommentsOfBloggerTest } from './comments-blogger.helpers';
 import {
   createCommentTest,
   createResponseCommentsOfBlogger,
 } from '../../public/comments/comments-public.helpers';
 import { startApp } from '../../test.utils';
+import { usersRequestsTestManager } from '../../utils/users/users-requests-test.manager';
+import { blogsRequestsTestManager } from '../../utils/blogs/blogs-requests-test.manager';
+import { blogsResponsesTestManager } from '../../utils/blogs/blogs-responses-test.manager';
+import { postsRequestsTestManager } from '../../utils/post/posts-requests-test.manager';
 
 describe('Blogs, Post, Comments (Blogger); /blogger', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -90,7 +84,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await createBlogTest(
+      const result = await blogsRequestsTestManager.createBlogBlogger(
         httpServer,
         'IncorrectJWT',
         correctBlogName,
@@ -102,7 +96,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (400) values of 'name', 'website' and 'description' are incorrect (large length)
               - (400) values of 'name' (not string), 'website' (incorrect format) and 'description' (not string) are incorrect`, async () => {
-      const result1 = await createBlogTest(
+      const result1 = await blogsRequestsTestManager.createBlogBlogger(
         httpServer,
         accessToken,
         nameLength16,
@@ -114,7 +108,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
         createErrorsMessageTest(['name', 'description', 'websiteUrl']),
       );
 
-      const result2 = await createBlogTest(
+      const result2 = await blogsRequestsTestManager.createBlogBlogger(
         httpServer,
         accessToken,
         null,
@@ -126,7 +120,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     });
 
     it(`+ (201) should create blog`, async () => {
-      const result = await createBlogTest(
+      const result = await blogsRequestsTestManager.createBlogBlogger(
         httpServer,
         accessToken,
         correctBlogName,
@@ -135,7 +129,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
       expect(result.body).toEqual(
-        createResponseSingleBlog(
+        blogsResponsesTestManager.createResponseSingleBlogBlogger(
           result.body.id,
           correctBlogName,
           correctDescription,
@@ -156,7 +150,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await createBlogTest(
+      const result = await blogsRequestsTestManager.createBlogBlogger(
         httpServer,
         'IncorrectJWT',
         correctBlogName,
@@ -167,15 +161,21 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     });
 
     it(`+ (200) should return empty array`, async () => {
-      const result = await getAllBlogsBloggerTest(httpServer, accessToken, '');
+      const result = await blogsRequestsTestManager.getAllBlogsBlogger(
+        httpServer,
+        accessToken,
+        '',
+      );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result.body).toEqual(createResponseAllBlogsTest([]));
+      expect(result.body).toEqual(
+        blogsResponsesTestManager.createResponseAllBlogsBlogger([]),
+      );
     });
 
     // it(`(Addition) + (201) should create 10 blogs
     //           + (200) should return empty array all (not banned) blogs`, async () => {
     //   const result1 = creat;
-    //   const result = await getAllBlogsBloggerTest(
+    //   const result = await blogsRequestsTestManager.getAllBlogsBlogger(
     //     httpServer,
     //     'IncorrectJWT',
     //     '',
@@ -198,7 +198,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await updateBlogBloggerTest(
+      const result = await blogsRequestsTestManager.updateBlogBlogger(
         httpServer,
         correctBlogId,
         'IncorrectJWT',
@@ -211,7 +211,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (400) values of 'name', 'website' and 'description' are incorrect (large length)
               - (400) values of 'name' (not string), 'website' (incorrect format) and 'description' (not string) are incorrect`, async () => {
-      const result1 = await updateBlogBloggerTest(
+      const result1 = await blogsRequestsTestManager.updateBlogBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -224,7 +224,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
         createErrorsMessageTest(['name', 'description', 'websiteUrl']),
       );
 
-      const result2 = await updateBlogBloggerTest(
+      const result2 = await blogsRequestsTestManager.updateBlogBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -240,7 +240,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (403) shouldn't update blog if the blog doesn't belong to current user`, async () => {
       //creates new user
-      const newUser = await createUserTest(
+      const newUser = await usersRequestsTestManager.createUserSa(
         httpServer,
         'user2',
         correctPass,
@@ -257,7 +257,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const accessToken2 = result1.body.accessToken;
 
       //403 (update blog that doesn't belong this user
-      const result2 = await updateBlogBloggerTest(
+      const result2 = await blogsRequestsTestManager.updateBlogBlogger(
         httpServer,
         correctBlogId,
         accessToken2,
@@ -269,7 +269,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     });
 
     it(`- (404) should not update blog because blog is not found with such id`, async () => {
-      const result = await updateBlogBloggerTest(
+      const result = await blogsRequestsTestManager.updateBlogBlogger(
         httpServer,
         uuidv4(),
         accessToken,
@@ -281,7 +281,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     });
 
     it(`+ (204) should update blog`, async () => {
-      const result = await updateBlogBloggerTest(
+      const result = await blogsRequestsTestManager.updateBlogBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -295,7 +295,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const blog = await getBlogByIdPublicTest(httpServer, correctBlogId);
       expect(blog.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(blog.body).toEqual(
-        createResponseSingleBlog(
+        blogsResponsesTestManager.createResponseSingleBlogBlogger(
           correctBlogId,
           correctBlogName,
           correctDescription,
@@ -319,7 +319,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await deleteBlogBloggerTest(
+      const result = await blogsRequestsTestManager.deleteBlogBlogger(
         httpServer,
         correctBlogId,
         'IncorrectJWT',
@@ -329,7 +329,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (403) shouldn't delete blog if the blog doesn't belong to current user`, async () => {
       //creates new user
-      const newUser = await createUserTest(
+      const newUser = await usersRequestsTestManager.createUserSa(
         httpServer,
         'user2',
         correctPass,
@@ -346,7 +346,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const accessToken2 = result1.body.accessToken;
 
       //403 (update blog that doesn't belong this user
-      const result2 = await deleteBlogBloggerTest(
+      const result2 = await blogsRequestsTestManager.deleteBlogBlogger(
         httpServer,
         correctBlogId,
         accessToken2,
@@ -355,7 +355,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     });
 
     it(`- (404) should not delete blog because blog doesn't exist with such id`, async () => {
-      const result = await deleteBlogBloggerTest(
+      const result = await blogsRequestsTestManager.deleteBlogBlogger(
         httpServer,
         uuidv4(),
         accessToken,
@@ -364,7 +364,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     });
 
     it(`+ (204) should delete blog`, async () => {
-      const result = await deleteBlogBloggerTest(
+      const result = await blogsRequestsTestManager.deleteBlogBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -391,7 +391,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await createPostTest(
+      const result = await postsRequestsTestManager.createPostBlogger(
         httpServer,
         correctBlogId,
         'IncorrectJWT',
@@ -403,7 +403,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     });
 
     it(`- (404) should not create post because blog doesn't exist with such id`, async () => {
-      const result = await createPostTest(
+      const result = await postsRequestsTestManager.createPostBlogger(
         httpServer,
         uuidv4(),
         accessToken,
@@ -416,7 +416,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (400) values of 'title', 'shortDescription' and 'content' are incorrect (large length)
               - (400) values of 'title', 'shortDescription' and 'content' are incorrect (not string)`, async () => {
-      const result1 = await createPostTest(
+      const result1 = await postsRequestsTestManager.createPostBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -429,7 +429,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
         createErrorsMessageTest(['title', 'shortDescription', 'content']),
       );
 
-      const result2 = await createPostTest(
+      const result2 = await postsRequestsTestManager.createPostBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -445,7 +445,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (403) shouldn't create post if the blog doesn't belong to current user`, async () => {
       //creates new user
-      const newUser = await createUserTest(
+      const newUser = await usersRequestsTestManager.createUserSa(
         httpServer,
         'user2',
         correctPass,
@@ -462,7 +462,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const accessToken2 = result1.body.accessToken;
 
       //403 (update blog that doesn't belong this user
-      const result2 = await createPostTest(
+      const result2 = await postsRequestsTestManager.createPostBlogger(
         httpServer,
         correctBlogId,
         accessToken2,
@@ -474,7 +474,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     });
 
     it(`+ (201) should create post`, async () => {
-      const result = await createPostTest(
+      const result = await postsRequestsTestManager.createPostBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -523,7 +523,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (403) shouldn't return posts if the blog doesn't belong to current user`, async () => {
       //creates new user
-      const newUser = await createUserTest(
+      const newUser = await usersRequestsTestManager.createUserSa(
         httpServer,
         'user2',
         correctPass,
@@ -555,7 +555,9 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
         accessToken,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      expect(result.body).toEqual(createResponseAllBlogsTest([]));
+      expect(result.body).toEqual(
+        blogsResponsesTestManager.createResponseAllBlogsBlogger([]),
+      );
     });
   });
 
@@ -620,7 +622,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (403) shouldn't update post if the blog of this post doesn't belong to current user`, async () => {
       //creates new user
-      const newUser = await createUserTest(
+      const newUser = await usersRequestsTestManager.createUserSa(
         httpServer,
         'user2',
         correctPass,
@@ -758,7 +760,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (403) shouldn't delete post if the blog of this post doesn't belong to current user`, async () => {
       //creates new user
-      const newUser = await createUserTest(
+      const newUser = await usersRequestsTestManager.createUserSa(
         httpServer,
         'user2',
         correctPass,
@@ -844,7 +846,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       commentId1 = comment1.body.id;
 
       //comment 2 by user 2 blog 1, post 1(1)(blog 1)
-      const user2 = await createUserTest(
+      const user2 = await usersRequestsTestManager.createUserSa(
         httpServer,
         'login2',
         'Password2',
@@ -866,7 +868,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       commentId2 = comment2.body.id;
 
       //comment 3 by user 2, blog 1, post 2(2)(blog 1)
-      const post2 = await createPostTest(
+      const post2 = await postsRequestsTestManager.createPostBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -887,7 +889,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       commentId3 = comment3.body.id;
 
       //comment 4 by user 2, blog 2, post 1(3)(blog 2)
-      const blog2 = await createBlogTest(
+      const blog2 = await blogsRequestsTestManager.createBlogBlogger(
         httpServer,
         accessToken,
         correctBlogName,
@@ -897,7 +899,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       expect(blog2.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
       correctBlogId2 = blog2.body.id;
 
-      const post3 = await createPostTest(
+      const post3 = await postsRequestsTestManager.createPostBlogger(
         httpServer,
         correctBlogId2,
         accessToken,
@@ -918,7 +920,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       commentId4 = comment4.body.id;
 
       //comment 5 by user 3, blog 2, post 1(3)(blog 2)
-      const user3 = await createUserTest(
+      const user3 = await usersRequestsTestManager.createUserSa(
         httpServer,
         'login3',
         'Password3',
@@ -940,7 +942,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       commentId5 = comment5.body.id;
 
       //comment 6 by user 3, blog 2, post 2(4)(blog 2)
-      const post4 = await createPostTest(
+      const post4 = await postsRequestsTestManager.createPostBlogger(
         httpServer,
         correctBlogId,
         accessToken,

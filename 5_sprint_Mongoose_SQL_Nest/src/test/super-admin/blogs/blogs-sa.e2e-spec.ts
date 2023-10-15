@@ -2,16 +2,16 @@ import { INestApplication } from '@nestjs/common';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { v4 as uuidv4 } from 'uuid';
 import { blogsRequestsTestManager } from '../../utils/blogs/blogs-requests-test.manager';
-import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
+import { createErrorsMessageTest } from '../../utils/general/errors-message.helper';
 import { getPostByIdPublicTest } from '../../public/posts/posts-public.helpers';
 import { getBlogByIdPublicTest } from '../../public/blogs/blogs-public.helpers';
-import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
+import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
 import {
   createCorrectBlogTest,
   createCorrectPostTest,
   createCorrectUserTest,
   loginCorrectUserTest,
-} from '../../helpers/chains-of-requests.helpers';
+} from '../../utils/general/chains-of-requests.helpers';
 import { startApp } from '../../test.utils';
 import { blogsResponsesTestManager } from '../../utils/blogs/blogs-responses-test.manager';
 import { postsRequestsTestManager } from '../../utils/post/posts-requests-test.manager';
@@ -127,7 +127,7 @@ describe('Blogs, Post (SA); /sa', () => {
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
       expect(result.body).toEqual(
-        blogsResponsesTestManager.createResponseSaSingleBlog(
+        blogsResponsesTestManager.createResponseSingleBlogSa(
           result.body.id,
           correctBlogName,
           correctDescription,
@@ -172,7 +172,7 @@ describe('Blogs, Post (SA); /sa', () => {
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
-        blogsResponsesTestManager.createResponseSaAllBlogs([]),
+        blogsResponsesTestManager.createResponseAllBlogsSa([]),
       );
     });
   });
@@ -267,7 +267,7 @@ describe('Blogs, Post (SA); /sa', () => {
       const blog = await getBlogByIdPublicTest(httpServer, correctBlogId);
       expect(blog.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(blog.body).toEqual(
-        blogsResponsesTestManager.createResponseSaSingleBlog(
+        blogsResponsesTestManager.createResponseSingleBlogSa(
           correctBlogId,
           correctBlogName,
           correctDescription,
@@ -473,7 +473,7 @@ describe('Blogs, Post (SA); /sa', () => {
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
-        blogsResponsesTestManager.createResponseSaAllBlogs([]),
+        blogsResponsesTestManager.createResponseAllBlogsSa([]),
       );
     });
   });

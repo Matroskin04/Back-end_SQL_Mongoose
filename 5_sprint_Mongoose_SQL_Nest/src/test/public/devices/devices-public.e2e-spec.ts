@@ -1,12 +1,11 @@
 import { INestApplication } from '@nestjs/common';
 import { startApp } from '../../test.utils';
-import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
-import { createUserTest } from '../../super-admin/users/users-sa.helpers';
+import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
 import { v4 as uuidv4 } from 'uuid';
 import {
   createCorrectUserTest,
   loginCorrectUserTest,
-} from '../../helpers/chains-of-requests.helpers';
+} from '../../utils/general/chains-of-requests.helpers';
 import { loginUserTest } from '../auth/auth-public.helpers';
 import {
   createResponseDevicesTest,
@@ -15,6 +14,7 @@ import {
   getDevicesPublicTest,
 } from './devices-public.helpers';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
+import { usersRequestsTestManager } from '../../utils/users/users-requests-test.manager';
 
 describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -50,7 +50,12 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       expect(refreshToken1).toBeDefined();
 
       //login by 2 user
-      await createUserTest(httpServer, 'Login2', 'Password2', 'email2@mail.ru');
+      await usersRequestsTestManager.createUserSa(
+        httpServer,
+        'Login2',
+        'Password2',
+        'email2@mail.ru',
+      );
       const result2 = await loginUserTest(httpServer, 'Login2', 'Password2');
       refreshToken2 = result2.headers['set-cookie'][0];
       expect(refreshToken1).toBeDefined();
@@ -136,7 +141,12 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
       expect(deviceId1).toBeDefined();
 
       //login by 2 user
-      await createUserTest(httpServer, 'Login2', 'Password2', 'email2@mail.ru');
+      await usersRequestsTestManager.createUserSa(
+        httpServer,
+        'Login2',
+        'Password2',
+        'email2@mail.ru',
+      );
       const result2 = await loginUserTest(httpServer, 'Login2', 'Password2');
       refreshToken2 = result2.headers['set-cookie'][0];
       expect(refreshToken1).toBeDefined();

@@ -14,15 +14,15 @@ import {
   sendCodeRecoveryPasswordTest,
   updatePasswordTest,
 } from './auth-public.helpers';
-import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
-import { createUserTest } from '../../super-admin/users/users-sa.helpers';
+import { createErrorsMessageTest } from '../../utils/general/errors-message.helper';
 import { Connection, DataSource } from 'typeorm';
-import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
+import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
 import { startApp } from '../../test.utils';
 import {
   createCorrectUserTest,
   loginCorrectUserTest,
-} from '../../helpers/chains-of-requests.helpers';
+} from '../../utils/general/chains-of-requests.helpers';
+import { usersRequestsTestManager } from '../../utils/users/users-requests-test.manager';
 
 describe('Auth (Public); /auth', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -61,7 +61,7 @@ describe('Auth (Public); /auth', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
-      user = await createUserTest(
+      user = await usersRequestsTestManager.createUserSa(
         httpServer,
         freeCorrectLogin,
         correctPass,
@@ -362,7 +362,7 @@ describe('Auth (Public); /auth', () => {
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
-      user = await createUserTest(
+      user = await usersRequestsTestManager.createUserSa(
         httpServer,
         freeCorrectLogin,
         correctPass,
@@ -501,7 +501,7 @@ describe('Auth (Public); /auth', () => {
       await deleteAllDataTest(httpServer);
 
       //create user
-      user = await createUserTest(
+      user = await usersRequestsTestManager.createUserSa(
         httpServer,
         freeCorrectLogin,
         correctPass,
