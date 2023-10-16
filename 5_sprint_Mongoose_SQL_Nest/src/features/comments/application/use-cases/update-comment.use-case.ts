@@ -1,7 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException } from '@nestjs/common';
-import { CommentsRepository } from '../../infrastructure/SQL/repository/comments.repository';
-import { CommentsQueryRepository } from '../../infrastructure/SQL/query.repository/comments.query.repository';
 import { CommentsOrmRepository } from '../../infrastructure/typeORM/repository/comments-orm.repository';
 import { CommentsOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/comments-orm.query.repository';
 

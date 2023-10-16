@@ -80,9 +80,9 @@ export class RegisterUserUseCase
       // commit transaction now:
       await dataForTransaction.queryRunner.commitTransaction();
       this.emailManager.sendEmailConfirmationMessage(email, confirmationCode);
-    } catch (e) {
+    } catch (err) {
       await dataForTransaction.queryRunner.rollbackTransaction();
-      console.error('Register of new user failed:', e);
+      console.error('Register of new user failed:', err);
     } finally {
       // you need to release query runner which is manually created:
       await dataForTransaction.queryRunner.release();
