@@ -16,6 +16,7 @@ import { startApp } from '../../test.utils';
 import { blogsResponsesTestManager } from '../../utils/blogs/blogs-responses-test.manager';
 import { postsRequestsTestManager } from '../../utils/post/posts-requests-test.manager';
 import { postsResponsesTestManager } from '../../utils/post/posts-responses-test.manager';
+import { createResponseAllPostsTest } from '../../public/blogs/posts-blogs-puclic.helpers';
 
 describe('Blogs, Post (SA); /sa', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -427,6 +428,7 @@ describe('Blogs, Post (SA); /sa', () => {
   });
 
   describe(`/blogs/:id/posts (GET) - get all posts of the blog`, () => {
+    let postsIds;
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
@@ -436,6 +438,12 @@ describe('Blogs, Post (SA); /sa', () => {
 
       const blog = await createCorrectBlogTest(httpServer, accessToken);
       correctBlogId = blog.id;
+      //create 9 posts of 3 blogs by 3 users
+      postsIds = await postsRequestsTestManager.create9PostsOfBlog(
+        httpServer,
+        blog.id,
+        accessToken,
+      );
     });
 
     it(`- (401) sa login is incorrect
@@ -443,7 +451,8 @@ describe('Blogs, Post (SA); /sa', () => {
       //sa login is incorrect
       const result1 = await postsRequestsTestManager.getAllPostsSa(
         httpServer,
-        correctBlogId,
+        uuidv4(),
+        '',
         'incorrectLogin',
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
@@ -451,14 +460,15 @@ describe('Blogs, Post (SA); /sa', () => {
       //sa password is incorrect
       const result2 = await postsRequestsTestManager.getAllPostsSa(
         httpServer,
-        correctBlogId,
+        uuidv4(),
+        '',
         null,
         'IncorrectPass',
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
-    it(`- (404) should not return posts because blog is not found`, async () => {
+    it(`- (404) should not return posts because of blog with such id doesn't exist`, async () => {
       const result = await postsRequestsTestManager.getAllPostsSa(
         httpServer,
         uuidv4(),
@@ -466,15 +476,190 @@ describe('Blogs, Post (SA); /sa', () => {
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
-    it(`+ (200) should return empty array of posts`, async () => {
+    it(`+ (200) should return 9 posts of blog by id`, async () => {
       const result = await postsRequestsTestManager.getAllPostsSa(
         httpServer,
         correctBlogId,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
-        blogsResponsesTestManager.createResponseAllBlogsSa([]),
+        createResponseAllPostsTest(postsIds, null, null, null, 9, 1, 1, 10),
       );
+    });
+
+    it(`+ (200) should return 3 posts (query: pageSize=3, pageNumber=2)
+              + (200) should return 4 posts (query: pageSize=5, pageNumber=2)`, async () => {
+      //3 posts
+      const result1 = await postsRequestsTestManager.getAllPostsSa(
+        httpServer,
+        correctBlogId,
+        'pageSize=3&&pageNumber=2',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllPostsTest(
+          postsIds.slice(3, 6),
+          null,
+          null,
+          null,
+          9,
+          3,
+          2,
+          3,
+        ),
+      );
+
+      //4 posts
+      const result2 = await postsRequestsTestManager.getAllPostsSa(
+        httpServer,
+        correctBlogId,
+
+        'pageSize=5&&pageNumber=2',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllPostsTest(
+          postsIds.slice(5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          2,
+          5,
+        ),
+      );
+    });
+
+    it(`+ (200) should return 9 posts (query: sortBy=title&&pageSize=5)
+              + (200) should return 9 posts (query: sortBy=content&&pageSize=5)
+              + (200) should return 9 posts (query: sortBy=shortDescription&&pageSize=5)
+              + (200) should return 9 posts (query: sortDirection=asc)
+              + (200) should return 9 posts (query: sortBy=id&&sortDirection=desc)`, async () => {
+      const postsIdsCopy = [...postsIds];
+      //sortBy=name, total 9 posts
+      const result1 = await postsRequestsTestManager.getAllPostsSa(
+        httpServer,
+        correctBlogId,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortBy=content, total 9 posts
+      const result2 = await postsRequestsTestManager.getAllPostsSa(
+        httpServer,
+        correctBlogId,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortBy=shortDescription, total 9 posts
+      const result3 = await postsRequestsTestManager.getAllPostsBlogger(
+        httpServer,
+        correctBlogId,
+        accessToken,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortDirection=asc, total 9 posts
+      const result4 = await postsRequestsTestManager.getAllPostsBlogger(
+        httpServer,
+        correctBlogId,
+        accessToken,
+        'sortDirection=asc',
+      );
+      expect(result4.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result4.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.reverse(),
+          null,
+          null,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+
+      //sortBy=id&&sortDirection=desc, total 9 posts
+      const result5 = await postsRequestsTestManager.getAllPostsBlogger(
+        httpServer,
+        correctBlogId,
+        accessToken,
+        'sortBy=id&&sortDirection=desc',
+      );
+      expect(result5.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result5.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.sort().reverse(),
+          null,
+          null,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+    });
+
+    it(`- (400) sortBy has incorrect value (query: sortBy=Truncate;)
+              - (400) sortDirection has incorrect value (query: sortDirection=Truncate;)`, async () => {
+      //status 400
+      const result1 = await postsRequestsTestManager.getAllPostsSa(
+        httpServer,
+        correctBlogId,
+        'sortBy=Truncate;',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result1.body).toEqual(createErrorsMessageTest(['sortBy']));
+
+      //status 400
+      const result2 = await postsRequestsTestManager.getAllPostsSa(
+        httpServer,
+        correctBlogId,
+        'sortDirection=Truncate;',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
     });
   });
 

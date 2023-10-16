@@ -501,6 +501,16 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       );
     });
 
+    it(`- (401) jwt access token is incorrect`, async () => {
+      //jwt is incorrect
+      const result = await postsRequestsTestManager.getAllPostsBlogger(
+        httpServer,
+        correctBlogId,
+        'IncorrectJWT',
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
+    });
+
     it(`- (404) should not return posts because of blog with such id doesn't exist`, async () => {
       const result = await postsRequestsTestManager.getAllPostsBlogger(
         httpServer,
@@ -574,7 +584,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
               + (200) should return 9 posts (query: sortBy=id&&sortDirection=desc)`, async () => {
       const postsIdsCopy = [...postsIds];
       //sortBy=name, total 9 posts
-      const result1 = await getPostsOfBlogPublicTest(
+      const result1 = await postsRequestsTestManager.getAllPostsBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -595,7 +605,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       );
 
       //sortBy=content, total 9 posts
-      const result2 = await getPostsOfBlogPublicTest(
+      const result2 = await postsRequestsTestManager.getAllPostsBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -616,7 +626,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       );
 
       //sortBy=shortDescription, total 9 posts
-      const result3 = await getPostsOfBlogPublicTest(
+      const result3 = await postsRequestsTestManager.getAllPostsBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -637,7 +647,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       );
 
       //sortDirection=asc, total 9 posts
-      const result4 = await getPostsOfBlogPublicTest(
+      const result4 = await postsRequestsTestManager.getAllPostsBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -658,7 +668,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       );
 
       //sortBy=id&&sortDirection=desc, total 9 posts
-      const result5 = await getPostsOfBlogPublicTest(
+      const result5 = await postsRequestsTestManager.getAllPostsBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -682,7 +692,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     it(`- (400) sortBy has incorrect value (query: sortBy=Truncate;)
               - (400) sortDirection has incorrect value (query: sortDirection=Truncate;)`, async () => {
       //status 400
-      const result1 = await getPostsOfBlogPublicTest(
+      const result1 = await postsRequestsTestManager.getAllPostsBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -692,7 +702,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       expect(result1.body).toEqual(createErrorsMessageTest(['sortBy']));
 
       //status 400
-      const result2 = await getPostsOfBlogPublicTest(
+      const result2 = await postsRequestsTestManager.getAllPostsBlogger(
         httpServer,
         correctBlogId,
         accessToken,
@@ -700,16 +710,6 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
       expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
-    });
-
-    it(`- (401) jwt access token is incorrect`, async () => {
-      //jwt is incorrect
-      const result = await postsRequestsTestManager.getAllPostsBlogger(
-        httpServer,
-        correctBlogId,
-        'IncorrectJWT',
-      );
-      expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
   });
 
