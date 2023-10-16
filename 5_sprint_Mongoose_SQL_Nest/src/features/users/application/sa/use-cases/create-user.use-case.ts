@@ -94,6 +94,9 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
         dataForTransaction.repositories.UsersBanInfo,
       );
 
+      // commit transaction now:
+      await dataForTransaction.queryRunner.commitTransaction();
+
       return {
         id: user.id,
         login,
