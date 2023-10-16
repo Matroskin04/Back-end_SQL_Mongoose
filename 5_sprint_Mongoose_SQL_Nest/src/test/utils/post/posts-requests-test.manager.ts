@@ -113,10 +113,17 @@ export const postsRequestsTestManager = {
     return postsIds.reverse();
   },
 
-  getAllPostsSa: async function (httpServer, blogId, saLogin?, saPass?) {
+  getAllPostsSa: async function (
+    httpServer,
+    blogId,
+    query = '',
+    saLogin?,
+    saPass?,
+  ) {
     return request(httpServer)
       .get(RouterPaths.blogsSa + `/${blogId}/posts`)
-      .auth(saLogin ?? 'admin', saPass ?? 'qwerty');
+      .auth(saLogin ?? 'admin', saPass ?? 'qwerty')
+      .query(query);
   },
 
   getAllPostsBlogger: async function (
