@@ -1,7 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException } from '@nestjs/common';
-import { EmailConfirmationPublicRepository } from '../../../users/infrastructure/SQL/subrepository/email-confirmation.public.repository';
-import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.repository/users.query.repository';
 import { EmailConfirmationOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/email-confirmation-orm.public.repository';
 import { UsersOrmQueryRepository } from '../../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 

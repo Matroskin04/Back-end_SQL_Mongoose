@@ -4,10 +4,7 @@ import { loginUserTest } from '../../public/auth/auth-public.helpers';
 import { v4 as uuidv4 } from 'uuid';
 import { createErrorsMessageTest } from '../../utils/general/errors-message.helper';
 import { getPostByIdPublicTest } from '../../public/posts/posts-public.helpers';
-import {
-  getAllBlogsPublicTest,
-  getBlogByIdPublicTest,
-} from '../../public/blogs/blogs-public.helpers';
+import { getBlogByIdPublicTest } from '../../public/blogs/blogs-public.helpers';
 import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
 import {
   createCorrectBlogTest,
@@ -25,10 +22,7 @@ import { blogsRequestsTestManager } from '../../utils/blogs/blogs-requests-test.
 import { blogsResponsesTestManager } from '../../utils/blogs/blogs-responses-test.manager';
 import { postsRequestsTestManager } from '../../utils/post/posts-requests-test.manager';
 import { postsResponsesTestManager } from '../../utils/post/posts-responses-test.manager';
-import {
-  createResponseAllPostsTest,
-  getPostsOfBlogPublicTest,
-} from '../../public/blogs/posts-blogs-puclic.helpers';
+import { createResponseAllPostsTest } from '../../public/blogs/posts-blogs-puclic.helpers';
 import { commentsRequestsTestManager } from '../../utils/comments/comments-requests-test.manager';
 
 describe('Blogs, Post, Comments (Blogger); /blogger', () => {

@@ -7,6 +7,11 @@ import { EmailConfirmationOrmRepository } from '../../../users/infrastructure/ty
 import { PasswordRecoveryOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/password-recovery-orm.public.repository';
 import { BanInfoOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
 import { DataSource } from 'typeorm';
+import { startTransaction } from '../../../../infrastructure/utils/functions/db-helpers/transaction.helpers';
+import { Users } from '../../../users/domain/users.entity';
+import { UsersEmailConfirmation } from '../../../users/domain/users-email-confirmation.entity';
+import { UsersPasswordRecovery } from '../../../users/domain/users-password-recovery.entity';
+import { UsersBanInfo } from '../../../users/domain/users-ban-info.entity';
 
 export class RegisterUserCommand {
   constructor(
@@ -40,13 +45,20 @@ export class RegisterUserUseCase
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
 
-    await queryRunner.startTransaction();
+    //start transaction
+    const dataForTransaction = await startTransaction(this.dataSource, [
+      Users,
+      UsersEmailConfirmation,
+      UsersPasswordRecovery,
+      UsersBanInfo,
+    ]);
     try {
       await this.usersOrmRepository.createUser(
         userId,
         login,
         email,
         passwordHash,
+        dataForTransaction.repositories.Users,
       );
 
       await this.emailConfirmationPublicRepository.createEmailConfirmationInfo(
@@ -54,23 +66,28 @@ export class RegisterUserUseCase
         '5 hours',
         false,
         userId,
+        dataForTransaction.repositories.UsersEmailConfirmation,
       );
 
       await this.passwordRecoveryPublicRepository.createPassRecoveryInfo(
         uuidv4(),
         userId,
+        dataForTransaction.repositories.UsersPasswordRecovery,
       );
-      await this.banInfoPublicRepository.createBanInfoUser(userId);
+      await this.banInfoPublicRepository.createBanInfoUser(
+        userId,
+        dataForTransaction.repositories.UsersBanInfo,
+      );
 
       // commit transaction now:
       await queryRunner.commitTransaction();
       this.emailManager.sendEmailConfirmationMessage(email, confirmationCode);
     } catch (e) {
       await queryRunner.rollbackTransaction();
+      console.error('Register of new user failed:', e);
     } finally {
       // you need to release query runner which is manually created:
       await queryRunner.release();
     }
-    return;
   }
 }

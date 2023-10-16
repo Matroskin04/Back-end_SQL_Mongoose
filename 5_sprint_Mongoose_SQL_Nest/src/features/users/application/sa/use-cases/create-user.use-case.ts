@@ -62,6 +62,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
       Users,
       UsersEmailConfirmation,
       UsersPasswordRecovery,
+      UsersBanInfo,
     ]);
     try {
       //create user
