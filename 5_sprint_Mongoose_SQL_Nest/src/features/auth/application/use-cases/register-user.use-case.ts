@@ -42,8 +42,6 @@ export class RegisterUserUseCase
     const passwordHash = await this.cryptoAdapter._generateHash(password);
 
     const userId = uuidv4();
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
 
     //start transaction
     const dataForTransaction = await startTransaction(this.dataSource, [
@@ -80,14 +78,14 @@ export class RegisterUserUseCase
       );
 
       // commit transaction now:
-      await queryRunner.commitTransaction();
+      await dataForTransaction.queryRunner.commitTransaction();
       this.emailManager.sendEmailConfirmationMessage(email, confirmationCode);
     } catch (e) {
-      await queryRunner.rollbackTransaction();
+      await dataForTransaction.queryRunner.rollbackTransaction();
       console.error('Register of new user failed:', e);
     } finally {
       // you need to release query runner which is manually created:
-      await queryRunner.release();
+      await dataForTransaction.queryRunner.release();
     }
   }
 }

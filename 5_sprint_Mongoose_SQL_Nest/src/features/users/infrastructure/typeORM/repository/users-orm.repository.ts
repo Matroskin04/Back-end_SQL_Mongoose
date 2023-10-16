@@ -67,8 +67,10 @@ export class UsersOrmRepository {
     userId: string,
     isBanned: boolean,
     banReason: string,
+    usersBanInfoRepository: Repository<UsersBanInfo> = this
+      .usersBanInfoRepository,
   ): Promise<boolean> {
-    const result = await this.usersBanInfoRepository
+    const result = await usersBanInfoRepository
       .createQueryBuilder()
       .update()
       .set({

@@ -68,8 +68,11 @@ export class DevicesOrmRepository {
     return result.affected ? result.affected > 0 : false;
   }
 
-  async deleteAllDevicesByUserId(userId: string): Promise<boolean> {
-    const result = await this.devicesRepository
+  async deleteAllDevicesByUserId(
+    userId: string,
+    devicesRepository: Repository<Devices> = this.devicesRepository,
+  ): Promise<boolean> {
+    const result = await devicesRepository
       .createQueryBuilder()
       .delete()
       .where('userId = :userId', { userId })

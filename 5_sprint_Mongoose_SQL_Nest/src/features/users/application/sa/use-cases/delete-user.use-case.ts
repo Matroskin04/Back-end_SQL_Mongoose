@@ -1,5 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../../infrastructure/SQL/repository/users.repository';
 import { UsersOrmRepository } from '../../../infrastructure/typeORM/repository/users-orm.repository';
 
 export class DeleteUserCommand {
