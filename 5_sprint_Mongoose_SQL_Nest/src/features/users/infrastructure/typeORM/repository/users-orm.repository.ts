@@ -23,8 +23,9 @@ export class UsersOrmRepository {
     login: string,
     email: string,
     passwordHash: string,
+    usersRepository: Repository<Users> = this.usersRepository,
   ): Promise<UserIdAndDateType> {
-    const result = await this.usersRepository
+    const result = await usersRepository
       .createQueryBuilder()
       .insert()
       .values({ id: userId, login, email, passwordHash })

@@ -14,8 +14,10 @@ export class PasswordRecoveryOrmRepository {
   async createPassRecoveryInfo(
     confirmationCode: string,
     userId: string,
+    usersPasswordRecoveryRepo: Repository<UsersPasswordRecovery> = this
+      .usersPasswordRecovery,
   ): Promise<void> {
-    await this.usersPasswordRecovery
+    await usersPasswordRecoveryRepo
       .createQueryBuilder()
       .insert()
       .values({
