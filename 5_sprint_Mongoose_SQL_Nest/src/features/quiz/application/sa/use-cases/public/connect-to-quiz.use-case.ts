@@ -9,7 +9,6 @@ import { QuestionsOrmQueryRepository } from '../../../../infrastructure/typeORM/
 import { QuestionQuizRelationOrmRepository } from '../../../../infrastructure/typeORM/repository/question-quiz-relation-orm.repository';
 import { QuizInfoAboutUserOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz-info-about-user-orm.repository';
 import { startTransaction } from '../../../../../../infrastructure/utils/functions/db-helpers/transaction.helpers';
-import { QuestionQuiz } from '../../../../domain/question-quiz.entity';
 import { QuestionQuizRelation } from '../../../../domain/question-quiz-relation.entity';
 
 export class ConnectToQuizCommand {

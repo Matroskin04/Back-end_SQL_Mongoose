@@ -1,8 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ResponseTypeService } from '../../../../infrastructure/utils/functions/types/create-responses-service.types';
 import { createResponseByCodeAndMessage } from '../../../../infrastructure/utils/functions/create-response-service.function';
-import { DevicesQueryRepository } from '../../infrastructure/SQL/query.repository/devices.query.repository';
-import { DevicesRepository } from '../../infrastructure/SQL/repository/devices.repository';
 import { DevicesOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/devices-orm.query.repository';
 import { DevicesOrmRepository } from '../../infrastructure/typeORM/repository/devices-orm.repository';
 
