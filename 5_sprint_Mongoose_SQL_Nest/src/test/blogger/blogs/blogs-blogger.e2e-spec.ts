@@ -3,12 +3,6 @@ import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-statu
 import { loginUserTest } from '../../public/auth/auth-public.helpers';
 import { v4 as uuidv4 } from 'uuid';
 import { createErrorsMessageTest } from '../../utils/general/errors-message.helper';
-import {
-  createResponseSinglePost,
-  deletePostTest,
-  getAllPostsTest,
-  updatePostTest,
-} from './posts-blogger.helpers';
 import { getPostByIdPublicTest } from '../../public/posts/posts-public.helpers';
 import { getBlogByIdPublicTest } from '../../public/blogs/blogs-public.helpers';
 import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
@@ -28,6 +22,11 @@ import { usersRequestsTestManager } from '../../utils/users/users-requests-test.
 import { blogsRequestsTestManager } from '../../utils/blogs/blogs-requests-test.manager';
 import { blogsResponsesTestManager } from '../../utils/blogs/blogs-responses-test.manager';
 import { postsRequestsTestManager } from '../../utils/post/posts-requests-test.manager';
+import { postsResponsesTestManager } from '../../utils/post/posts-responses-test.manager';
+import {
+  createResponseAllPostsTest,
+  getPostsOfBlogPublicTest,
+} from '../../public/blogs/posts-blogs-puclic.helpers';
 
 describe('Blogs, Post, Comments (Blogger); /blogger', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -171,17 +170,6 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
         blogsResponsesTestManager.createResponseAllBlogsBlogger([]),
       );
     });
-
-    // it(`(Addition) + (201) should create 10 blogs
-    //           + (200) should return empty array all (not banned) blogs`, async () => {
-    //   const result1 = creat;
-    //   const result = await blogsRequestsTestManager.getAllBlogsBlogger(
-    //     httpServer,
-    //     'IncorrectJWT',
-    //     '',
-    //   );
-    //   expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-    // });
   });
 
   describe(`/blogs/:id (PUT) - update blog by id`, () => {
@@ -484,7 +472,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
       expect(result.body).toEqual(
-        createResponseSinglePost(
+        postsResponsesTestManager.createResponseSinglePostBlogger(
           correctTitle,
           correctShortDescription,
           correctPostContent,
@@ -495,6 +483,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
   });
 
   describe(`/blogs/:id/posts (GET) - get all posts of the blog`, () => {
+    let postsIds;
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
@@ -504,60 +493,223 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
       const blog = await createCorrectBlogTest(httpServer, accessToken);
       correctBlogId = blog.id;
-    });
-
-    it(`- (401) jwt access token is incorrect`, async () => {
-      //jwt is incorrect
-      const result = await getAllPostsTest(
+      //create 9 posts of 3 blogs by 3 users
+      postsIds = await postsRequestsTestManager.create9PostsOfBlog(
         httpServer,
-        correctBlogId,
-        'IncorrectJWT',
+        blog.id,
+        accessToken,
       );
-      expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
-    it(`- (404) should not return posts because blog is not found`, async () => {
-      const result = await getAllPostsTest(httpServer, uuidv4(), accessToken);
+    it(`- (404) should not return posts because of blog with such id doesn't exist`, async () => {
+      const result = await postsRequestsTestManager.getAllPostsBlogger(
+        httpServer,
+        uuidv4(),
+        accessToken,
+      );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
     });
 
-    it(`- (403) shouldn't return posts if the blog doesn't belong to current user`, async () => {
-      //creates new user
-      const newUser = await usersRequestsTestManager.createUserSa(
-        httpServer,
-        'user2',
-        correctPass,
-        'email2@gmail.com',
-      );
-      expect(newUser.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-
-      const result1 = await loginUserTest(
-        httpServer,
-        newUser.body.login,
-        correctPass,
-      );
-      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      const accessToken2 = result1.body.accessToken;
-
-      //403 (update blog that doesn't belong this user
-      const result2 = await getAllPostsTest(
-        httpServer,
-        correctBlogId,
-        accessToken2,
-      );
-      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.FORBIDDEN_403);
-    });
-
-    it(`+ (200) should return empty array of posts`, async () => {
-      const result = await getAllPostsTest(
+    it(`+ (200) should return 9 posts of blog by id`, async () => {
+      const result = await postsRequestsTestManager.getAllPostsBlogger(
         httpServer,
         correctBlogId,
         accessToken,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
-        blogsResponsesTestManager.createResponseAllBlogsBlogger([]),
+        createResponseAllPostsTest(postsIds, null, null, null, 9, 1, 1, 10),
       );
+    });
+
+    it(`+ (200) should return 3 posts (query: pageSize=3, pageNumber=2)
+              + (200) should return 4 posts (query: pageSize=5, pageNumber=2)`, async () => {
+      //3 posts
+      const result1 = await postsRequestsTestManager.getAllPostsBlogger(
+        httpServer,
+        correctBlogId,
+        accessToken,
+        'pageSize=3&&pageNumber=2',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllPostsTest(
+          postsIds.slice(3, 6),
+          null,
+          null,
+          null,
+          9,
+          3,
+          2,
+          3,
+        ),
+      );
+
+      //4 posts
+      const result2 = await postsRequestsTestManager.getAllPostsBlogger(
+        httpServer,
+        correctBlogId,
+        accessToken,
+        'pageSize=5&&pageNumber=2',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllPostsTest(
+          postsIds.slice(5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          2,
+          5,
+        ),
+      );
+    });
+
+    it(`+ (200) should return 9 posts (query: sortBy=title&&pageSize=5)
+              + (200) should return 9 posts (query: sortBy=content&&pageSize=5)
+              + (200) should return 9 posts (query: sortBy=shortDescription&&pageSize=5)
+              + (200) should return 9 posts (query: sortDirection=asc)
+              + (200) should return 9 posts (query: sortBy=id&&sortDirection=desc)`, async () => {
+      const postsIdsCopy = [...postsIds];
+      //sortBy=name, total 9 posts
+      const result1 = await getPostsOfBlogPublicTest(
+        httpServer,
+        correctBlogId,
+        accessToken,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result1.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortBy=content, total 9 posts
+      const result2 = await getPostsOfBlogPublicTest(
+        httpServer,
+        correctBlogId,
+        accessToken,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result2.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortBy=shortDescription, total 9 posts
+      const result3 = await getPostsOfBlogPublicTest(
+        httpServer,
+        correctBlogId,
+        accessToken,
+        'sortBy=title&&pageSize=5',
+      );
+      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result3.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.slice(0, 5),
+          null,
+          null,
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
+      );
+
+      //sortDirection=asc, total 9 posts
+      const result4 = await getPostsOfBlogPublicTest(
+        httpServer,
+        correctBlogId,
+        accessToken,
+        'sortDirection=asc',
+      );
+      expect(result4.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result4.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.reverse(),
+          null,
+          null,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+
+      //sortBy=id&&sortDirection=desc, total 9 posts
+      const result5 = await getPostsOfBlogPublicTest(
+        httpServer,
+        correctBlogId,
+        accessToken,
+        'sortBy=id&&sortDirection=desc',
+      );
+      expect(result5.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      expect(result5.body).toEqual(
+        createResponseAllPostsTest(
+          postsIdsCopy.sort().reverse(),
+          null,
+          null,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
+      );
+    });
+
+    it(`- (400) sortBy has incorrect value (query: sortBy=Truncate;)
+              - (400) sortDirection has incorrect value (query: sortDirection=Truncate;)`, async () => {
+      //status 400
+      const result1 = await getPostsOfBlogPublicTest(
+        httpServer,
+        correctBlogId,
+        accessToken,
+        'sortBy=Truncate;',
+      );
+      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result1.body).toEqual(createErrorsMessageTest(['sortBy']));
+
+      //status 400
+      const result2 = await getPostsOfBlogPublicTest(
+        httpServer,
+        correctBlogId,
+        accessToken,
+        'sortDirection=Truncate;',
+      );
+      expect(result2.statusCode).toBe(HTTP_STATUS_CODE.BAD_REQUEST_400);
+      expect(result2.body).toEqual(createErrorsMessageTest(['sortDirection']));
+    });
+
+    it(`- (401) jwt access token is incorrect`, async () => {
+      //jwt is incorrect
+      const result = await postsRequestsTestManager.getAllPostsBlogger(
+        httpServer,
+        correctBlogId,
+        'IncorrectJWT',
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
   });
 
@@ -582,7 +734,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await updatePostTest(
+      const result = await postsRequestsTestManager.updatePostBlogger(
         httpServer,
         correctBlogId,
         correctPostId,
@@ -597,7 +749,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     it(`- (404) should not update post because blog is not found with such id
               - (404) should not update post because post is not found with such id`, async () => {
       //blogId is incorrect
-      const result1 = await updatePostTest(
+      const result1 = await postsRequestsTestManager.updatePostBlogger(
         httpServer,
         uuidv4(),
         correctPostId,
@@ -608,7 +760,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
       //postId is incorrect
-      const result2 = await updatePostTest(
+      const result2 = await postsRequestsTestManager.updatePostBlogger(
         httpServer,
         correctBlogId,
         uuidv4(),
@@ -639,7 +791,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const accessToken2 = result1.body.accessToken;
 
       //403 (update blog that doesn't belong this user
-      const result2 = await updatePostTest(
+      const result2 = await postsRequestsTestManager.updatePostBlogger(
         httpServer,
         correctBlogId,
         correctPostId,
@@ -653,7 +805,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (400) values of 'title', 'shortDescription' and 'content' are incorrect (large length)
               - (400) values of 'title', 'shortDescription' and 'content' are incorrect (not string)`, async () => {
-      const result1 = await updatePostTest(
+      const result1 = await postsRequestsTestManager.updatePostBlogger(
         httpServer,
         correctBlogId,
         correctPostId,
@@ -667,7 +819,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
         createErrorsMessageTest(['title', 'shortDescription', 'content']),
       );
 
-      const result2 = await updatePostTest(
+      const result2 = await postsRequestsTestManager.updatePostBlogger(
         httpServer,
         correctBlogId,
         correctPostId,
@@ -683,7 +835,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     });
 
     it(`+ (204) should update post`, async () => {
-      const result = await updatePostTest(
+      const result = await postsRequestsTestManager.updatePostBlogger(
         httpServer,
         correctBlogId,
         correctPostId,
@@ -698,7 +850,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const post = await getPostByIdPublicTest(httpServer, correctPostId);
       expect(post.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(post.body).toEqual(
-        createResponseSinglePost(
+        postsResponsesTestManager.createResponseSinglePostBlogger(
           'newTitle',
           'newShortDescription',
           'newContent',
@@ -729,7 +881,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await deletePostTest(
+      const result = await postsRequestsTestManager.deletePostBlogger(
         httpServer,
         correctBlogId,
         correctPostId,
@@ -741,7 +893,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     it(`- (404) should not delete post because blog is not found with such id
               - (404) should not delete post because post is not found with such id`, async () => {
       //blogId is incorrect
-      const result1 = await deletePostTest(
+      const result1 = await postsRequestsTestManager.deletePostBlogger(
         httpServer,
         uuidv4(),
         correctPostId,
@@ -749,7 +901,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.NOT_FOUND_404);
       //postId is incorrect
-      const result2 = await deletePostTest(
+      const result2 = await postsRequestsTestManager.deletePostBlogger(
         httpServer,
         correctBlogId,
         uuidv4(),
@@ -777,7 +929,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
       const accessToken2 = result1.body.accessToken;
 
       //403 (update blog that doesn't belong this user
-      const result2 = await deletePostTest(
+      const result2 = await postsRequestsTestManager.deletePostBlogger(
         httpServer,
         correctBlogId,
         correctPostId,
@@ -787,7 +939,7 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     });
 
     it(`+ (204) should delete post`, async () => {
-      const result = await deletePostTest(
+      const result = await postsRequestsTestManager.deletePostBlogger(
         httpServer,
         correctBlogId,
         correctPostId,

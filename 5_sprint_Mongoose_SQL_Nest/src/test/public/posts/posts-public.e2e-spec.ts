@@ -1,15 +1,14 @@
 import { INestApplication } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
+import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
 import {
   createCorrectBlogTest,
   createCorrectPostTest,
   createCorrectUserTest,
   loginCorrectUserTest,
-} from '../../helpers/chains-of-requests.helpers';
+} from '../../utils/general/chains-of-requests.helpers';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import {
-  create9PostsOf3BlogsBy3Users,
   createResponseSinglePost,
   getPostByIdPublicTest,
   getPostsPublicTest,
@@ -24,9 +23,10 @@ import {
   createResponseSingleComment,
   getCommentsOfPostTest,
 } from '../comments/comments-public.helpers';
-import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
+import { createErrorsMessageTest } from '../../utils/general/errors-message.helper';
 import { startApp } from '../../test.utils';
-import { createBlogTest } from '../../blogger/blogs/blogs-blogger.helpers';
+import { blogsRequestsTestManager } from '../../utils/blogs/blogs-requests-test.manager';
+import { postsRequestsTestManager } from '../../utils/post/posts-requests-test.manager';
 
 describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -71,28 +71,29 @@ describe('Posts (GET), Put-Like (Post), Comments (Public); /', () => {
 
       //create and login 3 users
       const result = await createAndLogin3UsersTest(httpServer);
-      const blog1 = await createBlogTest(
+      const blog1 = await blogsRequestsTestManager.createBlogBlogger(
         httpServer,
         result[0].accessToken,
         'Blog 1',
       );
-      const blog2 = await createBlogTest(
+      const blog2 = await blogsRequestsTestManager.createBlogBlogger(
         httpServer,
         result[1].accessToken,
         'blog 2',
       );
-      const blog3 = await createBlogTest(
+      const blog3 = await blogsRequestsTestManager.createBlogBlogger(
         httpServer,
         result[2].accessToken,
         'c blog 3',
       );
       //create 10 blogs by 3 users
-      const postsInfo = await create9PostsOf3BlogsBy3Users(
-        httpServer,
-        [blog1.body.id, blog2.body.id, blog3.body.id],
-        [result[0].accessToken, result[1].accessToken, result[2].accessToken],
-        [result[0].userId, result[1].userId, result[2].userId],
-      );
+      const postsInfo =
+        await postsRequestsTestManager.create9PostsOf3BlogsBy3Users(
+          httpServer,
+          [blog1.body.id, blog2.body.id, blog3.body.id],
+          [result[0].accessToken, result[1].accessToken, result[2].accessToken],
+          [result[0].userId, result[1].userId, result[2].userId],
+        );
       postsIds = postsInfo.map((e) => e.id).reverse();
     });
 

@@ -416,7 +416,7 @@ describe('Blogs, Post (SA); /sa', () => {
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
       expect(result.body).toEqual(
-        postsResponsesTestManager.createResponseSingleSaPost(
+        postsResponsesTestManager.createResponseSinglePostSa(
           correctTitle,
           correctShortDescription,
           correctPostContent,
@@ -593,7 +593,7 @@ describe('Blogs, Post (SA); /sa', () => {
       const post = await getPostByIdPublicTest(httpServer, correctPostId);
       expect(post.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(post.body).toEqual(
-        postsResponsesTestManager.createResponseSingleSaPost(
+        postsResponsesTestManager.createResponseSinglePostSa(
           'newTitle',
           'newShortDescription',
           'newContent',

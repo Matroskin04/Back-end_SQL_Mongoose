@@ -1,15 +1,26 @@
 import { regexpISOSString } from '../../../infrastructure/utils/regexp/general-regexp';
-import { QuestionPaginationType } from '../../../features/quiz/infrastructure/typeORM/query.repository/questions/questions.types.query.repository';
 import { toBeOneOf } from 'jest-extended';
 expect.extend({ toBeOneOf });
 
 export const usersResponsesTestManager = {
-  createResponseSingleUserSa: function (login?, email?) {
+  createResponseSingleUserSa: function (
+    login?,
+    email?,
+    banDate?: 'string' | null,
+    banReason?: 'string' | null,
+    isBanned?: boolean,
+  ) {
     return {
       id: expect.any(String),
       login: login ?? expect.any(String),
       email: email ?? expect.any(String),
       createdAt: expect.any(String),
+      banInfo: {
+        banDate:
+          banDate === 'string' ? expect.stringMatching(regexpISOSString) : null,
+        banReason: banReason === 'string' ? expect.any(String) : null,
+        isBanned: isBanned ?? expect.any(Boolean),
+      },
     };
   },
 
@@ -30,6 +41,14 @@ export const usersResponsesTestManager = {
         login: expect.any(String),
         email: expect.any(String),
         createdAt: expect.any(String),
+        banInfo: {
+          banDate: expect.toBeOneOf([
+            expect.stringMatching(regexpISOSString),
+            null,
+          ]),
+          banReason: expect.toBeOneOf([expect.any(String), null]),
+          isBanned: expect.any(Boolean),
+        },
       });
     }
     return {

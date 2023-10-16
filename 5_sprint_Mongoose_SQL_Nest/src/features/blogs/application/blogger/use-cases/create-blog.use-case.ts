@@ -3,6 +3,8 @@ import { BodyBlogType } from '../../../infrastructure/SQL/repository/blogs-blogg
 import { CreateBlogDTO } from '../dto/create-blog.dto';
 import { UsersOrmQueryRepository } from '../../../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 import { BlogsOrmRepository } from '../../../infrastructure/typeORM/repository/blogs-orm.repository';
+import { validate, validateOrReject } from 'class-validator';
+import { CreateBlogInputModel } from '../../../api/models/input/create-blog.input.model';
 
 export class CreateBlogCommand {
   constructor(public blogDTO: BodyBlogType, public userId: string | null) {}

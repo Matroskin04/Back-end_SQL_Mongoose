@@ -85,9 +85,7 @@
     "typescript": "^5.1.3"
   },
   "jest": {
-    "setupFilesAfterEnv": [
-      "jest-extended/all"
-    ],
+    "setupFilesAfterEnv": ["jest-extended/all"],
     "moduleFileExtensions": [
       "js",
       "json",
