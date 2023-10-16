@@ -27,9 +27,9 @@ export const postsRequestsTestManager = {
     httpServer,
     blogId,
     accessToken,
-    title = 'correctTitle',
-    shortDescription = 'correctShortDescription',
-    content = 'correctContent',
+    title: any = 'correctTitle',
+    shortDescription: any = 'correctShortDescription',
+    content: any = 'correctContent',
   ) {
     return request(httpServer)
       .post(RouterPaths.blogsBlogger + `/${blogId}/posts`)
