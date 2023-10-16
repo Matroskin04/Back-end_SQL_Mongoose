@@ -15,7 +15,6 @@ import {
   createCorrectUserTest,
   loginCorrectUserTest,
 } from '../../utils/general/chains-of-requests.helpers';
-import { getAllCommentsOfBloggerTest } from './comments-blogger.helpers';
 import {
   createCommentTest,
   createResponseCommentsOfBlogger,
@@ -30,6 +29,7 @@ import {
   createResponseAllPostsTest,
   getPostsOfBlogPublicTest,
 } from '../../public/blogs/posts-blogs-puclic.helpers';
+import { commentsRequestsTestManager } from '../../utils/comments/comments-requests-test.manager';
 
 describe('Blogs, Post, Comments (Blogger); /blogger', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -1162,204 +1162,100 @@ describe('Blogs, Post, Comments (Blogger); /blogger', () => {
     });
   });
 
-  describe(`/blogs/comments (GET) - get all comments of the blogger
+  describe(`/blogs/comments (GET) - get all comments of a blogger
                   (Addition) /blogs, /blogs/:id/posts (POST) - create addition blog and 2 posts for blog 1 and 2
                   (Addition) /posts/:id/comments (POST) -  should create 6 comments by 3 users`, () => {
+    const accessTokens: string[] = [];
+    let accessToken1;
     let accessToken2;
     let accessToken3;
-    let correctPostId2;
-    let correctPostId3;
-    let correctPostId4;
-    let correctBlogId2;
 
-    let commentId1;
-    let commentId2;
-    let commentId3;
-    let commentId4;
-    let commentId5;
-    let commentId6;
+    const blogsIds: string[] = [];
+    const postsIds: string[] = [];
+    const commentsIds: string[] = [];
 
     beforeAll(async () => {
       await deleteAllDataTest(httpServer);
 
+      //blogger
       user = await createCorrectUserTest(httpServer);
-      const result = await loginCorrectUserTest(httpServer);
-      accessToken = result.accessToken;
+      const result1 = await loginCorrectUserTest(httpServer);
+      accessToken = result1.accessToken;
+      accessTokens.push(accessToken);
 
-      const blog = await createCorrectBlogTest(httpServer, accessToken);
-      correctBlogId = blog.id;
-
-      const post = await createCorrectPostTest(
-        httpServer,
-        correctBlogId,
-        accessToken,
-      );
-      correctPostId = post.id;
-
-      //comment 1 by user 1, blog 1, post 1
-      const comment1 = await createCommentTest(
-        httpServer,
-        correctPostId,
-        accessToken,
-        'Comment 1 by the first User',
-      );
-      expect(comment1.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-      commentId1 = comment1.body.id;
-
-      //comment 2 by user 2 blog 1, post 1(1)(blog 1)
-      const user2 = await usersRequestsTestManager.createUserSa(
+      //2 another user
+      await usersRequestsTestManager.createUserSa(
         httpServer,
         'login2',
-        'Password2',
+        'password2',
         'email2@mail.ru',
       );
-      expect(user2.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-
-      const result1 = await loginUserTest(httpServer, 'login2', 'Password2');
-      expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      accessToken2 = result1.body.accessToken;
-
-      const comment2 = await createCommentTest(
-        httpServer,
-        correctPostId,
-        accessToken2,
-        'Comment 2 by the second User',
-      );
-      expect(comment2.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-      commentId2 = comment2.body.id;
-
-      //comment 3 by user 2, blog 1, post 2(2)(blog 1)
-      const post2 = await postsRequestsTestManager.createPostBlogger(
-        httpServer,
-        correctBlogId,
-        accessToken,
-        correctTitle,
-        correctShortDescription,
-        correctPostContent,
-      );
-      expect(post2.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-      correctPostId2 = post2.body.id;
-
-      const comment3 = await createCommentTest(
-        httpServer,
-        correctPostId2,
-        accessToken2,
-        'Comment 3 by the second User',
-      );
-      expect(comment3.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-      commentId3 = comment3.body.id;
-
-      //comment 4 by user 2, blog 2, post 1(3)(blog 2)
-      const blog2 = await blogsRequestsTestManager.createBlogBlogger(
-        httpServer,
-        accessToken,
-        correctBlogName,
-        correctDescription,
-        correctWebsiteUrl,
-      );
-      expect(blog2.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-      correctBlogId2 = blog2.body.id;
-
-      const post3 = await postsRequestsTestManager.createPostBlogger(
-        httpServer,
-        correctBlogId2,
-        accessToken,
-        correctTitle,
-        correctShortDescription,
-        correctPostContent,
-      );
-      expect(post3.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-      correctPostId3 = post3.body.id;
-
-      const comment4 = await createCommentTest(
-        httpServer,
-        correctPostId3,
-        accessToken2,
-        'Comment 4 by the second User',
-      );
-      expect(comment4.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-      commentId4 = comment4.body.id;
-
-      //comment 5 by user 3, blog 2, post 1(3)(blog 2)
-      const user3 = await usersRequestsTestManager.createUserSa(
+      const result2 = await loginUserTest(httpServer, 'login2', 'password2');
+      accessToken2 = result2.body.accessToken;
+      accessTokens.push(accessToken2);
+      await usersRequestsTestManager.createUserSa(
         httpServer,
         'login3',
-        'Password3',
+        'password3',
         'email3@mail.ru',
       );
-      expect(user3.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-
-      const result3 = await loginUserTest(httpServer, 'login3', 'Password3');
-      expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      const result3 = await loginUserTest(httpServer, 'login3', 'password3');
       accessToken3 = result3.body.accessToken;
+      accessTokens.push(accessToken3);
 
-      const comment5 = await createCommentTest(
-        httpServer,
-        correctPostId3,
-        accessToken3,
-        'Comment 5 by the third User',
-      );
-      expect(comment5.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-      commentId5 = comment5.body.id;
+      //create 3 blogs by 1 user
+      for (let i = 0; i < 3; i++) {
+        const result = await blogsRequestsTestManager.createBlogBlogger(
+          httpServer,
+          accessToken,
+        );
+        expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+        blogsIds.push(result.body.id);
+      }
 
-      //comment 6 by user 3, blog 2, post 2(4)(blog 2)
-      const post4 = await postsRequestsTestManager.createPostBlogger(
-        httpServer,
-        correctBlogId,
-        accessToken,
-        correctTitle,
-        correctShortDescription,
-        correctPostContent,
-      );
-      expect(post4.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
-      correctPostId4 = post4.body.id;
+      //create 9 posts of 3 blogs
+      for (let i = 0; i < 9; i++) {
+        const result = await postsRequestsTestManager.createPostBlogger(
+          httpServer,
+          blogsIds[Math.floor(i / 3)],
+          accessToken,
+        );
+        expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+        postsIds.push(result.body.id);
+      }
 
-      const comment6 = await createCommentTest(
-        httpServer,
-        correctPostId4,
-        accessToken3,
-        'Comment 4 by the second User',
-      );
-      expect(comment6.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201); //todo in function
-      commentId6 = comment6.body.id;
+      //create 9 comments of 9 posts by 3 different users
+      for (let i = 0; i < 9; i++) {
+        const result = await createCommentTest(
+          httpServer,
+          postsIds[i],
+          accessTokens[Math.floor(i / 3)],
+        );
+        expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+        commentsIds.push(result.body.id);
+      }
+      //sort by desc:
+      commentsIds.reverse();
     });
 
     it(`- (401) jwt access token is incorrect`, async () => {
       //jwt is incorrect
-      const result = await getAllCommentsOfBloggerTest(
+      const result = await commentsRequestsTestManager.getAllCommentsOfBlogger(
         httpServer,
         'IncorrectJWT',
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.UNAUTHORIZED_401);
     });
 
-    it(`+ (200) should return array of 6 comments`, async () => {
+    it(`+ (200) should return array of 9 comments`, async () => {
       //getAllComments
-      const result = await getAllCommentsOfBloggerTest(httpServer, accessToken);
+      const result = await commentsRequestsTestManager.getAllCommentsOfBlogger(
+        httpServer,
+        accessToken,
+      );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
-        createResponseCommentsOfBlogger(
-          [
-            commentId6,
-            commentId5,
-            commentId4,
-            commentId3,
-            commentId2,
-            commentId1,
-          ],
-          [
-            correctPostId4,
-            correctPostId3,
-            correctPostId3,
-            correctPostId2,
-            correctPostId,
-            correctPostId,
-          ],
-          null,
-          null,
-          null,
-          6,
-        ),
+        createResponseCommentsOfBlogger(commentsIds, 9),
       );
     });
   });

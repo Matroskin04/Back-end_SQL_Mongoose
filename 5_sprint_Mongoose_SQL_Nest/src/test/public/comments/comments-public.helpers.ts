@@ -7,7 +7,7 @@ export async function createCommentTest(
   httpServer,
   postId,
   accessToken,
-  content,
+  content = 'Correct content of comment',
 ) {
   return request(httpServer)
     .post(`/hometask-nest/posts/${postId}/comments`)
@@ -92,14 +92,14 @@ export async function createCorrectCommentTest(
 
 export function createResponseCommentsOfBlogger(
   idsOfComments: Array<string> | number,
-  idsOfPosts: Array<number> | null,
-  arrOfLikesCount: Array<number> | null,
-  arrOfDislikesCount: Array<number> | null,
-  arrOfMyStatus: Array<string> | null,
-  totalCount?: number,
-  pagesCount?: number,
-  page?: number,
-  pageSize?: number,
+  totalCount?: number | null,
+  pagesCount?: number | null,
+  page?: number | null,
+  pageSize?: number | null,
+  idsOfPosts?: Array<number> | null,
+  arrOfLikesCount?: Array<number> | null,
+  arrOfDislikesCount?: Array<number> | null,
+  arrOfMyStatus?: Array<string> | null,
 ) {
   const allComments: any = [];
   let count = 0;
