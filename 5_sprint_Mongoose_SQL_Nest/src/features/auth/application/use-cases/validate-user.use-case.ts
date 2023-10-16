@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserWithPassEmailInfoDto } from '../dto/user-with-pass-email-info.dto';
 import * as bcrypt from 'bcryptjs';
-import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.repository/users.query.repository';
 import { UsersOrmQueryRepository } from '../../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 
 export class ValidateUserCommand {

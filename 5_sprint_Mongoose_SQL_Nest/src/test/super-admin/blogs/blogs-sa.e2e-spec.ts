@@ -482,6 +482,7 @@ describe('Blogs, Post (SA); /sa', () => {
         correctBlogId,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
+      console.log(result.body.items);
       expect(result.body).toEqual(
         createResponseAllPostsTest(postsIds, null, null, null, 9, 1, 1, 10),
       );
@@ -513,7 +514,6 @@ describe('Blogs, Post (SA); /sa', () => {
       const result2 = await postsRequestsTestManager.getAllPostsSa(
         httpServer,
         correctBlogId,
-
         'pageSize=5&&pageNumber=2',
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);

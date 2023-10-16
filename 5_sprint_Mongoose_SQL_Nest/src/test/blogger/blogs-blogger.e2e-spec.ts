@@ -1,29 +1,29 @@
 import { INestApplication } from '@nestjs/common';
-import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
-import { loginUserTest } from '../../public/auth/auth-public.helpers';
+import { HTTP_STATUS_CODE } from '../../infrastructure/utils/enums/http-status.enums';
+import { loginUserTest } from '../public/auth/auth-public.helpers';
 import { v4 as uuidv4 } from 'uuid';
-import { createErrorsMessageTest } from '../../utils/general/errors-message.helper';
-import { getPostByIdPublicTest } from '../../public/posts/posts-public.helpers';
-import { getBlogByIdPublicTest } from '../../public/blogs/blogs-public.helpers';
-import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
+import { createErrorsMessageTest } from '../utils/general/errors-message.helper';
+import { getPostByIdPublicTest } from '../public/posts/posts-public.helpers';
+import { getBlogByIdPublicTest } from '../public/blogs/blogs-public.helpers';
+import { deleteAllDataTest } from '../utils/general/delete-all-data.helper';
 import {
   createCorrectBlogTest,
   createCorrectPostTest,
   createCorrectUserTest,
   loginCorrectUserTest,
-} from '../../utils/general/chains-of-requests.helpers';
+} from '../utils/general/chains-of-requests.helpers';
 import {
   createCommentTest,
   createResponseCommentsOfBlogger,
-} from '../../public/comments/comments-public.helpers';
-import { startApp } from '../../test.utils';
-import { usersRequestsTestManager } from '../../utils/users/users-requests-test.manager';
-import { blogsRequestsTestManager } from '../../utils/blogs/blogs-requests-test.manager';
-import { blogsResponsesTestManager } from '../../utils/blogs/blogs-responses-test.manager';
-import { postsRequestsTestManager } from '../../utils/post/posts-requests-test.manager';
-import { postsResponsesTestManager } from '../../utils/post/posts-responses-test.manager';
-import { createResponseAllPostsTest } from '../../public/blogs/posts-blogs-puclic.helpers';
-import { commentsRequestsTestManager } from '../../utils/comments/comments-requests-test.manager';
+} from '../public/comments/comments-public.helpers';
+import { startApp } from '../test.utils';
+import { usersRequestsTestManager } from '../utils/users/users-requests-test.manager';
+import { blogsRequestsTestManager } from '../utils/blogs/blogs-requests-test.manager';
+import { blogsResponsesTestManager } from '../utils/blogs/blogs-responses-test.manager';
+import { postsRequestsTestManager } from '../utils/post/posts-requests-test.manager';
+import { postsResponsesTestManager } from '../utils/post/posts-responses-test.manager';
+import { createResponseAllPostsTest } from '../public/blogs/posts-blogs-puclic.helpers';
+import { commentsRequestsTestManager } from '../utils/comments/comments-requests-test.manager';
 
 describe('Blogs, Post, Comments (Blogger); /blogger', () => {
   jest.setTimeout(5 * 60 * 1000);

@@ -1,6 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogsRepository } from '../../../infrastructure/SQL/repository/blogs.repository';
-import { UsersQueryRepository } from '../../../../users/infrastructure/SQL/query.repository/users.query.repository';
 import { BlogsOrmRepository } from '../../../infrastructure/typeORM/repository/blogs-orm.repository';
 import { UsersOrmQueryRepository } from '../../../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 
