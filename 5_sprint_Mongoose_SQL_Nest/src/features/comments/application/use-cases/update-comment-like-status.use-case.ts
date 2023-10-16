@@ -37,6 +37,7 @@ export class UpdateCommentLikeStatusUseCase
       commentId,
       userId,
     );
+
     //if likeInfo doesn't exist, then user has like status 'None'
     if (!likeInfo) {
       if (likeStatus === 'None') return true; //If statuses are the same, then just return true
@@ -46,6 +47,7 @@ export class UpdateCommentLikeStatusUseCase
         commentId,
         likeStatus,
       );
+      return true;
     } else {
       //if new like status = 'None' - then delete info
       if (likeStatus === 'None') {
@@ -66,7 +68,7 @@ export class UpdateCommentLikeStatusUseCase
         likeStatus,
       );
       if (!isUpdate) {
-        throw new Error('Like status of the post is not updated');
+        throw new Error('Like status of the comment is not updated');
       }
     }
     return true;
