@@ -33,7 +33,7 @@ export async function create9BlogsBy3Users(
   for (const i of blogNumber) {
     const result = await blogsRequestsTestManager.createBlogBlogger(
       httpServer,
-      accessTokens[0],
+      accessTokens[Math.floor((count - 1) / 3)],
       `Name ${count} ${i}`,
       `Description ${i}`,
       `https://samurai.it-incubator.io`,
