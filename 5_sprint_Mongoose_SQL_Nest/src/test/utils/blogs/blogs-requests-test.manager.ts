@@ -1,5 +1,6 @@
 import request from 'supertest';
 import { RouterPaths } from '../router-paths';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 
 export const blogsRequestsTestManager = {
   createBlogSa: async function (
@@ -38,6 +39,38 @@ export const blogsRequestsTestManager = {
       });
   },
 
+  create9BlogsBlogger: async function (
+    httpServer,
+    accessTokens: string,
+  ): Promise<string[]> {
+    const blogNumber = [
+      'first',
+      'second',
+      'third',
+      'fourth',
+      'fifth',
+      'sixth',
+      'seventh',
+      'eighth',
+      'ninth',
+    ];
+    const blogsIds: any = [];
+    let count = 1;
+    for (const i of blogNumber) {
+      const result = await this.createBlogBlogger(
+        httpServer,
+        accessTokens,
+        `Name ${count} ${i}`,
+        `Description ${i}`,
+        `https://samurai.it-incubator.io`,
+      );
+      expect(result.statusCode).toBe(HTTP_STATUS_CODE.CREATED_201);
+      blogsIds.push(result.body.id);
+      count++;
+    }
+    return blogsIds.reverse();
+  },
+
   getAllBlogsSa: async function (httpServer, query, saLogin?, saPass?) {
     return request(httpServer)
       .get(RouterPaths.blogsSa)
@@ -45,7 +78,7 @@ export const blogsRequestsTestManager = {
       .query(query);
   },
 
-  getAllBlogsBlogger: async function (httpServer, accessToken, query) {
+  getAllBlogsBlogger: async function (httpServer, accessToken, query = '') {
     return request(httpServer)
       .get(RouterPaths.blogsBlogger)
       .set('Authorization', `Bearer ${accessToken}`)
