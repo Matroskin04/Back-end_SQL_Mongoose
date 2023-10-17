@@ -10,7 +10,7 @@
 testing.js
 tests.ts
 data-source.ts
-/configuration
+configuration/
 
 # Logs
 logs
