@@ -482,7 +482,6 @@ describe('Blogs, Post (SA); /sa', () => {
         correctBlogId,
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
-      console.log(result.body.items);
       expect(result.body).toEqual(
         createResponseAllPostsTest(postsIds, null, null, null, 9, 1, 1, 10),
       );
