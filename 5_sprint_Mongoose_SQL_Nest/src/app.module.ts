@@ -1,5 +1,6 @@
+//this configModule should be the first import of app
+import { configModule } from './configuration/configModule';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { PostsController } from './features/posts/api/posts.controller';
 import { PostsQueryRepository } from './features/posts/infrastructure/SQL/query.repository/posts.query.repository';
 import { PostsRepository } from './features/posts/infrastructure/SQL/repository/posts.repository';
@@ -226,7 +227,7 @@ const handlers = [
   imports: [
     CqrsModule,
     ThrottlerModule.forRoot(),
-    ConfigModule.forRoot(),
+    configModule,
     ScheduleModule.forRoot(),
     TypeOrmModule.forFeature([
       Blogs,
@@ -255,7 +256,7 @@ const handlers = [
       database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: true,
       synchronize: false,
-      url: process.env.POSTGRES_URL + '?sslmode=require',
+      // url: process.env.POSTGRES_URL + '?sslmode=require',
     }),
     JwtModule.register({}),
   ],
