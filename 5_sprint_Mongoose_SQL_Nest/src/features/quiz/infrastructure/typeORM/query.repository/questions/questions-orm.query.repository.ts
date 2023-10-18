@@ -80,8 +80,10 @@ export class QuestionsOrmQueryRepository {
     return result;
   }
 
-  async get5RandomQuestions(): Promise<{ id: string }[]> {
-    const randomQuestions = await this.questionQuizRepository
+  async get5RandomQuestions(
+    questionQuizRepo: Repository<QuestionQuiz> = this.questionQuizRepository,
+  ): Promise<{ id: string }[]> {
+    const randomQuestions = await questionQuizRepo
       .createQueryBuilder('q')
       .select('q."id"')
       .orderBy('RANDOM()')
@@ -91,32 +93,17 @@ export class QuestionsOrmQueryRepository {
     return randomQuestions;
   }
 
-  async getAnswersOfQuestion(questionId: string): Promise<null | string[]> {
-    const query = await this.questionQuizRepository
+  async getAnswersOfQuestion(
+    questionId: string,
+    questionQuizRepo: Repository<QuestionQuiz> = this.questionQuizRepository,
+  ): Promise<null | string[]> {
+    const query = await questionQuizRepo
       .createQueryBuilder()
       .select('"correctAnswers"')
       .where('id = :questionId', { questionId });
     const result = await query.getRawOne();
 
     return result?.correctAnswers?.split(',') ?? null;
-  }
-
-  async getQuestionAllInfoById(
-    id: string,
-  ): Promise<null | QuestionQuizAllInfoType> {
-    const result = await this.questionQuizRepository
-      .createQueryBuilder('q')
-      .select()
-      .where('q."id" = :id', { id })
-      .getOne();
-
-    return result
-      ? {
-          ...result,
-          createdAt: result.createdAt.toISOString(),
-          updatedAt: result.updatedAt?.toISOString() ?? null,
-        }
-      : null;
   }
 
   private publishedConditionBuilder(publishedStatus: boolean | null) {
