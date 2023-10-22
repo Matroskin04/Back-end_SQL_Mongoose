@@ -7,6 +7,7 @@ import { startTransaction } from '../../../../infrastructure/utils/functions/db-
 import { DataSource } from 'typeorm';
 import { Comments } from '../../domain/comments.entity';
 import { CommentsLikesInfo } from '../../domain/comments-likes-info.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 export class DeleteCommentCommand {
   constructor(public commentId: string, public userId: string) {}
@@ -20,7 +21,7 @@ export class DeleteCommentUseCase
     protected commentsOrmRepository: CommentsOrmRepository,
     protected commentsLikesOrmRepository: CommentsLikesOrmRepository,
     protected commentsOrmQueryRepository: CommentsOrmQueryRepository,
-    private dataSource: DataSource,
+    @InjectDataSource() private dataSource: DataSource,
   ) {}
 
   async execute(command: DeleteCommentCommand): Promise<boolean> {

@@ -14,6 +14,7 @@ import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
 import { AnswersQuizOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/answers-quiz-orm.query.repository';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 import { QuestionQuiz } from '../../../../domain/question-quiz.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 export class SendAnswerToQuizCommand {
   constructor(public currentUserId: string, public answer: string) {}
@@ -32,7 +33,7 @@ export class SendAnswerToQuizUseCase
     protected questionsOrmQueryRepository: QuestionsOrmQueryRepository,
     protected answersQuizOrmRepository: AnswersQuizOrmRepository,
     protected answersQuizOrmQueryRepository: AnswersQuizOrmQueryRepository,
-    protected dataSource: DataSource,
+    @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
   async execute(command: SendAnswerToQuizCommand): Promise<any> {
