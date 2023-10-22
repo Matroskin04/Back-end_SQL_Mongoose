@@ -11,6 +11,7 @@ import { QuizInfoAboutUserOrmRepository } from '../../../../infrastructure/typeO
 import { startTransaction } from '../../../../../../infrastructure/utils/functions/db-helpers/transaction.helpers';
 import { QuestionQuizRelation } from '../../../../domain/question-quiz-relation.entity';
 import { QuestionQuiz } from '../../../../domain/question-quiz.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 export class ConnectToQuizCommand {
   constructor(public userId: string) {}
@@ -26,7 +27,7 @@ export class ConnectToQuizUseCase
     protected questionQuizRelationOrmRepository: QuestionQuizRelationOrmRepository,
     protected quizOrmRepository: QuizOrmRepository,
     protected quizInfoAboutUserOrmRepository: QuizInfoAboutUserOrmRepository,
-    protected dataSource: DataSource,
+    @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
   async execute(command: ConnectToQuizCommand): Promise<any> {
