@@ -35,8 +35,7 @@ export class UsersOrmQueryRepository {
     protected bannedUsersOfBlogRepository: Repository<BannedUsersOfBlog>,
     @InjectRepository(UsersEmailConfirmation)
     protected usersEmailConfirmation: Repository<UsersEmailConfirmation>,
-    @InjectDataSource()
-    protected dataSource: DataSource,
+    @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
   //view methods

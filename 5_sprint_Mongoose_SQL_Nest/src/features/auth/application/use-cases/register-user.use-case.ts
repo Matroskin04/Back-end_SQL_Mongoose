@@ -12,6 +12,7 @@ import { Users } from '../../../users/domain/users.entity';
 import { UsersEmailConfirmation } from '../../../users/domain/users-email-confirmation.entity';
 import { UsersPasswordRecovery } from '../../../users/domain/users-password-recovery.entity';
 import { UsersBanInfo } from '../../../users/domain/users-ban-info.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 export class RegisterUserCommand {
   constructor(
@@ -32,7 +33,7 @@ export class RegisterUserUseCase
     protected emailConfirmationPublicRepository: EmailConfirmationOrmRepository,
     protected passwordRecoveryPublicRepository: PasswordRecoveryOrmRepository,
     protected banInfoPublicRepository: BanInfoOrmRepository,
-    protected dataSource: DataSource,
+    @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
   async execute(command: RegisterUserCommand): Promise<void> {

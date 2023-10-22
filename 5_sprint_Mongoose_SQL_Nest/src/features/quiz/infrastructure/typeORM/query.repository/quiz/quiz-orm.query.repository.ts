@@ -64,8 +64,11 @@ export class QuizOrmQueryRepository {
     return modifyQuizIntoViewModel(result);
   }
 
-  async getCurrentQuizByUserId(userId: string): Promise<QuizViewType | null> {
-    const query = await this.quizRepository
+  async getCurrentQuizByUserId(
+    userId: string,
+    quizRepository: Repository<Quiz> = this.quizRepository,
+  ): Promise<QuizViewType | null> {
+    const query = await quizRepository
       .createQueryBuilder('q')
       .select([
         'q."id"',
