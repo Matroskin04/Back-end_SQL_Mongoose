@@ -40,6 +40,53 @@ export class SendAnswerToQuizUseCase
   async execute(command: SendAnswerToQuizCommand): Promise<any> {
     const { currentUserId, answer } = command;
 
+    const activeQuiz = await this.quizOrmQueryRepository.getCurrentQuizByUserId(
+      currentUserId,
+    );
+    //check that user has an active game
+    if (!activeQuiz || activeQuiz.status !== 'Active')
+      throw new ForbiddenException('Active quiz game is not found');
+
+    if (!activeQuiz.questions || !activeQuiz.secondPlayerProgress)
+      throw new Error('Questions or the second player are not found');
+
+    const [
+      answersNumberCurrentUser,
+      currentUserScore,
+      answersNumberSecondUser,
+      secondUserId,
+      secondUserScore,
+    ] =
+      activeQuiz.firstPlayerProgress.player.id === currentUserId
+        ? [
+            activeQuiz.firstPlayerProgress.answers?.length ?? 0,
+            activeQuiz.firstPlayerProgress.score,
+            activeQuiz.secondPlayerProgress.answers?.length ?? 0,
+            activeQuiz.secondPlayerProgress.player.id,
+            activeQuiz.secondPlayerProgress.score,
+          ]
+        : [
+            activeQuiz.secondPlayerProgress.answers?.length ?? 0,
+            activeQuiz.secondPlayerProgress.score,
+            activeQuiz.firstPlayerProgress.answers?.length ?? 0,
+            activeQuiz.firstPlayerProgress.player.id,
+            activeQuiz.firstPlayerProgress.score,
+          ];
+
+    //if all answers already exists - then 403 status
+    if (answersNumberCurrentUser === 5)
+      throw new ForbiddenException(
+        'All the answers have already been received',
+      );
+
+    //get correct answers
+    const currentQuestionId = activeQuiz.questions[answersNumberCurrentUser].id;
+    const correctAnswers =
+      await this.questionsOrmQueryRepository.getAnswersOfQuestion(
+        currentQuestionId,
+      );
+    if (!correctAnswers) throw new Error('Correct answers is not found');
+
     //start transaction
     const dataForTransaction = await startTransaction(this.dataSource, [
       AnswerQuiz,
@@ -48,56 +95,6 @@ export class SendAnswerToQuizUseCase
       QuestionQuiz,
     ]);
     try {
-      const activeQuiz =
-        await this.quizOrmQueryRepository.getCurrentQuizByUserId(
-          currentUserId,
-          dataForTransaction.repositories.Quiz,
-        );
-      //check that user has an active game
-      if (!activeQuiz || activeQuiz.status !== 'Active')
-        throw new ForbiddenException('Active quiz game is not found');
-
-      if (!activeQuiz.questions || !activeQuiz.secondPlayerProgress)
-        throw new Error('Questions or the second player are not found');
-
-      const [
-        answersNumberCurrentUser,
-        currentUserScore,
-        answersNumberSecondUser,
-        secondUserId,
-        secondUserScore,
-      ] =
-        activeQuiz.firstPlayerProgress.player.id === currentUserId
-          ? [
-              activeQuiz.firstPlayerProgress.answers?.length ?? 0,
-              activeQuiz.firstPlayerProgress.score,
-              activeQuiz.secondPlayerProgress.answers?.length ?? 0,
-              activeQuiz.secondPlayerProgress.player.id,
-              activeQuiz.secondPlayerProgress.score,
-            ]
-          : [
-              activeQuiz.secondPlayerProgress.answers?.length ?? 0,
-              activeQuiz.secondPlayerProgress.score,
-              activeQuiz.firstPlayerProgress.answers?.length ?? 0,
-              activeQuiz.firstPlayerProgress.player.id,
-              activeQuiz.firstPlayerProgress.score,
-            ];
-
-      //if all answers already exists - then 403 status
-      if (answersNumberCurrentUser === 5)
-        throw new ForbiddenException(
-          'All the answers have already been received',
-        );
-
-      //get correct answers
-      const currentQuestionId =
-        activeQuiz.questions[answersNumberCurrentUser].id;
-      const correctAnswers =
-        await this.questionsOrmQueryRepository.getAnswersOfQuestion(
-          currentQuestionId,
-          dataForTransaction.repositories.QuestionQuiz,
-        );
-      if (!correctAnswers) throw new Error('Correct answers is not found');
       //validate user's answers
       const isAnswerCorrect =
         correctAnswers.join().split(',').indexOf(answer) > -1;
