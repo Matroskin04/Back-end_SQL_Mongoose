@@ -74,6 +74,14 @@ export class ConnectToQuizUseCase
         await dataForTransaction.queryRunner.release();
       }
     } else {
+      //if user connected - find 5 random questions
+      const questionsIds =
+        await this.questionsOrmQueryRepository.get5RandomQuestions();
+      if (questionsIds.length < 5)
+        throw new BadRequestException(
+          "There aren't enough questions in the database",
+        );
+
       //start transaction
       const dataForTransaction = await startTransaction(this.dataSource, [
         QuestionQuizRelation,
@@ -81,16 +89,6 @@ export class ConnectToQuizUseCase
         QuestionQuiz,
       ]);
       try {
-        //if user connected - find 5 random questions
-        const questionsIds =
-          await this.questionsOrmQueryRepository.get5RandomQuestions(
-            dataForTransaction.repositories.QuestionQuiz,
-          );
-        if (questionsIds.length < 5)
-          throw new BadRequestException(
-            "There aren't enough questions in the database",
-          );
-
         //then add 5 questions to quiz
         await this.questionQuizRelationOrmRepository.create5QuestionQuizRelations(
           quizInfo.id,
