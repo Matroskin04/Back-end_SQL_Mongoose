@@ -1,13 +1,12 @@
 import request from 'supertest';
-import {
-  QuizAnswerStatusType,
-  QuizStatusType,
-} from '../../../infrastructure/types/quiz-questions.general.types';
+import { QuizStatusType } from '../../../infrastructure/types/quiz-questions.general.types';
 import {
   regexpISOSString,
   regexpUUID,
 } from '../../../infrastructure/utils/regexp/general-regexp';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
+import { toBeOneOf } from 'jest-extended';
+expect.extend({ toBeOneOf });
 
 export async function connectPlayerToQuizTest(httpServer, accessToken) {
   return request(httpServer)

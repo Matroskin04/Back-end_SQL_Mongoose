@@ -143,7 +143,6 @@ export class SendAnswerToQuizUseCase
             (e) => (e.userId = currentUserId),
           );
           if (index > -1) {
-            console.log(this.timestamps[index]);
             delete this.cronInfo[this.timestamps[index].stamp];
             this.timestamps.splice(index, 1);
           }

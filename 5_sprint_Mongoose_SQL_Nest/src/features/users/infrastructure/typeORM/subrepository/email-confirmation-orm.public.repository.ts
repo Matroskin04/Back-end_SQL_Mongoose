@@ -7,7 +7,7 @@ import { UsersEmailConfirmation } from '../../../domain/users-email-confirmation
 export class EmailConfirmationOrmRepository {
   constructor(
     @InjectRepository(UsersEmailConfirmation)
-    protected usersEmailConfirmation: Repository<UsersEmailConfirmation>,
+    protected usersEmailConfirmationRepo: Repository<UsersEmailConfirmation>,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
@@ -16,8 +16,10 @@ export class EmailConfirmationOrmRepository {
     intervalForExpirationDate: string,
     isConfirmed: boolean,
     userId: string,
+    usersEmailConfirmationRepo: Repository<UsersEmailConfirmation> = this
+      .usersEmailConfirmationRepo,
   ): Promise<void> {
-    await this.usersEmailConfirmation
+    await usersEmailConfirmationRepo
       .createQueryBuilder()
       .insert()
       .values({
@@ -32,7 +34,7 @@ export class EmailConfirmationOrmRepository {
   }
 
   async updateEmailConfirmationStatus(userId: string): Promise<boolean> {
-    const result = await this.usersEmailConfirmation
+    const result = await this.usersEmailConfirmationRepo
       .createQueryBuilder()
       .update()
       .set({ isConfirmed: true })
@@ -47,7 +49,7 @@ export class EmailConfirmationOrmRepository {
     newCode: string,
     intervalForExpirationDate: string,
   ): Promise<boolean> {
-    const result = await this.usersEmailConfirmation
+    const result = await this.usersEmailConfirmationRepo
       .createQueryBuilder()
       .update()
       .set({

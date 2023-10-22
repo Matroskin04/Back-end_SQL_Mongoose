@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import {
   BannedUsersOfBlogPaginationType,
   EmailConfirmationInfoType,
@@ -23,12 +23,16 @@ import {
 } from '../../../../../infrastructure/utils/functions/features/users.functions.helpers';
 import { Users } from '../../../domain/users.entity';
 import { UsersEmailConfirmation } from '../../../domain/users-email-confirmation.entity';
+import { UsersBanInfo } from '../../../domain/users-ban-info.entity';
+import { BannedUsersOfBlog } from '../../../../blogs/domain/banned-users-of-blog.entity';
 
 @Injectable()
 export class UsersOrmQueryRepository {
   constructor(
     @InjectRepository(Users)
     protected usersRepository: Repository<Users>,
+    @InjectRepository(BannedUsersOfBlog)
+    protected bannedUsersOfBlogRepository: Repository<BannedUsersOfBlog>,
     @InjectRepository(UsersEmailConfirmation)
     protected usersEmailConfirmation: Repository<UsersEmailConfirmation>,
     @InjectDataSource()
@@ -103,33 +107,34 @@ export class UsersOrmQueryRepository {
   }
 
   async getBannedUsersOfBlogView(
-    query: UsersQueryBloggerType,
+    queryParams: UsersQueryBloggerType,
     blogId: string,
   ): Promise<BannedUsersOfBlogPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchLoginTerm } =
-      variablesForReturn(query);
+      variablesForReturn(queryParams);
 
-    const result = await this.dataSource.query(
-      `
-    SELECT u."id", u."login", bi."isBanned", bi."banReason", bi."banDate",
-        (SELECT COUNT(*)
-            FROM public."banned_users_of_blog" as bi2
-                JOIN public."users" as u2
-                ON u2."id" = bi2."userId"
-        WHERE u2."login" ILIKE $1 AND bi2."blogId" = $2 AND u."isDeleted" = false)
-    FROM public."banned_users_of_blog" as bi
-        JOIN public."users" as u
-        ON u."id" = bi."userId"
-    WHERE u."login" ILIKE $1 AND bi."blogId" = $2 AND u."isDeleted" = false
-        ORDER BY "${sortBy}" ${sortDirection}
-        LIMIT $3 OFFSET $4;`,
-      [
-        `%${searchLoginTerm}%`,
-        blogId,
-        +pageSize,
-        (+pageNumber - 1) * +pageSize,
-      ],
-    );
+    const query = await this.bannedUsersOfBlogRepository
+      .createQueryBuilder('bi')
+      .select([
+        'u."id"',
+        'u."login"',
+        'bi."isBanned"',
+        'bi."banReason"',
+        'bi."banDate"',
+      ])
+      .addSelect(
+        (qb) => this.bannedUsersOfBlogCountBuilder(qb, searchLoginTerm, blogId),
+        'count',
+      )
+      .leftJoin('bi.user', 'u')
+      .where('u.login ILIKE :loginTerm', { loginTerm: `%${searchLoginTerm}%` })
+      .andWhere('bi."blogId" = :blogId', { blogId })
+      .andWhere('u."isDeleted" = false')
+      .orderBy(`u."${sortBy}"`, sortDirection)
+      .limit(+pageSize)
+      .offset((+pageNumber - 1) * +pageSize);
+
+    const result = await query.getRawMany();
 
     return {
       pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
@@ -302,5 +307,19 @@ export class UsersOrmQueryRepository {
       .getRawOne();
 
     return result ?? null;
+  }
+
+  private bannedUsersOfBlogCountBuilder(
+    qb: SelectQueryBuilder<BannedUsersOfBlog>,
+    searchLoginTerm: string,
+    blogId: string,
+  ) {
+    return qb
+      .select('COUNT(*)')
+      .from(BannedUsersOfBlog, 'bi')
+      .leftJoin('bi.user', 'u')
+      .where('u.login ILIKE :loginTerm', { loginTerm: `%${searchLoginTerm}%` })
+      .andWhere('bi."blogId" = :blogId', { blogId })
+      .andWhere('u."isDeleted" = false');
   }
 }

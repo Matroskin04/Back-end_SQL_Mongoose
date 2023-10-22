@@ -17,12 +17,13 @@ import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/forbidden-
 import { UsersQueryRepository } from '../../infrastructure/SQL/query.repository/users.query.repository';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateUserBanInfoForBlogCommand } from '../../application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
+import { UsersOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/users-orm.query.repository';
 
 @Controller('/hometask-nest/blogger/users')
 export class UsersBloggerController {
   constructor(
     protected commandBus: CommandBus,
-    protected usersQueryRepository: UsersQueryRepository,
+    protected usersOrmQueryRepository: UsersOrmQueryRepository,
   ) {}
 
   @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
@@ -31,7 +32,7 @@ export class UsersBloggerController {
     @Query() query: QueryUsersBloggerInputModel,
     @Param('blogId') blogId: string,
   ) {
-    const result = await this.usersQueryRepository.getBannedUsersOfBlogView(
+    const result = await this.usersOrmQueryRepository.getBannedUsersOfBlogView(
       query,
       blogId,
     );

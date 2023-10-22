@@ -1,11 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { startApp } from '../../test.utils';
-import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
-import {
-  create9Questions,
-  publishQuestionSaTest,
-} from '../../super-admin/quiz/quiz-sa.helpers';
+import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import {
   addAnswersToQuizTest,
@@ -24,10 +20,11 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   createCorrectUserTest,
   loginCorrectUserTest,
-} from '../../helpers/chains-of-requests.helpers';
-import { createUserTest } from '../../super-admin/users/users-sa.helpers';
+} from '../../utils/general/chains-of-requests.helpers';
 import { loginUserTest } from '../auth/auth-public.helpers';
-import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
+import { createErrorsMessageTest } from '../../utils/general/errors-message.helper';
+import { quizzesRequestsTestManager } from '../../utils/quiz/quizzes-requests-test.manager';
+import { usersRequestsTestManager } from '../../utils/users/users-requests-test.manager';
 
 describe('Quiz (PUBLIC); /pair-game-quiz', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -72,7 +69,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       const result1 = await loginCorrectUserTest(httpServer);
       accessToken1 = result1.accessToken;
 
-      user2 = await createUserTest(
+      user2 = await usersRequestsTestManager.createUserSa(
         httpServer,
         'login2',
         'password2',
@@ -82,10 +79,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       accessToken2 = result2.body.accessToken;
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
     });
 
@@ -152,7 +155,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       const result1 = await loginCorrectUserTest(httpServer);
       accessToken1 = result1.accessToken;
 
-      user2 = await createUserTest(
+      user2 = await usersRequestsTestManager.createUserSa(
         httpServer,
         'login2',
         'password2',
@@ -162,10 +165,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       accessToken2 = result2.body.accessToken;
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
 
       //connect to new quiz
@@ -199,7 +208,12 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
 
     it(`(Addition) + (201) create and login new user
               - (403) the user does not participate is this quiz`, async () => {
-      await createUserTest(httpServer, 'login3', 'password3', 'email3@mail.ru');
+      await usersRequestsTestManager.createUserSa(
+        httpServer,
+        'login3',
+        'password3',
+        'email3@mail.ru',
+      );
       const logInfo = await loginUserTest(httpServer, 'login3', 'password3');
       const accessToken3 = logInfo.body.accessToken;
       //jwt is incorrect
@@ -255,7 +269,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       const result1 = await loginCorrectUserTest(httpServer);
       accessToken1 = result1.accessToken;
 
-      user2 = await createUserTest(
+      user2 = await usersRequestsTestManager.createUserSa(
         httpServer,
         'login2',
         'password2',
@@ -265,10 +279,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       accessToken2 = result2.body.accessToken;
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
       //create 3 finished games and 1 pending
       //score1: 4, score2: 4, draw
@@ -370,7 +390,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       const result1 = await loginCorrectUserTest(httpServer);
       accessToken1 = result1.accessToken;
 
-      user2 = await createUserTest(
+      user2 = await usersRequestsTestManager.createUserSa(
         httpServer,
         'login2',
         'password2',
@@ -380,10 +400,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       accessToken2 = result2.body.accessToken;
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
     });
 
@@ -478,7 +504,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       await deleteAllDataTest(httpServer);
       //create 4 users
       {
-        user1 = await createUserTest(
+        user1 = await usersRequestsTestManager.createUserSa(
           httpServer,
           'login1',
           'password1',
@@ -487,7 +513,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         const result1 = await loginUserTest(httpServer, 'login1', 'password1');
         accessToken1 = result1.body.accessToken;
 
-        user2 = await createUserTest(
+        user2 = await usersRequestsTestManager.createUserSa(
           httpServer,
           'login2',
           'password2',
@@ -496,7 +522,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         const result2 = await loginUserTest(httpServer, 'login2', 'password2');
         accessToken2 = result2.body.accessToken;
 
-        user3 = await createUserTest(
+        user3 = await usersRequestsTestManager.createUserSa(
           httpServer,
           'login3',
           'password3',
@@ -505,7 +531,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         const result3 = await loginUserTest(httpServer, 'login3', 'password3');
         accessToken3 = result3.body.accessToken;
 
-        user4 = await createUserTest(
+        user4 = await usersRequestsTestManager.createUserSa(
           httpServer,
           'login4',
           'password4',
@@ -516,10 +542,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       }
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
     });
 
@@ -653,7 +685,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
 
       //create and login 4 users
       {
-        user1 = await createUserTest(
+        user1 = await usersRequestsTestManager.createUserSa(
           httpServer,
           'login1',
           'password1',
@@ -662,7 +694,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         const result1 = await loginUserTest(httpServer, 'login1', 'password1');
         accessToken1 = result1.body.accessToken;
 
-        user2 = await createUserTest(
+        user2 = await usersRequestsTestManager.createUserSa(
           httpServer,
           'login2',
           'password2',
@@ -671,7 +703,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         const result2 = await loginUserTest(httpServer, 'login2', 'password2');
         accessToken2 = result2.body.accessToken;
 
-        user3 = await createUserTest(
+        user3 = await usersRequestsTestManager.createUserSa(
           httpServer,
           'login3',
           'password3',
@@ -680,7 +712,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         const result3 = await loginUserTest(httpServer, 'login3', 'password3');
         accessToken3 = result3.body.accessToken;
 
-        user4 = await createUserTest(
+        user4 = await usersRequestsTestManager.createUserSa(
           httpServer,
           'login4',
           'password4',
@@ -691,10 +723,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       }
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
     });
 
@@ -761,7 +799,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
 
       //create and login 4 users
       {
-        user1 = await createUserTest(
+        user1 = await usersRequestsTestManager.createUserSa(
           httpServer,
           'login1',
           'password1',
@@ -770,7 +808,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         const result1 = await loginUserTest(httpServer, 'login1', 'password1');
         accessToken1 = result1.body.accessToken;
 
-        user2 = await createUserTest(
+        user2 = await usersRequestsTestManager.createUserSa(
           httpServer,
           'login2',
           'password2',
@@ -779,7 +817,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         const result2 = await loginUserTest(httpServer, 'login2', 'password2');
         accessToken2 = result2.body.accessToken;
 
-        user3 = await createUserTest(
+        user3 = await usersRequestsTestManager.createUserSa(
           httpServer,
           'login3',
           'password3',
@@ -788,7 +826,7 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
         const result3 = await loginUserTest(httpServer, 'login3', 'password3');
         accessToken3 = result3.body.accessToken;
 
-        user4 = await createUserTest(
+        user4 = await usersRequestsTestManager.createUserSa(
           httpServer,
           'login4',
           'password4',
@@ -799,10 +837,16 @@ describe('Quiz (PUBLIC); /pair-game-quiz', () => {
       }
 
       //create 9 questions
-      questionsIds = await create9Questions(httpServer);
+      questionsIds = await quizzesRequestsTestManager.create9Questions(
+        httpServer,
+      );
       //publish them:
       for (const id of questionsIds) {
-        await publishQuestionSaTest(httpServer, id, true);
+        await quizzesRequestsTestManager.publishQuestionSa(
+          httpServer,
+          id,
+          true,
+        );
       }
     });
 

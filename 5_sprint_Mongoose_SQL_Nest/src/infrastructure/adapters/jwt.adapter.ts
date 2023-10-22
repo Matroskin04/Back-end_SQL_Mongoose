@@ -5,20 +5,27 @@ import { JwtService as JwtServiceNest } from '@nestjs/jwt';
 import { DevicesRepository } from '../../features/devices/infrastructure/SQL/repository/devices.repository';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { DevicesOrmRepository } from '../../features/devices/infrastructure/typeORM/repository/devices-orm.repository';
+import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '../../configuration/configuration';
 
 @Injectable()
 export class JwtAdapter {
   constructor(
     protected jwtServiceNest: JwtServiceNest,
     protected devicesOrmRepository: DevicesOrmRepository,
+    private configService: ConfigService<ConfigType>,
   ) {}
 
   createAccessJwtToken(userId: string): string {
     const accessToken = this.jwtServiceNest.sign(
       { userId: userId },
       {
-        secret: process.env.PRIVATE_KEY_ACCESS_TOKEN!,
-        expiresIn: process.env.EXPIRATION_TIME_ACCESS_TOKEN!,
+        secret: this.configService.get('jwt', {
+          infer: true,
+        })!.PRIVATE_KEY_ACCESS_TOKEN,
+        expiresIn: this.configService.get('jwt', {
+          infer: true,
+        })!.EXPIRATION_TIME_ACCESS_TOKEN,
       },
     );
     return accessToken;
@@ -28,8 +35,12 @@ export class JwtAdapter {
     const refreshToken = this.jwtServiceNest.sign(
       { userId: userId, deviceId: deviceId ?? uuidv4() },
       {
-        secret: process.env.PRIVATE_KEY_REFRESH_TOKEN!,
-        expiresIn: process.env.EXPIRATION_TIME_REFRESH_TOKEN!,
+        secret: this.configService.get('jwt', {
+          infer: true,
+        })!.PRIVATE_KEY_REFRESH_TOKEN,
+        expiresIn: this.configService.get('jwt', {
+          infer: true,
+        })!.EXPIRATION_TIME_REFRESH_TOKEN,
       },
     );
     return refreshToken;

@@ -1,11 +1,11 @@
 import { INestApplication } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { deleteAllDataTest } from '../../helpers/delete-all-data.helper';
+import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
 import {
   createCorrectBlogTest,
   createCorrectUserTest,
   loginCorrectUserTest,
-} from '../../helpers/chains-of-requests.helpers';
+} from '../../utils/general/chains-of-requests.helpers';
 import {
   create9BlogsBy3Users,
   createAndLogin3UsersTest,
@@ -14,19 +14,13 @@ import {
 } from './blogs-public.helpers';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import {
-  createResponseAllBlogsTest,
-  createResponseSingleBlog,
-} from '../../blogger/blogs/blogs-blogger.helpers';
-import {
   createResponseAllPostsTest,
   getPostsOfBlogPublicTest,
 } from './posts-blogs-puclic.helpers';
-import { createErrorsMessageTest } from '../../helpers/errors-message.helper';
-import {
-  create9PostsOf3BlogsBy3Users,
-  create9PostsOfBlog,
-} from '../posts/posts-public.helpers';
+import { createErrorsMessageTest } from '../../utils/general/errors-message.helper';
 import { startApp } from '../../test.utils';
+import { blogsResponsesTestManager } from '../../utils/blogs/blogs-responses-test.manager';
+import { postsRequestsTestManager } from '../../utils/post/posts-requests-test.manager';
 
 describe('Blogs (Public); /', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -72,7 +66,14 @@ describe('Blogs (Public); /', () => {
       const result = await getAllBlogsPublicTest(httpServer);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
-        createResponseAllBlogsTest(blogsIds, null, 9, 1, 1, 10),
+        blogsResponsesTestManager.createResponseAllBlogsBlogger(
+          blogsIds,
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
       );
     });
 
@@ -83,7 +84,14 @@ describe('Blogs (Public); /', () => {
       );
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
-        createResponseAllBlogsTest([], null, 0, 1, 1, 10),
+        blogsResponsesTestManager.createResponseAllBlogsBlogger(
+          [],
+          null,
+          0,
+          1,
+          1,
+          10,
+        ),
       );
     });
 
@@ -96,7 +104,14 @@ describe('Blogs (Public); /', () => {
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
-        createResponseAllBlogsTest(blogsIds.slice(3, 6), null, 9, 3, 2, 3),
+        blogsResponsesTestManager.createResponseAllBlogsBlogger(
+          blogsIds.slice(3, 6),
+          null,
+          9,
+          3,
+          2,
+          3,
+        ),
       );
 
       //4 blogs
@@ -106,7 +121,14 @@ describe('Blogs (Public); /', () => {
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
-        createResponseAllBlogsTest(blogsIds.slice(5), null, 9, 2, 2, 5),
+        blogsResponsesTestManager.createResponseAllBlogsBlogger(
+          blogsIds.slice(5),
+          null,
+          9,
+          2,
+          2,
+          5,
+        ),
       );
     });
 
@@ -121,7 +143,14 @@ describe('Blogs (Public); /', () => {
       );
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
-        createResponseAllBlogsTest(blogsIdsCopy.slice(0, 5), null, 9, 2, 1, 5),
+        blogsResponsesTestManager.createResponseAllBlogsBlogger(
+          blogsIdsCopy.slice(0, 5),
+          null,
+          9,
+          2,
+          1,
+          5,
+        ),
       );
 
       //sortDirection=asc, 9 blogs
@@ -131,7 +160,14 @@ describe('Blogs (Public); /', () => {
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
-        createResponseAllBlogsTest(blogsIdsCopy.reverse(), null, 9, 1, 1, 10),
+        blogsResponsesTestManager.createResponseAllBlogsBlogger(
+          blogsIdsCopy.reverse(),
+          null,
+          9,
+          1,
+          1,
+          10,
+        ),
       );
 
       //sortBy=id&&sortDirection=desc, 9 blogs
@@ -141,7 +177,7 @@ describe('Blogs (Public); /', () => {
       );
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result3.body).toEqual(
-        createResponseAllBlogsTest(
+        blogsResponsesTestManager.createResponseAllBlogsBlogger(
           blogsIdsCopy.sort().reverse(),
           null,
           9,
@@ -163,7 +199,14 @@ describe('Blogs (Public); /', () => {
 
       expect(result1.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result1.body).toEqual(
-        createResponseAllBlogsTest([blogsIds[8]], null, 1, 1, 1, 10),
+        blogsResponsesTestManager.createResponseAllBlogsBlogger(
+          [blogsIds[8]],
+          null,
+          1,
+          1,
+          1,
+          10,
+        ),
       );
 
       //searchNameTerm=TH, 7 blogs
@@ -173,7 +216,14 @@ describe('Blogs (Public); /', () => {
       );
       expect(result2.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result2.body).toEqual(
-        createResponseAllBlogsTest(blogsIds.slice(0, 7), null, 7, 1, 1, 10),
+        blogsResponsesTestManager.createResponseAllBlogsBlogger(
+          blogsIds.slice(0, 7),
+          null,
+          7,
+          1,
+          1,
+          10,
+        ),
       );
 
       //searchNameTerm=S, 4 blogs
@@ -183,7 +233,7 @@ describe('Blogs (Public); /', () => {
       );
       expect(result3.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result3.body).toEqual(
-        createResponseAllBlogsTest(
+        blogsResponsesTestManager.createResponseAllBlogsBlogger(
           blogsIds.filter((e, i) => i === 2 || i === 3 || i === 7 || i === 8),
           null,
           4,
@@ -235,7 +285,7 @@ describe('Blogs (Public); /', () => {
       const result = await getBlogByIdPublicTest(httpServer, blog.id);
       expect(result.statusCode).toBe(HTTP_STATUS_CODE.OK_200);
       expect(result.body).toEqual(
-        createResponseSingleBlog(
+        blogsResponsesTestManager.createResponseSingleBlogBlogger(
           blog.id,
           blog.name,
           blog.description,
@@ -257,7 +307,11 @@ describe('Blogs (Public); /', () => {
 
       blog = await createCorrectBlogTest(httpServer, accessToken1);
       //create 9 posts of 3 blogs by 3 users
-      postsIds = await create9PostsOfBlog(httpServer, blog.id, accessToken1);
+      postsIds = await postsRequestsTestManager.create9PostsOfBlog(
+        httpServer,
+        blog.id,
+        accessToken1,
+      );
     });
 
     it(`- (404) should not return posts because of blog with such id doesn't exist`, async () => {

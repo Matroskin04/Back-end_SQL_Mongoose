@@ -15,7 +15,6 @@ export class LikesInfoOrmQueryRepository {
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
-  //SQL
   async getLikesInfoPost(
     postId: string,
     userId: string,

@@ -9,11 +9,11 @@ export type UserViewType = {
   login: string;
   email: string;
   createdAt: string;
-  // banInfo: {
-  //   isBanned: boolean;
-  //   banDate: string | null;
-  //   banReason: string | null;
-  // };
+  banInfo: {
+    isBanned: boolean;
+    banDate: string | null;
+    banReason: string | null;
+  };
 };
 
 export type BannedUsersOfBlogPaginationType = {
@@ -28,8 +28,8 @@ type BannedUsersViewType = {
   login: string;
   banInfo: {
     isBanned: boolean;
-    banDate: string;
-    banReason: string;
+    banDate: string | null;
+    banReason: string | null;
   };
 };
 

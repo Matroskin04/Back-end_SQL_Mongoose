@@ -1,8 +1,11 @@
 import nodemailer from 'nodemailer';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '../../configuration/configuration';
 
 @Injectable()
 export class EmailAdapter {
+  constructor(private configService: ConfigService<ConfigType>) {}
   async sendEmailConfirmationMessage(
     email: string,
     subject: string,
@@ -13,7 +16,9 @@ export class EmailAdapter {
         service: 'gmail',
         auth: {
           user: 'itincubator9@gmail.com',
-          pass: process.env.EMAIL_PASS,
+          pass: this.configService.get('credentials', {
+            infer: true,
+          })!.EMAIL_PASS,
         },
       });
 
@@ -40,7 +45,9 @@ export class EmailAdapter {
         service: 'gmail',
         auth: {
           user: 'itincubator9@gmail.com',
-          pass: process.env.EMAIL_PASS,
+          pass: this.configService.get('credentials', {
+            infer: true,
+          })!.EMAIL_PASS,
         },
       });
 

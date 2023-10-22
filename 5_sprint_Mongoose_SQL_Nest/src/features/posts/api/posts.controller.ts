@@ -3,7 +3,6 @@ import {
   ViewAllPostsModel,
   PostOutputModel,
 } from './models/output/post.output.model';
-import { PostsQueryRepository } from '../infrastructure/SQL/query.repository/posts.query.repository';
 import {
   ViewAllCommentsOfPostModel,
   ViewCommentOfPostModel,
@@ -18,7 +17,6 @@ import {
   Post,
   Put,
   Query,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { CommentsQueryRepository } from '../../comments/infrastructure/SQL/query.repository/comments.query.repository';
@@ -35,13 +33,14 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateCommentCommand } from '../../comments/application/use-cases/create-comment-by-post-id.use-case';
 import { UpdatePostLikeStatusCommand } from '../application/use-cases/update-post-like-status.use-case';
 import { PostsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/posts-orm.query.repository';
+import { CommentsOrmQueryRepository } from '../../comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
 
 @Controller('/hometask-nest/posts')
 export class PostsController {
   constructor(
     protected commandBus: CommandBus,
     protected postsOrmQueryRepository: PostsOrmQueryRepository,
-    protected commentsQueryRepository: CommentsQueryRepository,
+    protected commentsOrmQueryRepository: CommentsOrmQueryRepository,
   ) {}
 
   @UseGuards(JwtAccessNotStrictGuard)
@@ -78,7 +77,7 @@ export class PostsController {
     @CurrentUserId() userId: string | null,
     @Query() query: QueryPostInputModel,
   ): Promise<ViewAllCommentsOfPostModel> {
-    const result = await this.commentsQueryRepository.getCommentsOfPostView(
+    const result = await this.commentsOrmQueryRepository.getCommentsOfPostView(
       postId,
       query,
       userId,

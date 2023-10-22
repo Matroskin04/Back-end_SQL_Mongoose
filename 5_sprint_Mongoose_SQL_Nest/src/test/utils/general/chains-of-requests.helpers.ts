@@ -1,19 +1,19 @@
-import { createUserTest } from '../super-admin/users/users-sa.helpers';
-import { HTTP_STATUS_CODE } from '../../infrastructure/utils/enums/http-status.enums';
-import { loginUserTest } from '../public/auth/auth-public.helpers';
-import { createBlogTest } from '../blogger/blogs/blogs-blogger.helpers';
-import { createPostTest } from '../blogger/blogs/posts-blogger.helpers';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
+import { loginUserTest } from '../../public/auth/auth-public.helpers';
 import {
   CreateCorrectBlogTestType,
   CreateCorrectPostTestType,
   CreateCorrectUserTestType,
   LoginCorrectUserTestType,
-} from './types/chains-of-requests.types';
+} from '../../types/chains-of-requests.types';
+import { usersRequestsTestManager } from '../users/users-requests-test.manager';
+import { blogsRequestsTestManager } from '../blogs/blogs-requests-test.manager';
+import { postsRequestsTestManager } from '../post/posts-requests-test.manager';
 
 export async function createCorrectUserTest(
   httpServer,
 ): Promise<CreateCorrectUserTestType> {
-  const user = await createUserTest(
+  const user = await usersRequestsTestManager.createUserSa(
     httpServer,
     'correct',
     'correctPass',
@@ -47,7 +47,7 @@ export async function createCorrectBlogTest(
   httpServer,
   accessToken,
 ): Promise<CreateCorrectBlogTestType> {
-  const blog = await createBlogTest(
+  const blog = await blogsRequestsTestManager.createBlogBlogger(
     httpServer,
     accessToken,
     'correctName',
@@ -70,7 +70,7 @@ export async function createCorrectPostTest(
   blogId,
   accessToken,
 ): Promise<CreateCorrectPostTestType> {
-  const post = await createPostTest(
+  const post = await postsRequestsTestManager.createPostBlogger(
     httpServer,
     blogId,
     accessToken,

@@ -40,8 +40,11 @@ export class CommentsOrmRepository {
     return result.affected === 1;
   }
 
-  async deleteComment(commentId: string): Promise<boolean> {
-    const result = await this.commentsRepository
+  async deleteComment(
+    commentId: string,
+    commentsRepository: Repository<Comments> = this.commentsRepository,
+  ): Promise<boolean> {
+    const result = await commentsRepository
       .createQueryBuilder()
       .delete()
       .where('id = :commentId', { commentId })

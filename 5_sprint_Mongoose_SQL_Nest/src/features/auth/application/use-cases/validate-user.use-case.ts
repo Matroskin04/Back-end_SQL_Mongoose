@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserWithPassEmailInfoDto } from '../dto/user-with-pass-email-info.dto';
 import * as bcrypt from 'bcryptjs';
-import { UsersQueryRepository } from '../../../users/infrastructure/SQL/query.repository/users.query.repository';
+import { UsersOrmQueryRepository } from '../../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 
 export class ValidateUserCommand {
   constructor(public loginOrEmail: string, public password: string) {}
@@ -11,7 +11,7 @@ export class ValidateUserCommand {
 export class ValidateUserUseCase
   implements ICommandHandler<ValidateUserCommand>
 {
-  constructor(protected usersQueryRepository: UsersQueryRepository) {}
+  constructor(protected usersOrmQueryRepository: UsersOrmQueryRepository) {}
 
   async execute(
     command: ValidateUserCommand,
@@ -19,7 +19,7 @@ export class ValidateUserUseCase
     const { loginOrEmail, password } = command;
 
     const user =
-      await this.usersQueryRepository.getUserPassEmailInfoByLoginOrEmail(
+      await this.usersOrmQueryRepository.getUserPassEmailInfoByLoginOrEmail(
         loginOrEmail,
       );
     if (!user || !user.isConfirmed) {

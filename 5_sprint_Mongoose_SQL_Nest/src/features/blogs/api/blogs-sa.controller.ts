@@ -39,6 +39,7 @@ import { UpdatePostByBlogIdInputModel } from './models/input/update-post-by-blog
 import { UpdatePostCommand } from '../../posts/application/use-cases/update-post.use-case';
 import { DeleteBlogCommand } from '../application/blogger/use-cases/delete-blog.use-case';
 import { DeletePostCommand } from '../../posts/application/use-cases/delete-post.use-case';
+import { validate, validateOrReject, validateSync } from 'class-validator';
 
 @Controller('/hometask-nest/sa/blogs')
 export class BlogsSAController {
@@ -129,29 +130,6 @@ export class BlogsSAController {
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
-  @Delete(':blogId')
-  async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
-    const result = await this.commandBus.execute(new DeleteBlogCommand(blogId));
-    if (!result) throw new NotFoundException();
-    return;
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
-  @Delete(':blogId/posts/:postId')
-  async deletePostOfBlog(
-    @Param('postId') postId: string,
-    @Param('blogId') blogId: string,
-  ): Promise<void> {
-    const result = await this.commandBus.execute(
-      new DeletePostCommand(postId, blogId),
-    );
-    if (!result) throw new NotFoundException();
-    return;
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':id/ban')
   async updateBanInfoOfBlog(
     @Param('id') blogId: string,
@@ -173,6 +151,29 @@ export class BlogsSAController {
   ): Promise<void> {
     const result = await this.commandBus.execute(
       new BindBlogWithUserCommand(blogId, userId),
+    );
+    if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
+  @Delete(':blogId')
+  async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
+    const result = await this.commandBus.execute(new DeleteBlogCommand(blogId));
+    if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
+  @Delete(':blogId/posts/:postId')
+  async deletePostOfBlog(
+    @Param('postId') postId: string,
+    @Param('blogId') blogId: string,
+  ): Promise<void> {
+    const result = await this.commandBus.execute(
+      new DeletePostCommand(postId, blogId),
     );
     if (!result) throw new NotFoundException();
     return;

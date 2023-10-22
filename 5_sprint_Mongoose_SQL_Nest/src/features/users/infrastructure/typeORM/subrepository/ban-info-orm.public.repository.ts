@@ -11,8 +11,11 @@ export class BanInfoOrmRepository {
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
-  async createBanInfoUser(userId: string): Promise<void> {
-    await this.usersBanInfo
+  async createBanInfoUser(
+    userId: string,
+    usersBanInfoRepo: Repository<UsersBanInfo> = this.usersBanInfo,
+  ): Promise<void> {
+    await usersBanInfoRepo
       .createQueryBuilder()
       .insert()
       .values({ userId })

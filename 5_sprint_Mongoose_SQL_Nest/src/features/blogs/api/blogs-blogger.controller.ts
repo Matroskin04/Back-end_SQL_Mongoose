@@ -4,9 +4,9 @@ import {
   QueryPostsOfBlogInputModel,
 } from './models/input/queries-blog.input.model';
 import {
+  BlogOutputModel,
   BlogsOutputModel,
   PostsOfBlogViewModel,
-  BlogOutputModel,
 } from './models/output/blog.output.models';
 import { CreateBlogInputModel } from './models/input/create-blog.input.model';
 import { UpdateBlogInputModel } from './models/input/update-blog.input.model';
@@ -24,17 +24,13 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
-import { PostsQueryRepository } from '../../posts/infrastructure/SQL/query.repository/posts.query.repository';
 import { CurrentUserId } from '../../../infrastructure/decorators/current-user-id.param.decorator';
 import { CreatePostByBlogIdModel } from '../../posts/api/models/input/create-post.input.model';
 import { PostTypeWithId } from '../../posts/infrastructure/SQL/repository/posts.types.repositories';
 import { BlogOwnerByIdGuard } from '../../../infrastructure/guards/forbidden-guards/blog-owner-by-id.guard';
 import { UpdatePostByBlogIdInputModel } from './models/input/update-post-by-blog-id.input.model';
-import { CommentsQueryRepository } from '../../comments/infrastructure/SQL/query.repository/comments.query.repository';
-import { BlogsQueryRepository } from '../infrastructure/SQL/query.repository/blogs.query.repository';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateBlogCommand } from '../application/blogger/use-cases/create-blog.use-case';
 import { UpdateBlogCommand } from '../application/blogger/use-cases/update-blog.use-case';
@@ -42,14 +38,17 @@ import { DeleteBlogCommand } from '../application/blogger/use-cases/delete-blog.
 import { CreatePostCommand } from '../../posts/application/use-cases/create-post.use-case';
 import { UpdatePostCommand } from '../../posts/application/use-cases/update-post.use-case';
 import { DeletePostCommand } from '../../posts/application/use-cases/delete-post.use-case';
+import { CommentsOrmQueryRepository } from '../../comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
+import { PostsOrmQueryRepository } from '../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
+import { BlogsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
 
 @Controller('/hometask-nest/blogger/blogs')
 export class BlogsBloggerController {
   constructor(
     protected commandBus: CommandBus,
-    protected blogsQueryRepository: BlogsQueryRepository,
-    protected postsQueryRepository: PostsQueryRepository,
-    protected commentsQueryRepository: CommentsQueryRepository,
+    protected blogsOrmQueryRepository: BlogsOrmQueryRepository,
+    protected postsOrmQueryRepository: PostsOrmQueryRepository,
+    protected commentsOrmQueryRepository: CommentsOrmQueryRepository,
   ) {}
 
   @UseGuards(JwtAccessGuard)
@@ -58,7 +57,7 @@ export class BlogsBloggerController {
     @Query() query: QueryBlogsInputModel,
     @CurrentUserId() userId: string,
   ): Promise<BlogsOutputModel> {
-    const result = await this.blogsQueryRepository.getAllBlogsOfBlogger(
+    const result = await this.blogsOrmQueryRepository.getAllBlogsOfBlogger(
       query,
       userId.toString(),
     );
@@ -72,7 +71,7 @@ export class BlogsBloggerController {
     @CurrentUserId() userId: string,
     @Query() query: QueryPostsOfBlogInputModel,
   ): Promise<PostsOfBlogViewModel> {
-    const result = await this.postsQueryRepository.getAllPostsOfBlog(
+    const result = await this.postsOrmQueryRepository.getAllPostsOfBlog(
       blogId,
       query,
       userId,
@@ -87,7 +86,7 @@ export class BlogsBloggerController {
     @CurrentUserId() userId: string,
     @Query() query: QueryCommentsOfBlogInputModel,
   ) {
-    const result = await this.commentsQueryRepository.getCommentsOfBlogger(
+    const result = await this.commentsOrmQueryRepository.getCommentsOfBlogger(
       query,
       userId,
     );

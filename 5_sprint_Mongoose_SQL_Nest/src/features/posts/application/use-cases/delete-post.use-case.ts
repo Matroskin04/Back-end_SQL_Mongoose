@@ -1,11 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import {
-  BodyPostByBlogIdType,
-  PostTypeWithId,
-} from '../../infrastructure/SQL/repository/posts.types.repositories';
-import { BlogsQueryRepository } from '../../../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
-import { modifyPostIntoInitialViewModel } from '../../../../infrastructure/utils/functions/features/posts.functions.helpers';
-import { PostsRepository } from '../../infrastructure/SQL/repository/posts.repository';
 import { PostsOrmRepository } from '../../infrastructure/typeORM/repository/posts-orm.repository';
 import { BlogsOrmQueryRepository } from '../../../blogs/infrastructure/typeORM/query.repository/blogs-orm.query.repository';
 

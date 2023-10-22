@@ -1,9 +1,9 @@
 import request from 'supertest';
-import { createBlogTest } from '../../blogger/blogs/blogs-blogger.helpers';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
-import { createUserTest } from '../../super-admin/users/users-sa.helpers';
 import { loginUserTest } from '../auth/auth-public.helpers';
 import { AccessTokensAndUsersIdType } from '../types/blogs.types';
+import { usersRequestsTestManager } from '../../utils/users/users-requests-test.manager';
+import { blogsRequestsTestManager } from '../../utils/blogs/blogs-requests-test.manager';
 
 export async function getBlogByIdPublicTest(httpServer, blogId) {
   return request(httpServer).get(`/hometask-nest/blogs/${blogId}`);
@@ -31,9 +31,9 @@ export async function create9BlogsBy3Users(
   const blogsIds: any = [];
   let count = 1;
   for (const i of blogNumber) {
-    const result = await createBlogTest(
+    const result = await blogsRequestsTestManager.createBlogBlogger(
       httpServer,
-      accessTokens[0],
+      accessTokens[Math.floor((count - 1) / 3)],
       `Name ${count} ${i}`,
       `Description ${i}`,
       `https://samurai.it-incubator.io`,
@@ -49,7 +49,7 @@ export async function createAndLogin3UsersTest(
   httpServer,
 ): Promise<AccessTokensAndUsersIdType> {
   //user1
-  const user1 = await createUserTest(
+  const user1 = await usersRequestsTestManager.createUserSa(
     httpServer,
     'Login1',
     'Password1',
@@ -61,7 +61,7 @@ export async function createAndLogin3UsersTest(
   const accessToken1 = result1.body.accessToken;
 
   //user2
-  const user2 = await createUserTest(
+  const user2 = await usersRequestsTestManager.createUserSa(
     httpServer,
     'Login2',
     'Password2',
@@ -73,7 +73,7 @@ export async function createAndLogin3UsersTest(
   const accessToken2 = result2.body.accessToken;
 
   //user3
-  const user3 = await createUserTest(
+  const user3 = await usersRequestsTestManager.createUserSa(
     httpServer,
     'Login3',
     'Password3',

@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtAdapter } from '../../../../infrastructure/adapters/jwt.adapter';
-import { DevicesRepository } from '../../infrastructure/SQL/repository/devices.repository';
 import { DevicesOrmRepository } from '../../infrastructure/typeORM/repository/devices-orm.repository';
 
 export class DeleteDevicesExcludeCurrentCommand {

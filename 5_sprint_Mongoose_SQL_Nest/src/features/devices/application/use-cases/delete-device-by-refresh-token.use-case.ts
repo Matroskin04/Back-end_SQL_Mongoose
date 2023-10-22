@@ -1,8 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ResponseTypeService } from '../../../../infrastructure/utils/functions/types/create-responses-service.types';
-import { createResponseByCodeAndMessage } from '../../../../infrastructure/utils/functions/create-response-service.function';
-import { DevicesQueryRepository } from '../../infrastructure/SQL/query.repository/devices.query.repository';
-import { DevicesRepository } from '../../infrastructure/SQL/repository/devices.repository';
 import { JwtAdapter } from '../../../../infrastructure/adapters/jwt.adapter';
 import { DevicesOrmRepository } from '../../infrastructure/typeORM/repository/devices-orm.repository';
 

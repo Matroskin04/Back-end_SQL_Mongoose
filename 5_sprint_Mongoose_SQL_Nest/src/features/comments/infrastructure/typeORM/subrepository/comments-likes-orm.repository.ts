@@ -8,12 +8,16 @@ import { CommentsLikesInfo } from '../../../domain/comments-likes-info.entity';
 export class CommentsLikesOrmRepository {
   constructor(
     @InjectRepository(CommentsLikesInfo)
-    protected commentsRepository: Repository<CommentsLikesInfo>,
+    protected commentsLikeInfoRepo: Repository<CommentsLikesInfo>,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
-  async deleteAllLikesInfoOfComment(commentId: string): Promise<void> {
-    const result = await this.commentsRepository
+  async deleteAllLikesInfoOfComment(
+    commentId: string,
+    commentsLikeInfoRepo: Repository<CommentsLikesInfo> = this
+      .commentsLikeInfoRepo,
+  ): Promise<void> {
+    const result = commentsLikeInfoRepo
       .createQueryBuilder()
       .delete()
       .where('commentId = :commentId', { commentId })
