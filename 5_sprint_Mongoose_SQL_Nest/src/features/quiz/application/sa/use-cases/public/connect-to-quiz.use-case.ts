@@ -27,7 +27,7 @@ export class ConnectToQuizUseCase
     protected questionQuizRelationOrmRepository: QuestionQuizRelationOrmRepository,
     protected quizOrmRepository: QuizOrmRepository,
     protected quizInfoAboutUserOrmRepository: QuizInfoAboutUserOrmRepository,
-    @InjectDataSource() protected dataSource: DataSource,
+    protected dataSource: DataSource,
   ) {}
 
   async execute(command: ConnectToQuizCommand): Promise<any> {

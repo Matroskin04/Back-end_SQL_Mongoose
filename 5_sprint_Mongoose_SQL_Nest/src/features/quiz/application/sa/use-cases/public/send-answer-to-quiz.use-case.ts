@@ -33,7 +33,8 @@ export class SendAnswerToQuizUseCase
     protected questionsOrmQueryRepository: QuestionsOrmQueryRepository,
     protected answersQuizOrmRepository: AnswersQuizOrmRepository,
     protected answersQuizOrmQueryRepository: AnswersQuizOrmQueryRepository,
-    @InjectDataSource() protected dataSource: DataSource,
+    //todo Why with @InjectDataSource() doesn't work???
+    protected dataSource: DataSource,
   ) {}
 
   async execute(command: SendAnswerToQuizCommand): Promise<any> {
