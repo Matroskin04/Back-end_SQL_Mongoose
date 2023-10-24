@@ -33,3 +33,5 @@ export class QuizInfoAboutUser {
   @Column()
   userId: string;
 }
+
+//todo add answers like join

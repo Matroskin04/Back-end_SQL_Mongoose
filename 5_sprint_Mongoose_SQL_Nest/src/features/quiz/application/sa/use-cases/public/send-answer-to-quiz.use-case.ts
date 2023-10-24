@@ -78,6 +78,7 @@ export class SendAnswerToQuizUseCase
       throw new ForbiddenException(
         'All the answers have already been received',
       );
+    //todo перехват
 
     //get correct answers
     const currentQuestionId = activeQuiz.questions[answersNumberCurrentUser].id;
