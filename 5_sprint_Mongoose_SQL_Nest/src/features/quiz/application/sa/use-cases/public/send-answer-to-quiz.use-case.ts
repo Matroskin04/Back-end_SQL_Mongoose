@@ -15,6 +15,7 @@ import { AnswersQuizOrmQueryRepository } from '../../../../infrastructure/typeOR
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 import { QuestionQuiz } from '../../../../domain/question-quiz.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
+import { QuizViewType } from '../../../../infrastructure/typeORM/query.repository/quiz/quiz.types.query.repository';
 
 export class SendAnswerToQuizCommand {
   constructor(public currentUserId: string, public answer: string) {}
@@ -33,17 +34,16 @@ export class SendAnswerToQuizUseCase
     protected questionsOrmQueryRepository: QuestionsOrmQueryRepository,
     protected answersQuizOrmRepository: AnswersQuizOrmRepository,
     protected answersQuizOrmQueryRepository: AnswersQuizOrmQueryRepository,
-    //todo Why with @InjectDataSource() doesn't work???
     protected dataSource: DataSource,
   ) {}
 
   async execute(command: SendAnswerToQuizCommand): Promise<any> {
     const { currentUserId, answer } = command;
 
+    //check that user has an active game
     const activeQuiz = await this.quizOrmQueryRepository.getCurrentQuizByUserId(
       currentUserId,
     );
-    //check that user has an active game
     if (!activeQuiz || activeQuiz.status !== 'Active')
       throw new ForbiddenException('Active quiz game is not found');
 
@@ -56,22 +56,7 @@ export class SendAnswerToQuizUseCase
       answersNumberSecondUser,
       secondUserId,
       secondUserScore,
-    ] =
-      activeQuiz.firstPlayerProgress.player.id === currentUserId
-        ? [
-            activeQuiz.firstPlayerProgress.answers?.length ?? 0,
-            activeQuiz.firstPlayerProgress.score,
-            activeQuiz.secondPlayerProgress.answers?.length ?? 0,
-            activeQuiz.secondPlayerProgress.player.id,
-            activeQuiz.secondPlayerProgress.score,
-          ]
-        : [
-            activeQuiz.secondPlayerProgress.answers?.length ?? 0,
-            activeQuiz.secondPlayerProgress.score,
-            activeQuiz.firstPlayerProgress.answers?.length ?? 0,
-            activeQuiz.firstPlayerProgress.player.id,
-            activeQuiz.firstPlayerProgress.score,
-          ];
+    ] = this.getCurrentUserInfo(activeQuiz, currentUserId);
 
     //if all answers already exists - then 403 status
     if (answersNumberCurrentUser === 5)
@@ -154,6 +139,7 @@ export class SendAnswerToQuizUseCase
           //if the second user doesn't finish the quiz, then...
         } else {
           const stamp = Date.now();
+          //todo in db, local store - not use
           this.timestamps.push({ stamp, userId: currentUserId });
           this.cronInfo[stamp] = {
             isAnswerCorrect,
@@ -176,6 +162,8 @@ export class SendAnswerToQuizUseCase
     } catch (e) {
       await dataForTransaction.queryRunner.rollbackTransaction();
       console.log('Something went wrong', e);
+      //todo throw error
+      throw e;
     } finally {
       await dataForTransaction.queryRunner.release();
     }
@@ -203,6 +191,7 @@ export class SendAnswerToQuizUseCase
         try {
           let questionNumber = answersCount;
           for (let i = 5; i > answersCount; i--) {
+            //todo fix one query
             //if there are less than five answers, then create remaining answers
             await this.answersQuizOrmRepository.createAnswer(
               QuizAnswerStatusEnum.Incorrect,
@@ -251,5 +240,26 @@ export class SendAnswerToQuizUseCase
         }
       }
     }
+  }
+
+  private getCurrentUserInfo(
+    activeQuiz: QuizViewType,
+    currentUserId: string,
+  ): [number, number, number, string, number] {
+    return activeQuiz.firstPlayerProgress.player.id === currentUserId
+      ? [
+          activeQuiz.firstPlayerProgress.answers?.length ?? 0,
+          activeQuiz.firstPlayerProgress.score,
+          activeQuiz.secondPlayerProgress!.answers?.length ?? 0,
+          activeQuiz.secondPlayerProgress!.player.id,
+          activeQuiz.secondPlayerProgress!.score,
+        ]
+      : [
+          activeQuiz.secondPlayerProgress!.answers?.length ?? 0,
+          activeQuiz.secondPlayerProgress!.score,
+          activeQuiz.firstPlayerProgress.answers?.length ?? 0,
+          activeQuiz.firstPlayerProgress.player.id,
+          activeQuiz.firstPlayerProgress.score,
+        ];
   }
 }

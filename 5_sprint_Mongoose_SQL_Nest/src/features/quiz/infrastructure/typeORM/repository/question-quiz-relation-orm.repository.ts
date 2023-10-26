@@ -17,6 +17,7 @@ export class QuestionQuizRelationOrmRepository {
     questionQuizRepository: Repository<QuestionQuizRelation> = this
       .questionQuizRelationRepository,
   ): Promise<void> {
+    //todo remove for
     for (const question of questionsIds) {
       await questionQuizRepository
         .createQueryBuilder()

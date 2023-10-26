@@ -24,4 +24,5 @@ export class QuestionQuizRelation {
   question: QuestionQuiz;
   @Column()
   questionId: string;
+  //todo add order number
 }

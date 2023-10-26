@@ -80,5 +80,5 @@ export class Users {
   quiz1: Quiz[];
 
   @OneToMany(() => Quiz, (q) => q.user2)
-  quiz2: Devices[];
+  quiz2: Quiz[];
 }
