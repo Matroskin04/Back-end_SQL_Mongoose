@@ -40,9 +40,18 @@ export class SendAnswerToQuizUseCase
   async execute(command: SendAnswerToQuizCommand): Promise<any> {
     const { currentUserId, answer } = command;
 
+    //start transaction
+    const dataForTransaction = await startTransaction(this.dataSource, [
+      AnswerQuiz,
+      QuizInfoAboutUser,
+      Quiz,
+      QuestionQuiz,
+    ]);
+
     //check that user has an active game
     const activeQuiz = await this.quizOrmQueryRepository.getCurrentQuizByUserId(
       currentUserId,
+      dataForTransaction.repositories.Quiz,
     );
     if (!activeQuiz || activeQuiz.status !== 'Active')
       throw new ForbiddenException('Active quiz game is not found');
@@ -63,23 +72,16 @@ export class SendAnswerToQuizUseCase
       throw new ForbiddenException(
         'All the answers have already been received',
       );
-    //todo перехват
 
     //get correct answers
     const currentQuestionId = activeQuiz.questions[answersNumberCurrentUser].id;
     const correctAnswers =
       await this.questionsOrmQueryRepository.getAnswersOfQuestion(
         currentQuestionId,
+        dataForTransaction.repositories.QuestionQuiz,
       );
     if (!correctAnswers) throw new Error('Correct answers is not found');
 
-    //start transaction
-    const dataForTransaction = await startTransaction(this.dataSource, [
-      AnswerQuiz,
-      QuizInfoAboutUser,
-      Quiz,
-      QuestionQuiz,
-    ]);
     try {
       //validate user's answers
       const isAnswerCorrect =
