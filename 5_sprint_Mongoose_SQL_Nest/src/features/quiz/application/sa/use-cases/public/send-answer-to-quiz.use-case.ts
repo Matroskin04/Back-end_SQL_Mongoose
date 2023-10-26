@@ -47,42 +47,39 @@ export class SendAnswerToQuizUseCase
       Quiz,
       QuestionQuiz,
     ]);
+    try {
+      //check that user has an active game
+      const activeQuiz =
+        await this.quizOrmQueryRepository.getCurrentQuizByUserId(
+          currentUserId,
+          dataForTransaction.repositories.Quiz,
+        );
+      if (!activeQuiz || activeQuiz.status !== 'Active')
+        throw new ForbiddenException('Active quiz game is not found');
 
-    //check that user has an active game
-    const activeQuiz = await this.quizOrmQueryRepository.getCurrentQuizByUserId(
-      currentUserId,
-      dataForTransaction.repositories.Quiz,
-    );
-    if (!activeQuiz || activeQuiz.status !== 'Active')
-      throw new ForbiddenException('Active quiz game is not found');
+      if (!activeQuiz.questions || !activeQuiz.secondPlayerProgress)
+        throw new Error('Questions or the second player are not found');
 
-    if (!activeQuiz.questions || !activeQuiz.secondPlayerProgress)
-      throw new Error('Questions or the second player are not found');
+      const [
+        answersNumberCurrentUser,
+        currentUserScore,
+        answersNumberSecondUser,
+        secondUserId,
+        secondUserScore,
+      ] = this.getCurrentUserInfo(activeQuiz, currentUserId);
 
-    const [
-      answersNumberCurrentUser,
-      currentUserScore,
-      answersNumberSecondUser,
-      secondUserId,
-      secondUserScore,
-    ] = this.getCurrentUserInfo(activeQuiz, currentUserId);
+      //if all answers already exists - then 403 status
+      if (answersNumberCurrentUser === 5)
+        throw new ForbiddenException('Player has already given all answers');
 
-    //if all answers already exists - then 403 status
-    if (answersNumberCurrentUser === 5)
-      throw new ForbiddenException(
-        'All the answers have already been received',
-      );
-
-    //get correct answers
-    const currentQuestionId = activeQuiz.questions[answersNumberCurrentUser].id;
-    const correctAnswers =
-      await this.questionsOrmQueryRepository.getAnswersOfQuestion(
+      //get correct answers of current question
+      const currentQuestionId =
+        activeQuiz.questions[answersNumberCurrentUser].id;
+      const correctAnswers = await this.getCorrectAnswers(
         currentQuestionId,
         dataForTransaction.repositories.QuestionQuiz,
       );
-    if (!correctAnswers) throw new Error('Correct answers is not found');
 
-    try {
       //validate user's answers
       const isAnswerCorrect =
         correctAnswers.join().split(',').indexOf(answer) > -1;
@@ -263,5 +260,19 @@ export class SendAnswerToQuizUseCase
           activeQuiz.firstPlayerProgress.player.id,
           activeQuiz.firstPlayerProgress.score,
         ];
+  }
+
+  private async getCorrectAnswers(
+    currentQuestionId: string,
+    QuestionQuizRepo,
+  ): Promise<string[]> {
+    const correctAnswers =
+      await this.questionsOrmQueryRepository.getAnswersOfQuestion(
+        currentQuestionId,
+        QuestionQuizRepo,
+      );
+    if (!correctAnswers) throw new Error('Correct answers are not found');
+
+    return correctAnswers;
   }
 }
