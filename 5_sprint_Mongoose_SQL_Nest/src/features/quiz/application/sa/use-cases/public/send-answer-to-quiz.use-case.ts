@@ -94,14 +94,11 @@ export class SendAnswerToQuizUseCase
 
       //if answer is correct - increment score
       if (isAnswerCorrect) {
-        const result =
-          await this.quizInfoAboutUserOrmRepository.incrementUserScore(
-            activeQuiz.id,
-            currentUserId,
-            repositories.QuizInfoAboutUser,
-          );
-        if (!result)
-          throw new Error('Something went wrong while incrementing score');
+        await this.incrementPlayerScore(
+          activeQuiz.id,
+          currentUserId,
+          repositories.QuizInfoAboutUser,
+        );
       }
 
       //if it is the last answer of user:
@@ -111,17 +108,15 @@ export class SendAnswerToQuizUseCase
           //finish quiz
           await this.finishQuiz(activeQuiz.id, repositories.Quiz);
 
+          //increment second player's score (if player has more than 0 points)
           if (secondUserScore !== 0) {
-            //increment second player's score (if player has more than 0 points)
-            const result =
-              await this.quizInfoAboutUserOrmRepository.incrementUserScore(
-                activeQuiz.id,
-                secondUserId,
-                repositories.QuizInfoAboutUser,
-              );
-            if (!result)
-              throw new Error('Something went wrong while incrementing score');
+            await this.incrementPlayerScore(
+              activeQuiz.id,
+              secondUserId,
+              repositories.QuizInfoAboutUser,
+            );
           }
+
           const index = this.timestamps.findIndex(
             (e) => (e.userId = currentUserId),
           );
@@ -283,6 +278,21 @@ export class SendAnswerToQuizUseCase
     const result = this.quizOrmRepository.finishQuiz(quizId, quizRepo);
     if (!result)
       throw new Error('Something went wrong while finishing the quiz game');
+    return;
+  }
+
+  private async incrementPlayerScore(
+    quizId,
+    userId,
+    quizInfoAboutUserRepo,
+  ): Promise<void> {
+    const result = await this.quizInfoAboutUserOrmRepository.incrementUserScore(
+      quizId,
+      userId,
+      quizInfoAboutUserRepo,
+    );
+    if (!result)
+      throw new Error('Something went wrong while incrementing score');
     return;
   }
 }
