@@ -108,18 +108,11 @@ export class SendAnswerToQuizUseCase
       if (this.isPlayerGivingTheLastAnswer(answersNumberCurrentUser)) {
         //if another user also finished, then:
         if (answersNumberSecondUser === 5) {
-          //change status, set winner and finishDate
-          const result = this.quizOrmRepository.finishQuiz(
-            activeQuiz.id,
-            repositories.Quiz,
-          );
-          if (!result)
-            throw new Error(
-              'Something went wrong while finishing the quiz game',
-            );
+          //finish quiz
+          await this.finishQuiz(activeQuiz.id, repositories.Quiz);
 
           if (secondUserScore !== 0) {
-            //increment user's score (if user has more than 0 points
+            //increment second player's score (if player has more than 0 points)
             const result =
               await this.quizInfoAboutUserOrmRepository.incrementUserScore(
                 activeQuiz.id,
@@ -283,5 +276,13 @@ export class SendAnswerToQuizUseCase
 
   private isPlayerGivingTheLastAnswer(answersNumberCurrentUser): boolean {
     return answersNumberCurrentUser === 4;
+  }
+
+  private async finishQuiz(quizId: string, quizRepo): Promise<void> {
+    //change status, set winner and finishDate
+    const result = this.quizOrmRepository.finishQuiz(quizId, quizRepo);
+    if (!result)
+      throw new Error('Something went wrong while finishing the quiz game');
+    return;
   }
 }
