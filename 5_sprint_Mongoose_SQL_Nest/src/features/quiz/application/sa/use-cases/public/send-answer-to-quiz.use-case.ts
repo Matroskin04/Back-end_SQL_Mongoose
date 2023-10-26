@@ -41,18 +41,16 @@ export class SendAnswerToQuizUseCase
     const { currentUserId, answer } = command;
 
     //start transaction
-    const dataForTransaction = await startTransaction(this.dataSource, [
-      AnswerQuiz,
-      QuizInfoAboutUser,
-      Quiz,
-      QuestionQuiz,
-    ]);
+    const { queryRunner, repositories } = await startTransaction(
+      this.dataSource,
+      [AnswerQuiz, QuizInfoAboutUser, Quiz, QuestionQuiz],
+    );
     try {
       //check that user has an active game
       const activeQuiz =
         await this.quizOrmQueryRepository.getCurrentQuizByUserId(
           currentUserId,
-          dataForTransaction.repositories.Quiz,
+          repositories.Quiz,
         );
       if (!activeQuiz || activeQuiz.status !== 'Active')
         throw new ForbiddenException('Active quiz game is not found');
@@ -77,19 +75,21 @@ export class SendAnswerToQuizUseCase
         activeQuiz.questions[answersNumberCurrentUser].id;
       const correctAnswers = await this.getCorrectAnswers(
         currentQuestionId,
-        dataForTransaction.repositories.QuestionQuiz,
+        repositories.QuestionQuiz,
       );
 
       //validate user's answers
-      const isAnswerCorrect =
-        correctAnswers.join().split(',').indexOf(answer) > -1;
+      const isAnswerCorrect = this.hasUserGivenCorrectAnswer(
+        correctAnswers,
+        answer,
+      );
       //save answer info
       const createdAnswer = await this.answersQuizOrmRepository.createAnswer(
         +isAnswerCorrect,
         activeQuiz.id,
         currentUserId,
         currentQuestionId,
-        dataForTransaction.repositories.AnswerQuiz,
+        repositories.AnswerQuiz,
       );
 
       //if answer is correct - increment score
@@ -98,19 +98,20 @@ export class SendAnswerToQuizUseCase
           await this.quizInfoAboutUserOrmRepository.incrementUserScore(
             activeQuiz.id,
             currentUserId,
-            dataForTransaction.repositories.QuizInfoAboutUser,
+            repositories.QuizInfoAboutUser,
           );
         if (!result)
           throw new Error('Something went wrong while incrementing score');
       }
+
       //if it is the last answer of user:
-      if (answersNumberCurrentUser === 4) {
+      if (this.isPlayerGivingTheLastAnswer(answersNumberCurrentUser)) {
         //if another user also finished, then:
         if (answersNumberSecondUser === 5) {
           //change status, set winner and finishDate
           const result = this.quizOrmRepository.finishQuiz(
             activeQuiz.id,
-            dataForTransaction.repositories.Quiz,
+            repositories.Quiz,
           );
           if (!result)
             throw new Error(
@@ -123,7 +124,7 @@ export class SendAnswerToQuizUseCase
               await this.quizInfoAboutUserOrmRepository.incrementUserScore(
                 activeQuiz.id,
                 secondUserId,
-                dataForTransaction.repositories.QuizInfoAboutUser,
+                repositories.QuizInfoAboutUser,
               );
             if (!result)
               throw new Error('Something went wrong while incrementing score');
@@ -150,7 +151,7 @@ export class SendAnswerToQuizUseCase
           };
         }
       }
-      await dataForTransaction.queryRunner.commitTransaction();
+      await queryRunner.commitTransaction();
 
       //return answerView
       return {
@@ -159,12 +160,12 @@ export class SendAnswerToQuizUseCase
         addedAt: createdAnswer.addedAt,
       };
     } catch (e) {
-      await dataForTransaction.queryRunner.rollbackTransaction();
+      await queryRunner.rollbackTransaction();
       console.log('Something went wrong', e);
       //todo throw error
       throw e;
     } finally {
-      await dataForTransaction.queryRunner.release();
+      await queryRunner.release();
     }
   }
 
@@ -274,5 +275,13 @@ export class SendAnswerToQuizUseCase
     if (!correctAnswers) throw new Error('Correct answers are not found');
 
     return correctAnswers;
+  }
+
+  private hasUserGivenCorrectAnswer(correctAnswers: string[], answer: string) {
+    return correctAnswers.join().split(',').includes(answer);
+  }
+
+  private isPlayerGivingTheLastAnswer(answersNumberCurrentUser): boolean {
+    return answersNumberCurrentUser === 4;
   }
 }
