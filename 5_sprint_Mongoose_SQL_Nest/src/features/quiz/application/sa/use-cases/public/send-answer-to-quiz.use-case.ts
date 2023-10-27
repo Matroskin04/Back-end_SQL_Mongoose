@@ -126,17 +126,14 @@ export class SendAnswerToQuizUseCase
           }
           //if the second user doesn't finish the quiz, then...
         } else {
-          const stamp = Date.now();
-          //todo in db, local store - not use
-          this.timestamps.push({ stamp, userId: currentUserId });
-          this.cronInfo[stamp] = {
+          this.removePlayerInfoForCron(
             isAnswerCorrect,
-            currentUserScore,
             secondUserId,
             currentUserId,
+            currentUserScore,
             secondUserScore,
             activeQuiz,
-          };
+          );
         }
       }
       await queryRunner.commitTransaction();
@@ -293,6 +290,28 @@ export class SendAnswerToQuizUseCase
     );
     if (!result)
       throw new Error('Something went wrong while incrementing score');
+    return;
+  }
+
+  private removePlayerInfoForCron(
+    isAnswerCorrect: boolean,
+    secondUserId: string,
+    currentUserId: string,
+    currentUserScore: number,
+    secondUserScore: number,
+    activeQuiz: any,
+  ): void {
+    const stamp = Date.now();
+    //todo in db, local store - not use
+    this.timestamps.push({ stamp, userId: currentUserId });
+    this.cronInfo[stamp] = {
+      isAnswerCorrect,
+      currentUserScore,
+      secondUserId,
+      currentUserId,
+      secondUserScore,
+      activeQuiz,
+    };
     return;
   }
 }
