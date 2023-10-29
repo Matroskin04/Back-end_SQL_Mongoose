@@ -99,7 +99,7 @@ export class QuestionsOrmQueryRepository {
   ): Promise<null | string[]> {
     const query = await questionQuizRepo
       .createQueryBuilder()
-      .setLock('pessimistic_read')
+      .setLock('pessimistic_write')
       .select('"correctAnswers"')
       .where('id = :questionId', { questionId });
     const result = await query.getRawOne();
