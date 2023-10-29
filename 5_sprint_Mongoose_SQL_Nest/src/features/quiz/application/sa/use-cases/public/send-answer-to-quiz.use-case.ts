@@ -126,7 +126,7 @@ export class SendAnswerToQuizUseCase
           }
           //if the second user doesn't finish the quiz, then...
         } else {
-          this.removePlayerInfoForCron(
+          this.createFinishingQuizInfoForCron(
             isAnswerCorrect,
             secondUserId,
             currentUserId,
@@ -159,8 +159,6 @@ export class SendAnswerToQuizUseCase
     for (const info of this.timestamps) {
       const timestamp = info.stamp;
       if (Date.now() - timestamp > 8000) {
-        // const job = this.schedulerRegistry.getCronJob('cron');
-        // job.stop();
         const answersCount =
           await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
             this.cronInfo[timestamp].secondUserId,
@@ -293,7 +291,7 @@ export class SendAnswerToQuizUseCase
     return;
   }
 
-  private removePlayerInfoForCron(
+  private createFinishingQuizInfoForCron(
     isAnswerCorrect: boolean,
     secondUserId: string,
     currentUserId: string,
@@ -302,7 +300,6 @@ export class SendAnswerToQuizUseCase
     activeQuiz: any,
   ): void {
     const stamp = Date.now();
-    //todo in db, local store - not use
     this.timestamps.push({ stamp, userId: currentUserId });
     this.cronInfo[stamp] = {
       isAnswerCorrect,
