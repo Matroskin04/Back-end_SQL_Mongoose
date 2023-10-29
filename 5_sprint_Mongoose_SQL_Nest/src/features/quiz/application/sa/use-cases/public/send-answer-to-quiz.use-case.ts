@@ -159,19 +159,19 @@ export class SendAnswerToQuizUseCase
     for (const info of this.timestamps) {
       const timestamp = info.stamp;
       if (Date.now() - timestamp > 8000) {
-        const answersCount =
-          await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
-            this.cronInfo[timestamp].secondUserId,
-            this.cronInfo[timestamp].activeQuiz.id,
-          );
-        if (answersCount === 5) return;
-
         const dataForTransaction = await startTransaction(this.dataSource, [
           AnswerQuiz,
           QuizInfoAboutUser,
           Quiz,
         ]);
         try {
+          const answersCount =
+            await this.answersQuizOrmQueryRepository.getAnswersCountOfUser(
+              this.cronInfo[timestamp].secondUserId,
+              this.cronInfo[timestamp].activeQuiz.id,
+              dataForTransaction.repositories.AnswerQuiz,
+            );
+          if (answersCount === 5) return;
           let questionNumber = answersCount;
           for (let i = 5; i > answersCount; i--) {
             //todo fix one query
@@ -190,7 +190,8 @@ export class SendAnswerToQuizUseCase
             answersCount < 5 &&
             this.cronInfo[timestamp].currentUserScore > 0
           ) {
-            //increment user's score (if user has more than 0 points
+            //todo create subscribers: https://orkhan.gitbook.io/typeorm/docs/listeners-and-subscribers
+            //increment user's score (if user has more than 0 points)
             const result =
               await this.quizInfoAboutUserOrmRepository.incrementUserScore(
                 this.cronInfo[timestamp].activeQuiz.id,

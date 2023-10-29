@@ -10,9 +10,14 @@ export class AnswersQuizOrmQueryRepository {
     protected answersQuizRepository: Repository<AnswerQuiz>,
   ) {}
 
-  async getAnswersCountOfUser(userId: string, quizId: string): Promise<number> {
-    const result = await this.answersQuizRepository
+  async getAnswersCountOfUser(
+    userId: string,
+    quizId: string,
+    answersQuizRepository: Repository<AnswerQuiz> = this.answersQuizRepository,
+  ): Promise<number> {
+    const result = await answersQuizRepository
       .createQueryBuilder()
+      .setLock('pessimistic_write')
       .select()
       .where('"userId" = :userId', { userId })
       .andWhere('"quizId" = :quizId', { quizId })
