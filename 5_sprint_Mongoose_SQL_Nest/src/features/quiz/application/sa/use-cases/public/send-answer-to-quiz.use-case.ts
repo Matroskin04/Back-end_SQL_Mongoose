@@ -116,14 +116,8 @@ export class SendAnswerToQuizUseCase
               repositories.QuizInfoAboutUser,
             );
           }
-
-          const index = this.timestamps.findIndex(
-            (e) => (e.userId = currentUserId),
-          );
-          if (index > -1) {
-            delete this.cronInfo[this.timestamps[index].stamp];
-            this.timestamps.splice(index, 1);
-          }
+          //delete info for cron
+          this.deleteFinishingQuizInfoForCron(secondUserId);
           //if the second user doesn't finish the quiz, then...
         } else {
           this.createFinishingQuizInfoForCron(
@@ -310,6 +304,15 @@ export class SendAnswerToQuizUseCase
       secondUserScore,
       activeQuiz,
     };
+    return;
+  }
+
+  private deleteFinishingQuizInfoForCron(secondUserId: string) {
+    const index = this.timestamps.findIndex((e) => (e.userId = secondUserId));
+    if (index > -1) {
+      delete this.cronInfo[this.timestamps[index].stamp];
+      this.timestamps.splice(index, 1);
+    }
     return;
   }
 }
