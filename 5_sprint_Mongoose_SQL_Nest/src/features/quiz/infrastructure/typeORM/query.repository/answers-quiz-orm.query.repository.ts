@@ -17,7 +17,6 @@ export class AnswersQuizOrmQueryRepository {
   ): Promise<number> {
     const result = await answersQuizRepository
       .createQueryBuilder()
-      .setLock('pessimistic_write')
       .select()
       .where('"userId" = :userId', { userId })
       .andWhere('"quizId" = :quizId', { quizId })
