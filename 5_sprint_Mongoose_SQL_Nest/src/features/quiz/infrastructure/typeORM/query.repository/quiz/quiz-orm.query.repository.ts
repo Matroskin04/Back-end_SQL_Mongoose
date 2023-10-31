@@ -16,7 +16,7 @@ import {
   modifyStatisticsWithUserIntoViewModel,
 } from '../../../../../../infrastructure/utils/functions/features/quiz.functions.helpers';
 import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
-import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.entity';
+import { QuizInfoAboutUser } from '../../../../domain/quiz-info-about-user.entity';
 import { variablesForReturn } from '../../../../../../infrastructure/utils/functions/variables-for-return.function';
 import { regexpUUID } from '../../../../../../infrastructure/utils/regexp/general-regexp';
 import {

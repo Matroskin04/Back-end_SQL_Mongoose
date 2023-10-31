@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QuizInfoAboutUser } from '../../../domain/quiz-game-info-about-user.entity';
+import { QuizInfoAboutUser } from '../../../domain/quiz-info-about-user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

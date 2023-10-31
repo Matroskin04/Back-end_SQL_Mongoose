@@ -4,7 +4,7 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { QuizOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz/quiz-orm.repository';
 import { DataSource } from 'typeorm';
 import { Quiz } from '../../../../domain/quiz.entity';
-import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.entity';
+import { QuizInfoAboutUser } from '../../../../domain/quiz-info-about-user.entity';
 import { QuestionsOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/questions/questions-orm.query.repository';
 import { QuestionQuizRelationOrmRepository } from '../../../../infrastructure/typeORM/repository/question-quiz-relation-orm.repository';
 import { QuizInfoAboutUserOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz-info-about-user-orm.repository';

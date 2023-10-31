@@ -18,7 +18,7 @@ import { CommentsLikesInfo } from '../../comments/domain/comments-likes-info.ent
 import { Devices } from '../../devices/domain/devices.entity';
 import { Quiz } from '../../quiz/domain/quiz.entity';
 import { AnswerQuiz } from '../../quiz/domain/answer-quiz.entity';
-import { QuizInfoAboutUser } from '../../quiz/domain/quiz-game-info-about-user.entity';
+import { QuizInfoAboutUser } from '../../quiz/domain/quiz-info-about-user.entity';
 
 @Entity()
 export class Users {

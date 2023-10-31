@@ -9,7 +9,7 @@ import { QuizAnswerStatusEnum } from '../../../../../../infrastructure/utils/enu
 import { QuizOrmRepository } from '../../../../infrastructure/typeORM/repository/quiz/quiz-orm.repository';
 import { startTransaction } from '../../../../../../infrastructure/utils/functions/db-helpers/transaction.helpers';
 import { Quiz } from '../../../../domain/quiz.entity';
-import { QuizInfoAboutUser } from '../../../../domain/quiz-game-info-about-user.entity';
+import { QuizInfoAboutUser } from '../../../../domain/quiz-info-about-user.entity';
 import { AnswerQuiz } from '../../../../domain/answer-quiz.entity';
 import { AnswersQuizOrmQueryRepository } from '../../../../infrastructure/typeORM/query.repository/answers-quiz-orm.query.repository';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';

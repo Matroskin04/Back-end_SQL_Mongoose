@@ -12,7 +12,7 @@ import { QuizStatusEnum } from '../../../infrastructure/utils/enums/quiz.enums';
 import { Users } from '../../users/domain/users.entity';
 import { QuestionQuizRelation } from './question-quiz-relation.entity';
 import { AnswerQuiz } from './answer-quiz.entity';
-import { QuizInfoAboutUser } from './quiz-game-info-about-user.entity';
+import { QuizInfoAboutUser } from './quiz-info-about-user.entity';
 
 @Entity()
 export class Quiz {
