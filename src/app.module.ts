@@ -260,6 +260,7 @@ const handlers = [
     }),
     JwtModule.register({}),
   ],
+
   controllers: [
     AuthController,
     BlogsPublicController,
