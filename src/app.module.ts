@@ -143,6 +143,7 @@ const queryRepositories = [
   QuizOrmQueryRepository,
   AnswersQuizOrmQueryRepository,
 ];
+
 const repositories = [
   //SQL
   PasswordRecoveryPublicRepository,
