@@ -122,6 +122,7 @@ import { SendAnswerToQuizUseCase } from './features/quiz/application/sa/use-case
 import { AnswersQuizOrmRepository } from './features/quiz/infrastructure/typeORM/repository/answers-quiz-orm.repository';
 import { AnswersQuizOrmQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/answers-quiz-orm.query.repository';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 const queryRepositories = [
   // SQL
@@ -247,17 +248,20 @@ const handlers = [
       Quiz,
       QuizInfoAboutUser,
     ]),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: 5432,
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DATABASE,
-      autoLoadEntities: true,
-      synchronize: false,
-      ssl: true,
-      // url: process.env.POSTGRES_URL + '?sslmode=require',
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('db.postgresql.POSTGRES_HOST'),
+        port: 5432,
+        username: configService.get('db.postgresql.POSTGRES_USER'),
+        password: configService.get('db.postgresql.POSTGRES_PASSWORD'),
+        database: configService.get('db.postgresql.POSTGRES_DATABASE'),
+        autoLoadEntities: true,
+        synchronize: false,
+        ssl: { require: true, rejectUnauthorized: false },
+        // url: process.env.POSTGRES_URL + '?sslmode=require',
+      }),
     }),
     JwtModule.register({}),
   ],
