@@ -40,9 +40,6 @@ export class Blogs {
   @Column({ nullable: true, type: 'timestamp without time zone' })
   banDate: Date | null;
 
-  @OneToOne(() => IconOfBlog, (i) => i.blog)
-  iconOfBlog: IconOfBlog;
-
   @ManyToOne(() => Users, (u) => u.blog)
   @JoinColumn()
   user: Users;
@@ -51,6 +48,9 @@ export class Blogs {
 
   @OneToMany(() => Posts, (p) => p.blog)
   post: Posts[];
+
+  @OneToMany(() => IconOfBlog, (i) => i.blog)
+  iconOfBlog: IconOfBlog[];
 
   @OneToMany(() => BannedUsersOfBlog, (bu) => bu.blog)
   bannedUsersOfBlog: BannedUsersOfBlog[];
