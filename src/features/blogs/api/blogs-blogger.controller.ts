@@ -15,14 +15,20 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   HttpCode,
+  MaxFileSizeValidator,
   NotFoundException,
   Param,
+  ParseFilePipe,
+  ParseFilePipeBuilder,
   Post,
   Put,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
@@ -41,8 +47,10 @@ import { DeletePostCommand } from '../../posts/application/use-cases/delete-post
 import { CommentsOrmQueryRepository } from '../../comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
 import { PostsOrmQueryRepository } from '../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
 import { BlogsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { WidthHeightFileValidator } from '../../../infrastructure/validators/width-height-file.validator';
 
-@Controller('/hometask-nest/blogger/blogs')
+@Controller('/api/blogger/blogs')
 export class BlogsBloggerController {
   constructor(
     protected commandBus: CommandBus,
@@ -131,6 +139,25 @@ export class BlogsBloggerController {
       new UpdateBlogCommand(inputBlogModel, blogId),
     );
     if (!result) throw new NotFoundException();
+    return;
+  }
+
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @Post(':blogId/images/main')
+  @UseInterceptors(FileInterceptor('file'))
+  async updateBlogIcon(
+    @Param('blogId') blogId: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 100000 }),
+          new FileTypeValidator({ fileType: /\.(jpg|jpeg|png)$/ }),
+          new WidthHeightFileValidator({ width: 156, height: 156 }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ): Promise<void> {
     return;
   }
 

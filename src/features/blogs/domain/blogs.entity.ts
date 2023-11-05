@@ -5,11 +5,14 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Users } from '../../users/domain/users.entity';
 import { Posts } from '../../posts/domain/posts.entity';
 import { BannedUsersOfBlog } from './banned-users-of-blog.entity';
+import { UsersEmailConfirmation } from '../../users/domain/users-email-confirmation.entity';
+import { IconOfBlog } from './icon-of-blog.entity';
 
 @Entity()
 export class Blogs {
@@ -36,6 +39,9 @@ export class Blogs {
 
   @Column({ nullable: true, type: 'timestamp without time zone' })
   banDate: Date | null;
+
+  @OneToOne(() => IconOfBlog, (i) => i.blog)
+  iconOfBlog: IconOfBlog;
 
   @ManyToOne(() => Users, (u) => u.blog)
   @JoinColumn()

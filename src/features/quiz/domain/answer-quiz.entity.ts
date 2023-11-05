@@ -4,7 +4,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { QuizAnswerStatusEnum } from '../../../infrastructure/utils/enums/quiz.enums';
