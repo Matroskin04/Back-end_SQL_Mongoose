@@ -6,11 +6,11 @@ import { usersRequestsTestManager } from '../../utils/users/users-requests-test.
 import { blogsRequestsTestManager } from '../../utils/blogs/blogs-requests-test.manager';
 
 export async function getBlogByIdPublicTest(httpServer, blogId) {
-  return request(httpServer).get(`/hometask-nest/blogs/${blogId}`);
+  return request(httpServer).get(`/api/blogs/${blogId}`);
 }
 
 export async function getAllBlogsPublicTest(httpServer, query?) {
-  return request(httpServer).get(`/hometask-nest/blogs`).query(query);
+  return request(httpServer).get(`/api/blogs`).query(query);
 }
 
 export async function create9BlogsBy3Users(

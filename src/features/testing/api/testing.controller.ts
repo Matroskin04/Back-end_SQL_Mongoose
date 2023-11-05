@@ -4,7 +4,7 @@ import { Controller, Delete, Res } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 
 @SkipThrottle()
-@Controller('/hometask-nest/testing/all-data')
+@Controller('/api/testing/all-data')
 export class TestingController {
   constructor(protected testingRepository: TestingRepository) {}
 

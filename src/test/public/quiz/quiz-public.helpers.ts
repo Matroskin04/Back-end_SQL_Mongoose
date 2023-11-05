@@ -10,45 +10,45 @@ expect.extend({ toBeOneOf });
 
 export async function connectPlayerToQuizTest(httpServer, accessToken) {
   return request(httpServer)
-    .post(`/hometask-nest/pair-game-quiz/pairs/connection`)
+    .post(`/api/pair-game-quiz/pairs/connection`)
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
 export async function sendAnswerTest(httpServer, accessToken, answer) {
   return request(httpServer)
-    .post(`/hometask-nest/pair-game-quiz/pairs/my-current/answers`)
+    .post(`/api/pair-game-quiz/pairs/my-current/answers`)
     .set('Authorization', `Bearer ${accessToken}`)
     .send({ answer });
 }
 
 export async function getMyStatisticTest(httpServer, accessToken) {
   return request(httpServer)
-    .get('/hometask-nest/pair-game-quiz/users/my-statistic')
+    .get('/api/pair-game-quiz/users/my-statistic')
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
 export async function getStatisticOfAllUsers(httpServer, query?) {
   return request(httpServer)
-    .get('/hometask-nest/pair-game-quiz/users/top')
+    .get('/api/pair-game-quiz/users/top')
     .query(query ?? '');
 }
 
 export async function getMyCurrentQuizTest(httpServer, accessToken) {
   return request(httpServer)
-    .get(`/hometask-nest/pair-game-quiz/pairs/my-current`)
+    .get(`/api/pair-game-quiz/pairs/my-current`)
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
 export async function getAllQuizzesTest(httpServer, accessToken, query?) {
   return request(httpServer)
-    .get(`/hometask-nest/pair-game-quiz/pairs/my`)
+    .get(`/api/pair-game-quiz/pairs/my`)
     .set('Authorization', `Bearer ${accessToken}`)
     .query(query ?? '');
 }
 
 export async function getQuizByIdTest(httpServer, quizId, accessToken) {
   return request(httpServer)
-    .get(`/hometask-nest/pair-game-quiz/pairs/${quizId}`)
+    .get(`/api/pair-game-quiz/pairs/${quizId}`)
     .set('Authorization', `Bearer ${accessToken}`);
 }
 

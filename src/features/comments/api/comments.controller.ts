@@ -24,7 +24,7 @@ import { DeleteCommentCommand } from '../application/use-cases/delete-comment.us
 import { UpdateCommentLikeStatusCommand } from '../application/use-cases/update-comment-like-status.use-case';
 import { CommentsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/comments-orm.query.repository';
 
-@Controller('/hometask-nest/comments')
+@Controller('/api/comments')
 export class CommentsController {
   constructor(
     protected commandBus: CommandBus,

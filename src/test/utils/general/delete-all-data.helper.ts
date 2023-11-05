@@ -3,6 +3,6 @@ import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-statu
 
 export async function deleteAllDataTest(httpServer) {
   await request(httpServer)
-    .delete('/hometask-nest/testing/all-data')
+    .delete('/api/testing/all-data')
     .expect(HTTP_STATUS_CODE.NO_CONTENT_204);
 }

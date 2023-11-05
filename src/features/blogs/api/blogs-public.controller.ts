@@ -20,7 +20,7 @@ import { QueryPostInputModel } from '../../posts/api/models/input/query-post.inp
 import { BlogsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
 import { PostsOrmQueryRepository } from '../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
 
-@Controller('/hometask-nest/blogs')
+@Controller('/api/blogs')
 export class BlogsPublicController {
   constructor(
     protected postsOrmQueryRepository: PostsOrmQueryRepository,

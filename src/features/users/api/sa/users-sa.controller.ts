@@ -26,7 +26,7 @@ import { DeleteUserCommand } from '../../application/sa/use-cases/delete-user.us
 import { UpdateBanInfoOfUserCommand } from '../../application/sa/use-cases/update-ban-info-of-user.use-case';
 import { UsersOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/users-orm.query.repository';
 
-@Controller('/hometask-nest/sa/users')
+@Controller('/api/sa/users')
 export class UsersSaController {
   constructor(
     protected commandBus: CommandBus,

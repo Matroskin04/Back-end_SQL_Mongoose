@@ -1,6 +1,6 @@
 export const RouterPaths = {
-  blogsSa: '/hometask-nest/sa/blogs',
-  blogsBlogger: '/hometask-nest/blogger/blogs',
-  questionsSa: '/hometask-nest/sa/quiz/questions',
-  usersSa: `/hometask-nest/sa/users`,
+  blogsSa: '/api/sa/blogs',
+  blogsBlogger: '/api/blogger/blogs',
+  questionsSa: '/api/sa/quiz/questions',
+  usersSa: `/api/sa/users`,
 };

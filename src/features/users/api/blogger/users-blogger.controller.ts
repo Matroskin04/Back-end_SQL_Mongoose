@@ -1,4 +1,3 @@
-import { SkipThrottle } from '@nestjs/throttler';
 import {
   Body,
   Controller,
@@ -14,12 +13,11 @@ import { JwtAccessGuard } from '../../../../infrastructure/guards/authorization-
 import { UpdateBanInfoOfUserInputModel } from './models/input/update-ban-info-of-user.input.model';
 import { QueryUsersBloggerInputModel } from './models/input/query-users-blogger.input.model';
 import { BlogOwnerByIdGuard } from '../../../../infrastructure/guards/forbidden-guards/blog-owner-by-id.guard';
-import { UsersQueryRepository } from '../../infrastructure/SQL/query.repository/users.query.repository';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateUserBanInfoForBlogCommand } from '../../application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
 import { UsersOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/users-orm.query.repository';
 
-@Controller('/hometask-nest/blogger/users')
+@Controller('/api/blogger/users')
 export class UsersBloggerController {
   constructor(
     protected commandBus: CommandBus,

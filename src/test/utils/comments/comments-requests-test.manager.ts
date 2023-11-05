@@ -10,7 +10,7 @@ export const commentsRequestsTestManager = {
     query = '',
   ) {
     return request(httpServer)
-      .get(`/hometask-nest/blogger/blogs/comments`)
+      .get(`/api/blogger/blogs/comments`)
       .set('Authorization', `Bearer ${accessToken}`)
       .query(query);
   },

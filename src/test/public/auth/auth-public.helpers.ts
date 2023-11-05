@@ -7,7 +7,7 @@ export async function registerUserTest(
   password: string,
   email: string,
 ) {
-  return request(httpServer).post('/hometask-nest/auth/registration').send({
+  return request(httpServer).post('/api/auth/registration').send({
     login,
     password,
     email,
@@ -19,7 +19,7 @@ export async function confirmEmailTest(
   confirmationCode: string | undefined,
 ) {
   return request(httpServer)
-    .post(`/hometask-nest/auth/registration-confirmation`)
+    .post(`/api/auth/registration-confirmation`)
     .send({
       code: confirmationCode ?? '',
     });
@@ -31,19 +31,19 @@ export async function loginUserTest(
   password: any,
 ) {
   return request(httpServer)
-    .post(`/hometask-nest/auth/login`)
+    .post(`/api/auth/login`)
     .send({ loginOrEmail, password });
 }
 
 export async function logoutUserTest(httpServer, refreshToken: string) {
   return request(httpServer)
-    .post('/hometask-nest/auth/logout')
+    .post('/api/auth/logout')
     .set('Cookie', refreshToken);
 }
 
 export async function getCurrentUserInfoTest(httpServer, accessToken: string) {
   return request(httpServer)
-    .get(`/hometask-nest/auth/me`)
+    .get(`/api/auth/me`)
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
@@ -52,7 +52,7 @@ export async function resendEmailConfirmationCodeTest(
   email: string,
 ) {
   return request(httpServer)
-    .post(`/hometask-nest/auth/registration-email-resending`)
+    .post(`/api/auth/registration-email-resending`)
     .send({ email });
 }
 
@@ -61,13 +61,13 @@ export async function createNewRefreshAccessTokensTest(
   refreshToken,
 ) {
   return request(httpServer)
-    .post('/hometask-nest/auth/refresh-token')
+    .post('/api/auth/refresh-token')
     .set('Cookie', refreshToken);
 }
 
 export async function sendCodeRecoveryPasswordTest(httpServer, email: string) {
   return request(httpServer)
-    .post(`/hometask-nest/auth/password-recovery`)
+    .post(`/api/auth/password-recovery`)
     .send({ email });
 }
 
@@ -77,6 +77,6 @@ export async function updatePasswordTest(
   recoveryCode,
 ) {
   return request(httpServer)
-    .post(`/hometask-nest/auth/new-password`)
+    .post(`/api/auth/new-password`)
     .send({ newPassword, recoveryCode });
 }
