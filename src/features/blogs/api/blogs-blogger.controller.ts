@@ -51,6 +51,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { WidthHeightFileValidator } from '../../../infrastructure/validators/width-height-file.validator';
 import { UploadBlogIconCommand } from '../application/blogger/use-cases/upload-blog-icon.use-case';
 import { ImageFileValidator } from '../../../infrastructure/validators/type-file.validator';
+import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '../../../configuration/configuration';
 
 @Controller('/api/blogger/blogs')
 export class BlogsBloggerController {
@@ -59,6 +61,7 @@ export class BlogsBloggerController {
     protected blogsOrmQueryRepository: BlogsOrmQueryRepository,
     protected postsOrmQueryRepository: PostsOrmQueryRepository,
     protected commentsOrmQueryRepository: CommentsOrmQueryRepository,
+    protected configService: ConfigService<ConfigType>,
   ) {}
 
   @UseGuards(JwtAccessGuard)

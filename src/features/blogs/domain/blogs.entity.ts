@@ -13,6 +13,7 @@ import { Posts } from '../../posts/domain/posts.entity';
 import { BannedUsersOfBlog } from './banned-users-of-blog.entity';
 import { UsersEmailConfirmation } from '../../users/domain/users-email-confirmation.entity';
 import { IconOfBlog } from './icon-of-blog.entity';
+import { WallpaperOfBlog } from './wallpaper-of-blog.entity';
 
 @Entity()
 export class Blogs {
@@ -39,6 +40,9 @@ export class Blogs {
 
   @Column({ nullable: true, type: 'timestamp without time zone' })
   banDate: Date | null;
+
+  @OneToOne(() => WallpaperOfBlog, (w) => w.blog)
+  wallpaperOfBlog: WallpaperOfBlog[];
 
   @ManyToOne(() => Users, (u) => u.blog)
   @JoinColumn()

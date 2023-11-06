@@ -11,17 +11,17 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../configuration/configuration';
 
 @Entity()
-export class IconOfBlog extends PhotoInfo {
+export class WallpaperOfBlog extends PhotoInfo {
   constructor() {
     super();
   }
-  @ManyToOne(() => Blogs, (b) => b.iconOfBlog)
+  @OneToOne(() => Blogs, (b) => b.wallpaperOfBlog)
   @JoinColumn()
   blog: Blogs;
   @PrimaryColumn()
   blogId: string;
 
-  static createIconInfo(
+  static createWallpaperInfo(
     url: string,
     blogId: string,
     fileSize: number,
@@ -31,8 +31,10 @@ export class IconOfBlog extends PhotoInfo {
       url,
       blogId,
       fileSize,
-      width: configService.get('photoInfo', { infer: true })!.BLOG_ICON_WIDTH,
-      height: configService.get('photoInfo', { infer: true })!.BLOG_ICON_HEIGHT,
+      width: configService.get('photoInfo', { infer: true })!
+        .BLOG_WALLPAPER_WIDTH,
+      height: configService.get('photoInfo', { infer: true })!
+        .BLOG_WALLPAPER_HEIGHT,
     };
   }
 }

@@ -33,6 +33,8 @@ export const getConfiguration = () => ({
   photoInfo: {
     BLOG_ICON_WIDTH: Number(process.env.BLOG_ICON_WIDTH) || 156,
     BLOG_ICON_HEIGHT: Number(process.env.BLOG_ICON_HEIGHT) || 156,
+    BLOG_WALLPAPER_WIDTH: Number(process.env.BLOG_WALLPAPER_WIDTH) || 1028,
+    BLOG_WALLPAPER_HEIGHT: Number(process.env.BLOG_WALLPAPER_HEIGHT) || 312,
   },
 });
 export type ConfigType = ReturnType<typeof getConfiguration>;
