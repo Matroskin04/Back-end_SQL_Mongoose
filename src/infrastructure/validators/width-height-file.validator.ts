@@ -1,5 +1,6 @@
-import { FileValidator } from '@nestjs/common';
+import { BadRequestException, FileValidator } from '@nestjs/common';
 import sharp from 'sharp';
+import { createBodyErrorBadRequest } from '../utils/functions/create-error-bad-request.function';
 
 export class WidthHeightFileValidator extends FileValidator<{
   width: number;
@@ -21,6 +22,11 @@ export class WidthHeightFileValidator extends FileValidator<{
     );
   }
   buildErrorMessage(): string {
-    return `The width and height of the uploaded photo must be ${this.validationOptions.width} and ${this.validationOptions.height} pixels, respectively`;
+    throw new BadRequestException(
+      createBodyErrorBadRequest(
+        `The width and height of the uploaded photo must be ${this.validationOptions.width} and ${this.validationOptions.height} pixels, respectively`,
+        'file',
+      ),
+    );
   }
 }
