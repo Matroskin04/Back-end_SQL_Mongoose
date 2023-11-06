@@ -1,5 +1,4 @@
 import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { emailAdapterMock } from '../mock.providers/auth.mock.providers';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,6 +22,7 @@ import {
   loginCorrectUserTest,
 } from '../../utils/general/chains-of-requests.helpers';
 import { usersRequestsTestManager } from '../../utils/users/users-requests-test.manager';
+import { Users } from '../../../features/users/domain/users.entity';
 
 describe('Auth (Public); /auth', () => {
   jest.setTimeout(5 * 60 * 1000);
@@ -247,7 +247,7 @@ describe('Auth (Public); /auth', () => {
         'email2@mail.ru',
       );
       expect(result4.statusCode).toBe(HTTP_STATUS_CODE.NO_CONTENT_204);
-
+      dataSource.getRepository(Users).createQueryBuilder();
       //change date of code expiration
       await dataSource.query(
         `

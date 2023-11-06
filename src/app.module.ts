@@ -123,6 +123,10 @@ import { AnswersQuizOrmRepository } from './features/quiz/infrastructure/typeORM
 import { AnswersQuizOrmQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/answers-quiz-orm.query.repository';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UploadBlogIconUseCase } from './features/blogs/application/blogger/use-cases/upload-blog-icon.use-case';
+import { S3StorageAdapter } from './infrastructure/adapters/s3-storage.adapter';
+import { ConfigType } from './configuration/configuration';
+import { IconOfBlog } from './features/blogs/domain/icon-of-blog.entity';
 
 const queryRepositories = [
   // SQL
@@ -191,6 +195,7 @@ const handlers = [
   DeleteBlogUseCase,
   BindBlogWithUserUseCase,
   UpdateBanInfoOfBlogUseCase,
+  UploadBlogIconUseCase,
   //posts
   CreatePostUseCase,
   UpdatePostUseCase,
@@ -247,16 +252,17 @@ const handlers = [
       QuestionQuizRelation,
       Quiz,
       QuizInfoAboutUser,
+      IconOfBlog,
     ]),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService<ConfigType>) => ({
         type: 'postgres',
-        host: configService.get('db.postgresql.POSTGRES_HOST'),
+        host: configService.get('db').postgresql.POSTGRES_HOST,
         port: 5432,
-        username: configService.get('db.postgresql.POSTGRES_USER'),
-        password: configService.get('db.postgresql.POSTGRES_PASSWORD'),
-        database: configService.get('db.postgresql.POSTGRES_DATABASE'),
+        username: configService.get('db').postgresql.POSTGRES_USER,
+        password: configService.get('db').postgresql.POSTGRES_PASSWORD,
+        database: configService.get('db').postgresql.POSTGRES_DATABASE,
         autoLoadEntities: true,
         synchronize: false,
         ssl: { require: true, rejectUnauthorized: false },
@@ -295,6 +301,7 @@ const handlers = [
     CryptoAdapter,
     EmailAdapter,
     JwtAdapter,
+    S3StorageAdapter,
     //handlers
     ...handlers,
 

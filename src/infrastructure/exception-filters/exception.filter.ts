@@ -33,7 +33,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       };
 
       const responseBody: any = exception.getResponse();
-
+      console.log(responseBody);
       responseBody.message.forEach((m) =>
         errorsResponse.errorsMessages.push(m),
       );

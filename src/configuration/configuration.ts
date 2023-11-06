@@ -27,5 +27,8 @@ export const getConfiguration = () => ({
     SA_LOGIN: process.env.SA_LOGIN,
     SA_PASS: process.env.SA_PASS,
   },
+  S3: {
+    BUCKET_NAME: process.env.BUCKET_NAME || 'content-platform',
+  },
 });
 export type ConfigType = ReturnType<typeof getConfiguration>;
