@@ -2,13 +2,13 @@ import {
   BlogPaginationType,
   BlogOutputType,
   BlogAllInfoOutputType,
-} from './blogs-public.types.query.repository';
+} from './types/blogs-public.types.query.repository';
 import { Injectable } from '@nestjs/common';
 import { QueryBlogsInputModel } from '../../../api/models/input/queries-blog.input.model';
 import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
-import { AllBlogsSAViewType } from './blogs-sa.types.query.repository';
+import { AllBlogsSAViewType } from './types/blogs-sa.types.query.repository';
 import { Blogs } from '../../../domain/blogs.entity';
 import { BannedUsersOfBlog } from '../../../domain/banned-users-of-blog.entity';
 import { modifyBlogIntoViewSAModel } from '../../../../../infrastructure/utils/functions/features/blog.functions.helpers';

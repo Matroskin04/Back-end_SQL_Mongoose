@@ -49,6 +49,8 @@ import { PostsOrmQueryRepository } from '../../posts/infrastructure/typeORM/quer
 import { BlogsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { WidthHeightFileValidator } from '../../../infrastructure/validators/width-height-file.validator';
+import { UploadBlogIconCommand } from '../application/blogger/use-cases/upload-blog-icon.use-case';
+import { ImageFileValidator } from '../../../infrastructure/validators/type-file.validator';
 
 @Controller('/api/blogger/blogs')
 export class BlogsBloggerController {
@@ -142,22 +144,27 @@ export class BlogsBloggerController {
     return;
   }
 
+  //todo create correct format error in maxfilevalidtor
   @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
   @Post(':blogId/images/main')
   @UseInterceptors(FileInterceptor('file'))
-  async updateBlogIcon(
+  async uploadBlogIcon(
     @Param('blogId') blogId: string,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 100000 }),
-          new FileTypeValidator({ fileType: /\.(jpg|jpeg|png)$/ }),
+          new MaxFileSizeValidator({
+            maxSize: 100000,
+            message: 'Max size = 100 KB',
+          }),
+          new ImageFileValidator({}),
           new WidthHeightFileValidator({ width: 156, height: 156 }),
         ],
       }),
     )
-    file: Express.Multer.File,
+    photo: Express.Multer.File,
   ): Promise<void> {
+    await this.commandBus.execute(new UploadBlogIconCommand(photo, blogId));
     return;
   }
 
