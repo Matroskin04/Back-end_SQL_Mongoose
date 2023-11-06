@@ -30,5 +30,9 @@ export const getConfiguration = () => ({
   S3: {
     BUCKET_NAME: process.env.BUCKET_NAME || 'content-platform',
   },
+  photoInfo: {
+    BLOG_ICON_WIDTH: Number(process.env.BLOG_ICON_WIDTH) || 156,
+    BLOG_ICON_HEIGHT: Number(process.env.BLOG_ICON_HEIGHT) || 156,
+  },
 });
 export type ConfigType = ReturnType<typeof getConfiguration>;
