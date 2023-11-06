@@ -21,21 +21,44 @@ export class S3StorageAdapter {
   async saveIconForBlog(
     blogId: string,
     photo: Express.Multer.File,
-  ): Promise<{ url: string }> {
+  ): Promise<string> {
     try {
       const iconId = uuidv4();
-      const fileUrl = `blog/${blogId}/icons/${iconId}_icon.png`;
+      const fileUrl = `blogs/${blogId}/icons/${iconId}_icon.png`;
       // Put an object into an Amazon S3 bucket.
       const result = await this.s3Client.send(
         new PutObjectCommand({
           Bucket: this.configService.get('S3', { infer: true })!.BUCKET_NAME,
           Key: fileUrl,
           Body: photo.buffer,
+          ContentType: 'image/png',
         }),
       );
-      return {
-        url: fileUrl,
-      };
+      console.log(result);
+      return fileUrl;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+
+  async saveWallpaperForBlog(
+    blogId: string,
+    photo: Express.Multer.File,
+  ): Promise<string> {
+    try {
+      const wallpaperId = uuidv4();
+      const fileUrl = `blog/${blogId}/wallpaper/${wallpaperId}_wallpaper.png`;
+      // Put an object into an Amazon S3 bucket.
+      const result = await this.s3Client.send(
+        new PutObjectCommand({
+          Bucket: this.configService.get('S3', { infer: true })!.BUCKET_NAME,
+          Key: fileUrl,
+          Body: photo.buffer,
+          ContentType: 'image/png',
+        }),
+      );
+      return fileUrl;
     } catch (err) {
       console.error(err);
       throw err;
