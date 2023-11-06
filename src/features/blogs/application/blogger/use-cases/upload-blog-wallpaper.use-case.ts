@@ -5,31 +5,32 @@ import { ConfigType } from '../../../../../configuration/configuration';
 import { PhotosForBlogRepository } from '../../../infrastructure/typeORM/repository/photos-for-blog.repository';
 import { PhotoInfo } from '../../../../general-entities/photo-info.entity';
 import { IconOfBlog } from '../../../domain/icon-of-blog.entity';
+import { WallpaperOfBlog } from '../../../domain/wallpaper-of-blog.entity';
 
-export class UploadBlogIconCommand {
+export class UploadBlogWallpaperCommand {
   constructor(public photo: Express.Multer.File, public blogId: string) {}
 }
 
-@CommandHandler(UploadBlogIconCommand)
-export class UploadBlogIconUseCase
-  implements ICommandHandler<UploadBlogIconCommand>
+@CommandHandler(UploadBlogWallpaperCommand)
+export class UploadBlogWallpaperUseCase
+  implements ICommandHandler<UploadBlogWallpaperCommand>
 {
   constructor(
     protected s3StorageAdapter: S3StorageAdapter,
     protected photosForBlogRepository: PhotosForBlogRepository,
     protected configService: ConfigService<ConfigType>,
   ) {}
-  async execute(command: UploadBlogIconCommand): Promise<void> {
+  async execute(command: UploadBlogWallpaperCommand): Promise<void> {
     const { photo, blogId } = command;
 
-    const url = await this.s3StorageAdapter.saveIconForBlog(blogId, photo);
-    const photoInfo = IconOfBlog.createIconInfo(
+    const url = await this.s3StorageAdapter.saveWallpaperForBlog(blogId, photo);
+    const wallpaperInfo = WallpaperOfBlog.createWallpaperInfo(
       url,
       blogId,
       photo.size,
       this.configService,
     );
-    await this.photosForBlogRepository.saveBlogIconInfo(photoInfo);
+    await this.photosForBlogRepository.saveBlogWallpaperInfo(wallpaperInfo);
 
     return;
   }

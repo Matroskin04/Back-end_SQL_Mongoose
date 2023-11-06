@@ -172,6 +172,29 @@ export class BlogsBloggerController {
   }
 
   @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @Post(':blogId/images/wallpaper')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadBlogWallpaper(
+    @Param('blogId') blogId: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({
+            maxSize: 100000,
+            message: 'Max size = 100 KB',
+          }),
+          new ImageFileValidator({}),
+          new WidthHeightFileValidator({ width: 1028, height: 312 }),
+        ],
+      }),
+    )
+    photo: Express.Multer.File,
+  ): Promise<void> {
+    await this.commandBus.execute(new UploadBlogIconCommand(photo, blogId));
+    return;
+  }
+
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':blogId/posts/:postId')
   async updatePostOfBlog(
