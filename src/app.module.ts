@@ -127,6 +127,8 @@ import { UploadBlogIconUseCase } from './features/blogs/application/blogger/use-
 import { S3StorageAdapter } from './infrastructure/adapters/s3-storage.adapter';
 import { ConfigType } from './configuration/configuration';
 import { IconOfBlog } from './features/blogs/domain/icon-of-blog.entity';
+import { PhotosForBlogRepository } from './features/blogs/infrastructure/typeORM/repository/photos-for-blog.repository';
+import { WallpaperOfBlog } from './features/blogs/domain/wallpaper-of-blog.entity';
 
 const queryRepositories = [
   // SQL
@@ -161,6 +163,7 @@ const repositories = [
   PostsRepository,
   UsersRepository,
   QuestionsOrmRepository,
+  PhotosForBlogRepository,
   TestingRepository,
 
   //ORM
@@ -253,6 +256,7 @@ const handlers = [
       Quiz,
       QuizInfoAboutUser,
       IconOfBlog,
+      WallpaperOfBlog,
     ]),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
