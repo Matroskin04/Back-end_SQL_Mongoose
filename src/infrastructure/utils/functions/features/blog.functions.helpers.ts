@@ -23,21 +23,17 @@ export function modifyBlogIntoViewSAModel(blog) {
   };
 }
 
-export function modifyBlogPhotoIntoViewModel(
-  wallpaper: BlogPhotoInfoType | null,
-  icons: BlogPhotoInfoViewType[],
-): PhotosOfBlogViewType {
+export function modifyBlogIntoViewGeneralModel(blog) {
   return {
-    wallpaper: wallpaper
-      ? {
-          ...wallpaper,
-          url:
-            'https://content-platform.storage.yandexcloud.net/' + wallpaper.url,
-        }
-      : {},
-    main: icons.map((icon) => ({
-      ...icon,
-      url: 'https://content-platform.storage.yandexcloud.net/' + icon.url,
-    })),
+    id: blog.id,
+    name: blog.name,
+    description: blog.description,
+    websiteUrl: blog.websiteUrl,
+    createdAt: blog.createdAt.toISOString(),
+    isMembership: blog.isMembership,
+    images: {
+      wallpaper: blog.wallpaper,
+      main: blog.icons,
+    },
   };
 }
