@@ -6,6 +6,9 @@ import { PhotosForBlogRepository } from '../../../infrastructure/typeORM/reposit
 import { PhotoInfo } from '../../../../general-entities/photo-info.entity';
 import { IconOfBlog } from '../../../domain/icon-of-blog.entity';
 import { WallpaperOfBlog } from '../../../domain/wallpaper-of-blog.entity';
+import { PhotosForBlogQueryRepository } from '../../../infrastructure/typeORM/query.repository/photos-for-blog.query.repository';
+import { modifyBlogPhotoIntoViewModel } from '../../../../../infrastructure/utils/functions/features/blog.functions.helpers';
+import { PhotosOfBlogViewType } from '../../../infrastructure/typeORM/query.repository/types/photos-for-blog.types.query.repository';
 
 export class UploadBlogWallpaperCommand {
   constructor(public photo: Express.Multer.File, public blogId: string) {}
@@ -18,9 +21,13 @@ export class UploadBlogWallpaperUseCase
   constructor(
     protected s3StorageAdapter: S3StorageAdapter,
     protected photosForBlogRepository: PhotosForBlogRepository,
+    protected photosForBlogQueryRepository: PhotosForBlogQueryRepository,
     protected configService: ConfigService<ConfigType>,
   ) {}
-  async execute(command: UploadBlogWallpaperCommand): Promise<void> {
+  //todo transaction
+  async execute(
+    command: UploadBlogWallpaperCommand,
+  ): Promise<PhotosOfBlogViewType> {
     const { photo, blogId } = command;
 
     const url = await this.s3StorageAdapter.saveWallpaperForBlog(blogId, photo);
@@ -32,6 +39,10 @@ export class UploadBlogWallpaperUseCase
     );
     await this.photosForBlogRepository.saveBlogWallpaperInfo(wallpaperInfo);
 
-    return;
+    const icons = await this.photosForBlogQueryRepository.getIconsOfBlog(
+      blogId,
+    );
+
+    return modifyBlogPhotoIntoViewModel(wallpaperInfo, icons);
   }
 }
