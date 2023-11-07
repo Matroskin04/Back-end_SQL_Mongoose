@@ -48,7 +48,7 @@ export class S3StorageAdapter {
   ): Promise<string> {
     try {
       const wallpaperId = uuidv4();
-      const fileUrl = `blog/${blogId}/wallpaper/${wallpaperId}_wallpaper.png`;
+      const fileUrl = `blogs/${blogId}/wallpapers/${wallpaperId}_wallpaper.png`;
       // Put an object into an Amazon S3 bucket.
       const result = await this.s3Client.send(
         new PutObjectCommand({
