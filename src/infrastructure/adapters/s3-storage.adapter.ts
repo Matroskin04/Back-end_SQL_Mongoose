@@ -80,7 +80,6 @@ export class S3StorageAdapter {
           Key: keyUrl,
         }),
       );
-      console.log(result);
       return;
     } catch (err) {
       console.error(err);

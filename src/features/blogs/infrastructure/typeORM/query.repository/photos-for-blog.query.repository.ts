@@ -19,7 +19,7 @@ export class PhotosForBlogQueryRepository {
     const query = this.wallpaperOfBlogRepo
       .createQueryBuilder()
       .select(['url', 'width', 'height', '"fileSize"', '"blogId"'])
-      .where('blogId = :blogId', { blogId });
+      .where('"blogId" = :blogId', { blogId });
 
     const result = await query.getRawOne();
 
@@ -33,7 +33,7 @@ export class PhotosForBlogQueryRepository {
       .where('"blogId" = :blogId', { blogId });
 
     const result = await query.getRawMany();
-
+    console.log(query.getQuery());
     return result;
   }
 }
