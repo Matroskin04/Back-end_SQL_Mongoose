@@ -53,6 +53,8 @@ import { UploadBlogIconCommand } from '../application/blogger/use-cases/upload-b
 import { ImageFileValidator } from '../../../infrastructure/validators/type-file.validator';
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../configuration/configuration';
+import { BlogPhotosOutputModel } from './models/output/blog-photos.output.model';
+import { UploadBlogWallpaperCommand } from '../application/blogger/use-cases/upload-blog-wallpaper.use-case';
 
 @Controller('/api/blogger/blogs')
 export class BlogsBloggerController {
@@ -166,9 +168,11 @@ export class BlogsBloggerController {
       }),
     )
     photo: Express.Multer.File,
-  ): Promise<void> {
-    await this.commandBus.execute(new UploadBlogIconCommand(photo, blogId));
-    return;
+  ): Promise<BlogPhotosOutputModel> {
+    const result = await this.commandBus.execute(
+      new UploadBlogIconCommand(photo, blogId),
+    );
+    return result;
   }
 
   @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
@@ -189,9 +193,11 @@ export class BlogsBloggerController {
       }),
     )
     photo: Express.Multer.File,
-  ): Promise<void> {
-    await this.commandBus.execute(new UploadBlogIconCommand(photo, blogId));
-    return;
+  ): Promise<BlogPhotosOutputModel> {
+    const result = await this.commandBus.execute(
+      new UploadBlogWallpaperCommand(photo, blogId),
+    );
+    return result;
   }
 
   @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)

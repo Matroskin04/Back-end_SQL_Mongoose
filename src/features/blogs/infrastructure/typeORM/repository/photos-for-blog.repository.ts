@@ -30,11 +30,9 @@ export class PhotosForBlogRepository {
     photoInfo: BlogPhotoInfoType,
     wallpaperOfBlogRepo: Repository<WallpaperOfBlog> = this.wallpaperOfBlogRepo,
   ): Promise<void> {
-    await wallpaperOfBlogRepo
-      .createQueryBuilder()
-      .insert()
-      .values(photoInfo)
-      .execute();
+    console.log(photoInfo);
+    await wallpaperOfBlogRepo.save(photoInfo);
+    console.log(1);
     return;
   }
 }
