@@ -1,4 +1,11 @@
-import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import { PhotoInfo } from '../../general-entities/photo-info.entity';
 import { Blogs } from './blogs.entity';
 import { ConfigService } from '@nestjs/config';
@@ -21,10 +28,14 @@ export class IconOfBlog extends PhotoInfo {
     this.width = width;
     this.height = height;
   }
+  @PrimaryColumn('uuid')
+  id: string;
+
   @ManyToOne(() => Blogs, (b) => b.iconOfBlog)
   @JoinColumn()
   blog: Blogs;
-  @PrimaryColumn()
+  @Index('blogId-index')
+  @Column()
   blogId: string;
 
   static createIconInfo(
