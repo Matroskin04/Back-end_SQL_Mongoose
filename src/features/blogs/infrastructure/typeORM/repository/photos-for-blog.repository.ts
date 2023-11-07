@@ -18,11 +18,7 @@ export class PhotosForBlogRepository {
     photoInfo: BlogPhotoInfoType,
     iconOfBlogRepo: Repository<IconOfBlog> = this.iconOfBlogRepo,
   ): Promise<void> {
-    await iconOfBlogRepo
-      .createQueryBuilder()
-      .insert()
-      .values(photoInfo)
-      .execute();
+    await iconOfBlogRepo.save(photoInfo);
     return;
   }
 
@@ -30,9 +26,15 @@ export class PhotosForBlogRepository {
     photoInfo: BlogPhotoInfoType,
     wallpaperOfBlogRepo: Repository<WallpaperOfBlog> = this.wallpaperOfBlogRepo,
   ): Promise<void> {
-    console.log(photoInfo);
     await wallpaperOfBlogRepo.save(photoInfo);
-    console.log(1);
     return;
+  }
+
+  async deleteBlogWallpaperInfo(
+    blogId: string,
+    wallpaperOfBlogRepo: Repository<WallpaperOfBlog> = this.wallpaperOfBlogRepo,
+  ): Promise<boolean> {
+    const result = await wallpaperOfBlogRepo.delete({ blogId });
+    return result.affected === 1;
   }
 }

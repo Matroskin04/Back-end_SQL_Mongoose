@@ -31,6 +31,8 @@ export class UploadBlogWallpaperUseCase
     const { photo, blogId } = command;
 
     const url = await this.s3StorageAdapter.saveWallpaperForBlog(blogId, photo);
+    await this.deleteLastWallpaperFromS3(blogId);
+
     const wallpaperInfo = WallpaperOfBlog.createWallpaperInfo(
       url,
       blogId,
@@ -44,5 +46,17 @@ export class UploadBlogWallpaperUseCase
     );
 
     return modifyBlogPhotoIntoViewModel(wallpaperInfo, icons);
+  }
+
+  private async deleteLastWallpaperFromS3(blogId: string): Promise<void> {
+    const currentWallpaper =
+      await this.photosForBlogQueryRepository.getWallpaperOfBlog(blogId);
+    if (currentWallpaper) {
+      await this.s3StorageAdapter.deleteWallpaperForBlog(
+        blogId,
+        currentWallpaper.url,
+      );
+    }
+    return;
   }
 }

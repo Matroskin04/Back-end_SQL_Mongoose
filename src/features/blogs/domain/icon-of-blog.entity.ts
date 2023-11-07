@@ -1,19 +1,25 @@
-import {
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryColumn,
-} from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { PhotoInfo } from '../../general-entities/photo-info.entity';
 import { Blogs } from './blogs.entity';
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../configuration/configuration';
+import { BlogPhotoInfoType } from '../infrastructure/typeORM/repository/photos-for-blog.types.repository';
 
 @Entity()
 export class IconOfBlog extends PhotoInfo {
-  constructor() {
+  constructor(
+    url: string,
+    blogId: string,
+    fileSize: number,
+    width: number,
+    height: number,
+  ) {
     super();
+    this.url = url;
+    this.blogId = blogId;
+    this.fileSize = fileSize;
+    this.width = width;
+    this.height = height;
   }
   @ManyToOne(() => Blogs, (b) => b.iconOfBlog)
   @JoinColumn()
@@ -26,13 +32,13 @@ export class IconOfBlog extends PhotoInfo {
     blogId: string,
     fileSize: number,
     configService: ConfigService<ConfigType>,
-  ) {
-    return {
+  ): BlogPhotoInfoType {
+    return new IconOfBlog(
       url,
       blogId,
       fileSize,
-      width: configService.get('photoInfo', { infer: true })!.BLOG_ICON_WIDTH,
-      height: configService.get('photoInfo', { infer: true })!.BLOG_ICON_HEIGHT,
-    };
+      configService.get('photoInfo', { infer: true })!.BLOG_ICON_WIDTH,
+      configService.get('photoInfo', { infer: true })!.BLOG_ICON_HEIGHT,
+    );
   }
 }
