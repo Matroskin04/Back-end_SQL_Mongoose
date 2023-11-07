@@ -129,6 +129,8 @@ import { ConfigType } from './configuration/configuration';
 import { IconOfBlog } from './features/blogs/domain/icon-of-blog.entity';
 import { PhotosForBlogRepository } from './features/blogs/infrastructure/typeORM/repository/photos-for-blog.repository';
 import { WallpaperOfBlog } from './features/blogs/domain/wallpaper-of-blog.entity';
+import { UploadBlogWallpaperUseCase } from './features/blogs/application/blogger/use-cases/upload-blog-wallpaper.use-case';
+import { PhotosForBlogQueryRepository } from './features/blogs/infrastructure/typeORM/query.repository/photos-for-blog.query.repository';
 
 const queryRepositories = [
   // SQL
@@ -149,6 +151,7 @@ const queryRepositories = [
   QuestionsOrmQueryRepository,
   QuizOrmQueryRepository,
   AnswersQuizOrmQueryRepository,
+  PhotosForBlogQueryRepository,
 ];
 const repositories = [
   //SQL
@@ -199,6 +202,8 @@ const handlers = [
   BindBlogWithUserUseCase,
   UpdateBanInfoOfBlogUseCase,
   UploadBlogIconUseCase,
+  UploadBlogWallpaperUseCase,
+
   //posts
   CreatePostUseCase,
   UpdatePostUseCase,
