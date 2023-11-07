@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PhotoInfo } from '../../general-entities/photo-info.entity';
 import { Blogs } from './blogs.entity';
@@ -28,7 +29,7 @@ export class IconOfBlog extends PhotoInfo {
     this.width = width;
     this.height = height;
   }
-  @PrimaryColumn('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ManyToOne(() => Blogs, (b) => b.iconOfBlog)
