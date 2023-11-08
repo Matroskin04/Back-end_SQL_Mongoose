@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
 import { ConfigType } from '../../configuration/configuration';
+import * as Buffer from 'buffer';
 
 @Injectable()
 export class S3StorageAdapter {
@@ -22,10 +23,7 @@ export class S3StorageAdapter {
     });
   }
 
-  async saveIconForBlog(
-    blogId: string,
-    photo: Express.Multer.File,
-  ): Promise<string> {
+  async saveIconForBlog(blogId: string, photo: Buffer): Promise<string> {
     try {
       const iconId = uuidv4();
       const fileUrl = `blogs/${blogId}/icons/${iconId}_icon.png`;
@@ -34,7 +32,7 @@ export class S3StorageAdapter {
         new PutObjectCommand({
           Bucket: this.configService.get('S3', { infer: true })!.BUCKET_NAME,
           Key: fileUrl,
-          Body: photo.buffer,
+          Body: photo,
           ContentType: 'image/png',
         }),
       );
@@ -46,10 +44,7 @@ export class S3StorageAdapter {
     }
   }
 
-  async saveIconForPost(
-    postId: string,
-    photo: Express.Multer.File,
-  ): Promise<string> {
+  async saveIconForPost(postId: string, photo: Buffer): Promise<string> {
     try {
       const iconId = uuidv4();
       const fileUrl = `posts/${postId}/icons/${iconId}_icon.png`;
@@ -58,7 +53,7 @@ export class S3StorageAdapter {
         new PutObjectCommand({
           Bucket: this.configService.get('S3', { infer: true })!.BUCKET_NAME,
           Key: fileUrl,
-          Body: photo.buffer,
+          Body: photo,
           ContentType: 'image/png',
         }),
       );
@@ -70,10 +65,7 @@ export class S3StorageAdapter {
     }
   }
 
-  async saveWallpaperForBlog(
-    blogId: string,
-    photo: Express.Multer.File,
-  ): Promise<string> {
+  async saveWallpaperForBlog(blogId: string, photo: Buffer): Promise<string> {
     try {
       const wallpaperId = uuidv4();
       const fileUrl = `blogs/${blogId}/wallpapers/${wallpaperId}_wallpaper.png`;
@@ -82,7 +74,7 @@ export class S3StorageAdapter {
         new PutObjectCommand({
           Bucket: this.configService.get('S3', { infer: true })!.BUCKET_NAME,
           Key: fileUrl,
-          Body: photo.buffer,
+          Body: photo,
           ContentType: 'image/png',
         }),
       );
