@@ -48,7 +48,7 @@ export function modifyPostIntoViewModel(postInfo: PostRawType): PostViewType {
       newestLikes: postInfo.newestLikes ?? [],
     },
     images: {
-      main: postInfo.mainImages,
+      main: postInfo.mainImages ?? [],
     },
   };
 }

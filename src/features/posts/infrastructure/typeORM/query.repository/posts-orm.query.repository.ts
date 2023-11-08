@@ -15,6 +15,9 @@ import { BlogsQueryRepository } from '../../../../blogs/infrastructure/SQL/query
 import { Posts } from '../../../domain/posts.entity';
 import { PostsLikesInfo } from '../../../domain/posts-likes-info.entity';
 import { UsersBanInfo } from '../../../../users/domain/users-ban-info.entity';
+import { Blogs } from '../../../../blogs/domain/blogs.entity';
+import { IconOfBlog } from '../../../../blogs/domain/icon-of-blog.entity';
+import { IconOfPost } from '../../../domain/icon-of-post.entity';
 
 @Injectable()
 export class PostsOrmQueryRepository {
@@ -42,12 +45,12 @@ export class PostsOrmQueryRepository {
     const result = await this.postsRepository
       .createQueryBuilder('p')
       .select([
-        'p.id AS id',
-        'p.title AS title',
-        'p.shortDescription AS "shortDescription"',
-        'p.content AS "content"',
-        'p.blogId AS "blogId"',
-        'p.createdAt AS "createdAt"',
+        'p."id"',
+        'p."title"',
+        'p."shortDescription"',
+        'p."content"',
+        'p."blogId"',
+        'p."createdAt"',
         'b.name AS "blogName"',
       ])
       .addSelect((subQuery) => {
@@ -62,6 +65,7 @@ export class PostsOrmQueryRepository {
       .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
       .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
       .addSelect((qb) => this.newestLikesBuilder(qb), 'newestLikes')
+      .addSelect((qb) => this.mainImgPostBuilder(qb), 'mainImages')
       .leftJoin('p.blog', 'b')
       .where('b.isBanned = false')
       .andWhere('b.id = :blogId', { blogId })
@@ -90,12 +94,12 @@ export class PostsOrmQueryRepository {
     const result = await this.postsRepository
       .createQueryBuilder('p')
       .select([
-        'p.id AS id',
-        'p.title AS title',
-        'p.shortDescription AS "shortDescription"',
-        'p.content AS "content"',
-        'p.blogId AS "blogId"',
-        'p.createdAt AS "createdAt"',
+        'p."id"',
+        'p."title"',
+        'p."shortDescription"',
+        'p."content"',
+        'p."blogId"',
+        'p."createdAt"',
         'b.name AS "blogName"',
       ])
       .addSelect((subQuery) => {
@@ -109,6 +113,7 @@ export class PostsOrmQueryRepository {
       .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
       .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
       .addSelect((qb) => this.newestLikesBuilder(qb), 'newestLikes')
+      .addSelect((qb) => this.mainImgPostBuilder(qb), 'mainImages')
       .leftJoin('p.blog', 'b')
       .where('b.isBanned = false')
       .orderBy(sortBy === 'blogName' ? 'b.name' : `p.${sortBy}`, sortDirection)
@@ -145,12 +150,12 @@ export class PostsOrmQueryRepository {
     const result = await this.postsRepository
       .createQueryBuilder('p')
       .select([
-        'p.id AS id',
-        'p.title AS title',
-        'p.shortDescription AS "shortDescription"',
-        'p.content AS "content"',
-        'p.blogId AS "blogId"',
-        'p.createdAt AS "createdAt"',
+        'p."id"',
+        'p."title"',
+        'p."shortDescription"',
+        'p."content"',
+        'p."blogId"',
+        'p."createdAt"',
         'b.name AS "blogName"',
       ])
       .addSelect((subQuery) => {
@@ -164,6 +169,7 @@ export class PostsOrmQueryRepository {
       .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
       .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
       .addSelect((qb) => this.newestLikesBuilder(qb), 'newestLikes')
+      .addSelect((qb) => this.mainImgPostBuilder(qb), 'mainImages')
       .leftJoin('p.blog', 'b')
       .where('b.isBanned = false')
       .andWhere('p.id = :postId', { postId });
@@ -246,5 +252,14 @@ export class PostsOrmQueryRepository {
           .orderBy('li."addedAt"', 'DESC')
           .limit(3);
       }, 'threeLikes');
+  }
+
+  private mainImgPostBuilder(qb: SelectQueryBuilder<Posts>) {
+    return qb.select('json_agg(to_jsonb("images"))').from((qb) => {
+      return qb
+        .select(['i."url"', 'i."width"', 'i."height"', 'i."fileSize"'])
+        .from(IconOfPost, 'i')
+        .where('i."postId" = p."id"');
+    }, 'images');
   }
 }
