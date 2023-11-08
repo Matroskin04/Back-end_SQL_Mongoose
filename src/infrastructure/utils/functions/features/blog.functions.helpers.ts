@@ -26,8 +26,19 @@ export function modifyBlogIntoViewGeneralModel(blog) {
     createdAt: blog.createdAt.toISOString(),
     isMembership: blog.isMembership,
     images: {
-      wallpaper: blog.wallpaper ?? null,
-      main: blog.icons ?? [],
+      wallpaper: blog.wallpaper
+        ? {
+            ...blog.wallpaper,
+            url:
+              'https://content-platform.storage.yandexcloud.net/' +
+              blog.wallpaper.url,
+          }
+        : null,
+      main:
+        blog.icons?.forEach(
+          (icon) =>
+            (icon.url += 'https://content-platform.storage.yandexcloud.net/'),
+        ) ?? [],
     },
   };
 }
