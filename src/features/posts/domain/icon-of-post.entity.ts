@@ -44,14 +44,9 @@ export class IconOfPost extends PhotoInfo {
     url: string,
     postId: string,
     fileSize: number,
-    configService: ConfigService<ConfigType>,
+    width: number,
+    height: number,
   ): PostPhotoInfoType {
-    return new IconOfPost(
-      url,
-      postId,
-      fileSize,
-      configService.get('photoInfo', { infer: true })!.POST_ICON_WIDTH,
-      configService.get('photoInfo', { infer: true })!.POST_ICON_HEIGHT,
-    );
+    return new IconOfPost(url, postId, fileSize, width, height);
   }
 }

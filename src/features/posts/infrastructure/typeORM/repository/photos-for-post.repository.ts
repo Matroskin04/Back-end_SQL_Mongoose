@@ -12,8 +12,8 @@ export class PhotosForPostRepository {
     protected iconOfPostRepo: Repository<IconOfPost>,
   ) {}
 
-  async savePostIconInfo(
-    photoInfo: PostPhotoInfoType,
+  async savePostIconsInfo(
+    photoInfo: PostPhotoInfoType[],
     iconOfPostRepo: Repository<IconOfPost> = this.iconOfPostRepo,
   ): Promise<void> {
     await iconOfPostRepo.save(photoInfo);

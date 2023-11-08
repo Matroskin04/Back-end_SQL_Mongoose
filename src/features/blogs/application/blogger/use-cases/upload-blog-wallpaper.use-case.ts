@@ -30,7 +30,10 @@ export class UploadBlogWallpaperUseCase
   ): Promise<PhotosOfBlogViewType> {
     const { photo, blogId } = command;
 
-    const url = await this.s3StorageAdapter.saveWallpaperForBlog(blogId, photo);
+    const url = await this.s3StorageAdapter.saveWallpaperForBlog(
+      blogId,
+      photo.buffer,
+    );
     await this.deleteLastWallpaperFromS3(blogId);
 
     const wallpaperInfo = WallpaperOfBlog.createWallpaperInfo(

@@ -26,7 +26,10 @@ export class UploadBlogIconUseCase
   async execute(command: UploadBlogIconCommand): Promise<PhotosOfBlogViewType> {
     const { photo, blogId } = command;
 
-    const url = await this.s3StorageAdapter.saveIconForBlog(blogId, photo);
+    const url = await this.s3StorageAdapter.saveIconForBlog(
+      blogId,
+      photo.buffer,
+    );
     const iconInfo = IconOfBlog.createIconInfo(
       url,
       blogId,
