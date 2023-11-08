@@ -10,8 +10,7 @@ export function modifyBlogPhotoIntoViewModel(
   return {
     wallpaper: wallpaper
       ? {
-          url:
-            'https://content-platform.storage.yandexcloud.net/' + wallpaper.url,
+          url: wallpaper.url,
           width: wallpaper.width,
           height: wallpaper.height,
           fileSize: wallpaper.fileSize,
@@ -19,7 +18,7 @@ export function modifyBlogPhotoIntoViewModel(
       : null,
     main: icons.map((icon) => ({
       ...icon,
-      url: 'https://content-platform.storage.yandexcloud.net/' + icon.url,
+      url: icon.url,
     })),
   };
 }
