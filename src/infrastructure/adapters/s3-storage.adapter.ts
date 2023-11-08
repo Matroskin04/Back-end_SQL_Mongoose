@@ -38,7 +38,31 @@ export class S3StorageAdapter {
           ContentType: 'image/png',
         }),
       );
-      console.log(result);
+
+      return fileUrl;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+
+  async saveIconForPost(
+    postId: string,
+    photo: Express.Multer.File,
+  ): Promise<string> {
+    try {
+      const iconId = uuidv4();
+      const fileUrl = `posts/${postId}/icons/${iconId}_icon.png`;
+      // Put an object into an Amazon S3 bucket.
+      const result = await this.s3Client.send(
+        new PutObjectCommand({
+          Bucket: this.configService.get('S3', { infer: true })!.BUCKET_NAME,
+          Key: fileUrl,
+          Body: photo.buffer,
+          ContentType: 'image/png',
+        }),
+      );
+
       return fileUrl;
     } catch (err) {
       console.error(err);
