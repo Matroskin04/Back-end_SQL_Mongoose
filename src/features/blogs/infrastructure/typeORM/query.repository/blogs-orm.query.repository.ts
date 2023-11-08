@@ -169,11 +169,11 @@ export class BlogsOrmQueryRepository {
         'b.id',
         'b.name',
         'b.description',
-        'b.websiteUrl',
-        'b.createdAt',
-        'b.isMembership',
-        'b.isBanned',
-        'b.userId',
+        'b."websiteUrl"',
+        'b."createdAt"',
+        'b."isMembership"',
+        'b."isBanned"',
+        'b."userId"',
       ])
       .where('b.id = :blogId', { blogId })
       .getRawOne();
