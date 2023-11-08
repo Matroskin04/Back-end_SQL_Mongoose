@@ -15,14 +15,11 @@ import {
   Body,
   Controller,
   Delete,
-  FileTypeValidator,
   Get,
   HttpCode,
-  MaxFileSizeValidator,
   NotFoundException,
   Param,
   ParseFilePipe,
-  ParseFilePipeBuilder,
   Post,
   Put,
   Query,
@@ -55,6 +52,8 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../configuration/configuration';
 import { BlogPhotosOutputModel } from './models/output/blog-photos.output.model';
 import { UploadBlogWallpaperCommand } from '../application/blogger/use-cases/upload-blog-wallpaper.use-case';
+import { UploadPostIconCommand } from '../application/blogger/use-cases/upload-post-icon.use-case';
+import { MaxFileSizeValidator } from '../../../infrastructure/validators/max-file-size.validator';
 
 @Controller('/api/blogger/blogs')
 export class BlogsBloggerController {
@@ -158,10 +157,7 @@ export class BlogsBloggerController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({
-            maxSize: 100000,
-            message: 'Max size = 100 KB',
-          }),
+          new MaxFileSizeValidator({ maxSize: 100000 }),
           new ImageFileValidator({}),
           new WidthHeightFileValidator({ width: 156, height: 156 }),
         ],
@@ -183,10 +179,7 @@ export class BlogsBloggerController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({
-            maxSize: 100000,
-            message: 'Max size = 100 KB',
-          }),
+          new MaxFileSizeValidator({ maxSize: 100000 }),
           new ImageFileValidator({}),
           new WidthHeightFileValidator({ width: 1028, height: 312 }),
         ],
@@ -196,6 +189,29 @@ export class BlogsBloggerController {
   ): Promise<BlogPhotosOutputModel> {
     const result = await this.commandBus.execute(
       new UploadBlogWallpaperCommand(photo, blogId),
+    );
+    return result;
+  }
+
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @Post(':blogId/posts/:postId/images/main')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadPostIcon(
+    @Param('blogId') blogId: string,
+    @Param('postId') postId: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 100000 }),
+          new ImageFileValidator({}),
+          new WidthHeightFileValidator({ width: 940, height: 432 }),
+        ],
+      }),
+    )
+    photo: Express.Multer.File,
+  ): Promise<BlogPhotosOutputModel> {
+    const result = await this.commandBus.execute(
+      new UploadPostIconCommand(photo, blogId, postId),
     );
     return result;
   }
