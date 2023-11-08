@@ -58,7 +58,7 @@ export class BlogsOrmQueryRepository {
       .offset((+pageNumber - 1) * +pageSize);
 
     const result = await query.getRawMany();
-    console.log(result);
+
     return {
       pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
       page: +pageNumber,
@@ -122,6 +122,7 @@ export class BlogsOrmQueryRepository {
         'b."createdAt"',
         'b."isMembership"',
       ])
+      .addSelect((qb) => this.allBlogsCountBuilder(qb, searchNameTerm), 'count')
       .addSelect((qb) => this.iconsOfBlogBuilder(qb), 'icons')
       .addSelect((qb) => this.wallpaperOfBlogBuilder(qb), 'wallpaper')
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
@@ -129,14 +130,14 @@ export class BlogsOrmQueryRepository {
       .orderBy(`b.${sortBy}`, sortDirection)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize)
-      .getManyAndCount();
+      .getRawMany();
 
     return {
-      pagesCount: Math.ceil((result[1] || 1) / +pageSize),
+      pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: result[1] || 0,
-      items: result[0].map((blog) => modifyBlogIntoViewGeneralModel(blog)),
+      totalCount: +result[0]?.count || 0,
+      items: result.map((blog) => modifyBlogIntoViewGeneralModel(blog)),
     };
   }
 
