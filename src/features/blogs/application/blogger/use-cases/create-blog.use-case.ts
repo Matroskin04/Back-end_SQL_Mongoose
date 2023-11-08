@@ -4,6 +4,8 @@ import { CreateBlogDTO } from '../dto/create-blog.dto';
 import { UsersOrmQueryRepository } from '../../../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 import { BlogsOrmRepository } from '../../../infrastructure/typeORM/repository/blogs-orm.repository';
 import { modifyBlogIntoViewGeneralModel } from '../../../../../infrastructure/utils/functions/features/blog.functions.helpers';
+import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '../../../../../configuration/configuration';
 
 export class CreateBlogCommand {
   constructor(public blogDTO: BodyBlogType, public userId: string | null) {}
@@ -14,6 +16,7 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
   constructor(
     protected blogsOrmRepository: BlogsOrmRepository,
     protected usersOrmQueryRepository: UsersOrmQueryRepository,
+    protected configService: ConfigService<ConfigType>,
   ) {}
 
   async execute(command: CreateBlogCommand): Promise<CreateBlogDTO> {
@@ -25,6 +28,6 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
     }
 
     const result = await this.blogsOrmRepository.createBlog(blogDTO, userId);
-    return modifyBlogIntoViewGeneralModel(result);
+    return modifyBlogIntoViewGeneralModel(result, this.configService);
   }
 }

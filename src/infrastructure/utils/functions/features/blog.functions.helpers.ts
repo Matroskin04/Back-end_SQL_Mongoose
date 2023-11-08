@@ -1,3 +1,6 @@
+import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '../../../../configuration/configuration';
+
 export function modifyBlogIntoViewSAModel(blog) {
   return {
     id: blog.id,
@@ -17,7 +20,10 @@ export function modifyBlogIntoViewSAModel(blog) {
   };
 }
 
-export function modifyBlogIntoViewGeneralModel(blog) {
+export function modifyBlogIntoViewGeneralModel(
+  blog,
+  configService: ConfigService<ConfigType>,
+) {
   return {
     id: blog.id,
     name: blog.name,
@@ -30,14 +36,14 @@ export function modifyBlogIntoViewGeneralModel(blog) {
         ? {
             ...blog.wallpaper,
             url:
-              'https://content-platform.storage.yandexcloud.net/' +
+              configService.get('S3', { infer: true })!.URL +
               blog.wallpaper.url,
           }
         : null,
       main:
         blog.icons?.map((icon) => ({
           ...icon,
-          url: 'https://content-platform.storage.yandexcloud.net/' + icon.url,
+          url: configService.get('S3', { infer: true })!.URL + icon.url,
         })) ?? [],
     },
   };

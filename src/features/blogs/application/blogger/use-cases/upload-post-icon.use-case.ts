@@ -7,7 +7,7 @@ import { PhotosForPostQueryRepository } from '../../../../posts/infrastructure/t
 import { PhotosForPostRepository } from '../../../../posts/infrastructure/typeORM/repository/photos-for-post.repository';
 import { IconOfPost } from '../../../../posts/domain/icon-of-post.entity';
 import { BlogsQueryRepository } from '../../../infrastructure/SQL/query.repository/blogs.query.repository';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import * as Buffer from 'buffer';
 import sharp from 'sharp';
 import { PostPhotoInfoType } from '../../../../posts/infrastructure/typeORM/repository/photos-for-post.types.repository';
@@ -51,7 +51,10 @@ export class UploadPostIconUseCase
       postId,
     );
 
-    return icons;
+    return icons.map((icon) => ({
+      ...icon,
+      url: this.configService.get('S3', { infer: true })!.URL + icon.url,
+    }));
   }
 
   private async checkExistingBlog(blogId: string): Promise<void> {

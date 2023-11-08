@@ -17,6 +17,8 @@ import {
 } from '../../../../../infrastructure/utils/functions/features/blog.functions.helpers';
 import { IconOfBlog } from '../../../domain/icon-of-blog.entity';
 import { WallpaperOfBlog } from '../../../domain/wallpaper-of-blog.entity';
+import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '../../../../../configuration/configuration';
 
 @Injectable()
 export class BlogsOrmQueryRepository {
@@ -26,6 +28,7 @@ export class BlogsOrmQueryRepository {
     @InjectRepository(BannedUsersOfBlog)
     protected bannedUsersOfBlogRepository: Repository<BannedUsersOfBlog>,
     @InjectDataSource() protected dataSource: DataSource,
+    protected configService: ConfigService<ConfigType>,
   ) {}
 
   async getAllBlogsOfBlogger(
@@ -64,7 +67,9 @@ export class BlogsOrmQueryRepository {
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,
-      items: result.map((blog) => modifyBlogIntoViewGeneralModel(blog)),
+      items: result.map((blog) =>
+        modifyBlogIntoViewGeneralModel(blog, this.configService),
+      ),
     };
   }
 
@@ -137,7 +142,9 @@ export class BlogsOrmQueryRepository {
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,
-      items: result.map((blog) => modifyBlogIntoViewGeneralModel(blog)),
+      items: result.map((blog) =>
+        modifyBlogIntoViewGeneralModel(blog, this.configService),
+      ),
     };
   }
 
@@ -158,7 +165,9 @@ export class BlogsOrmQueryRepository {
       .andWhere('b."isBanned" = false')
       .getRawOne();
 
-    return result ? modifyBlogIntoViewGeneralModel(result) : null;
+    return result
+      ? modifyBlogIntoViewGeneralModel(result, this.configService)
+      : null;
   }
 
   async getBlogAllInfoById(

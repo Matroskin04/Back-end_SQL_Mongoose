@@ -29,6 +29,8 @@ export const getConfiguration = () => ({
   },
   S3: {
     BUCKET_NAME: process.env.BUCKET_NAME || 'content-platform',
+    URL:
+      process.env.S3_URL || 'https://content-platform.storage.yandexcloud.net/',
   },
   photoInfo: {
     BLOG_ICON_WIDTH: Number(process.env.BLOG_ICON_WIDTH) || 156,
