@@ -35,10 +35,10 @@ export function modifyBlogIntoViewGeneralModel(blog) {
           }
         : null,
       main:
-        blog.icons?.forEach(
-          (icon) =>
-            (icon.url += 'https://content-platform.storage.yandexcloud.net/'),
-        ) ?? [],
+        blog.icons?.map((icon) => ({
+          ...icon,
+          url: 'https://content-platform.storage.yandexcloud.net/' + icon.url,
+        })) ?? [],
     },
   };
 }
