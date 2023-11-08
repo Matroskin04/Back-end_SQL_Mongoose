@@ -1,5 +1,5 @@
 export type PhotosOfBlogViewType = {
-  wallpaper: PhotoInfoViewType | { [K in any]: never };
+  wallpaper: PhotoInfoViewType | null;
   main: PhotoInfoViewType[];
 };
 

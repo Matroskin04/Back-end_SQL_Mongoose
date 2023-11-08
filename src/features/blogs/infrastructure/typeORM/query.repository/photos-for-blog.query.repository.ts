@@ -15,10 +15,12 @@ export class PhotosForBlogQueryRepository {
     protected wallpaperOfBlogRepo: Repository<WallpaperOfBlog>,
   ) {}
 
-  async getWallpaperOfBlog(blogId: string): Promise<BlogPhotoInfoType | null> {
+  async getWallpaperOfBlogView(
+    blogId: string,
+  ): Promise<PhotoInfoViewType | null> {
     const query = this.wallpaperOfBlogRepo
       .createQueryBuilder()
-      .select(['url', 'width', 'height', '"fileSize"', '"blogId"'])
+      .select(['url', 'width', 'height', '"fileSize"'])
       .where('"blogId" = :blogId', { blogId });
 
     const result = await query.getRawOne();

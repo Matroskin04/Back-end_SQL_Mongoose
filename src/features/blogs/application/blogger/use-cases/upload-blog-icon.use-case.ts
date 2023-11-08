@@ -42,7 +42,7 @@ export class UploadBlogIconUseCase
       blogId,
     );
     const wallpaper =
-      await this.photosForBlogQueryRepository.getWallpaperOfBlog(blogId);
+      await this.photosForBlogQueryRepository.getWallpaperOfBlogView(blogId);
 
     return modifyBlogPhotoIntoViewModel(wallpaper, icons);
   }

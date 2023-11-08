@@ -115,12 +115,12 @@ export class BlogsOrmQueryRepository {
     const result = await this.blogsRepository
       .createQueryBuilder('b')
       .select([
-        'b.id',
-        'b.name',
-        'b.description',
-        'b.websiteUrl',
-        'b.createdAt',
-        'b.isMembership',
+        'b."id"',
+        'b."name"',
+        'b."description"',
+        'b."websiteUrl"',
+        'b."createdAt"',
+        'b."isMembership"',
       ])
       .addSelect((qb) => this.iconsOfBlogBuilder(qb), 'icons')
       .addSelect((qb) => this.wallpaperOfBlogBuilder(qb), 'wallpaper')
@@ -144,17 +144,17 @@ export class BlogsOrmQueryRepository {
     const result = await this.blogsRepository
       .createQueryBuilder('b')
       .select([
-        'b.id',
-        'b.name',
-        'b.description',
-        'b.websiteUrl',
-        'b.createdAt',
-        'b.isMembership',
+        'b."id"',
+        'b."name"',
+        'b."description"',
+        'b."websiteUrl"',
+        'b."createdAt"',
+        'b."isMembership"',
       ])
       .addSelect((qb) => this.iconsOfBlogBuilder(qb), 'icons')
       .addSelect((qb) => this.wallpaperOfBlogBuilder(qb), 'wallpaper')
       .where('b.id = :blogId', { blogId })
-      .andWhere('b.isBanned = false')
+      .andWhere('b."isBanned" = false')
       .getRawOne();
 
     return result ? modifyBlogIntoViewGeneralModel(result) : null;
@@ -166,9 +166,9 @@ export class BlogsOrmQueryRepository {
     const result = await this.blogsRepository
       .createQueryBuilder('b')
       .select([
-        'b.id',
-        'b.name',
-        'b.description',
+        'b."id"',
+        'b."name"',
+        'b."description"',
         'b."websiteUrl"',
         'b."createdAt"',
         'b."isMembership"',
@@ -177,7 +177,7 @@ export class BlogsOrmQueryRepository {
       ])
       .where('b.id = :blogId', { blogId })
       .getRawOne();
-
+    console.log(result);
     return result
       ? { ...result, createdAt: result.createdAt.toISOString() }
       : null;

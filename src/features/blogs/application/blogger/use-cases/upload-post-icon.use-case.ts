@@ -47,7 +47,7 @@ export class UploadPostIconUseCase
 
     await this.photosForPostRepository.savePostIconsInfo(iconsInfo);
 
-    const icons = await this.photosForPostQueryRepository.getIconsOfPost(
+    const icons = await this.photosForPostQueryRepository.getMainImgOfPost(
       postId,
     );
 

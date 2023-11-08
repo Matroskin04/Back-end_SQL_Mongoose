@@ -183,13 +183,13 @@ export class PostsOrmQueryRepository {
     const result = await this.postsRepository
       .createQueryBuilder('p')
       .select([
-        'p.id',
-        'p.blogId',
-        'p.userId',
-        'p.title',
-        'p.shortDescription',
-        'p.content',
-        'p.createdAt',
+        'p."id"',
+        'p."blogId"',
+        'p."userId"',
+        'p."title"',
+        'p."shortDescription"',
+        'p."content"',
+        'p."createdAt"',
       ])
       .where('p.id = :postId', { postId })
       .getOne();

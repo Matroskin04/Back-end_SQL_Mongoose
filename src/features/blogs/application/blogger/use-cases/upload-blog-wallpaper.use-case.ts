@@ -53,7 +53,7 @@ export class UploadBlogWallpaperUseCase
 
   private async deleteLastWallpaperFromS3(blogId: string): Promise<void> {
     const currentWallpaper =
-      await this.photosForBlogQueryRepository.getWallpaperOfBlog(blogId);
+      await this.photosForBlogQueryRepository.getWallpaperOfBlogView(blogId);
     if (currentWallpaper) {
       await this.s3StorageAdapter.deleteWallpaperForBlog(
         blogId,

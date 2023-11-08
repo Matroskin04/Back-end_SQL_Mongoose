@@ -11,7 +11,7 @@ export class PhotosForPostQueryRepository {
     protected iconOfPostRepo: Repository<IconOfPost>,
   ) {}
 
-  async getIconsOfPost(
+  async getMainImgOfPost(
     postId: string,
     iconOfPostRepo: Repository<IconOfPost> = this.iconOfPostRepo,
   ): Promise<PhotoInfoViewType[] | []> {

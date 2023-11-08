@@ -1,11 +1,10 @@
-import { BlogPhotoInfoType } from '../../../../features/blogs/infrastructure/typeORM/repository/photos-for-blog.types.repository';
 import {
   PhotoInfoViewType,
   PhotosOfBlogViewType,
 } from '../../../../features/blogs/infrastructure/typeORM/query.repository/types/photos-for-post.types.query.repository';
 
 export function modifyBlogPhotoIntoViewModel(
-  wallpaper: BlogPhotoInfoType | null,
+  wallpaper: PhotoInfoViewType | null,
   icons: PhotoInfoViewType[],
 ): PhotosOfBlogViewType {
   return {
@@ -15,7 +14,7 @@ export function modifyBlogPhotoIntoViewModel(
           url:
             'https://content-platform.storage.yandexcloud.net/' + wallpaper.url,
         }
-      : {},
+      : null,
     main: icons.map((icon) => ({
       ...icon,
       url: 'https://content-platform.storage.yandexcloud.net/' + icon.url,
