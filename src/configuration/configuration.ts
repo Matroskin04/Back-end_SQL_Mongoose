@@ -35,6 +35,12 @@ export const getConfiguration = () => ({
     BLOG_ICON_HEIGHT: Number(process.env.BLOG_ICON_HEIGHT) || 156,
     BLOG_WALLPAPER_WIDTH: Number(process.env.BLOG_WALLPAPER_WIDTH) || 1028,
     BLOG_WALLPAPER_HEIGHT: Number(process.env.BLOG_WALLPAPER_HEIGHT) || 312,
+    POST_ICON_WIDTH: Number(process.env.POST_ICON_WIDTH) || 940,
+    POST_ICON_HEIGHT: Number(process.env.POST_ICON_HEIGHT) || 432,
+    POST_ICON_MIDDLE_WIDTH: Number(process.env.POST_ICON_WIDTH) || 300,
+    POST_ICON_MIDDLE_HEIGHT: Number(process.env.POST_ICON_HEIGHT) || 180,
+    POST_ICON_SMALL_WIDTH: Number(process.env.POST_ICON_WIDTH) || 149,
+    POST_ICON_SMALL_HEIGHT: Number(process.env.POST_ICON_HEIGHT) || 96,
   },
 });
 export type ConfigType = ReturnType<typeof getConfiguration>;
