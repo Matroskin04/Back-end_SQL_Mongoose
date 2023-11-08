@@ -3,6 +3,7 @@ import { BodyBlogType } from '../../../infrastructure/SQL/repository/blogs-blogg
 import { CreateBlogDTO } from '../dto/create-blog.dto';
 import { UsersOrmQueryRepository } from '../../../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 import { BlogsOrmRepository } from '../../../infrastructure/typeORM/repository/blogs-orm.repository';
+import { modifyBlogIntoViewGeneralModel } from '../../../../../infrastructure/utils/functions/features/blog.functions.helpers';
 
 export class CreateBlogCommand {
   constructor(public blogDTO: BodyBlogType, public userId: string | null) {}
@@ -24,6 +25,6 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
     }
 
     const result = await this.blogsOrmRepository.createBlog(blogDTO, userId);
-    return result;
+    return modifyBlogIntoViewGeneralModel(result);
   }
 }

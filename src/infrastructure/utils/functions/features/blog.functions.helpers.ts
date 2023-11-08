@@ -1,9 +1,3 @@
-import { BlogPhotoInfoType } from '../../../../features/blogs/infrastructure/typeORM/repository/photos-for-blog.types.repository';
-import {
-  PhotoInfoViewType,
-  PhotosOfBlogViewType,
-} from '../../../../features/blogs/infrastructure/typeORM/query.repository/types/photos-for-post.types.query.repository';
-
 export function modifyBlogIntoViewSAModel(blog) {
   return {
     id: blog.id,
@@ -32,8 +26,8 @@ export function modifyBlogIntoViewGeneralModel(blog) {
     createdAt: blog.createdAt.toISOString(),
     isMembership: blog.isMembership,
     images: {
-      wallpaper: blog.wallpaper,
-      main: blog.icons,
+      wallpaper: blog.wallpaper ?? null,
+      main: blog.icons ?? [],
     },
   };
 }
