@@ -25,6 +25,9 @@ export function modifyPostIntoInitialViewModel(
       myStatus,
       newestLikes,
     },
+    images: {
+      main: [],
+    },
   };
 }
 
@@ -43,6 +46,9 @@ export function modifyPostIntoViewModel(postInfo: PostRawType): PostViewType {
       myStatus:
         (AllLikeStatusEnum[postInfo.myStatus] as AllLikeStatusType) ?? 'None',
       newestLikes: postInfo.newestLikes ?? [],
+    },
+    images: {
+      main: postInfo.mainImages,
     },
   };
 }
@@ -63,5 +69,11 @@ type PostRawType = {
     login: string;
     userId: string;
     addedAt: string;
+  }>;
+  mainImages: Array<{
+    url: 'string';
+    width: number;
+    height: number;
+    fileSize: number;
   }>;
 };
