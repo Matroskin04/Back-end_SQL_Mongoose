@@ -131,6 +131,10 @@ import { PhotosForBlogRepository } from './features/blogs/infrastructure/typeORM
 import { WallpaperOfBlog } from './features/blogs/domain/wallpaper-of-blog.entity';
 import { UploadBlogWallpaperUseCase } from './features/blogs/application/blogger/use-cases/upload-blog-wallpaper.use-case';
 import { PhotosForBlogQueryRepository } from './features/blogs/infrastructure/typeORM/query.repository/photos-for-blog.query.repository';
+import { UploadPostIconUseCase } from './features/blogs/application/blogger/use-cases/upload-post-icon.use-case';
+import { PhotosForPostQueryRepository } from './features/posts/infrastructure/typeORM/query.repository/photos-for-post.query.repository';
+import { PhotosForPostRepository } from './features/posts/infrastructure/typeORM/repository/photos-for-post.repository';
+import { IconOfPost } from './features/posts/domain/icon-of-post.entity';
 
 const queryRepositories = [
   // SQL
@@ -152,6 +156,7 @@ const queryRepositories = [
   QuizOrmQueryRepository,
   AnswersQuizOrmQueryRepository,
   PhotosForBlogQueryRepository,
+  PhotosForPostQueryRepository,
 ];
 const repositories = [
   //SQL
@@ -184,6 +189,8 @@ const repositories = [
   QuestionQuizRelationOrmRepository,
   QuizInfoAboutUserOrmRepository,
   AnswersQuizOrmRepository,
+  PhotosForPostRepository,
+  PhotosForBlogRepository,
 ];
 
 const handlers = [
@@ -203,6 +210,7 @@ const handlers = [
   UpdateBanInfoOfBlogUseCase,
   UploadBlogIconUseCase,
   UploadBlogWallpaperUseCase,
+  UploadPostIconUseCase,
 
   //posts
   CreatePostUseCase,
@@ -262,6 +270,7 @@ const handlers = [
       QuizInfoAboutUser,
       IconOfBlog,
       WallpaperOfBlog,
+      IconOfPost,
     ]),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],

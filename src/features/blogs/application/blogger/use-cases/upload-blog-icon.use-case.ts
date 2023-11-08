@@ -3,9 +3,8 @@ import { S3StorageAdapter } from '../../../../../infrastructure/adapters/s3-stor
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../../../configuration/configuration';
 import { PhotosForBlogRepository } from '../../../infrastructure/typeORM/repository/photos-for-blog.repository';
-import { PhotoInfo } from '../../../../general-entities/photo-info.entity';
 import { IconOfBlog } from '../../../domain/icon-of-blog.entity';
-import { PhotosOfBlogViewType } from '../../../infrastructure/typeORM/query.repository/types/photos-for-blog.types.query.repository';
+import { PhotosOfBlogViewType } from '../../../infrastructure/typeORM/query.repository/types/photos-for-post.types.query.repository';
 import { PhotosForBlogQueryRepository } from '../../../infrastructure/typeORM/query.repository/photos-for-blog.query.repository';
 import { modifyBlogPhotoIntoViewModel } from '../../../../../infrastructure/utils/functions/features/photos.functions.helpers';
 

@@ -1,12 +1,12 @@
 import { BlogPhotoInfoType } from '../../../../features/blogs/infrastructure/typeORM/repository/photos-for-blog.types.repository';
 import {
-  BlogPhotoInfoViewType,
+  PhotoInfoViewType,
   PhotosOfBlogViewType,
-} from '../../../../features/blogs/infrastructure/typeORM/query.repository/types/photos-for-blog.types.query.repository';
+} from '../../../../features/blogs/infrastructure/typeORM/query.repository/types/photos-for-post.types.query.repository';
 
 export function modifyBlogPhotoIntoViewModel(
   wallpaper: BlogPhotoInfoType | null,
-  icons: BlogPhotoInfoViewType[],
+  icons: PhotoInfoViewType[],
 ): PhotosOfBlogViewType {
   return {
     wallpaper: wallpaper

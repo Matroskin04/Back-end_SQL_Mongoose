@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IconOfBlog } from '../../../domain/icon-of-blog.entity';
 import { Repository } from 'typeorm';
 import { WallpaperOfBlog } from '../../../domain/wallpaper-of-blog.entity';
-import { BlogPhotoInfoViewType } from './types/photos-for-blog.types.query.repository';
+import { PhotoInfoViewType } from './types/photos-for-post.types.query.repository';
 import { BlogPhotoInfoType } from '../repository/photos-for-blog.types.repository';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class PhotosForBlogQueryRepository {
     return result ?? null;
   }
 
-  async getIconsOfBlog(blogId: string): Promise<BlogPhotoInfoViewType[] | []> {
+  async getIconsOfBlog(blogId: string): Promise<PhotoInfoViewType[] | []> {
     const query = this.iconOfBlogRepo
       .createQueryBuilder()
       .select(['url', 'width', 'height', '"fileSize"'])

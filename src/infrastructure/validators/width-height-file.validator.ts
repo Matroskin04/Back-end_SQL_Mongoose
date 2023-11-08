@@ -11,11 +11,8 @@ export class WidthHeightFileValidator extends FileValidator<{
   }
 
   async isValid(file: Express.Multer.File): Promise<boolean> {
-    const image = await sharp(file.buffer)
-      .metadata()
-      .then(function (metadata) {
-        return { width: metadata.width, height: metadata.height };
-      });
+    const image = await sharp(file.buffer).metadata();
+
     return !(
       image.width !== this.validationOptions.width ||
       image.height !== this.validationOptions.height

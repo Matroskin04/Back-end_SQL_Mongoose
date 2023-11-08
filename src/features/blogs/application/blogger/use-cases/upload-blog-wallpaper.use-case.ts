@@ -7,7 +7,7 @@ import { PhotoInfo } from '../../../../general-entities/photo-info.entity';
 import { IconOfBlog } from '../../../domain/icon-of-blog.entity';
 import { WallpaperOfBlog } from '../../../domain/wallpaper-of-blog.entity';
 import { PhotosForBlogQueryRepository } from '../../../infrastructure/typeORM/query.repository/photos-for-blog.query.repository';
-import { PhotosOfBlogViewType } from '../../../infrastructure/typeORM/query.repository/types/photos-for-blog.types.query.repository';
+import { PhotosOfBlogViewType } from '../../../infrastructure/typeORM/query.repository/types/photos-for-post.types.query.repository';
 import { modifyBlogPhotoIntoViewModel } from '../../../../../infrastructure/utils/functions/features/photos.functions.helpers';
 
 export class UploadBlogWallpaperCommand {
