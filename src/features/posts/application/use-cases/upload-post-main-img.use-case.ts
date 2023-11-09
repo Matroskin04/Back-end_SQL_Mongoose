@@ -1,18 +1,19 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { S3StorageAdapter } from '../../../../../infrastructure/adapters/s3-storage.adapter';
+import { S3StorageAdapter } from '../../../../infrastructure/adapters/s3-storage.adapter';
 import { ConfigService } from '@nestjs/config';
-import { ConfigType } from '../../../../../configuration/configuration';
-import { PhotoInfoViewType } from '../../../infrastructure/typeORM/query.repository/types/photos-for-post.types.query.repository';
-import { PhotosForPostQueryRepository } from '../../../../posts/infrastructure/typeORM/query.repository/photos-for-post.query.repository';
-import { PhotosForPostRepository } from '../../../../posts/infrastructure/typeORM/repository/photos-for-post.repository';
-import { IconOfPost } from '../../../../posts/domain/icon-of-post.entity';
-import { BlogsQueryRepository } from '../../../infrastructure/SQL/query.repository/blogs.query.repository';
+import { ConfigType } from '../../../../configuration/configuration';
+import { PhotoInfoViewType } from '../../../blogs/infrastructure/typeORM/query.repository/types/photos-for-post.types.query.repository';
+import { PhotosForPostQueryRepository } from '../../infrastructure/typeORM/query.repository/photos-for-post.query.repository';
+import { PhotosForPostRepository } from '../../infrastructure/typeORM/repository/photos-for-post.repository';
+import { IconOfPost } from '../../domain/main-img-of-post.entity';
+import { BlogsQueryRepository } from '../../../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 import { NotFoundException } from '@nestjs/common';
 import * as Buffer from 'buffer';
 import sharp from 'sharp';
-import { PostPhotoInfoType } from '../../../../posts/infrastructure/typeORM/repository/photos-for-post.types.repository';
+import { PostPhotoInfoType } from '../../infrastructure/typeORM/repository/photos-for-post.types.repository';
+import { modifyPostMainIntoViewModel } from '../../../../infrastructure/utils/functions/features/photos.functions.helpers';
 
-export class UploadPostIconCommand {
+export class UploadPostMainImgCommand {
   constructor(
     public photo: Express.Multer.File,
     public blogId: string,
@@ -20,9 +21,9 @@ export class UploadPostIconCommand {
   ) {}
 }
 
-@CommandHandler(UploadPostIconCommand)
-export class UploadPostIconUseCase
-  implements ICommandHandler<UploadPostIconCommand>
+@CommandHandler(UploadPostMainImgCommand)
+export class UploadPostMainImgUseCase
+  implements ICommandHandler<UploadPostMainImgCommand>
 {
   constructor(
     protected s3StorageAdapter: S3StorageAdapter,
@@ -32,7 +33,9 @@ export class UploadPostIconUseCase
     protected configService: ConfigService<ConfigType>,
   ) {}
   //todo transaction
-  async execute(command: UploadPostIconCommand): Promise<PhotoInfoViewType[]> {
+  async execute(
+    command: UploadPostMainImgCommand,
+  ): Promise<PhotoInfoViewType[]> {
     const { photo, blogId, postId } = command;
 
     await this.checkExistingBlog(blogId);
@@ -51,10 +54,7 @@ export class UploadPostIconUseCase
       postId,
     );
 
-    return icons.map((icon) => ({
-      ...icon,
-      url: this.configService.get('S3', { infer: true })!.URL + icon.url,
-    }));
+    return modifyPostMainIntoViewModel(icons, this.configService);
   }
 
   private async checkExistingBlog(blogId: string): Promise<void> {

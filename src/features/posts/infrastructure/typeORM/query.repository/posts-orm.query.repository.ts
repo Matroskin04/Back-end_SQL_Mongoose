@@ -17,7 +17,7 @@ import { PostsLikesInfo } from '../../../domain/posts-likes-info.entity';
 import { UsersBanInfo } from '../../../../users/domain/users-ban-info.entity';
 import { Blogs } from '../../../../blogs/domain/blogs.entity';
 import { IconOfBlog } from '../../../../blogs/domain/icon-of-blog.entity';
-import { IconOfPost } from '../../../domain/icon-of-post.entity';
+import { IconOfPost } from '../../../domain/main-img-of-post.entity';
 
 @Injectable()
 export class PostsOrmQueryRepository {
@@ -175,7 +175,7 @@ export class PostsOrmQueryRepository {
       .andWhere('p.id = :postId', { postId });
 
     const postInfo = await result.getRawOne();
-
+    console.log(postInfo);
     return postInfo ? modifyPostIntoViewModel(postInfo) : null;
   }
 

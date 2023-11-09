@@ -35,7 +35,7 @@ export class PhotosForBlogQueryRepository {
       .where('"blogId" = :blogId', { blogId });
 
     const result = await query.getRawMany();
-    console.log(query.getQuery());
+
     return result;
   }
 }

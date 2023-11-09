@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { IconOfPost } from '../../../domain/icon-of-post.entity';
+import { IconOfPost } from '../../../domain/main-img-of-post.entity';
 import { PhotoInfoViewType } from '../../../../blogs/infrastructure/typeORM/query.repository/types/photos-for-post.types.query.repository';
 
 @Injectable()

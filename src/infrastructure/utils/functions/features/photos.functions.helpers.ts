@@ -2,6 +2,8 @@ import {
   PhotoInfoViewType,
   PhotosOfBlogViewType,
 } from '../../../../features/blogs/infrastructure/typeORM/query.repository/types/photos-for-post.types.query.repository';
+import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '../../../../configuration/configuration';
 
 export function modifyBlogPhotoIntoViewModel(
   wallpaper: PhotoInfoViewType | null,
@@ -20,6 +22,18 @@ export function modifyBlogPhotoIntoViewModel(
     main: icons.map((icon) => ({
       ...icon,
       url: 'https://content-platform.storage.yandexcloud.net/' + icon.url,
+    })),
+  };
+}
+
+export function modifyPostMainIntoViewModel(
+  icons: PhotoInfoViewType[],
+  configService: ConfigService<ConfigType>,
+): any {
+  return {
+    main: icons.map((icon) => ({
+      ...icon,
+      url: configService.get('S3', { infer: true })!.URL + icon.url,
     })),
   };
 }
