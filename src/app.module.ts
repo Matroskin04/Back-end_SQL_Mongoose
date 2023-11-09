@@ -131,10 +131,11 @@ import { PhotosForBlogRepository } from './features/blogs/infrastructure/typeORM
 import { WallpaperOfBlog } from './features/blogs/domain/wallpaper-of-blog.entity';
 import { UploadBlogWallpaperUseCase } from './features/blogs/application/blogger/use-cases/upload-blog-wallpaper.use-case';
 import { PhotosForBlogQueryRepository } from './features/blogs/infrastructure/typeORM/query.repository/photos-for-blog.query.repository';
-import { UploadPostIconUseCase } from './features/blogs/application/blogger/use-cases/upload-post-icon.use-case';
+import { UploadPostMainImgUseCase } from './features/posts/application/use-cases/upload-post-main-img.use-case';
 import { PhotosForPostQueryRepository } from './features/posts/infrastructure/typeORM/query.repository/photos-for-post.query.repository';
 import { PhotosForPostRepository } from './features/posts/infrastructure/typeORM/repository/photos-for-post.repository';
-import { IconOfPost } from './features/posts/domain/icon-of-post.entity';
+import { IconOfPost } from './features/posts/domain/main-img-of-post.entity';
+import { IsIdUUIDValidationPipe } from './infrastructure/pipes/is-id-uuid-validation.pipe';
 
 const queryRepositories = [
   // SQL
@@ -210,7 +211,7 @@ const handlers = [
   UpdateBanInfoOfBlogUseCase,
   UploadBlogIconUseCase,
   UploadBlogWallpaperUseCase,
-  UploadPostIconUseCase,
+  UploadPostMainImgUseCase,
 
   //posts
   CreatePostUseCase,
