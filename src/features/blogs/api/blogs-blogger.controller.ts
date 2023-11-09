@@ -26,6 +26,7 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  UsePipes,
 } from '@nestjs/common';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
@@ -52,8 +53,9 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../configuration/configuration';
 import { BlogPhotosOutputModel } from './models/output/blog-photos.output.model';
 import { UploadBlogWallpaperCommand } from '../application/blogger/use-cases/upload-blog-wallpaper.use-case';
-import { UploadPostIconCommand } from '../application/blogger/use-cases/upload-post-icon.use-case';
+import { UploadPostMainImgCommand } from '../../posts/application/use-cases/upload-post-main-img.use-case';
 import { MaxFileSizeValidator } from '../../../infrastructure/validators/max-file-size.validator';
+import { IsIdUUIDValidationPipe } from '../../../infrastructure/pipes/is-id-uuid-validation.pipe';
 
 @Controller('/api/blogger/blogs')
 export class BlogsBloggerController {
@@ -153,7 +155,7 @@ export class BlogsBloggerController {
   @Post(':blogId/images/main')
   @UseInterceptors(FileInterceptor('file'))
   async uploadBlogIcon(
-    @Param('blogId') blogId: string,
+    @Param('blogId', IsIdUUIDValidationPipe) blogId: string,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -175,7 +177,7 @@ export class BlogsBloggerController {
   @Post(':blogId/images/wallpaper')
   @UseInterceptors(FileInterceptor('file'))
   async uploadBlogWallpaper(
-    @Param('blogId') blogId: string,
+    @Param('blogId', IsIdUUIDValidationPipe) blogId: string,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -197,8 +199,8 @@ export class BlogsBloggerController {
   @Post(':blogId/posts/:postId/images/main')
   @UseInterceptors(FileInterceptor('file'))
   async uploadPostIcon(
-    @Param('blogId') blogId: string,
-    @Param('postId') postId: string,
+    @Param('blogId', IsIdUUIDValidationPipe) blogId: string,
+    @Param('postId', IsIdUUIDValidationPipe) postId: string,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -211,7 +213,7 @@ export class BlogsBloggerController {
     photo: Express.Multer.File,
   ): Promise<BlogPhotosOutputModel> {
     const result = await this.commandBus.execute(
-      new UploadPostIconCommand(photo, blogId, postId),
+      new UploadPostMainImgCommand(photo, blogId, postId),
     );
     return result;
   }
@@ -220,8 +222,8 @@ export class BlogsBloggerController {
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':blogId/posts/:postId')
   async updatePostOfBlog(
-    @Param('blogId') blogId: string,
-    @Param('postId') postId: string,
+    @Param('blogId', IsIdUUIDValidationPipe) blogId: string,
+    @Param('postId', IsIdUUIDValidationPipe) postId: string,
     @Body() inputPostModel: UpdatePostByBlogIdInputModel,
   ): Promise<void> {
     const result = await this.commandBus.execute(
@@ -235,7 +237,9 @@ export class BlogsBloggerController {
   @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':blogId')
-  async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
+  async deleteBlog(
+    @Param('blogId', IsIdUUIDValidationPipe) blogId: string,
+  ): Promise<void> {
     const result = await this.commandBus.execute(new DeleteBlogCommand(blogId));
     if (!result) throw new NotFoundException();
     return;

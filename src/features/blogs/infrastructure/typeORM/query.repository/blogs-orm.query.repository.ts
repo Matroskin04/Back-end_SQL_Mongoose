@@ -187,7 +187,7 @@ export class BlogsOrmQueryRepository {
       ])
       .where('b.id = :blogId', { blogId })
       .getRawOne();
-    console.log(result);
+
     return result
       ? { ...result, createdAt: result.createdAt.toISOString() }
       : null;
