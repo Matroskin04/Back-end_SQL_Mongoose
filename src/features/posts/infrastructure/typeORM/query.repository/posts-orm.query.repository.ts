@@ -18,6 +18,7 @@ import { UsersBanInfo } from '../../../../users/domain/users-ban-info.entity';
 import { Blogs } from '../../../../blogs/domain/blogs.entity';
 import { IconOfBlog } from '../../../../blogs/domain/icon-of-blog.entity';
 import { IconOfPost } from '../../../domain/main-img-of-post.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PostsOrmQueryRepository {
@@ -28,6 +29,7 @@ export class PostsOrmQueryRepository {
     protected postsLikesInfoRepository: Repository<PostsLikesInfo>,
     @InjectDataSource() protected dataSource: DataSource,
     protected blogsQueryRepository: BlogsQueryRepository,
+    protected configService: ConfigService,
   ) {}
 
   //SQL
@@ -80,7 +82,9 @@ export class PostsOrmQueryRepository {
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +postsInfo[0]?.count || 0,
-      items: postsInfo.map((post) => modifyPostIntoViewModel(post)),
+      items: postsInfo.map((post) =>
+        modifyPostIntoViewModel(post, this.configService),
+      ),
     };
   }
 
@@ -127,7 +131,9 @@ export class PostsOrmQueryRepository {
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +postsInfo[0]?.count || 0,
-      items: postsInfo.map((post) => modifyPostIntoViewModel(post)),
+      items: postsInfo.map((post) =>
+        modifyPostIntoViewModel(post, this.configService),
+      ),
     };
   }
 
@@ -175,8 +181,10 @@ export class PostsOrmQueryRepository {
       .andWhere('p.id = :postId', { postId });
 
     const postInfo = await result.getRawOne();
-    console.log(postInfo);
-    return postInfo ? modifyPostIntoViewModel(postInfo) : null;
+    console.log('Post by id:', postInfo);
+    return postInfo
+      ? modifyPostIntoViewModel(postInfo, this.configService)
+      : null;
   }
 
   async getPostDBInfoById(postId: string): Promise<PostDBType | null> {
