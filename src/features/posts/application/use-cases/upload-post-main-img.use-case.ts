@@ -12,6 +12,9 @@ import * as Buffer from 'buffer';
 import sharp from 'sharp';
 import { PostPhotoInfoType } from '../../infrastructure/typeORM/repository/photos-for-post.types.repository';
 import { modifyPostMainIntoViewModel } from '../../../../infrastructure/utils/functions/features/photos.functions.helpers';
+import { PostsQueryRepository } from '../../infrastructure/SQL/query.repository/posts.query.repository';
+import { BlogsOrmQueryRepository } from '../../../blogs/infrastructure/typeORM/query.repository/blogs-orm.query.repository';
+import { PostsOrmQueryRepository } from '../../infrastructure/typeORM/query.repository/posts-orm.query.repository';
 
 export class UploadPostMainImgCommand {
   constructor(
@@ -29,7 +32,8 @@ export class UploadPostMainImgUseCase
     protected s3StorageAdapter: S3StorageAdapter,
     protected photosForPostRepository: PhotosForPostRepository,
     protected photosForPostQueryRepository: PhotosForPostQueryRepository,
-    protected blogsQueryRepository: BlogsQueryRepository,
+    protected blogsQueryRepository: BlogsOrmQueryRepository,
+    protected postsQueryRepository: PostsOrmQueryRepository,
     protected configService: ConfigService<ConfigType>,
   ) {}
   //todo transaction
@@ -38,7 +42,7 @@ export class UploadPostMainImgUseCase
   ): Promise<PhotoInfoViewType[]> {
     const { photo, blogId, postId } = command;
 
-    await this.checkExistingBlog(blogId);
+    await this.checkExistencePostOfBlog(postId, blogId);
 
     const bufferMiddle = await this.resizePhotoMiddle(photo.buffer);
     const bufferSmall = await this.resizePhotoSmall(photo.buffer);
@@ -53,14 +57,20 @@ export class UploadPostMainImgUseCase
     const icons = await this.photosForPostQueryRepository.getMainImgOfPost(
       postId,
     );
-
+    console.log('icons of post', icons, postId);
     return modifyPostMainIntoViewModel(icons, this.configService);
   }
 
-  private async checkExistingBlog(blogId: string): Promise<void> {
-    const doesBlogExist = await this.blogsQueryRepository.doesBlogExist(blogId);
-    if (!doesBlogExist) {
-      throw new NotFoundException('Blog is not found');
+  private async checkExistencePostOfBlog(
+    postId: string,
+    blogId: string,
+  ): Promise<void> {
+    const doesPostExist = await this.postsQueryRepository.doesPostExistAtBlog(
+      postId,
+      blogId,
+    );
+    if (!doesPostExist) {
+      throw new NotFoundException('Post is not found');
     }
     return;
   }

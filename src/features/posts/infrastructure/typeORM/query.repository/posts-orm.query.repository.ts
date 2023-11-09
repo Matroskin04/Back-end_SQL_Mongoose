@@ -144,9 +144,22 @@ export class PostsOrmQueryRepository {
       .leftJoin('p.blog', 'b')
       .where('p.id = :postId', { postId })
       .andWhere('b.isBanned = false')
-      .getCount();
+      .getExists();
 
-    return result === 1;
+    return result;
+  }
+
+  async doesPostExistAtBlog(postId: string, blogId: string): Promise<boolean> {
+    const result = await this.postsRepository
+      .createQueryBuilder('p')
+      .select()
+      .leftJoin('p.blog', 'b')
+      .where('p.id = :postId', { postId })
+      .andWhere('b.id = :blogId', { blogId })
+      .andWhere('b.isBanned = false')
+      .getExists();
+
+    return result;
   }
 
   async getPostByIdView(
