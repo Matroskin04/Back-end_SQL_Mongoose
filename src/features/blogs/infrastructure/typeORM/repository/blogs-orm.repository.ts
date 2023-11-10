@@ -84,14 +84,6 @@ export class BlogsOrmRepository {
     return result.affected === 1;
   }
 
-  async subscribeToBlog(blogId: string, userId: string): Promise<void> {
-    const result = await this.subscribersOfBlogRepository.insert({
-      blogId,
-      userId,
-    });
-    return;
-  }
-
   async deleteSingleBlog(blogId: string): Promise<boolean> {
     const result = await this.blogsRepository
       .createQueryBuilder()

@@ -10,7 +10,7 @@ import { PhotoInfo } from '../../general-entities/photo-info.entity';
 import { Blogs } from '../../blogs/domain/blogs.entity';
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../configuration/configuration';
-import { BlogPhotoInfoType } from '../../blogs/infrastructure/typeORM/repository/photos-for-blog.types.repository';
+import { BlogPhotoInfoType } from '../../blogs/infrastructure/typeORM/subrepositories/photos-for-blog.types.repository';
 import { Posts } from './posts.entity';
 import { PostPhotoInfoType } from '../infrastructure/typeORM/repository/photos-for-post.types.repository';
 

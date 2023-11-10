@@ -127,7 +127,7 @@ import { UploadBlogIconUseCase } from './features/blogs/application/blogger/use-
 import { S3StorageAdapter } from './infrastructure/adapters/s3-storage.adapter';
 import { ConfigType } from './configuration/configuration';
 import { IconOfBlog } from './features/blogs/domain/icon-of-blog.entity';
-import { PhotosForBlogRepository } from './features/blogs/infrastructure/typeORM/repository/photos-for-blog.repository';
+import { PhotosForBlogRepository } from './features/blogs/infrastructure/typeORM/subrepositories/photos-for-blog.repository';
 import { WallpaperOfBlog } from './features/blogs/domain/wallpaper-of-blog.entity';
 import { UploadBlogWallpaperUseCase } from './features/blogs/application/blogger/use-cases/upload-blog-wallpaper.use-case';
 import { PhotosForBlogQueryRepository } from './features/blogs/infrastructure/typeORM/query.repository/photos-for-blog.query.repository';
@@ -135,9 +135,9 @@ import { UploadPostMainImgUseCase } from './features/posts/application/use-cases
 import { PhotosForPostQueryRepository } from './features/posts/infrastructure/typeORM/query.repository/photos-for-post.query.repository';
 import { PhotosForPostRepository } from './features/posts/infrastructure/typeORM/repository/photos-for-post.repository';
 import { IconOfPost } from './features/posts/domain/main-img-of-post.entity';
-import { IsIdUUIDValidationPipe } from './infrastructure/pipes/is-id-uuid-validation.pipe';
 import { SubscribeToBlogUseCase } from './features/blogs/application/blogger/use-cases/subsribe-to-blog.use-case';
 import { SubscribersOfBlog } from './features/blogs/domain/subscribers-of-blog.entity';
+import { SubscriptionsBlogOrmRepository } from './features/blogs/infrastructure/typeORM/subrepositories/subscription-blog-orm.repository';
 
 const queryRepositories = [
   // SQL
@@ -194,6 +194,7 @@ const repositories = [
   AnswersQuizOrmRepository,
   PhotosForPostRepository,
   PhotosForBlogRepository,
+  SubscriptionsBlogOrmRepository,
 ];
 
 const handlers = [

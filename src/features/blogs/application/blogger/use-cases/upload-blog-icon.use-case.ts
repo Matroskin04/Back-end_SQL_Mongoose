@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { S3StorageAdapter } from '../../../../../infrastructure/adapters/s3-storage.adapter';
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../../../configuration/configuration';
-import { PhotosForBlogRepository } from '../../../infrastructure/typeORM/repository/photos-for-blog.repository';
+import { PhotosForBlogRepository } from '../../../infrastructure/typeORM/subrepositories/photos-for-blog.repository';
 import { IconOfBlog } from '../../../domain/icon-of-blog.entity';
 import { PhotosOfBlogViewType } from '../../../infrastructure/typeORM/query.repository/types/photos-for-post.types.query.repository';
 import { PhotosForBlogQueryRepository } from '../../../infrastructure/typeORM/query.repository/photos-for-blog.query.repository';

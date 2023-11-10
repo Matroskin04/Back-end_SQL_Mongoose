@@ -4,7 +4,7 @@ import { IconOfBlog } from '../../../domain/icon-of-blog.entity';
 import { Repository } from 'typeorm';
 import { WallpaperOfBlog } from '../../../domain/wallpaper-of-blog.entity';
 import { PhotoInfoViewType } from './types/photos-for-post.types.query.repository';
-import { BlogPhotoInfoType } from '../repository/photos-for-blog.types.repository';
+import { BlogPhotoInfoType } from '../subrepositories/photos-for-blog.types.repository';
 
 @Injectable()
 export class PhotosForBlogQueryRepository {

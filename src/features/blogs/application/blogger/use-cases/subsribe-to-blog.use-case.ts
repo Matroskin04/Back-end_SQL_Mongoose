@@ -7,6 +7,7 @@ import { modifyBlogIntoViewGeneralModel } from '../../../../../infrastructure/ut
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../../../configuration/configuration';
 import { BlogsOrmQueryRepository } from '../../../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
+import { SubscriptionsBlogOrmRepository } from '../../../infrastructure/typeORM/subrepositories/subscription-blog-orm.repository';
 
 export class SubscribeToBlogCommand {
   constructor(public blogId: string, public userId: string) {}
@@ -17,7 +18,7 @@ export class SubscribeToBlogUseCase
   implements ICommandHandler<SubscribeToBlogCommand>
 {
   constructor(
-    protected blogsOrmRepository: BlogsOrmRepository,
+    protected subscriptionsBlogOrmRepository: SubscriptionsBlogOrmRepository,
     protected blogsOrmQueryRepository: BlogsOrmQueryRepository,
   ) {}
 
@@ -27,7 +28,7 @@ export class SubscribeToBlogUseCase
     const doesBlogExist = this.blogsOrmQueryRepository.doesBlogExist(blogId);
     if (!doesBlogExist) return false;
 
-    await this.blogsOrmRepository.subscribeToBlog(blogId, userId);
+    await this.subscriptionsBlogOrmRepository.subscribeToBlog(blogId, userId);
     return true;
   }
 }

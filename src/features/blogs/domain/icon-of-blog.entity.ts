@@ -11,7 +11,7 @@ import { PhotoInfo } from '../../general-entities/photo-info.entity';
 import { Blogs } from './blogs.entity';
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../configuration/configuration';
-import { BlogPhotoInfoType } from '../infrastructure/typeORM/repository/photos-for-blog.types.repository';
+import { BlogPhotoInfoType } from '../infrastructure/typeORM/subrepositories/photos-for-blog.types.repository';
 
 @Entity()
 export class IconOfBlog extends PhotoInfo {
