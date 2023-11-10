@@ -1,6 +1,8 @@
 import {
   Controller,
+  Delete,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   Post,
@@ -21,6 +23,8 @@ import { PostsOrmQueryRepository } from '../../posts/infrastructure/typeORM/quer
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { SubscribeToBlogCommand } from '../application/blogger/use-cases/subsribe-to-blog.use-case';
+import { UnsubscribeFromBlogCommand } from '../application/blogger/use-cases/usubsribe-from-blog.use-case';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 
 @Controller('/api/blogs')
 export class BlogsPublicController {
@@ -62,6 +66,7 @@ export class BlogsPublicController {
   }
 
   @UseGuards(JwtAccessGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Post(':blogId/subscription')
   async subscribeToBlog(
     @Param('blogId') blogId: string,
@@ -71,6 +76,20 @@ export class BlogsPublicController {
       new SubscribeToBlogCommand(blogId, userId),
     );
     if (!result) throw new NotFoundException();
-    return result;
+    return;
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
+  @Delete(':blogId/subscription')
+  async unsubscribeFromBlog(
+    @Param('blogId') blogId: string,
+    @CurrentUserId() userId: string,
+  ): Promise<void> {
+    const result = await this.commandBus.execute(
+      new UnsubscribeFromBlogCommand(blogId, userId),
+    );
+    if (!result) throw new NotFoundException();
+    return;
   }
 }

@@ -18,4 +18,12 @@ export class SubscriptionsBlogOrmRepository {
     });
     return;
   }
+
+  async unsubscribeFromBlog(blogId: string, userId: string): Promise<boolean> {
+    const result = await this.subscribersOfBlogRepository.delete({
+      blogId,
+      userId,
+    });
+    return result.affected === 1;
+  }
 }

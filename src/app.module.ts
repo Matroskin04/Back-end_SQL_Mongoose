@@ -138,6 +138,7 @@ import { IconOfPost } from './features/posts/domain/main-img-of-post.entity';
 import { SubscribeToBlogUseCase } from './features/blogs/application/blogger/use-cases/subsribe-to-blog.use-case';
 import { SubscribersOfBlog } from './features/blogs/domain/subscribers-of-blog.entity';
 import { SubscriptionsBlogOrmRepository } from './features/blogs/infrastructure/typeORM/subrepositories/subscription-blog-orm.repository';
+import { UnsubscribeFromBlogUseCase } from './features/blogs/application/blogger/use-cases/usubsribe-from-blog.use-case';
 
 const queryRepositories = [
   // SQL
@@ -216,7 +217,7 @@ const handlers = [
   UploadBlogWallpaperUseCase,
   UploadPostMainImgUseCase,
   SubscribeToBlogUseCase,
-
+  UnsubscribeFromBlogUseCase,
   //posts
   CreatePostUseCase,
   UpdatePostUseCase,
