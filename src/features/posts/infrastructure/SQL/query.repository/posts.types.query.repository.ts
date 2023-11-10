@@ -2,6 +2,7 @@ import {
   NewestLikesType,
   PostTypeWithId,
 } from '../repository/posts.types.repositories';
+import { PhotoInfoViewType } from '../../../../blogs/infrastructure/typeORM/query.repository/types/photos-for-post.types.query.repository';
 
 export type PostPaginationType = {
   pagesCount: number;
@@ -17,5 +18,8 @@ export type PostViewType = PostTypeWithId & {
     dislikesCount: number;
     myStatus: 'None' | 'Like' | 'Dislike';
     newestLikes: NewestLikesType;
+  };
+  images: {
+    main: PhotoInfoViewType[];
   };
 };

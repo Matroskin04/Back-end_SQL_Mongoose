@@ -11,12 +11,14 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AllLikeStatusEnum } from '../../../../../infrastructure/utils/enums/like-status.enums';
 import { BlogsQueryRepository } from '../../../../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PostsQueryRepository {
   constructor(
     @InjectDataSource() protected dataSource: DataSource,
     protected blogsQueryRepository: BlogsQueryRepository,
+    protected configService: ConfigService,
   ) {}
 
   //SQL
@@ -90,7 +92,9 @@ export class PostsQueryRepository {
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,
-      items: result.map((post) => modifyPostIntoViewModel(post)),
+      items: result.map((post) =>
+        modifyPostIntoViewModel(post, this.configService),
+      ),
     };
   }
 
@@ -159,7 +163,9 @@ export class PostsQueryRepository {
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,
-      items: result.map((post) => modifyPostIntoViewModel(post)),
+      items: result.map((post) =>
+        modifyPostIntoViewModel(post, this.configService),
+      ),
     };
   }
 
@@ -223,7 +229,7 @@ export class PostsQueryRepository {
 
     if (!result[0]) return null;
 
-    return modifyPostIntoViewModel(result[0]);
+    return modifyPostIntoViewModel(result[0], this.configService);
   }
 
   async getPostDBInfoById(postId: string): Promise<any> {

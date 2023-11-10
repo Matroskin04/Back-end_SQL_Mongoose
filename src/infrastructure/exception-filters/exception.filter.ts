@@ -21,6 +21,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     if (httpStatus === 500) {
       if (process.env.environment !== 'production') {
+        console.log(exception.toString(), exception.stack);
         response
           .status(httpStatus)
           .send({ error: exception.toString(), stack: exception.stack });
@@ -33,7 +34,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       };
 
       const responseBody: any = exception.getResponse();
-
+      console.log(responseBody);
       responseBody.message.forEach((m) =>
         errorsResponse.errorsMessages.push(m),
       );

@@ -19,7 +19,7 @@ import { DeleteDevicesExcludeCurrentCommand } from '../application/use-cases/del
 import { DeleteDeviceByIdCommand } from '../application/use-cases/delete-device-by-id.use-case';
 import { DevicesOrmQueryRepository } from '../infrastructure/typeORM/query.repository/devices-orm.query.repository';
 
-@Controller('/hometask-nest/security/devices')
+@Controller('/api/security/devices')
 export class DevicesController {
   constructor(
     protected commandBus: CommandBus,

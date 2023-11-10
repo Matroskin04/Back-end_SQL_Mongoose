@@ -7,6 +7,7 @@ import { useContainer, ValidationError } from 'class-validator';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import { AllExceptionsFilter } from './infrastructure/exception-filters/exception.filter';
+import ngrok from 'ngrok';
 
 export const appSettings = (app: INestApplication) => {
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
@@ -15,7 +16,7 @@ export const appSettings = (app: INestApplication) => {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      transform: true, //трансформация типов
+      transform: true, //transformation of types
       stopAtFirstError: true,
       exceptionFactory: (errors: ValidationError[]) => {
         const errorsForResponse: any = [];

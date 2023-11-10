@@ -7,7 +7,7 @@ export async function getPostsOfBlogPublicTest(
   query?,
 ) {
   return request(httpServer)
-    .get(`/hometask-nest/blogs/${blogId}/posts`)
+    .get(`/api/blogs/${blogId}/posts`)
     .set('Authorization', `Bearer ${accessToken}`)
     .query(query || '');
 }

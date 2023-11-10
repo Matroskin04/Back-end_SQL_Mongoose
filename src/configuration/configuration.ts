@@ -27,5 +27,25 @@ export const getConfiguration = () => ({
     SA_LOGIN: process.env.SA_LOGIN,
     SA_PASS: process.env.SA_PASS,
   },
+  S3: {
+    BUCKET_NAME: process.env.BUCKET_NAME || 'content-platform',
+    URL:
+      process.env.S3_URL || 'https://content-platform.storage.yandexcloud.net/',
+  },
+  photoInfo: {
+    BLOG_ICON_WIDTH: Number(process.env.BLOG_ICON_WIDTH) || 156,
+    BLOG_ICON_HEIGHT: Number(process.env.BLOG_ICON_HEIGHT) || 156,
+    BLOG_WALLPAPER_WIDTH: Number(process.env.BLOG_WALLPAPER_WIDTH) || 1028,
+    BLOG_WALLPAPER_HEIGHT: Number(process.env.BLOG_WALLPAPER_HEIGHT) || 312,
+    POST_ICON_WIDTH: Number(process.env.POST_ICON_WIDTH) || 940,
+    POST_ICON_HEIGHT: Number(process.env.POST_ICON_HEIGHT) || 432,
+    POST_ICON_MIDDLE_WIDTH: Number(process.env.POST_ICON_WIDTH) || 300,
+    POST_ICON_MIDDLE_HEIGHT: Number(process.env.POST_ICON_HEIGHT) || 180,
+    POST_ICON_SMALL_WIDTH: Number(process.env.POST_ICON_WIDTH) || 149,
+    POST_ICON_SMALL_HEIGHT: Number(process.env.POST_ICON_HEIGHT) || 96,
+  },
+  bot_tg: {
+    BOT_TOKEN: process.env.BOT_TOKEN,
+  },
 });
 export type ConfigType = ReturnType<typeof getConfiguration>;

@@ -11,6 +11,7 @@ import { Users } from '../../users/domain/users.entity';
 import { Blogs } from '../../blogs/domain/blogs.entity';
 import { Comments } from '../../comments/domain/comments.entity';
 import { PostsLikesInfo } from './posts-likes-info.entity';
+import { IconOfPost } from './main-img-of-post.entity';
 
 @Entity()
 export class Posts {
@@ -43,6 +44,9 @@ export class Posts {
 
   @OneToMany(() => Comments, (c) => c.post)
   comment: Comments[];
+
+  @OneToMany(() => IconOfPost, (i) => i.post)
+  iconOfPost: IconOfPost[];
 
   @OneToMany(() => PostsLikesInfo, (li) => li.post)
   postLikeInfo: PostsLikesInfo[];

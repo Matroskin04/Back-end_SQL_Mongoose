@@ -39,9 +39,8 @@ import { UpdatePostByBlogIdInputModel } from './models/input/update-post-by-blog
 import { UpdatePostCommand } from '../../posts/application/use-cases/update-post.use-case';
 import { DeleteBlogCommand } from '../application/blogger/use-cases/delete-blog.use-case';
 import { DeletePostCommand } from '../../posts/application/use-cases/delete-post.use-case';
-import { validate, validateOrReject, validateSync } from 'class-validator';
 
-@Controller('/hometask-nest/sa/blogs')
+@Controller('/api/sa/blogs')
 export class BlogsSAController {
   constructor(
     protected commandBus: CommandBus,

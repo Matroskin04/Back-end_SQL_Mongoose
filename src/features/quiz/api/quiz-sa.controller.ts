@@ -24,7 +24,7 @@ import { PublishQuestionCommand } from '../application/sa/use-cases/sa/publish-q
 import { QueryQuestionsInputModel } from './models/input/query-questions.input.model';
 import { QuestionsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/questions/questions-orm.query.repository';
 
-@Controller('/hometask-nest/sa/quiz/questions')
+@Controller('/api/sa/quiz/questions')
 export class QuizSaController {
   constructor(
     protected commandBus: CommandBus,

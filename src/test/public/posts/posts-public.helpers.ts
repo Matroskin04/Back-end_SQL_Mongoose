@@ -4,13 +4,13 @@ import { PostsAndUsersIdType } from '../types/posts.types';
 
 export async function getPostByIdPublicTest(httpServer, postId, accessToken?) {
   return request(httpServer)
-    .get(`/hometask-nest/posts/${postId}`)
+    .get(`/api/posts/${postId}`)
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
 export async function getPostsPublicTest(httpServer, query?, accessToken?) {
   return request(httpServer)
-    .get(`/hometask-nest/posts`)
+    .get(`/api/posts`)
     .set('Authorization', `Bearer ${accessToken}`)
     .query(query ?? '');
 }
@@ -22,7 +22,7 @@ export async function updateStatusLikeOfPostTest(
   accessToken,
 ) {
   return request(httpServer)
-    .put(`/hometask-nest/posts/${postId}/like-status`)
+    .put(`/api/posts/${postId}/like-status`)
     .set('Authorization', `Bearer ${accessToken}`)
     .send({ likeStatus });
 }

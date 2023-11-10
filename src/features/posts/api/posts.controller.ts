@@ -35,7 +35,7 @@ import { UpdatePostLikeStatusCommand } from '../application/use-cases/update-pos
 import { PostsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/posts-orm.query.repository';
 import { CommentsOrmQueryRepository } from '../../comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
 
-@Controller('/hometask-nest/posts')
+@Controller('/api/posts')
 export class PostsController {
   constructor(
     protected commandBus: CommandBus,

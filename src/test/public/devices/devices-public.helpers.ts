@@ -2,7 +2,7 @@ import request from 'supertest';
 
 export async function getDevicesPublicTest(httpServer, refreshToken) {
   return request(httpServer)
-    .get(`/hometask-nest/security/devices`)
+    .get(`/api/security/devices`)
     .set('Cookie', refreshToken);
 }
 
@@ -11,13 +11,13 @@ export async function deleteDevicesExcludeCurrentTest(
   refreshToken,
 ) {
   return request(httpServer)
-    .delete(`/hometask-nest/security/devices`)
+    .delete(`/api/security/devices`)
     .set('Cookie', refreshToken);
 }
 
 export async function deleteDeviceByIdTest(httpServer, refreshToken, deviceId) {
   return request(httpServer)
-    .delete(`/hometask-nest/security/devices/${deviceId}`)
+    .delete(`/api/security/devices/${deviceId}`)
     .set('Cookie', refreshToken);
 }
 

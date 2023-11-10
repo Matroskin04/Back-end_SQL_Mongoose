@@ -10,7 +10,7 @@ export async function createCommentTest(
   content = 'Correct content of comment',
 ) {
   return request(httpServer)
-    .post(`/hometask-nest/posts/${postId}/comments`)
+    .post(`/api/posts/${postId}/comments`)
     .set('Authorization', `Bearer ${accessToken}`)
     .send({
       content,
@@ -24,7 +24,7 @@ export async function getCommentsOfPostTest(
   accessToken?,
 ) {
   return request(httpServer)
-    .get(`/hometask-nest/posts/${postId}/comments`)
+    .get(`/api/posts/${postId}/comments`)
     .set('Authorization', `Bearer ${accessToken}`)
     .query(query ?? '');
 }
@@ -35,7 +35,7 @@ export async function getCommentByIdPublicTest(
   accessToken?,
 ) {
   return request(httpServer)
-    .get(`/hometask-nest/comments/${commentId}`)
+    .get(`/api/comments/${commentId}`)
     .set('Authorization', `Bearer ${accessToken}`);
 }
 
@@ -46,7 +46,7 @@ export async function updateCommentTest(
   accessToken,
 ) {
   return request(httpServer)
-    .put(`/hometask-nest/comments/${commentId}`)
+    .put(`/api/comments/${commentId}`)
     .set('Authorization', `Bearer ${accessToken}`)
     .send({ content });
 }
@@ -58,14 +58,14 @@ export async function updateStatusLikeOfCommentTest(
   accessToken,
 ) {
   return request(httpServer)
-    .put(`/hometask-nest/comments/${commentId}/like-status`)
+    .put(`/api/comments/${commentId}/like-status`)
     .set('Authorization', `Bearer ${accessToken}`)
     .send({ likeStatus });
 }
 
 export async function deleteCommentTest(httpServer, commentId, accessToken) {
   return request(httpServer)
-    .delete(`/hometask-nest/comments/${commentId}`)
+    .delete(`/api/comments/${commentId}`)
     .set('Authorization', `Bearer ${accessToken}`);
 }
 

@@ -43,9 +43,9 @@ import { NewPasswordInputModel } from './models/input/new-password.input.model';
 import { CreateDeviceCommand } from '../../devices/application/use-cases/create-device.use-case';
 import { DeleteDeviceByRefreshTokenCommand } from '../../devices/application/use-cases/delete-device-by-refresh-token.use-case';
 import { UsersOrmQueryRepository } from '../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
-
+import stringWidth from 'string-width';
 @Throttle(5, 10)
-@Controller('/hometask-nest/auth')
+@Controller('/api/auth')
 export class AuthController {
   constructor(
     protected commandBus: CommandBus,
@@ -62,7 +62,7 @@ export class AuthController {
     const result = await this.usersOrmQueryRepository.getUserInfoByIdView(
       userId,
     );
-
+    stringWidth('a');
     if (result) return result;
     throw new NotFoundException('User is not found');
   }

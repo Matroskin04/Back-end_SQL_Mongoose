@@ -10,7 +10,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommentOutputModel } from './models/output/comment.output.model';
-import { CommentsQueryRepository } from '../infrastructure/SQL/query.repository/comments.query.repository';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { CurrentUserId } from '../../../infrastructure/decorators/current-user-id.param.decorator';
@@ -24,7 +23,7 @@ import { DeleteCommentCommand } from '../application/use-cases/delete-comment.us
 import { UpdateCommentLikeStatusCommand } from '../application/use-cases/update-comment-like-status.use-case';
 import { CommentsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/comments-orm.query.repository';
 
-@Controller('/hometask-nest/comments')
+@Controller('/api/comments')
 export class CommentsController {
   constructor(
     protected commandBus: CommandBus,

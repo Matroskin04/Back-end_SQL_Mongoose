@@ -19,10 +19,14 @@ import {
   HttpCode,
   NotFoundException,
   Param,
+  ParseFilePipe,
   Post,
   Put,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
+  UsePipes,
 } from '@nestjs/common';
 import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
@@ -41,14 +45,26 @@ import { DeletePostCommand } from '../../posts/application/use-cases/delete-post
 import { CommentsOrmQueryRepository } from '../../comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
 import { PostsOrmQueryRepository } from '../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
 import { BlogsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { WidthHeightFileValidator } from '../../../infrastructure/validators/width-height-file.validator';
+import { UploadBlogIconCommand } from '../application/blogger/use-cases/upload-blog-icon.use-case';
+import { ImageFileValidator } from '../../../infrastructure/validators/type-file.validator';
+import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '../../../configuration/configuration';
+import { BlogPhotosOutputModel } from './models/output/blog-photos.output.model';
+import { UploadBlogWallpaperCommand } from '../application/blogger/use-cases/upload-blog-wallpaper.use-case';
+import { UploadPostMainImgCommand } from '../../posts/application/use-cases/upload-post-main-img.use-case';
+import { MaxFileSizeValidator } from '../../../infrastructure/validators/max-file-size.validator';
+import { IsIdUUIDValidationPipe } from '../../../infrastructure/pipes/is-id-uuid-validation.pipe';
 
-@Controller('/hometask-nest/blogger/blogs')
+@Controller('/api/blogger/blogs')
 export class BlogsBloggerController {
   constructor(
     protected commandBus: CommandBus,
     protected blogsOrmQueryRepository: BlogsOrmQueryRepository,
     protected postsOrmQueryRepository: PostsOrmQueryRepository,
     protected commentsOrmQueryRepository: CommentsOrmQueryRepository,
+    protected configService: ConfigService<ConfigType>,
   ) {}
 
   @UseGuards(JwtAccessGuard)
@@ -134,12 +150,80 @@ export class BlogsBloggerController {
     return;
   }
 
+  //todo create correct format error in maxfilevalidtor
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @Post(':blogId/images/main')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadBlogIcon(
+    @Param('blogId', IsIdUUIDValidationPipe) blogId: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 100000 }),
+          new ImageFileValidator({}),
+          new WidthHeightFileValidator({ width: 156, height: 156 }),
+        ],
+      }),
+    )
+    photo: Express.Multer.File,
+  ): Promise<BlogPhotosOutputModel> {
+    const result = await this.commandBus.execute(
+      new UploadBlogIconCommand(photo, blogId),
+    );
+    return result;
+  }
+
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @Post(':blogId/images/wallpaper')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadBlogWallpaper(
+    @Param('blogId', IsIdUUIDValidationPipe) blogId: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 100000 }),
+          new ImageFileValidator({}),
+          new WidthHeightFileValidator({ width: 1028, height: 312 }),
+        ],
+      }),
+    )
+    photo: Express.Multer.File,
+  ): Promise<BlogPhotosOutputModel> {
+    const result = await this.commandBus.execute(
+      new UploadBlogWallpaperCommand(photo, blogId),
+    );
+    return result;
+  }
+
+  @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
+  @Post(':blogId/posts/:postId/images/main')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadPostIcon(
+    @Param('blogId', IsIdUUIDValidationPipe) blogId: string,
+    @Param('postId', IsIdUUIDValidationPipe) postId: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 100000 }),
+          new ImageFileValidator({}),
+          new WidthHeightFileValidator({ width: 940, height: 432 }),
+        ],
+      }),
+    )
+    photo: Express.Multer.File,
+  ): Promise<BlogPhotosOutputModel> {
+    const result = await this.commandBus.execute(
+      new UploadPostMainImgCommand(photo, blogId, postId),
+    );
+    return result;
+  }
+
   @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Put(':blogId/posts/:postId')
   async updatePostOfBlog(
-    @Param('blogId') blogId: string,
-    @Param('postId') postId: string,
+    @Param('blogId', IsIdUUIDValidationPipe) blogId: string,
+    @Param('postId', IsIdUUIDValidationPipe) postId: string,
     @Body() inputPostModel: UpdatePostByBlogIdInputModel,
   ): Promise<void> {
     const result = await this.commandBus.execute(
@@ -153,7 +237,9 @@ export class BlogsBloggerController {
   @UseGuards(JwtAccessGuard, BlogOwnerByIdGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Delete(':blogId')
-  async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
+  async deleteBlog(
+    @Param('blogId', IsIdUUIDValidationPipe) blogId: string,
+  ): Promise<void> {
     const result = await this.commandBus.execute(new DeleteBlogCommand(blogId));
     if (!result) throw new NotFoundException();
     return;

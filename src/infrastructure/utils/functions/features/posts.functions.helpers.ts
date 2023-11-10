@@ -5,6 +5,8 @@ import {
 import { PostViewType } from '../../../../features/posts/infrastructure/SQL/query.repository/posts.types.query.repository';
 import { AllLikeStatusEnum } from '../../enums/like-status.enums';
 import { AllLikeStatusType } from '../../../types/like-status.general.types';
+import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '../../../../configuration/configuration';
 export function modifyPostIntoInitialViewModel(
   post: PostDBType,
   blogName: string,
@@ -25,10 +27,16 @@ export function modifyPostIntoInitialViewModel(
       myStatus,
       newestLikes,
     },
+    images: {
+      main: [],
+    },
   };
 }
 
-export function modifyPostIntoViewModel(postInfo: PostRawType): PostViewType {
+export function modifyPostIntoViewModel(
+  postInfo: PostRawType,
+  configService: ConfigService<ConfigType>,
+): PostViewType {
   return {
     id: postInfo.id,
     title: postInfo.title,
@@ -43,6 +51,13 @@ export function modifyPostIntoViewModel(postInfo: PostRawType): PostViewType {
       myStatus:
         (AllLikeStatusEnum[postInfo.myStatus] as AllLikeStatusType) ?? 'None',
       newestLikes: postInfo.newestLikes ?? [],
+    },
+    images: {
+      main:
+        postInfo.mainImages.map((image) => ({
+          ...image,
+          url: configService.get('S3', { infer: true })!.URL + image.url,
+        })) ?? [],
     },
   };
 }
@@ -63,5 +78,11 @@ type PostRawType = {
     login: string;
     userId: string;
     addedAt: string;
+  }>;
+  mainImages: Array<{
+    url: 'string';
+    width: number;
+    height: number;
+    fileSize: number;
   }>;
 };

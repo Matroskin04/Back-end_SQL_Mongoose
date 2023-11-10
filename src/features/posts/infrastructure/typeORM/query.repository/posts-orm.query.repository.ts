@@ -15,6 +15,10 @@ import { BlogsQueryRepository } from '../../../../blogs/infrastructure/SQL/query
 import { Posts } from '../../../domain/posts.entity';
 import { PostsLikesInfo } from '../../../domain/posts-likes-info.entity';
 import { UsersBanInfo } from '../../../../users/domain/users-ban-info.entity';
+import { Blogs } from '../../../../blogs/domain/blogs.entity';
+import { IconOfBlog } from '../../../../blogs/domain/icon-of-blog.entity';
+import { IconOfPost } from '../../../domain/main-img-of-post.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PostsOrmQueryRepository {
@@ -25,6 +29,7 @@ export class PostsOrmQueryRepository {
     protected postsLikesInfoRepository: Repository<PostsLikesInfo>,
     @InjectDataSource() protected dataSource: DataSource,
     protected blogsQueryRepository: BlogsQueryRepository,
+    protected configService: ConfigService,
   ) {}
 
   //SQL
@@ -42,12 +47,12 @@ export class PostsOrmQueryRepository {
     const result = await this.postsRepository
       .createQueryBuilder('p')
       .select([
-        'p.id AS id',
-        'p.title AS title',
-        'p.shortDescription AS "shortDescription"',
-        'p.content AS "content"',
-        'p.blogId AS "blogId"',
-        'p.createdAt AS "createdAt"',
+        'p."id"',
+        'p."title"',
+        'p."shortDescription"',
+        'p."content"',
+        'p."blogId"',
+        'p."createdAt"',
         'b.name AS "blogName"',
       ])
       .addSelect((subQuery) => {
@@ -62,6 +67,7 @@ export class PostsOrmQueryRepository {
       .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
       .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
       .addSelect((qb) => this.newestLikesBuilder(qb), 'newestLikes')
+      .addSelect((qb) => this.mainImgPostBuilder(qb), 'mainImages')
       .leftJoin('p.blog', 'b')
       .where('b.isBanned = false')
       .andWhere('b.id = :blogId', { blogId })
@@ -76,7 +82,9 @@ export class PostsOrmQueryRepository {
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +postsInfo[0]?.count || 0,
-      items: postsInfo.map((post) => modifyPostIntoViewModel(post)),
+      items: postsInfo.map((post) =>
+        modifyPostIntoViewModel(post, this.configService),
+      ),
     };
   }
 
@@ -90,12 +98,12 @@ export class PostsOrmQueryRepository {
     const result = await this.postsRepository
       .createQueryBuilder('p')
       .select([
-        'p.id AS id',
-        'p.title AS title',
-        'p.shortDescription AS "shortDescription"',
-        'p.content AS "content"',
-        'p.blogId AS "blogId"',
-        'p.createdAt AS "createdAt"',
+        'p."id"',
+        'p."title"',
+        'p."shortDescription"',
+        'p."content"',
+        'p."blogId"',
+        'p."createdAt"',
         'b.name AS "blogName"',
       ])
       .addSelect((subQuery) => {
@@ -109,6 +117,7 @@ export class PostsOrmQueryRepository {
       .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
       .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
       .addSelect((qb) => this.newestLikesBuilder(qb), 'newestLikes')
+      .addSelect((qb) => this.mainImgPostBuilder(qb), 'mainImages')
       .leftJoin('p.blog', 'b')
       .where('b.isBanned = false')
       .orderBy(sortBy === 'blogName' ? 'b.name' : `p.${sortBy}`, sortDirection)
@@ -122,7 +131,9 @@ export class PostsOrmQueryRepository {
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +postsInfo[0]?.count || 0,
-      items: postsInfo.map((post) => modifyPostIntoViewModel(post)),
+      items: postsInfo.map((post) =>
+        modifyPostIntoViewModel(post, this.configService),
+      ),
     };
   }
 
@@ -133,9 +144,22 @@ export class PostsOrmQueryRepository {
       .leftJoin('p.blog', 'b')
       .where('p.id = :postId', { postId })
       .andWhere('b.isBanned = false')
-      .getCount();
+      .getExists();
 
-    return result === 1;
+    return result;
+  }
+
+  async doesPostExistAtBlog(postId: string, blogId: string): Promise<boolean> {
+    const result = await this.postsRepository
+      .createQueryBuilder('p')
+      .select()
+      .leftJoin('p.blog', 'b')
+      .where('p.id = :postId', { postId })
+      .andWhere('b.id = :blogId', { blogId })
+      .andWhere('b.isBanned = false')
+      .getExists();
+
+    return result;
   }
 
   async getPostByIdView(
@@ -145,12 +169,12 @@ export class PostsOrmQueryRepository {
     const result = await this.postsRepository
       .createQueryBuilder('p')
       .select([
-        'p.id AS id',
-        'p.title AS title',
-        'p.shortDescription AS "shortDescription"',
-        'p.content AS "content"',
-        'p.blogId AS "blogId"',
-        'p.createdAt AS "createdAt"',
+        'p."id"',
+        'p."title"',
+        'p."shortDescription"',
+        'p."content"',
+        'p."blogId"',
+        'p."createdAt"',
         'b.name AS "blogName"',
       ])
       .addSelect((subQuery) => {
@@ -164,26 +188,29 @@ export class PostsOrmQueryRepository {
       .addSelect((qb) => this.dislikesCountBuilder(qb), 'dislikesCount')
       .addSelect((qb) => this.myStatusBuilder(qb, userId), 'myStatus')
       .addSelect((qb) => this.newestLikesBuilder(qb), 'newestLikes')
+      .addSelect((qb) => this.mainImgPostBuilder(qb), 'mainImages')
       .leftJoin('p.blog', 'b')
       .where('b.isBanned = false')
       .andWhere('p.id = :postId', { postId });
 
     const postInfo = await result.getRawOne();
-
-    return postInfo ? modifyPostIntoViewModel(postInfo) : null;
+    console.log('Post by id:', postInfo);
+    return postInfo
+      ? modifyPostIntoViewModel(postInfo, this.configService)
+      : null;
   }
 
   async getPostDBInfoById(postId: string): Promise<PostDBType | null> {
     const result = await this.postsRepository
       .createQueryBuilder('p')
       .select([
-        'p.id',
-        'p.blogId',
-        'p.userId',
-        'p.title',
-        'p.shortDescription',
-        'p.content',
-        'p.createdAt',
+        'p."id"',
+        'p."blogId"',
+        'p."userId"',
+        'p."title"',
+        'p."shortDescription"',
+        'p."content"',
+        'p."createdAt"',
       ])
       .where('p.id = :postId', { postId })
       .getOne();
@@ -246,5 +273,14 @@ export class PostsOrmQueryRepository {
           .orderBy('li."addedAt"', 'DESC')
           .limit(3);
       }, 'threeLikes');
+  }
+
+  private mainImgPostBuilder(qb: SelectQueryBuilder<Posts>) {
+    return qb.select('json_agg(to_jsonb("images"))').from((qb) => {
+      return qb
+        .select(['i."url"', 'i."width"', 'i."height"', 'i."fileSize"'])
+        .from(IconOfPost, 'i')
+        .where('i."postId" = p."id"');
+    }, 'images');
   }
 }

@@ -29,7 +29,7 @@ import {
 } from './models/input/query-quiz.input.model';
 import { AllStatisticOutputModel } from './models/output/all-statistics.output.model';
 
-@Controller('/hometask-nest/pair-game-quiz')
+@Controller('/api/pair-game-quiz')
 export class QuizPublicController {
   constructor(
     protected commandBus: CommandBus,

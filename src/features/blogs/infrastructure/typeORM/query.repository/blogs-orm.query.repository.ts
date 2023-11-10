@@ -2,19 +2,23 @@ import {
   BlogPaginationType,
   BlogOutputType,
   BlogAllInfoOutputType,
-} from './blogs-public.types.query.repository';
+} from './types/blogs-public.types.query.repository';
 import { Injectable } from '@nestjs/common';
 import { QueryBlogsInputModel } from '../../../api/models/input/queries-blog.input.model';
 import { variablesForReturn } from '../../../../../infrastructure/utils/functions/variables-for-return.function';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
-import { AllBlogsSAViewType } from './blogs-sa.types.query.repository';
+import { AllBlogsSAViewType } from './types/blogs-sa.types.query.repository';
 import { Blogs } from '../../../domain/blogs.entity';
 import { BannedUsersOfBlog } from '../../../domain/banned-users-of-blog.entity';
-import { modifyBlogIntoViewSAModel } from '../../../../../infrastructure/utils/functions/features/blog.functions.helpers';
-import { QuizInfoAboutUser } from '../../../../quiz/domain/quiz-info-about-user.entity';
-import { Quiz } from '../../../../quiz/domain/quiz.entity';
-import { QuizStatusEnum } from '../../../../../infrastructure/utils/enums/quiz.enums';
+import {
+  modifyBlogIntoViewGeneralModel,
+  modifyBlogIntoViewSAModel,
+} from '../../../../../infrastructure/utils/functions/features/blog.functions.helpers';
+import { IconOfBlog } from '../../../domain/icon-of-blog.entity';
+import { WallpaperOfBlog } from '../../../domain/wallpaper-of-blog.entity';
+import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '../../../../../configuration/configuration';
 
 @Injectable()
 export class BlogsOrmQueryRepository {
@@ -24,6 +28,7 @@ export class BlogsOrmQueryRepository {
     @InjectRepository(BannedUsersOfBlog)
     protected bannedUsersOfBlogRepository: Repository<BannedUsersOfBlog>,
     @InjectDataSource() protected dataSource: DataSource,
+    protected configService: ConfigService<ConfigType>,
   ) {}
 
   async getAllBlogsOfBlogger(
@@ -47,6 +52,8 @@ export class BlogsOrmQueryRepository {
         (qb) => this.blogsOfBloggerCountBuilder(qb, searchNameTerm, userId),
         'count',
       )
+      .addSelect((qb) => this.iconsOfBlogBuilder(qb), 'icons')
+      .addSelect((qb) => this.wallpaperOfBlogBuilder(qb), 'wallpaper')
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
       .andWhere('b.userId = :userId', { userId })
       .orderBy(`b.${sortBy}`, sortDirection)
@@ -54,28 +61,15 @@ export class BlogsOrmQueryRepository {
       .offset((+pageNumber - 1) * +pageSize);
 
     const result = await query.getRawMany();
-    // const result = await this.dataSource.query(
-    //   `
-    // SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership",
-    //   (SELECT COUNT(*)
-    //     FROM public."blogs"
-    //     WHERE "name" ILIKE $1 AND "userId" = $2)
-    // FROM public."blogs"
-    //     WHERE "name" ILIKE $1 AND "userId" = $2
-    //         ORDER BY "${sortBy}" ${sortDirection}
-    //         LIMIT $3 OFFSET $4`,
-    //   [`%${searchNameTerm}%`, userId, +pageSize, (+pageNumber - 1) * +pageSize],
-    // );
 
     return {
       pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +result[0]?.count || 0,
-      items: result.map((e) => {
-        delete e.count;
-        return e;
-      }),
+      items: result.map((blog) =>
+        modifyBlogIntoViewGeneralModel(blog, this.configService),
+      ),
     };
   }
 
@@ -126,29 +120,31 @@ export class BlogsOrmQueryRepository {
     const result = await this.blogsRepository
       .createQueryBuilder('b')
       .select([
-        'b.id',
-        'b.name',
-        'b.description',
-        'b.websiteUrl',
-        'b.createdAt',
-        'b.isMembership',
+        'b."id"',
+        'b."name"',
+        'b."description"',
+        'b."websiteUrl"',
+        'b."createdAt"',
+        'b."isMembership"',
       ])
+      .addSelect((qb) => this.allBlogsCountBuilder(qb, searchNameTerm), 'count')
+      .addSelect((qb) => this.iconsOfBlogBuilder(qb), 'icons')
+      .addSelect((qb) => this.wallpaperOfBlogBuilder(qb), 'wallpaper')
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
       .andWhere('b.isBanned = false')
       .orderBy(`b.${sortBy}`, sortDirection)
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize)
-      .getManyAndCount();
+      .getRawMany();
 
     return {
-      pagesCount: Math.ceil((result[1] || 1) / +pageSize),
+      pagesCount: Math.ceil((+result[0]?.count || 1) / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: result[1] || 0,
-      items: result[0].map((blog) => ({
-        ...blog,
-        createdAt: blog.createdAt.toISOString(),
-      })),
+      totalCount: +result[0]?.count || 0,
+      items: result.map((blog) =>
+        modifyBlogIntoViewGeneralModel(blog, this.configService),
+      ),
     };
   }
 
@@ -156,19 +152,21 @@ export class BlogsOrmQueryRepository {
     const result = await this.blogsRepository
       .createQueryBuilder('b')
       .select([
-        'b.id',
-        'b.name',
-        'b.description',
-        'b.websiteUrl',
-        'b.createdAt',
-        'b.isMembership',
+        'b."id"',
+        'b."name"',
+        'b."description"',
+        'b."websiteUrl"',
+        'b."createdAt"',
+        'b."isMembership"',
       ])
+      .addSelect((qb) => this.iconsOfBlogBuilder(qb), 'icons')
+      .addSelect((qb) => this.wallpaperOfBlogBuilder(qb), 'wallpaper')
       .where('b.id = :blogId', { blogId })
-      .andWhere('b.isBanned = false')
-      .getOne();
+      .andWhere('b."isBanned" = false')
+      .getRawOne();
 
     return result
-      ? { ...result, createdAt: result.createdAt.toISOString() }
+      ? modifyBlogIntoViewGeneralModel(result, this.configService)
       : null;
   }
 
@@ -178,17 +176,17 @@ export class BlogsOrmQueryRepository {
     const result = await this.blogsRepository
       .createQueryBuilder('b')
       .select([
-        'b.id',
-        'b.name',
-        'b.description',
-        'b.websiteUrl',
-        'b.createdAt',
-        'b.isMembership',
-        'b.isBanned',
-        'b.userId',
+        'b."id"',
+        'b."name"',
+        'b."description"',
+        'b."websiteUrl"',
+        'b."createdAt"',
+        'b."isMembership"',
+        'b."isBanned"',
+        'b."userId"',
       ])
       .where('b.id = :blogId', { blogId })
-      .getOne();
+      .getRawOne();
 
     return result
       ? { ...result, createdAt: result.createdAt.toISOString() }
@@ -237,5 +235,23 @@ export class BlogsOrmQueryRepository {
       .from(Blogs, 'b')
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
       .andWhere('b.userId = :userId', { userId });
+  }
+
+  private iconsOfBlogBuilder(qb: SelectQueryBuilder<Blogs>) {
+    return qb.select('json_agg(to_jsonb("icons"))').from((qb) => {
+      return qb
+        .select(['i."url"', 'i."width"', 'i."height"', 'i."fileSize"'])
+        .from(IconOfBlog, 'i')
+        .where('i."blogId" = b."id"');
+    }, 'icons');
+  }
+
+  private wallpaperOfBlogBuilder(qb: SelectQueryBuilder<Blogs>) {
+    return qb.select('to_jsonb("wallpaper")').from((qb) => {
+      return qb
+        .select(['w."url"', 'w."width"', 'w."height"', 'w."fileSize"'])
+        .from(WallpaperOfBlog, 'w')
+        .where('w."blogId" = b."id"');
+    }, 'wallpaper');
   }
 }

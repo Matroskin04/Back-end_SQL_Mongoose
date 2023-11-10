@@ -122,6 +122,27 @@ import { SendAnswerToQuizUseCase } from './features/quiz/application/sa/use-case
 import { AnswersQuizOrmRepository } from './features/quiz/infrastructure/typeORM/repository/answers-quiz-orm.repository';
 import { AnswersQuizOrmQueryRepository } from './features/quiz/infrastructure/typeORM/query.repository/answers-quiz-orm.query.repository';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UploadBlogIconUseCase } from './features/blogs/application/blogger/use-cases/upload-blog-icon.use-case';
+import { S3StorageAdapter } from './infrastructure/adapters/s3-storage.adapter';
+import { ConfigType } from './configuration/configuration';
+import { IconOfBlog } from './features/blogs/domain/icon-of-blog.entity';
+import { PhotosForBlogRepository } from './features/blogs/infrastructure/typeORM/subrepositories/photos-for-blog.repository';
+import { WallpaperOfBlog } from './features/blogs/domain/wallpaper-of-blog.entity';
+import { UploadBlogWallpaperUseCase } from './features/blogs/application/blogger/use-cases/upload-blog-wallpaper.use-case';
+import { PhotosForBlogQueryRepository } from './features/blogs/infrastructure/typeORM/query.repository/photos-for-blog.query.repository';
+import { UploadPostMainImgUseCase } from './features/posts/application/use-cases/upload-post-main-img.use-case';
+import { PhotosForPostQueryRepository } from './features/posts/infrastructure/typeORM/query.repository/photos-for-post.query.repository';
+import { PhotosForPostRepository } from './features/posts/infrastructure/typeORM/repository/photos-for-post.repository';
+import { IconOfPost } from './features/posts/domain/main-img-of-post.entity';
+import { SubscribeToBlogUseCase } from './features/blogs/application/blogger/use-cases/subsribe-to-blog.use-case';
+import { SubscribersOfBlog } from './features/blogs/domain/subscribers-of-blog.entity';
+import { SubscriptionsBlogOrmRepository } from './features/blogs/infrastructure/typeORM/subrepositories/subscription-blog-orm.repository';
+import { UnsubscribeFromBlogUseCase } from './features/blogs/application/blogger/use-cases/usubsribe-from-blog.use-case';
+import { TelegramController } from './infrastructure/integrations/api/telegram.controller';
+import { SubscribersOfTgBot } from './infrastructure/integrations/domain/subscribers-of-tg-bot.entity';
+import { SubscribersOfTgBotRepository } from './infrastructure/integrations/infrastructure/repository/subscribers-of-tg-bot.repository';
+import { TelegramAdapter } from './infrastructure/adapters/telegram.adapter';
 
 const queryRepositories = [
   // SQL
@@ -142,6 +163,9 @@ const queryRepositories = [
   QuestionsOrmQueryRepository,
   QuizOrmQueryRepository,
   AnswersQuizOrmQueryRepository,
+  PhotosForBlogQueryRepository,
+  PhotosForPostQueryRepository,
+  SubscribersOfTgBotRepository,
 ];
 const repositories = [
   //SQL
@@ -156,6 +180,7 @@ const repositories = [
   PostsRepository,
   UsersRepository,
   QuestionsOrmRepository,
+  PhotosForBlogRepository,
   TestingRepository,
 
   //ORM
@@ -173,6 +198,9 @@ const repositories = [
   QuestionQuizRelationOrmRepository,
   QuizInfoAboutUserOrmRepository,
   AnswersQuizOrmRepository,
+  PhotosForPostRepository,
+  PhotosForBlogRepository,
+  SubscriptionsBlogOrmRepository,
 ];
 
 const handlers = [
@@ -190,6 +218,11 @@ const handlers = [
   DeleteBlogUseCase,
   BindBlogWithUserUseCase,
   UpdateBanInfoOfBlogUseCase,
+  UploadBlogIconUseCase,
+  UploadBlogWallpaperUseCase,
+  UploadPostMainImgUseCase,
+  SubscribeToBlogUseCase,
+  UnsubscribeFromBlogUseCase,
   //posts
   CreatePostUseCase,
   UpdatePostUseCase,
@@ -246,17 +279,26 @@ const handlers = [
       QuestionQuizRelation,
       Quiz,
       QuizInfoAboutUser,
+      IconOfBlog,
+      WallpaperOfBlog,
+      IconOfPost,
+      SubscribersOfBlog,
+      SubscribersOfTgBot,
     ]),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: 5432,
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DATABASE,
-      autoLoadEntities: true,
-      synchronize: false,
-      // url: process.env.POSTGRES_URL + '?sslmode=require',
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<ConfigType>) => ({
+        type: 'postgres',
+        host: configService.get('db').postgresql.POSTGRES_HOST,
+        port: 5432,
+        username: configService.get('db').postgresql.POSTGRES_USER,
+        password: configService.get('db').postgresql.POSTGRES_PASSWORD,
+        database: configService.get('db').postgresql.POSTGRES_DATABASE,
+        autoLoadEntities: true,
+        synchronize: false,
+        ssl: { require: true, rejectUnauthorized: false },
+        // url: process.env.POSTGRES_URL + '?sslmode=require',
+      }),
     }),
     JwtModule.register({}),
   ],
@@ -273,6 +315,7 @@ const handlers = [
     QuizSaController,
     QuizPublicController,
     TestingController,
+    TelegramController,
   ],
   providers: [
     ...queryRepositories,
@@ -290,6 +333,8 @@ const handlers = [
     CryptoAdapter,
     EmailAdapter,
     JwtAdapter,
+    S3StorageAdapter,
+    TelegramAdapter,
     //handlers
     ...handlers,
 
