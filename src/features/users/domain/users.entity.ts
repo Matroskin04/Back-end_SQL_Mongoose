@@ -19,6 +19,7 @@ import { Devices } from '../../devices/domain/devices.entity';
 import { Quiz } from '../../quiz/domain/quiz.entity';
 import { AnswerQuiz } from '../../quiz/domain/answer-quiz.entity';
 import { QuizInfoAboutUser } from '../../quiz/domain/quiz-info-about-user.entity';
+import { SubscribersOfBlog } from '../../blogs/domain/subscribers-of-blog.entity';
 
 @Entity()
 export class Users {
@@ -81,4 +82,7 @@ export class Users {
 
   @OneToMany(() => Quiz, (q) => q.user2)
   quiz2: Quiz[];
+
+  @OneToMany(() => SubscribersOfBlog, (s) => s.user)
+  subscribersOfBlog: SubscribersOfBlog[];
 }

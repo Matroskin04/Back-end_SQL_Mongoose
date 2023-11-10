@@ -14,6 +14,7 @@ import { BannedUsersOfBlog } from './banned-users-of-blog.entity';
 import { UsersEmailConfirmation } from '../../users/domain/users-email-confirmation.entity';
 import { IconOfBlog } from './icon-of-blog.entity';
 import { WallpaperOfBlog } from './wallpaper-of-blog.entity';
+import { SubscribersOfBlog } from './subscribers-of-blog.entity';
 
 @Entity()
 export class Blogs {
@@ -58,4 +59,7 @@ export class Blogs {
 
   @OneToMany(() => BannedUsersOfBlog, (bu) => bu.blog)
   bannedUsersOfBlog: BannedUsersOfBlog[];
+
+  @OneToMany(() => SubscribersOfBlog, (s) => s.blog)
+  subscribersOfBlog: SubscribersOfBlog[];
 }

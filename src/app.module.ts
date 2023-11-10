@@ -136,6 +136,8 @@ import { PhotosForPostQueryRepository } from './features/posts/infrastructure/ty
 import { PhotosForPostRepository } from './features/posts/infrastructure/typeORM/repository/photos-for-post.repository';
 import { IconOfPost } from './features/posts/domain/main-img-of-post.entity';
 import { IsIdUUIDValidationPipe } from './infrastructure/pipes/is-id-uuid-validation.pipe';
+import { SubscribeToBlogUseCase } from './features/blogs/application/blogger/use-cases/subsribe-to-blog.use-case';
+import { SubscribersOfBlog } from './features/blogs/domain/subscribers-of-blog.entity';
 
 const queryRepositories = [
   // SQL
@@ -212,6 +214,7 @@ const handlers = [
   UploadBlogIconUseCase,
   UploadBlogWallpaperUseCase,
   UploadPostMainImgUseCase,
+  SubscribeToBlogUseCase,
 
   //posts
   CreatePostUseCase,
@@ -272,6 +275,7 @@ const handlers = [
       IconOfBlog,
       WallpaperOfBlog,
       IconOfPost,
+      SubscribersOfBlog,
     ]),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
