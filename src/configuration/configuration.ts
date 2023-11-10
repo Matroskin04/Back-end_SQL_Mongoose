@@ -44,5 +44,8 @@ export const getConfiguration = () => ({
     POST_ICON_SMALL_WIDTH: Number(process.env.POST_ICON_WIDTH) || 149,
     POST_ICON_SMALL_HEIGHT: Number(process.env.POST_ICON_HEIGHT) || 96,
   },
+  bot_tg: {
+    BOT_TOKEN: process.env.BOT_TOKEN,
+  },
 });
 export type ConfigType = ReturnType<typeof getConfiguration>;
