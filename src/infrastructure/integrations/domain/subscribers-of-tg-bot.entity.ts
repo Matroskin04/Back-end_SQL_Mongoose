@@ -6,12 +6,12 @@ export class SubscribersOfTgBot {
   @Column({ nullable: true })
   telegramId: string;
 
-  @Column()
+  @Column('uuid')
   codeConfirmation: string;
 
   @ManyToOne(() => Users, (u) => u.subscribersOfTgBot)
   @JoinColumn()
   user: Users;
-  @PrimaryColumn()
+  @PrimaryColumn('uuid')
   userId: string;
 }

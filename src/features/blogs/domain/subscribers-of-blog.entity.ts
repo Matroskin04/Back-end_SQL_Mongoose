@@ -13,12 +13,12 @@ export class SubscribersOfBlog {
   @ManyToOne(() => Blogs, (b) => b.subscribersOfBlog)
   @JoinColumn()
   blog: Blogs;
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   blogId: string;
 
   @ManyToOne(() => Users, (u) => u.subscribersOfBlog)
   @JoinColumn()
   user: Users;
-  @Column()
+  @Column('uuid')
   userId: string;
 }

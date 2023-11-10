@@ -139,6 +139,10 @@ import { SubscribeToBlogUseCase } from './features/blogs/application/blogger/use
 import { SubscribersOfBlog } from './features/blogs/domain/subscribers-of-blog.entity';
 import { SubscriptionsBlogOrmRepository } from './features/blogs/infrastructure/typeORM/subrepositories/subscription-blog-orm.repository';
 import { UnsubscribeFromBlogUseCase } from './features/blogs/application/blogger/use-cases/usubsribe-from-blog.use-case';
+import { TelegramController } from './infrastructure/integrations/api/telegram.controller';
+import { SubscribersOfTgBot } from './infrastructure/integrations/domain/subscribers-of-tg-bot.entity';
+import { SubscribersOfTgBotRepository } from './infrastructure/integrations/infrastructure/repository/subscribers-of-tg-bot.repository';
+import { TelegramAdapter } from './infrastructure/adapters/telegram.adapter';
 
 const queryRepositories = [
   // SQL
@@ -161,6 +165,7 @@ const queryRepositories = [
   AnswersQuizOrmQueryRepository,
   PhotosForBlogQueryRepository,
   PhotosForPostQueryRepository,
+  SubscribersOfTgBotRepository,
 ];
 const repositories = [
   //SQL
@@ -278,6 +283,7 @@ const handlers = [
       WallpaperOfBlog,
       IconOfPost,
       SubscribersOfBlog,
+      SubscribersOfTgBot,
     ]),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -309,6 +315,7 @@ const handlers = [
     QuizSaController,
     QuizPublicController,
     TestingController,
+    TelegramController,
   ],
   providers: [
     ...queryRepositories,
@@ -327,6 +334,7 @@ const handlers = [
     EmailAdapter,
     JwtAdapter,
     S3StorageAdapter,
+    TelegramAdapter,
     //handlers
     ...handlers,
 
