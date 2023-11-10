@@ -6,12 +6,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Blogs } from '../../../domain/blogs.entity';
+import { SubscribersOfBlog } from '../../../domain/subscribers-of-blog.entity';
 
 @Injectable()
 export class BlogsOrmRepository {
   constructor(
     @InjectRepository(Blogs)
     protected blogsRepository: Repository<Blogs>,
+    @InjectRepository(SubscribersOfBlog)
+    protected subscribersOfBlogRepository: Repository<SubscribersOfBlog>,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
@@ -79,6 +82,14 @@ export class BlogsOrmRepository {
       .execute();
 
     return result.affected === 1;
+  }
+
+  async subscribeToBlog(blogId: string, userId: string): Promise<void> {
+    const result = await this.subscribersOfBlogRepository.insert({
+      blogId,
+      userId,
+    });
+    return;
   }
 
   async deleteSingleBlog(blogId: string): Promise<boolean> {

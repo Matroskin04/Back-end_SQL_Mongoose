@@ -3,6 +3,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -17,12 +18,16 @@ import {
 import { QueryPostInputModel } from '../../posts/api/models/input/query-post.input.model';
 import { BlogsOrmQueryRepository } from '../infrastructure/typeORM/query.repository/blogs-orm.query.repository';
 import { PostsOrmQueryRepository } from '../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
+import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import { CommandBus } from '@nestjs/cqrs';
+import { SubscribeToBlogCommand } from '../application/blogger/use-cases/subsribe-to-blog.use-case';
 
 @Controller('/api/blogs')
 export class BlogsPublicController {
   constructor(
     protected postsOrmQueryRepository: PostsOrmQueryRepository,
     protected blogsOrmQueryRepository: BlogsOrmQueryRepository,
+    protected commandBus: CommandBus,
   ) {}
 
   @Get()
@@ -44,13 +49,26 @@ export class BlogsPublicController {
   @Get(':blogId/posts')
   async getAllPostsOfBlog(
     @Param('blogId') blogId: string,
-    @CurrentUserId() userId: string,
+    @CurrentUserId() userId: string | null,
     @Query() query: QueryPostInputModel,
   ): Promise<PostsOfBlogViewModel> {
     const result = await this.postsOrmQueryRepository.getAllPostsOfBlog(
       blogId,
       query,
       userId,
+    );
+    if (!result) throw new NotFoundException();
+    return result;
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Post(':blogId/subscription')
+  async subscribeToBlog(
+    @Param('blogId') blogId: string,
+    @CurrentUserId() userId: string,
+  ): Promise<void> {
+    const result = await this.commandBus.execute(
+      new SubscribeToBlogCommand(blogId, userId),
     );
     if (!result) throw new NotFoundException();
     return result;
