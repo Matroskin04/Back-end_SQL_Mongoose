@@ -9,7 +9,7 @@ export class TelegramAdapter {
   constructor(protected configService: ConfigService<ConfigType>) {
     const token = this.configService.get('bot_tg', { infer: true })!.BOT_TOKEN;
     this.axiosInstance = axios.create({
-      baseURL: `https://api.telegram.org/${token}`,
+      baseURL: `https://api.telegram.org/bot${token}`,
     });
   }
 
