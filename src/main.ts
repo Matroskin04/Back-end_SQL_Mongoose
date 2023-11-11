@@ -12,7 +12,7 @@ async function bootstrap() {
 
   const telegramAdapter = await app.resolve(TelegramAdapter);
   const baseUrl = await ngrok.connect(Number(process.env.PORT) || 5000);
-  await telegramAdapter.setWebhook(baseUrl);
+  await telegramAdapter.sendWebhook(baseUrl);
 
   await app.listen(process.env.PORT || 5000);
 }

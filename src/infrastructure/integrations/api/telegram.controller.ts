@@ -1,12 +1,26 @@
-import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { SubscribersOfTgBotRepository } from '../infrastructure/repository/subscribers-of-tg-bot.repository';
 import { JwtAccessGuard } from '../../guards/authorization-guards/jwt-access.guard';
 import { CurrentUserId } from '../../decorators/current-user-id.param.decorator';
+import { HTTP_STATUS_CODE } from '../../utils/enums/http-status.enums';
+import { CommandBus } from '@nestjs/cqrs';
+import { TelegramMessageDtoType } from '../application/dto/telegram-message-type';
+import { HandleTelegramUpdatesCommand } from '../application/use-cases/handle-telegram-updates.use-case';
+import { TelegramMessageInputModel } from './models/input/telegram-messsage.input.model';
 
 @Controller('/api/integrations/telegram')
 export class TelegramController {
   constructor(
     protected subscribersOfTgBotRepository: SubscribersOfTgBotRepository,
+    protected commandBus: CommandBus,
   ) {}
 
   @UseGuards(JwtAccessGuard)
@@ -18,5 +32,14 @@ export class TelegramController {
       link:
         'https://t.me/content_platform_bot/?code=' + result.codeConfirmation,
     };
+  }
+
+  @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
+  @Post('webhook')
+  async forTelegramHook(
+    @Body() payload: TelegramMessageInputModel,
+  ): Promise<void> {
+    await this.commandBus.execute(new HandleTelegramUpdatesCommand(payload));
+    return;
   }
 }
