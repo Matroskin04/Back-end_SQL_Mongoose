@@ -12,7 +12,6 @@ import { JwtAccessGuard } from '../../guards/authorization-guards/jwt-access.gua
 import { CurrentUserId } from '../../decorators/current-user-id.param.decorator';
 import { HTTP_STATUS_CODE } from '../../utils/enums/http-status.enums';
 import { CommandBus } from '@nestjs/cqrs';
-import { TelegramMessageDtoType } from '../application/dto/telegram-message-type';
 import { HandleTelegramUpdatesCommand } from '../application/use-cases/handle-telegram-updates.use-case';
 import { TelegramMessageInputModel } from './models/input/telegram-messsage.input.model';
 
@@ -36,10 +35,9 @@ export class TelegramController {
 
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Post('webhook')
-  async forTelegramHook(
-    @Body() payload: TelegramMessageInputModel,
-  ): Promise<void> {
-    await this.commandBus.execute(new HandleTelegramUpdatesCommand(payload));
+  forTelegramHook(@Body() payload: TelegramMessageInputModel): void {
+    //todo async await is not needed?
+    this.commandBus.execute(new HandleTelegramUpdatesCommand(payload));
     return;
   }
 }

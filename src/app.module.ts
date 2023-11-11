@@ -145,6 +145,8 @@ import { SubscribersOfTgBotRepository } from './infrastructure/integrations/infr
 import { TelegramAdapter } from './infrastructure/adapters/telegram.adapter';
 import { HandleTelegramUpdatesUseCase } from './infrastructure/integrations/application/use-cases/handle-telegram-updates.use-case';
 import { StartUseCase } from './infrastructure/integrations/application/use-cases/sub-use-cases/start.use-case';
+import { PostSubscriber } from './infrastructure/subscribers/post.subscriber';
+// import { PostListeners } from './infrastructure/listeners/post-listeners';
 
 const queryRepositories = [
   // SQL
@@ -343,6 +345,8 @@ const handlers = [
     TelegramAdapter,
     //handlers
     ...handlers,
+    //subscribers
+    PostSubscriber,
 
     //Throttler
     // {
