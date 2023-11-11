@@ -16,7 +16,17 @@ export class SubscribersOfTgBotRepository {
       userId,
       codeConfirmation: uuidv4(),
     });
-    console.log(result);
     return result;
+  }
+
+  async activateSubscriptionToTgBot(
+    codeConfirmation: string,
+    telegramId: number,
+  ): Promise<boolean> {
+    const result = await this.subscribersOfTgBotRepo.update(
+      { codeConfirmation },
+      { telegramId },
+    );
+    return result.affected === 1;
   }
 }
