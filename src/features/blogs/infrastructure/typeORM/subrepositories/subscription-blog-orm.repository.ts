@@ -21,6 +21,20 @@ export class SubscriptionsBlogOrmRepository {
     return;
   }
 
+  async doesUserSubscribedToBlog(
+    blogId: string,
+    userId: string,
+  ): Promise<boolean> {
+    const result = await this.subscribersOfBlogRepository.exist({
+      where: {
+        blogId,
+        userId,
+        subscriptionStatus: SubscriptionStatusEnum.Subscribed,
+      },
+    });
+    return result;
+  }
+
   async unsubscribeFromBlog(blogId: string, userId: string): Promise<boolean> {
     const result = await this.subscribersOfBlogRepository.update(
       { blogId, userId },

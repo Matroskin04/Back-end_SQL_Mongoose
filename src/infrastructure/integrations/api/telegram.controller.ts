@@ -23,7 +23,7 @@ export class TelegramController {
   ) {}
 
   @UseGuards(JwtAccessGuard)
-  @Get('auto-bot-link')
+  @Get('auth-bot-link')
   async getBotLink(@CurrentUserId() userId: string) {
     const result =
       await this.subscribersOfTgBotRepository.saveSubscriberInfoOfTgBot(userId);
