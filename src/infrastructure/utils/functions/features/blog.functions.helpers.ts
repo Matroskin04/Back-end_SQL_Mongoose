@@ -21,7 +21,7 @@ export function modifyBlogIntoViewSAModel(blog) {
 }
 
 export function modifyBlogIntoViewGeneralModel(
-  blog,
+  blog: any,
   configService: ConfigService<ConfigType>,
 ) {
   return {
@@ -46,5 +46,7 @@ export function modifyBlogIntoViewGeneralModel(
           url: configService.get('S3', { infer: true })!.URL + icon.url,
         })) ?? [],
     },
+    currentUserSubscriptionStatus: blog.subscriptionStatus ?? 'None',
+    subscribersCount: Number(blog.subscribersCount) || 0,
   };
 }
