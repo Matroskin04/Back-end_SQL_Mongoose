@@ -20,6 +20,7 @@ import { WallpaperOfBlog } from '../../../domain/wallpaper-of-blog.entity';
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../../../configuration/configuration';
 import { SubscribersOfBlog } from '../../../domain/subscribers-of-blog.entity';
+import { SubscriptionStatusEnum } from '../../../../../infrastructure/utils/enums/blogs-subscribers.enums';
 
 @Injectable()
 export class BlogsOrmQueryRepository {
@@ -288,7 +289,10 @@ export class BlogsOrmQueryRepository {
     return qb
       .select('COUNT(*)')
       .from(SubscribersOfBlog, 'subs')
-      .where('subs."blogId" = b.id');
+      .where('subs."blogId" = b.id')
+      .andWhere('subs."subscriptionStatus" = :subscribed', {
+        subscribed: SubscriptionStatusEnum.Subscribed,
+      });
   }
 
   private subscriptionStatusOfBlogBuilder(
