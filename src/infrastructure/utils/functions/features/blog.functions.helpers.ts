@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../../configuration/configuration';
+import { SubscriptionStatusEnum } from '../../enums/blogs-subscribers.enums';
 
 export function modifyBlogIntoViewSAModel(blog) {
   return {
@@ -46,7 +47,8 @@ export function modifyBlogIntoViewGeneralModel(
           url: configService.get('S3', { infer: true })!.URL + icon.url,
         })) ?? [],
     },
-    currentUserSubscriptionStatus: blog.subscriptionStatus ?? 'None',
+    currentUserSubscriptionStatus:
+      SubscriptionStatusEnum[blog.subscriptionStatus] ?? 'None',
     subscribersCount: Number(blog.subscribersCount) || 0,
   };
 }

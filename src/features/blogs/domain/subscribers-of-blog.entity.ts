@@ -7,7 +7,6 @@ import {
 } from 'typeorm';
 import { Blogs } from './blogs.entity';
 import { Users } from '../../users/domain/users.entity';
-import { QuizStatusEnum } from '../../../infrastructure/utils/enums/quiz.enums';
 import { SubscriptionStatusEnum } from '../../../infrastructure/utils/enums/blogs-subscribers.enums';
 
 @Entity()

@@ -19,6 +19,7 @@ import { IconOfBlog } from '../../../domain/icon-of-blog.entity';
 import { WallpaperOfBlog } from '../../../domain/wallpaper-of-blog.entity';
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../../../configuration/configuration';
+import { SubscribersOfBlog } from '../../../domain/subscribers-of-blog.entity';
 
 @Injectable()
 export class BlogsOrmQueryRepository {
@@ -54,6 +55,14 @@ export class BlogsOrmQueryRepository {
       )
       .addSelect((qb) => this.iconsOfBlogBuilder(qb), 'icons')
       .addSelect((qb) => this.wallpaperOfBlogBuilder(qb), 'wallpaper')
+      .addSelect(
+        (qb) => this.subscribersCountOfBlogBuilder(qb),
+        'subscribersCount',
+      )
+      .addSelect(
+        (qb) => this.subscriptionStatusOfBlogBuilder(qb, userId),
+        'subscriptionStatus',
+      )
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
       .andWhere('b.userId = :userId', { userId })
       .orderBy(`b.${sortBy}`, sortDirection)
@@ -113,6 +122,7 @@ export class BlogsOrmQueryRepository {
 
   async getAllBlogsPublic(
     query: QueryBlogsInputModel,
+    userId: string | null,
   ): Promise<BlogPaginationType> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
       variablesForReturn(query);
@@ -130,6 +140,14 @@ export class BlogsOrmQueryRepository {
       .addSelect((qb) => this.allBlogsCountBuilder(qb, searchNameTerm), 'count')
       .addSelect((qb) => this.iconsOfBlogBuilder(qb), 'icons')
       .addSelect((qb) => this.wallpaperOfBlogBuilder(qb), 'wallpaper')
+      .addSelect(
+        (qb) => this.subscribersCountOfBlogBuilder(qb),
+        'subscribersCount',
+      )
+      .addSelect(
+        (qb) => this.subscriptionStatusOfBlogBuilder(qb, userId),
+        'subscriptionStatus',
+      )
       .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
       .andWhere('b.isBanned = false')
       .orderBy(`b.${sortBy}`, sortDirection)
@@ -253,5 +271,23 @@ export class BlogsOrmQueryRepository {
         .from(WallpaperOfBlog, 'w')
         .where('w."blogId" = b."id"');
     }, 'wallpaper');
+  }
+
+  private subscribersCountOfBlogBuilder(qb: SelectQueryBuilder<Blogs>) {
+    return qb
+      .select('COUNT(*)')
+      .from(SubscribersOfBlog, 'subs')
+      .where('subs."blogId" = b.id');
+  }
+
+  private subscriptionStatusOfBlogBuilder(
+    qb: SelectQueryBuilder<Blogs>,
+    userId: string | null,
+  ) {
+    return qb
+      .select('subs."subscriptionStatus"')
+      .from(SubscribersOfBlog, 'subs')
+      .where('subs."blogId" = b.id')
+      .andWhere('subs."userId" = :userId', { userId });
   }
 }

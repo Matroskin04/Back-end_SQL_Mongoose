@@ -34,11 +34,16 @@ export class BlogsPublicController {
     protected commandBus: CommandBus,
   ) {}
 
+  @UseGuards(JwtAccessNotStrictGuard)
   @Get()
   async getAllBlogs(
+    @CurrentUserId() userId: string | null,
     @Query() query: QueryBlogsInputModel,
   ): Promise<BlogsOutputModel> {
-    const result = await this.blogsOrmQueryRepository.getAllBlogsPublic(query);
+    const result = await this.blogsOrmQueryRepository.getAllBlogsPublic(
+      query,
+      userId,
+    );
     return result;
   }
 
