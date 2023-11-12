@@ -166,7 +166,10 @@ export class BlogsOrmQueryRepository {
     };
   }
 
-  async getBlogByIdPublic(blogId: string): Promise<null | BlogOutputType> {
+  async getBlogByIdPublic(
+    blogId: string,
+    userId: string | null,
+  ): Promise<null | BlogOutputType> {
     const result = await this.blogsRepository
       .createQueryBuilder('b')
       .select([
@@ -179,6 +182,14 @@ export class BlogsOrmQueryRepository {
       ])
       .addSelect((qb) => this.iconsOfBlogBuilder(qb), 'icons')
       .addSelect((qb) => this.wallpaperOfBlogBuilder(qb), 'wallpaper')
+      .addSelect(
+        (qb) => this.subscribersCountOfBlogBuilder(qb),
+        'subscribersCount',
+      )
+      .addSelect(
+        (qb) => this.subscriptionStatusOfBlogBuilder(qb, userId),
+        'subscriptionStatus',
+      )
       .where('b.id = :blogId', { blogId })
       .andWhere('b."isBanned" = false')
       .getRawOne();

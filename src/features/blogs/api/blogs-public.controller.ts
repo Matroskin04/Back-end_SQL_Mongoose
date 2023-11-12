@@ -47,9 +47,16 @@ export class BlogsPublicController {
     return result;
   }
 
+  @UseGuards(JwtAccessNotStrictGuard)
   @Get(':id')
-  async getBlogById(@Param('id') blogId: string): Promise<BlogOutputModel> {
-    const result = await this.blogsOrmQueryRepository.getBlogByIdPublic(blogId);
+  async getBlogById(
+    @CurrentUserId() userId: string | null,
+    @Param('id') blogId: string,
+  ): Promise<BlogOutputModel> {
+    const result = await this.blogsOrmQueryRepository.getBlogByIdPublic(
+      blogId,
+      userId,
+    );
     if (!result) throw new NotFoundException();
     return result;
   }
