@@ -28,8 +28,7 @@ export class TelegramController {
     const result =
       await this.subscribersOfTgBotRepository.saveSubscriberInfoOfTgBot(userId);
     return {
-      link:
-        'https://t.me/content_platform_bot/?code=' + result.codeConfirmation,
+      link: 'https://t.me/content_platform_bot?code=' + result.codeConfirmation,
     };
   }
 
