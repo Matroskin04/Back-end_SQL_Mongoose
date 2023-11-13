@@ -18,6 +18,7 @@ async function bootstrap() {
   let baseUrl = configService.get('app', { infer: true })!.CURRENT_APP_BASE_URL;
   if (configService.get('app', { infer: true })!.NODE_ENV === 'development') {
     baseUrl = await ngrok.connect(Number(process.env.PORT) || 5000);
+    console.log('Ngrok BaseURL:', baseUrl);
   }
   await telegramAdapter.sendWebhook(baseUrl);
 

@@ -5,6 +5,7 @@ import {
   HttpCode,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { SubscribersOfTgBotRepository } from '../infrastructure/repository/subscribers-of-tg-bot.repository';
@@ -35,6 +36,7 @@ export class TelegramController {
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Post('webhook')
   forTelegramHook(@Body() payload: TelegramMessageInputModel): void {
+    console.log(payload);
     //todo async await is not needed?
     this.commandBus.execute(new HandleTelegramUpdatesCommand(payload));
     return;

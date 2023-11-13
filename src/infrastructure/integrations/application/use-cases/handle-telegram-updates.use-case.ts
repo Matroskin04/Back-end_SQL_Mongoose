@@ -16,9 +16,10 @@ export class HandleTelegramUpdatesUseCase
 
   async execute(command: HandleTelegramUpdatesCommand): Promise<any> {
     const { message } = command.messageInfo;
-    const userTgId = message.from.id;
+    if (!message) return;
 
-    if (/^\/start/.test(message.text)) {
+    const userTgId = message.from.id;
+    if (/^\/start code=/.test(message.text)) {
       this.startUseCase.execute(message.text, userTgId);
     }
   }

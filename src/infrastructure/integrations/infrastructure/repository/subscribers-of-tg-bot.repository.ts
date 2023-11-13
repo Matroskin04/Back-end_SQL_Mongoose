@@ -5,6 +5,7 @@ import { SubscribersOfTgBot } from '../../domain/subscribers-of-tg-bot.entity';
 import { Repository } from 'typeorm';
 import { SubscribersOfBlog } from '../../../../features/blogs/domain/subscribers-of-blog.entity';
 import { Blogs } from '../../../../features/blogs/domain/blogs.entity';
+import { SubscriptionStatusEnum } from '../../../utils/enums/blogs-subscribers.enums';
 
 @Injectable()
 export class SubscribersOfTgBotRepository {
@@ -45,7 +46,10 @@ export class SubscribersOfTgBotRepository {
         { blogId },
       )
       .leftJoin('sb.blog', 'b')
-      .where('stg."telegramId" IS NOT NULL');
+      .where('stg."telegramId" IS NOT NULL')
+      .andWhere('sb."subscriptionStatus" = :subscribed', {
+        subscribed: SubscriptionStatusEnum.Subscribed,
+      });
 
     const result = await query.getRawMany();
     return result;
