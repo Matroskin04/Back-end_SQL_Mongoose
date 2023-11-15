@@ -305,6 +305,7 @@ const handlers = [
         autoLoadEntities: true,
         synchronize: false,
         ssl: { require: true, rejectUnauthorized: false },
+        // url: process.env.POSTGRES_URL + '?sslmode=require',
       }),
     }),
     JwtModule.register({}),

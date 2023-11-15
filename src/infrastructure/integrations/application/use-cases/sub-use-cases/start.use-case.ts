@@ -26,11 +26,10 @@ export class StartUseCase {
         userTgId,
       );
     } else {
-      return;
-      // await this.telegramAdapter.sendMessage(
-      //   `Great! Now I will notify you about all new blog posts that you have subscribed to`,
-      //   userTgId,
-      // );
+      await this.telegramAdapter.sendMessage(
+        `Great! Now I will notify you about all new blog posts that you have subscribed to`,
+        userTgId,
+      );
     }
   }
 }
