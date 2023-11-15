@@ -10,6 +10,7 @@ import { AllExceptionsFilter } from './infrastructure/exception-filters/exceptio
 import ngrok from 'ngrok';
 
 export const appSettings = (app: INestApplication) => {
+  //creating container for Dependency Injection
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.enableCors();
   app.use(cookieParser());

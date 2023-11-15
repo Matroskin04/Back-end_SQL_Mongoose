@@ -3,8 +3,8 @@ import { Users } from '../../../features/users/domain/users.entity';
 
 @Entity()
 export class SubscribersOfTgBot {
-  @Column({ nullable: true })
-  telegramId: string;
+  @Column({ nullable: true, type: 'bigint' })
+  telegramId: number;
 
   @Column('uuid')
   codeConfirmation: string;

@@ -14,6 +14,11 @@ export const getConfiguration = () => ({
       POSTGRES_DATABASE: process.env.POSTGRES_DATABASE,
     },
   },
+  app: {
+    CURRENT_APP_BASE_URL:
+      process.env.CURRENT_APP_BASE_URL || 'https://localhost:5000',
+    NODE_ENV: process.env.NODE_ENV || 'development',
+  },
   jwt: {
     PRIVATE_KEY_ACCESS_TOKEN: process.env.PRIVATE_KEY_ACCESS_TOKEN ?? '123',
     PRIVATE_KEY_REFRESH_TOKEN: process.env.PRIVATE_KEY_REFRESH_TOKEN ?? '234',

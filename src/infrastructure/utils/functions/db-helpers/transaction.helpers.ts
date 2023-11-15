@@ -1,4 +1,10 @@
-import { DataSource, Repository } from 'typeorm';
+import {
+  BaseEntity,
+  DataSource,
+  EntityTarget,
+  ObjectLiteral,
+  Repository,
+} from 'typeorm';
 import { Users } from '../../../../features/users/domain/users.entity';
 
 export async function startTransaction(
@@ -8,6 +14,7 @@ export async function startTransaction(
   const repositories: { [key: string]: Repository<any> } = {};
   // create a new query runner
   const queryRunner = dataSource.createQueryRunner();
+  const repo = queryRunner.manager.getRepository<ObjectLiteral>(Users);
 
   // establish real database connection using our new query runner
   await queryRunner.connect();

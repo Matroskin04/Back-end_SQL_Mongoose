@@ -400,11 +400,6 @@ export class QuizOrmQueryRepository {
       .limit(+pageSize)
       .offset((+pageNumber - 1) * +pageSize);
 
-    try {
-      const quizInfo = await query.getRawMany();
-    } catch (e) {
-      console.log(e);
-    }
     const quizInfo = await query.getRawMany();
 
     return {

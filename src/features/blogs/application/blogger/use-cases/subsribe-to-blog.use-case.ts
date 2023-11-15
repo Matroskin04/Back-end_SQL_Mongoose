@@ -25,8 +25,17 @@ export class SubscribeToBlogUseCase
   async execute(command: SubscribeToBlogCommand): Promise<boolean> {
     const { blogId, userId } = command;
 
-    const doesBlogExist = this.blogsOrmQueryRepository.doesBlogExist(blogId);
+    const doesBlogExist = await this.blogsOrmQueryRepository.doesBlogExist(
+      blogId,
+    );
     if (!doesBlogExist) return false;
+
+    const doesUserSubscribed =
+      await this.subscriptionsBlogOrmRepository.doesUserSubscribedToBlog(
+        blogId,
+        userId,
+      );
+    if (doesUserSubscribed) return true;
 
     await this.subscriptionsBlogOrmRepository.subscribeToBlog(blogId, userId);
     return true;

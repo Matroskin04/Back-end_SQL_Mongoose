@@ -13,9 +13,13 @@ export class TelegramAdapter {
     });
   }
 
-  async setWebhook(baseUrl: string): Promise<void> {
+  async sendWebhook(baseUrl: string): Promise<void> {
     await this.axiosInstance.post('setWebhook', {
-      url: baseUrl + '/api/integrations/telegram',
+      url: baseUrl + '/api/integrations/telegram/webhook',
     });
+  }
+
+  async sendMessage(text: string, chatId: number): Promise<void> {
+    await this.axiosInstance.post('sendMessage', { text, chat_id: chatId });
   }
 }
