@@ -6,9 +6,11 @@ import { BlogsSAController } from './api/blogs-sa.controller';
 import { BlogsQueryRepository } from './infrastructure/SQL/query.repository/blogs.query.repository';
 import { BlogsOrmQueryRepository } from './infrastructure/typeORM/query.repository/blogs-orm.query.repository';
 import { BlogsOrmRepository } from './infrastructure/typeORM/repository/blogs-orm.repository';
-import { BlogsRepository } from "./infrastructure/SQL/repository/blogs.repository";
+import { BlogsRepository } from './infrastructure/SQL/repository/blogs.repository';
+import { AppModule } from '../../app.module';
 
 @Module({
+  // imports: [AppModule],
   controllers: [
     BlogsPublicController,
     BlogsBloggerController,

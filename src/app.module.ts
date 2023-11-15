@@ -147,6 +147,7 @@ import { HandleTelegramUpdatesUseCase } from './infrastructure/integrations/appl
 import { StartUseCase } from './infrastructure/integrations/application/use-cases/sub-use-cases/start.use-case';
 import { PostSubscriber } from './infrastructure/subscribers/post.subscriber';
 // import { PostListeners } from './infrastructure/listeners/post-listeners';
+import { QuizModule } from './features/quiz/quiz.module';
 
 const queryRepositories = [
   // SQL
@@ -164,9 +165,9 @@ const queryRepositories = [
   DevicesOrmQueryRepository,
   UsersOrmQueryRepository,
   LikesInfoOrmQueryRepository,
-  QuestionsOrmQueryRepository,
-  QuizOrmQueryRepository,
-  AnswersQuizOrmQueryRepository,
+  // QuestionsOrmQueryRepository,
+  // QuizOrmQueryRepository,
+  // AnswersQuizOrmQueryRepository,
   PhotosForBlogQueryRepository,
   PhotosForPostQueryRepository,
   SubscribersOfTgBotRepository,
@@ -183,7 +184,7 @@ const repositories = [
   LikesInfoRepository,
   PostsRepository,
   UsersRepository,
-  QuestionsOrmRepository,
+  // QuestionsOrmRepository,
   PhotosForBlogRepository,
   TestingRepository,
 
@@ -198,10 +199,10 @@ const repositories = [
   DevicesOrmRepository,
   LikesInfoOrmRepository,
   CommentsLikesOrmRepository,
-  QuizOrmRepository,
-  QuestionQuizRelationOrmRepository,
-  QuizInfoAboutUserOrmRepository,
-  AnswersQuizOrmRepository,
+  // QuizOrmRepository,
+  // QuestionQuizRelationOrmRepository,
+  // QuizInfoAboutUserOrmRepository,
+  // AnswersQuizOrmRepository,
   PhotosForPostRepository,
   PhotosForBlogRepository,
   SubscriptionsBlogOrmRepository,
@@ -250,14 +251,14 @@ const handlers = [
   DeleteDevicesByUserIdUseCase,
 
   //Questions
-  CreateQuestionUseCase,
-  UpdateQuestionUseCase,
-  PublishQuestionUseCase,
-  DeleteQuestionUseCase,
+  // CreateQuestionUseCase,
+  // UpdateQuestionUseCase,
+  // PublishQuestionUseCase,
+  // DeleteQuestionUseCase,
 
   //Quiz
-  ConnectToQuizUseCase,
-  SendAnswerToQuizUseCase,
+  // ConnectToQuizUseCase,
+  // SendAnswerToQuizUseCase,
 
   //Telegram
   HandleTelegramUpdatesUseCase,
@@ -282,11 +283,11 @@ const handlers = [
       UsersPasswordRecovery,
       UsersEmailConfirmation,
       UsersBanInfo,
-      QuestionQuiz,
-      AnswerQuiz,
-      QuestionQuizRelation,
-      Quiz,
-      QuizInfoAboutUser,
+      // QuestionQuiz,
+      // AnswerQuiz,
+      // QuestionQuizRelation,
+      // Quiz,
+      // QuizInfoAboutUser,
       IconOfBlog,
       WallpaperOfBlog,
       IconOfPost,
@@ -304,11 +305,12 @@ const handlers = [
         database: configService.get('db').postgresql.POSTGRES_DATABASE,
         autoLoadEntities: true,
         synchronize: false,
-        ssl: { require: true, rejectUnauthorized: false },
+        // ssl: { require: true, rejectUnauthorized: false },
         // url: process.env.POSTGRES_URL + '?sslmode=require',
       }),
     }),
     JwtModule.register({}),
+    QuizModule,
   ],
   controllers: [
     AuthController,
@@ -320,8 +322,6 @@ const handlers = [
     CommentsController,
     UsersSaController,
     UsersBloggerController,
-    QuizSaController,
-    QuizPublicController,
     TestingController,
     TelegramController,
   ],
