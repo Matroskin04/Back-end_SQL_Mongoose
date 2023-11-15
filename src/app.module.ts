@@ -29,7 +29,6 @@ import { DevicesRepository } from './features/devices/infrastructure/SQL/reposit
 import { JwtAdapter } from './infrastructure/adapters/jwt.adapter';
 import { BlogsPublicController } from './features/blogs/api/blogs-public.controller';
 import { BlogsBloggerController } from './features/blogs/api/blogs-blogger.controller';
-import { BlogsQueryRepository } from './features/blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 import { BlogsRepository } from './features/blogs/infrastructure/SQL/repository/blogs.repository';
 import { UsersBloggerController } from './features/users/api/blogger/users-blogger.controller';
 import { RegisterUserUseCase } from './features/auth/application/use-cases/register-user.use-case';
@@ -148,6 +147,9 @@ import { StartUseCase } from './infrastructure/integrations/application/use-case
 import { PostSubscriber } from './infrastructure/subscribers/post.subscriber';
 // import { PostListeners } from './infrastructure/listeners/post-listeners';
 import { QuizModule } from './features/quiz/quiz.module';
+import { UsersModule } from './features/users/users.module';
+import { BlogOwnerByIdGuard } from './infrastructure/guards/forbidden-guards/blog-owner-by-id.guard';
+import { BlogsQueryRepository } from './features/blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 
 const queryRepositories = [
   // SQL
@@ -156,7 +158,7 @@ const queryRepositories = [
   LikesInfoQueryRepository,
   DevicesQueryRepository,
   CommentsQueryRepository,
-  UsersQueryRepository,
+  // UsersQueryRepository,
 
   //ORM
   BlogsOrmQueryRepository,
@@ -183,7 +185,7 @@ const repositories = [
   DevicesRepository,
   LikesInfoRepository,
   PostsRepository,
-  UsersRepository,
+  // UsersRepository,
   // QuestionsOrmRepository,
   PhotosForBlogRepository,
   TestingRepository,
@@ -239,10 +241,10 @@ const handlers = [
   UpdateCommentLikeStatusUseCase,
   DeleteCommentUseCase,
   //users
-  CreateUserUseCase,
-  UpdateBanInfoOfUserUseCase,
-  UpdateUserBanInfoForBlogUseCase,
-  DeleteUserUseCase,
+  // CreateUserUseCase,
+  // UpdateBanInfoOfUserUseCase,
+  // UpdateUserBanInfoForBlogUseCase,
+  // DeleteUserUseCase,
   //devices
   CreateDeviceUseCase,
   DeleteDeviceByRefreshTokenUseCase,
@@ -279,10 +281,10 @@ const handlers = [
       PostsLikesInfo,
       Comments,
       CommentsLikesInfo,
-      Users,
-      UsersPasswordRecovery,
-      UsersEmailConfirmation,
-      UsersBanInfo,
+      // Users,
+      // UsersPasswordRecovery,
+      // UsersEmailConfirmation,
+      // UsersBanInfo,
       // QuestionQuiz,
       // AnswerQuiz,
       // QuestionQuizRelation,
@@ -311,6 +313,7 @@ const handlers = [
     }),
     JwtModule.register({}),
     QuizModule,
+    UsersModule,
   ],
   controllers: [
     AuthController,
@@ -320,8 +323,8 @@ const handlers = [
     DevicesController,
     PostsController,
     CommentsController,
-    UsersSaController,
-    UsersBloggerController,
+    // UsersSaController,
+    // UsersBloggerController,
     TestingController,
     TelegramController,
   ],
@@ -354,5 +357,6 @@ const handlers = [
     //   useClass: ThrottlerGuard,
     // },
   ],
+  // exports: [CryptoAdapter, EmailConfirmationOrmRepository, PasswordRecoveryOrmRepository],
 })
 export class AppModule {}

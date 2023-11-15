@@ -56,5 +56,6 @@ const useCases = [
   imports: [TypeOrmModule.forFeature([...entities]), CqrsModule],
   controllers: [QuizSaController, QuizPublicController],
   providers: [...queryRepositories, ...repositories, ...useCases],
+  exports: [TypeOrmModule],
 })
 export class QuizModule {}
