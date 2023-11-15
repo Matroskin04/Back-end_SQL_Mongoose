@@ -18,6 +18,7 @@ import { AllLikeStatusEnum } from '../../../../../infrastructure/utils/enums/lik
 import { Comments } from '../../../domain/comments.entity';
 import { CommentsLikesInfo } from '../../../domain/comments-likes-info.entity';
 import { UsersBanInfo } from '../../../../users/domain/users-ban-info.entity';
+import { PostsOrmQueryRepository } from '../../../../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
 
 @Injectable()
 export class CommentsOrmQueryRepository {
@@ -25,7 +26,7 @@ export class CommentsOrmQueryRepository {
     @InjectRepository(Comments)
     protected commentsRepository: Repository<Comments>,
     @InjectDataSource() protected dataSource: DataSource,
-    protected postsQueryRepository: PostsQueryRepository,
+    protected postsQueryRepository: PostsOrmQueryRepository,
   ) {}
 
   //view methods

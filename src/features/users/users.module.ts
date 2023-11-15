@@ -5,9 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UsersRepository } from './infrastructure/SQL/repository/users.repository';
 import { UsersOrmRepository } from './infrastructure/typeORM/repository/users-orm.repository';
-import { RegisterUserUseCase } from '../auth/application/use-cases/register-user.use-case';
-import { LoginUserUseCase } from '../auth/application/use-cases/login-user.use-case';
-import { ValidateUserUseCase } from '../auth/application/use-cases/validate-user.use-case';
 import { CreateUserUseCase } from './application/sa/use-cases/create-user.use-case';
 import { UpdateBanInfoOfUserUseCase } from './application/sa/use-cases/update-ban-info-of-user.use-case';
 import { UpdateUserBanInfoForBlogUseCase } from './application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
@@ -26,7 +23,6 @@ import { DevicesOrmRepository } from '../devices/infrastructure/typeORM/reposito
 import { BannedUsersOfBlog } from '../blogs/domain/banned-users-of-blog.entity';
 import { Devices } from '../devices/domain/devices.entity';
 import { BlogsOrmQueryRepository } from '../blogs/infrastructure/typeORM/query.repository/blogs-orm.query.repository';
-import { AppModule } from '../../app.module';
 import { Blogs } from '../blogs/domain/blogs.entity';
 
 const entities = [

@@ -32,7 +32,6 @@ export class UploadPostMainImgUseCase
     protected s3StorageAdapter: S3StorageAdapter,
     protected photosForPostRepository: PhotosForPostRepository,
     protected photosForPostQueryRepository: PhotosForPostQueryRepository,
-    protected blogsQueryRepository: BlogsOrmQueryRepository,
     protected postsQueryRepository: PostsOrmQueryRepository,
     protected configService: ConfigService<ConfigType>,
   ) {}
