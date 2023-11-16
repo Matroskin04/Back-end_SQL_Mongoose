@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { AccessRefreshTokens } from './types/jwt.types.adapter';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService as JwtServiceNest } from '@nestjs/jwt';
-import { DevicesRepository } from '../../features/devices/infrastructure/SQL/repository/devices.repository';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { DevicesOrmRepository } from '../../features/devices/infrastructure/typeORM/repository/devices-orm.repository';
 import { ConfigService } from '@nestjs/config';
