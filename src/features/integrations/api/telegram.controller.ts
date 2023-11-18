@@ -9,9 +9,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { SubscribersOfTgBotRepository } from '../infrastructure/repository/subscribers-of-tg-bot.repository';
-import { JwtAccessGuard } from '../../guards/authorization-guards/jwt-access.guard';
-import { CurrentUserId } from '../../decorators/current-user-id.param.decorator';
-import { HTTP_STATUS_CODE } from '../../utils/enums/http-status.enums';
+import { JwtAccessGuard } from '../../../infrastructure/guards/authorization-guards/jwt-access.guard';
+import { CurrentUserId } from '../../../infrastructure/decorators/current-user-id.param.decorator';
+import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { CommandBus } from '@nestjs/cqrs';
 import { HandleTelegramUpdatesCommand } from '../application/use-cases/handle-telegram-updates.use-case';
 import { TelegramMessageInputModel } from './models/input/telegram-messsage.input.model';

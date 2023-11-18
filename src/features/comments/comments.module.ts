@@ -53,6 +53,8 @@ const entities = [
   Users,
   BannedUsersOfBlog,
   UsersEmailConfirmation,
+  Blogs,
+  BannedUsersOfBlog,
 ];
 const queryRepositories = [
   CommentsOrmQueryRepository,
@@ -62,6 +64,7 @@ const queryRepositories = [
   UsersOrmQueryRepository,
   LikesInfoOrmQueryRepository,
   BlogsQueryRepository,
+  BlogsOrmQueryRepository,
 ];
 const repositories = [
   CommentsRepository,

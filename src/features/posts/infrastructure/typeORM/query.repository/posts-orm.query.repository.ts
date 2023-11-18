@@ -19,6 +19,7 @@ import { Blogs } from '../../../../blogs/domain/blogs.entity';
 import { IconOfBlog } from '../../../../blogs/domain/icon-of-blog.entity';
 import { IconOfPost } from '../../../domain/main-img-of-post.entity';
 import { ConfigService } from '@nestjs/config';
+import { BlogsOrmQueryRepository } from '../../../../blogs/infrastructure/typeORM/query.repository/blogs-orm.query.repository';
 
 @Injectable()
 export class PostsOrmQueryRepository {
@@ -28,7 +29,7 @@ export class PostsOrmQueryRepository {
     @InjectRepository(PostsLikesInfo)
     protected postsLikesInfoRepository: Repository<PostsLikesInfo>,
     @InjectDataSource() protected dataSource: DataSource,
-    protected blogsQueryRepository: BlogsQueryRepository,
+    protected blogsQueryRepository: BlogsOrmQueryRepository,
     protected configService: ConfigService,
   ) {}
 

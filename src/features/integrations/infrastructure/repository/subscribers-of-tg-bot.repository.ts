@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { SubscribersOfTgBot } from '../../domain/subscribers-of-tg-bot.entity';
 import { Repository } from 'typeorm';
-import { SubscribersOfBlog } from '../../../../features/blogs/domain/subscribers-of-blog.entity';
-import { Blogs } from '../../../../features/blogs/domain/blogs.entity';
-import { SubscriptionStatusEnum } from '../../../utils/enums/blogs-subscribers.enums';
+import { SubscribersOfBlog } from '../../../blogs/domain/subscribers-of-blog.entity';
+import { Blogs } from '../../../blogs/domain/blogs.entity';
+import { SubscriptionStatusEnum } from '../../../../infrastructure/utils/enums/blogs-subscribers.enums';
 
 @Injectable()
 export class SubscribersOfTgBotRepository {

@@ -85,12 +85,12 @@ import { PhotosForPostRepository } from './features/posts/infrastructure/typeORM
 import { IconOfPost } from './features/posts/domain/main-img-of-post.entity';
 import { SubscribersOfBlog } from './features/blogs/domain/subscribers-of-blog.entity';
 import { SubscriptionsBlogOrmRepository } from './features/blogs/infrastructure/typeORM/subrepositories/subscription-blog-orm.repository';
-import { TelegramController } from './infrastructure/integrations/api/telegram.controller';
-import { SubscribersOfTgBot } from './infrastructure/integrations/domain/subscribers-of-tg-bot.entity';
-import { SubscribersOfTgBotRepository } from './infrastructure/integrations/infrastructure/repository/subscribers-of-tg-bot.repository';
+import { TelegramController } from './features/integrations/api/telegram.controller';
+import { SubscribersOfTgBot } from './features/integrations/domain/subscribers-of-tg-bot.entity';
+import { SubscribersOfTgBotRepository } from './features/integrations/infrastructure/repository/subscribers-of-tg-bot.repository';
 import { TelegramAdapter } from './infrastructure/adapters/telegram.adapter';
-import { HandleTelegramUpdatesUseCase } from './infrastructure/integrations/application/use-cases/handle-telegram-updates.use-case';
-import { StartUseCase } from './infrastructure/integrations/application/use-cases/sub-use-cases/start.use-case';
+import { HandleTelegramUpdatesUseCase } from './features/integrations/application/use-cases/handle-telegram-updates.use-case';
+import { StartUseCase } from './features/integrations/application/use-cases/sub-use-cases/start.use-case';
 import { PostSubscriber } from './infrastructure/subscribers/post.subscriber';
 import { QuizModule } from './features/quiz/quiz.module';
 import { UsersModule } from './features/users/users.module';
@@ -98,28 +98,26 @@ import { BlogsModule } from './features/blogs/blogs.module';
 import { UploadPostMainImgUseCase } from './features/posts/application/use-cases/upload-post-main-img.use-case';
 import { BlogsQueryRepository } from './features/blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 import { BlogsOrmQueryRepository } from './features/blogs/infrastructure/typeORM/query.repository/blogs-orm.query.repository';
+import { DevicesModule } from './features/devices/devices.module';
+import { AuthModule } from './features/auth/auth.module';
+import { CommentsModule } from './features/comments/comments.module';
+import { PostsModule } from './features/posts/posts.module';
 
 const queryRepositories = [
   // SQL
   BlogsQueryRepository,
-  PostsQueryRepository,
-  LikesInfoQueryRepository,
-  DevicesQueryRepository,
-  CommentsQueryRepository,
-  // UsersQueryRepository,
+  // PostsQueryRepository,
+  // LikesInfoQueryRepository,
+  // CommentsQueryRepository,
 
   //ORM
   BlogsOrmQueryRepository,
-  PostsOrmQueryRepository,
-  CommentsOrmQueryRepository,
+  // PostsOrmQueryRepository,
+  // CommentsOrmQueryRepository,
   DevicesOrmQueryRepository,
   UsersOrmQueryRepository,
-  LikesInfoOrmQueryRepository,
-  // QuestionsOrmQueryRepository,
-  // QuizOrmQueryRepository,
-  // AnswersQuizOrmQueryRepository,
-  // PhotosForBlogQueryRepository,
-  PhotosForPostQueryRepository,
+  // LikesInfoOrmQueryRepository,
+  // PhotosForPostQueryRepository,
   SubscribersOfTgBotRepository,
 ];
 const repositories = [
@@ -127,89 +125,33 @@ const repositories = [
   PasswordRecoveryPublicRepository,
   BanInfoPublicRepository,
   EmailConfirmationPublicRepository,
-  // BlogsRepository,
-  CommentsRepository,
-  CommentsLikesRepository,
-  DevicesRepository,
-  LikesInfoRepository,
-  PostsRepository,
-  // UsersRepository,
-  // QuestionsOrmRepository,
-  // PhotosForBlogRepository,
+  // CommentsRepository,
+  // CommentsLikesRepository,
+  // LikesInfoRepository,
+  // PostsRepository,
   TestingRepository,
 
   //ORM
-  // BlogsOrmRepository,
-  PostsOrmRepository,
-  CommentsOrmRepository,
-  UsersOrmRepository,
-  EmailConfirmationOrmRepository,
-  PasswordRecoveryOrmRepository,
-  BanInfoOrmRepository,
+  // PostsOrmRepository,
+  // CommentsOrmRepository,
   DevicesOrmRepository,
-  LikesInfoOrmRepository,
-  CommentsLikesOrmRepository,
-  // QuizOrmRepository,
-  // QuestionQuizRelationOrmRepository,
-  // QuizInfoAboutUserOrmRepository,
-  // AnswersQuizOrmRepository,
-  PhotosForPostRepository,
-  // PhotosForBlogRepository,
-  // SubscriptionsBlogOrmRepository,
+  // LikesInfoOrmRepository,
+  // CommentsLikesOrmRepository,
+  // PhotosForPostRepository,
 ];
 
 const handlers = [
-  //auth
-  RegisterUserUseCase,
-  ConfirmEmailUseCase,
-  ResendConfirmationEmailMessageUseCase,
-  UpdatePasswordUseCase,
-  LoginUserUseCase,
-  ValidateUserUseCase,
-  SendEmailPassRecoveryUseCase,
-  //blogs
-  // CreateBlogUseCase,
-  // UpdateBlogUseCase,
-  // DeleteBlogUseCase,
-  // BindBlogWithUserUseCase,
-  // UpdateBanInfoOfBlogUseCase,
-  // UploadBlogIconUseCase,
-  // UploadBlogWallpaperUseCase,
-  UploadPostMainImgUseCase,
-  // SubscribeToBlogUseCase,
-  // UnsubscribeFromBlogUseCase,
+  // UploadPostMainImgUseCase,
   //posts
-  CreatePostUseCase,
-  UpdatePostUseCase,
-  UpdatePostLikeStatusUseCase,
-  DeletePostUseCase,
+  // CreatePostUseCase,
+  // UpdatePostUseCase,
+  // UpdatePostLikeStatusUseCase,
+  // DeletePostUseCase,
   //comments
-  CreateCommentUseCase,
-  UpdateCommentUseCase,
-  UpdateCommentLikeStatusUseCase,
-  DeleteCommentUseCase,
-  //users
-  // CreateUserUseCase,
-  // UpdateBanInfoOfUserUseCase,
-  // UpdateUserBanInfoForBlogUseCase,
-  // DeleteUserUseCase,
-  //devices
-  CreateDeviceUseCase,
-  DeleteDeviceByRefreshTokenUseCase,
-  DeleteDevicesExcludeCurrentUseCase,
-  DeleteDeviceByIdUseCase,
-  DeleteDevicesByUserIdUseCase,
-
-  //Questions
-  // CreateQuestionUseCase,
-  // UpdateQuestionUseCase,
-  // PublishQuestionUseCase,
-  // DeleteQuestionUseCase,
-
-  //Quiz
-  // ConnectToQuizUseCase,
-  // SendAnswerToQuizUseCase,
-
+  // CreateCommentUseCase,
+  // UpdateCommentUseCase,
+  // UpdateCommentLikeStatusUseCase,
+  // DeleteCommentUseCase,
   //Telegram
   HandleTelegramUpdatesUseCase,
   StartUseCase,
@@ -225,24 +167,12 @@ const handlers = [
       // Blogs,
       // BannedUsersOfBlog,
       Devices,
-      Posts,
-      PostsLikesInfo,
-      Comments,
-      CommentsLikesInfo,
-      // Users,
-      // UsersPasswordRecovery,
-      // UsersEmailConfirmation,
-      // UsersBanInfo,
-      // QuestionQuiz,
-      // AnswerQuiz,
-      // QuestionQuizRelation,
-      // Quiz,
-      // QuizInfoAboutUser,
-      // IconOfBlog,
-      // WallpaperOfBlog,
-      IconOfPost,
-      // SubscribersOfBlog,
-      SubscribersOfTgBot,
+      // Posts,
+      // PostsLikesInfo,
+      // Comments,
+      // CommentsLikesInfo,
+      // IconOfPost,
+      // SubscribersOfTgBot,
     ]),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -263,17 +193,14 @@ const handlers = [
     BlogsModule,
     QuizModule,
     UsersModule,
+    DevicesModule,
+    AuthModule,
+    CommentsModule,
+    PostsModule,
   ],
   controllers: [
-    AuthController,
-    // BlogsPublicController,
-    // BlogsBloggerController,
-    // BlogsSAController,
-    DevicesController,
-    PostsController,
-    CommentsController,
-    // UsersSaController,
-    // UsersBloggerController,
+    // PostsController,
+    // CommentsController,
     TestingController,
     TelegramController,
   ],
@@ -289,10 +216,10 @@ const handlers = [
     IsUserBannedByJWTStrategy,
 
     //Managers && Adapters
-    EmailManager,
-    CryptoAdapter,
+    // EmailManager,
+    // CryptoAdapter,
     EmailAdapter,
-    JwtAdapter,
+    // JwtAdapter,
     S3StorageAdapter,
     TelegramAdapter,
     //handlers
@@ -306,6 +233,6 @@ const handlers = [
     //   useClass: ThrottlerGuard,
     // },
   ],
-  // exports: [CryptoAdapter, EmailConfirmationOrmRepository, PasswordRecoveryOrmRepository],
+  // exports: [  ],
 })
 export class AppModule {}

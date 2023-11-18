@@ -6,7 +6,7 @@ import {
   InsertEvent,
 } from 'typeorm';
 import { Injectable } from '@nestjs/common';
-import { SubscribersOfTgBotRepository } from '../integrations/infrastructure/repository/subscribers-of-tg-bot.repository';
+import { SubscribersOfTgBotRepository } from '../../features/integrations/infrastructure/repository/subscribers-of-tg-bot.repository';
 import { TelegramAdapter } from '../adapters/telegram.adapter';
 
 @Injectable()

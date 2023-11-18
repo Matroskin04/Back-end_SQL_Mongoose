@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-import { Users } from '../../../features/users/domain/users.entity';
+import { Users } from '../../users/domain/users.entity';
 
 @Entity()
 export class SubscribersOfTgBot {

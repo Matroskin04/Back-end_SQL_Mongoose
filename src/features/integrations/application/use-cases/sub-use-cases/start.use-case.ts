@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SubscribersOfTgBotRepository } from '../../../infrastructure/repository/subscribers-of-tg-bot.repository';
-import { TelegramAdapter } from '../../../../adapters/telegram.adapter';
-import { regexpUUID } from '../../../../utils/regexp/general-regexp';
+import { TelegramAdapter } from '../../../../../infrastructure/adapters/telegram.adapter';
+import { regexpUUID } from '../../../../../infrastructure/utils/regexp/general-regexp';
 
 @Injectable()
 export class StartUseCase {

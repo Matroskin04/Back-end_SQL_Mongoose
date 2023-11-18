@@ -20,7 +20,7 @@ import { Quiz } from '../../quiz/domain/quiz.entity';
 import { AnswerQuiz } from '../../quiz/domain/answer-quiz.entity';
 import { QuizInfoAboutUser } from '../../quiz/domain/quiz-info-about-user.entity';
 import { SubscribersOfBlog } from '../../blogs/domain/subscribers-of-blog.entity';
-import { SubscribersOfTgBot } from '../../../infrastructure/integrations/domain/subscribers-of-tg-bot.entity';
+import { SubscribersOfTgBot } from '../../integrations/domain/subscribers-of-tg-bot.entity';
 
 @Entity()
 export class Users {
