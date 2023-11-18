@@ -102,6 +102,7 @@ import { DevicesModule } from './features/devices/devices.module';
 import { AuthModule } from './features/auth/auth.module';
 import { CommentsModule } from './features/comments/comments.module';
 import { PostsModule } from './features/posts/posts.module';
+import { TestingModule } from './features/testing/testing.module';
 
 const queryRepositories = [
   // SQL
@@ -129,7 +130,7 @@ const repositories = [
   // CommentsLikesRepository,
   // LikesInfoRepository,
   // PostsRepository,
-  TestingRepository,
+  // TestingRepository,
 
   //ORM
   // PostsOrmRepository,
@@ -197,11 +198,12 @@ const handlers = [
     AuthModule,
     CommentsModule,
     PostsModule,
+    TestingModule,
   ],
   controllers: [
     // PostsController,
     // CommentsController,
-    TestingController,
+    // TestingController,
     TelegramController,
   ],
   providers: [

@@ -8,7 +8,7 @@ export class TestingRepository {
   async deleteAllData(): Promise<void> {
     try {
       await this.dataSource.query(`
-      TRUNCATE public."users" CASCADE;
+      TRUNCATE public."users" CASCADE; 
       TRUNCATE public."quiz" CASCADE;
       TRUNCATE public."question_quiz" CASCADE;`);
     } catch (err) {
