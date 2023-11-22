@@ -7,7 +7,7 @@
 
 # Another files
 .env
-testing.js
+testing.mjs
 tests.ts
 data-source.ts
 
