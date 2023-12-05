@@ -12,8 +12,10 @@ import { DevicesOrmQueryRepository } from './infrastructure/typeORM/query.reposi
 import { DevicesRepository } from './infrastructure/SQL/repository/devices.repository';
 import { DevicesOrmRepository } from './infrastructure/typeORM/repository/devices-orm.repository';
 import { JwtAdapter } from '../../infrastructure/adapters/jwt.adapter';
-import { Devices } from './domain/devices.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '../../configuration/configuration';
+import { Devices } from './domain/devices.entity';
 
 const queryRepositories = [DevicesQueryRepository, DevicesOrmQueryRepository];
 const repositories = [DevicesRepository, DevicesOrmRepository];
@@ -32,6 +34,6 @@ const useCases = [
   ],
   controllers: [DevicesController],
   providers: [...queryRepositories, ...repositories, ...useCases, JwtAdapter],
-  exports: [TypeOrmModule, DevicesOrmRepository, DevicesOrmQueryRepository],
+  exports: [DevicesOrmRepository, DevicesOrmQueryRepository],
 })
 export class DevicesModule {}

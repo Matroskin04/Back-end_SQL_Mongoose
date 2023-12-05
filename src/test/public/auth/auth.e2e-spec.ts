@@ -14,7 +14,7 @@ import {
   updatePasswordTest,
 } from './auth-public.helpers';
 import { createErrorsMessageTest } from '../../utils/general/errors-message.helper';
-import { Connection, DataSource } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { deleteAllDataTest } from '../../utils/general/delete-all-data.helper';
 import { startApp } from '../../test.utils';
 import {

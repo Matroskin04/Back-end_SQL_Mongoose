@@ -5,7 +5,15 @@ export const getConfiguration = () => ({
     mongo: {
       MONGO_URL: process.env.MONGO_URL ?? 'mongodb://0.0.0.0:27017',
     },
-    postgresql: {
+    postgresqlLocal: {
+      POSTGRES_URL: process.env.POSTGRES_URL_TEST,
+      POSTGRES_USER: process.env.POSTGRES_USER_TEST,
+      POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD_TEST,
+      POSTGRES_HOST: process.env.POSTGRES_HOST_TEST,
+      POSTGRES_PORT: process.env.POSTGRES_PORT_TEST,
+      POSTGRES_DATABASE: process.env.POSTGRES_DATABASE_TEST,
+    },
+    postgresqlRemote: {
       POSTGRES_URL: process.env.POSTGRES_URL,
       POSTGRES_USER: process.env.POSTGRES_USER,
       POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
