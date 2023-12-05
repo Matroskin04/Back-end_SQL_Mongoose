@@ -34,6 +34,8 @@ import { PostsLikesInfo } from '../posts/domain/posts-likes-info.entity';
 import { CommentsOrmQueryRepository } from '../comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
 import { Comments } from '../comments/domain/comments.entity';
 import { UsersOrmRepository } from '../users/infrastructure/typeORM/repository/users-orm.repository';
+import { PostsModule } from '../posts/posts.module';
+import { CommentsModule } from '../comments/comments.module';
 
 const entities = [
   Blogs,
@@ -41,16 +43,11 @@ const entities = [
   SubscribersOfBlog,
   IconOfBlog,
   WallpaperOfBlog,
-  Posts,
-  PostsLikesInfo,
-  Comments,
 ];
 const queryRepositories = [
   BlogsOrmQueryRepository,
   BlogsQueryRepository,
   PhotosForBlogQueryRepository,
-  PostsOrmQueryRepository,
-  CommentsOrmQueryRepository,
 ];
 const repositories = [
   BlogsOrmRepository,
@@ -75,6 +72,8 @@ const useCases = [
     TypeOrmModule.forFeature([...entities]),
     CqrsModule,
     forwardRef(() => UsersModule),
+    PostsModule,
+    CommentsModule,
   ],
   controllers: [
     BlogsPublicController,

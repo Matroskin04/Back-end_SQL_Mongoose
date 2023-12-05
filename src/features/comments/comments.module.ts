@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UsersSaController } from '../users/api/sa/users-sa.controller';
@@ -80,9 +80,13 @@ const useCases = [
   DeleteCommentUseCase,
 ];
 @Module({
-  imports: [TypeOrmModule.forFeature([...entities]), CqrsModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([...entities]),
+    CqrsModule,
+    forwardRef(() => UsersModule),
+  ],
   controllers: [CommentsController],
   providers: [...useCases, ...repositories, ...queryRepositories],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, CommentsOrmQueryRepository],
 })
 export class CommentsModule {}

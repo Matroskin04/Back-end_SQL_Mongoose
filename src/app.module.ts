@@ -73,7 +73,7 @@ const repositories = [
         database: configService.get('db').postgresql.POSTGRES_DATABASE,
         autoLoadEntities: true,
         synchronize: false,
-        ssl: { require: true, rejectUnauthorized: false },
+        // ssl: { require: true, rejectUnauthorized: false },
         // url: process.env.POSTGRES_URL + '?sslmode=require',
       }),
     }),

@@ -77,6 +77,6 @@ const useCases = [
     ...useCases,
     S3StorageAdapter,
   ],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, PostsOrmQueryRepository],
 })
 export class PostsModule {}
