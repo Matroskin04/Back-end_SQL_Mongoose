@@ -19,7 +19,6 @@ import { BlogsOrmRepository } from './infrastructure/typeORM/repository/blogs-or
 import { BlogsRepository } from './infrastructure/SQL/repository/blogs.repository';
 import { BlogsOrmQueryRepository } from './infrastructure/typeORM/query.repository/blogs-orm.query.repository';
 import { BlogsQueryRepository } from './infrastructure/SQL/query.repository/blogs.query.repository';
-import { UsersOrmQueryRepository } from '../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 import { S3StorageAdapter } from '../../infrastructure/adapters/s3-storage.adapter';
 import { PhotosForBlogRepository } from './infrastructure/typeORM/subrepositories/photos-for-blog.repository';
 import { PhotosForBlogQueryRepository } from './infrastructure/typeORM/query.repository/photos-for-blog.query.repository';
@@ -28,12 +27,6 @@ import { SubscribersOfBlog } from './domain/subscribers-of-blog.entity';
 import { IconOfBlog } from './domain/icon-of-blog.entity';
 import { WallpaperOfBlog } from './domain/wallpaper-of-blog.entity';
 import { UsersModule } from '../users/users.module';
-import { PostsOrmQueryRepository } from '../posts/infrastructure/typeORM/query.repository/posts-orm.query.repository';
-import { Posts } from '../posts/domain/posts.entity';
-import { PostsLikesInfo } from '../posts/domain/posts-likes-info.entity';
-import { CommentsOrmQueryRepository } from '../comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
-import { Comments } from '../comments/domain/comments.entity';
-import { UsersOrmRepository } from '../users/infrastructure/typeORM/repository/users-orm.repository';
 import { PostsModule } from '../posts/posts.module';
 import { CommentsModule } from '../comments/comments.module';
 
@@ -72,7 +65,7 @@ const useCases = [
     TypeOrmModule.forFeature([...entities]),
     CqrsModule,
     forwardRef(() => UsersModule),
-    PostsModule,
+    forwardRef(() => PostsModule),
     CommentsModule,
   ],
   controllers: [
@@ -87,6 +80,6 @@ const useCases = [
     ...queryRepositories,
     S3StorageAdapter,
   ],
-  exports: [TypeOrmModule, BlogsOrmQueryRepository],
+  exports: [TypeOrmModule, BlogsOrmQueryRepository, BlogsQueryRepository],
 })
 export class BlogsModule {}

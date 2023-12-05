@@ -1,8 +1,6 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CqrsModule } from '@nestjs/cqrs';
-import { QuizSaController } from '../quiz/api/quiz-sa.controller';
-import { QuizPublicController } from '../quiz/api/quiz-public.controller';
 import { PostsQueryRepository } from './infrastructure/SQL/query.repository/posts.query.repository';
 import { LikesInfoQueryRepository } from '../likes-info/infrastructure/SQL/query.repository/likes-info.query.repository';
 import { LikesInfoOrmQueryRepository } from '../likes-info/infrastructure/typeORM/query.repository/likes-info-orm.query.repository';
@@ -23,25 +21,12 @@ import { PostsLikesInfo } from './domain/posts-likes-info.entity';
 import { IconOfPost } from './domain/main-img-of-post.entity';
 import { SubscribersOfTgBot } from '../integrations/domain/subscribers-of-tg-bot.entity';
 import { PostsController } from './api/posts.controller';
-import { BlogsQueryRepository } from '../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
-import { CommentsLikesInfo } from '../comments/domain/comments-likes-info.entity';
-import { BlogsOrmQueryRepository } from '../blogs/infrastructure/typeORM/query.repository/blogs-orm.query.repository';
-import { Blogs } from '../blogs/domain/blogs.entity';
-import { BannedUsersOfBlog } from '../blogs/domain/banned-users-of-blog.entity';
 import { S3StorageAdapter } from '../../infrastructure/adapters/s3-storage.adapter';
-import { CommentsOrmQueryRepository } from '../comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
-import { Comments } from '../comments/domain/comments.entity';
+import { UsersModule } from '../users/users.module';
+import { BlogsModule } from '../blogs/blogs.module';
+import { CommentsModule } from '../comments/comments.module';
 
-const entities = [
-  Posts,
-  PostsLikesInfo,
-  IconOfPost,
-  SubscribersOfTgBot,
-  CommentsLikesInfo,
-  Blogs,
-  BannedUsersOfBlog,
-  Comments,
-];
+const entities = [Posts, PostsLikesInfo, IconOfPost, SubscribersOfTgBot];
 
 const queryRepositories = [
   PostsQueryRepository,
@@ -49,9 +34,6 @@ const queryRepositories = [
   LikesInfoOrmQueryRepository,
   PostsOrmQueryRepository,
   PhotosForPostQueryRepository,
-  BlogsQueryRepository,
-  BlogsOrmQueryRepository,
-  CommentsOrmQueryRepository,
 ];
 
 const repositories = [
@@ -69,7 +51,13 @@ const useCases = [
   UploadPostMainImgUseCase,
 ];
 @Module({
-  imports: [TypeOrmModule.forFeature([...entities]), CqrsModule],
+  imports: [
+    TypeOrmModule.forFeature([...entities]),
+    CqrsModule,
+    forwardRef(() => UsersModule),
+    forwardRef(() => BlogsModule),
+    CommentsModule,
+  ],
   controllers: [PostsController],
   providers: [
     ...queryRepositories,
