@@ -4,7 +4,7 @@ import { DataSource, Repository } from 'typeorm';
 import { UsersBanInfo } from '../../../domain/users-ban-info.entity';
 
 Injectable();
-export class BanInfoOrmRepository {
+export class UserBanInfoOrmRepository {
   constructor(
     @InjectRepository(UsersBanInfo)
     protected usersBanInfo: Repository<UsersBanInfo>,

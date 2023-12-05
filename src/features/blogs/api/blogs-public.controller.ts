@@ -33,7 +33,6 @@ export class BlogsPublicController {
     protected blogsOrmQueryRepository: BlogsOrmQueryRepository,
     protected commandBus: CommandBus,
   ) {}
-
   @UseGuards(JwtAccessNotStrictGuard)
   @Get()
   async getAllBlogs(

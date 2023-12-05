@@ -47,7 +47,6 @@ const entities = [
 const queryRepositories = [
   BlogsOrmQueryRepository,
   BlogsQueryRepository,
-  UsersOrmQueryRepository,
   PhotosForBlogQueryRepository,
   PostsOrmQueryRepository,
   CommentsOrmQueryRepository,

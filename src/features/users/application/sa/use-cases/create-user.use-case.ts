@@ -9,7 +9,7 @@ import { UsersOrmQueryRepository } from '../../../infrastructure/typeORM/query.r
 import { UsersOrmRepository } from '../../../infrastructure/typeORM/repository/users-orm.repository';
 import { EmailConfirmationOrmRepository } from '../../../infrastructure/typeORM/subrepository/email-confirmation-orm.public.repository';
 import { PasswordRecoveryOrmRepository } from '../../../infrastructure/typeORM/subrepository/password-recovery-orm.public.repository';
-import { BanInfoOrmRepository } from '../../../infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
+import { UserBanInfoOrmRepository } from '../../../infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
 import { startTransaction } from '../../../../../infrastructure/utils/functions/db-helpers/transaction.helpers';
 import { DataSource } from 'typeorm';
 import { Users } from '../../../domain/users.entity';
@@ -29,7 +29,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     protected usersOrmRepository: UsersOrmRepository,
     protected emailConfirmationOrmRepository: EmailConfirmationOrmRepository,
     protected passwordRecoveryOrmRepository: PasswordRecoveryOrmRepository,
-    protected banInfoOrmRepository: BanInfoOrmRepository,
+    protected banInfoOrmRepository: UserBanInfoOrmRepository,
     private dataSource: DataSource,
   ) {}
   async execute(command: CreateUserCommand): Promise<UserViewType | false> {

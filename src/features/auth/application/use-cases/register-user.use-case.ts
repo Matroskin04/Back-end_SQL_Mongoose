@@ -5,7 +5,7 @@ import { EmailManager } from '../../../../infrastructure/managers/email-manager'
 import { UsersOrmRepository } from '../../../users/infrastructure/typeORM/repository/users-orm.repository';
 import { EmailConfirmationOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/email-confirmation-orm.public.repository';
 import { PasswordRecoveryOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/password-recovery-orm.public.repository';
-import { BanInfoOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
+import { UserBanInfoOrmRepository } from '../../../users/infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
 import { DataSource } from 'typeorm';
 import { startTransaction } from '../../../../infrastructure/utils/functions/db-helpers/transaction.helpers';
 import { Users } from '../../../users/domain/users.entity';
@@ -32,7 +32,7 @@ export class RegisterUserUseCase
     protected usersOrmRepository: UsersOrmRepository,
     protected emailConfirmationPublicRepository: EmailConfirmationOrmRepository,
     protected passwordRecoveryPublicRepository: PasswordRecoveryOrmRepository,
-    protected banInfoPublicRepository: BanInfoOrmRepository,
+    protected banInfoPublicRepository: UserBanInfoOrmRepository,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
 

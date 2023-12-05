@@ -18,7 +18,7 @@ import { UsersOrmQueryRepository } from './infrastructure/typeORM/query.reposito
 import { CryptoAdapter } from '../../infrastructure/adapters/crypto.adapter';
 import { EmailConfirmationOrmRepository } from './infrastructure/typeORM/subrepository/email-confirmation-orm.public.repository';
 import { PasswordRecoveryOrmRepository } from './infrastructure/typeORM/subrepository/password-recovery-orm.public.repository';
-import { BanInfoOrmRepository } from './infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
+import { UserBanInfoOrmRepository } from './infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
 import { DevicesOrmRepository } from '../devices/infrastructure/typeORM/repository/devices-orm.repository';
 import { BannedUsersOfBlog } from '../blogs/domain/banned-users-of-blog.entity';
 import { Devices } from '../devices/domain/devices.entity';
@@ -45,7 +45,7 @@ const repositories = [
   DevicesOrmRepository,
   EmailConfirmationOrmRepository,
   PasswordRecoveryOrmRepository,
-  BanInfoOrmRepository,
+  UserBanInfoOrmRepository,
 ];
 const useCases = [
   CreateUserUseCase,
@@ -62,6 +62,6 @@ const useCases = [
     ...queryRepositories,
     CryptoAdapter,
   ],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, UsersOrmQueryRepository, UsersOrmRepository],
 })
 export class UsersModule {}

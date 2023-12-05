@@ -31,7 +31,9 @@ export class BlogsOrmQueryRepository {
     protected bannedUsersOfBlogRepository: Repository<BannedUsersOfBlog>,
     @InjectDataSource() protected dataSource: DataSource,
     protected configService: ConfigService<ConfigType>,
-  ) {}
+  ) {
+    console.log(1);
+  }
 
   async getAllBlogsOfBlogger(
     queryParams: QueryBlogsInputModel,

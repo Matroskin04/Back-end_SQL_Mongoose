@@ -19,7 +19,7 @@ import { UsersOrmRepository } from '../users/infrastructure/typeORM/repository/u
 import { DevicesOrmRepository } from '../devices/infrastructure/typeORM/repository/devices-orm.repository';
 import { EmailConfirmationOrmRepository } from '../users/infrastructure/typeORM/subrepository/email-confirmation-orm.public.repository';
 import { PasswordRecoveryOrmRepository } from '../users/infrastructure/typeORM/subrepository/password-recovery-orm.public.repository';
-import { BanInfoOrmRepository } from '../users/infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
+import { UserBanInfoOrmRepository } from '../users/infrastructure/typeORM/subrepository/ban-info-orm.public.repository';
 import { CreateUserUseCase } from '../users/application/sa/use-cases/create-user.use-case';
 import { UpdateBanInfoOfUserUseCase } from '../users/application/sa/use-cases/update-ban-info-of-user.use-case';
 import { UpdateUserBanInfoForBlogUseCase } from '../users/application/blogger/use-cases/update-user-ban-info-for-blog.use-case';
@@ -44,6 +44,7 @@ import { PostsLikesInfo } from '../posts/domain/posts-likes-info.entity';
 import { PostsQueryRepository } from '../posts/infrastructure/SQL/query.repository/posts.query.repository';
 import { Posts } from '../posts/domain/posts.entity';
 import { BlogsQueryRepository } from '../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
+import { UsersModule } from '../users/users.module';
 
 const entities = [
   Comments,
@@ -61,7 +62,6 @@ const queryRepositories = [
   CommentsQueryRepository,
   PostsOrmQueryRepository,
   PostsQueryRepository,
-  UsersOrmQueryRepository,
   LikesInfoOrmQueryRepository,
   BlogsQueryRepository,
   BlogsOrmQueryRepository,
@@ -80,7 +80,7 @@ const useCases = [
   DeleteCommentUseCase,
 ];
 @Module({
-  imports: [TypeOrmModule.forFeature([...entities]), CqrsModule],
+  imports: [TypeOrmModule.forFeature([...entities]), CqrsModule, UsersModule],
   controllers: [CommentsController],
   providers: [...useCases, ...repositories, ...queryRepositories],
   exports: [TypeOrmModule],

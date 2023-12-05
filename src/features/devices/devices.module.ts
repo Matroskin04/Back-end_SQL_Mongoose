@@ -15,7 +15,6 @@ import { JwtAdapter } from '../../infrastructure/adapters/jwt.adapter';
 import { Devices } from './domain/devices.entity';
 import { JwtModule } from '@nestjs/jwt';
 
-const entities = [Devices];
 const queryRepositories = [DevicesQueryRepository, DevicesOrmQueryRepository];
 const repositories = [DevicesRepository, DevicesOrmRepository];
 const useCases = [
@@ -27,12 +26,12 @@ const useCases = [
 ];
 @Module({
   imports: [
-    TypeOrmModule.forFeature([...entities]),
+    TypeOrmModule.forFeature([Devices]),
     CqrsModule,
     JwtModule.register({}),
   ],
   controllers: [DevicesController],
   providers: [...queryRepositories, ...repositories, ...useCases, JwtAdapter],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, DevicesOrmRepository],
 })
 export class DevicesModule {}
