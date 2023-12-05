@@ -66,7 +66,7 @@ const useCases = [
     CqrsModule,
     forwardRef(() => UsersModule),
     forwardRef(() => PostsModule),
-    CommentsModule,
+    forwardRef(() => CommentsModule),
   ],
   controllers: [
     BlogsPublicController,

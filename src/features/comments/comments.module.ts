@@ -45,33 +45,16 @@ import { PostsQueryRepository } from '../posts/infrastructure/SQL/query.reposito
 import { Posts } from '../posts/domain/posts.entity';
 import { BlogsQueryRepository } from '../blogs/infrastructure/SQL/query.repository/blogs.query.repository';
 import { UsersModule } from '../users/users.module';
+import { BlogsModule } from '../blogs/blogs.module';
+import { PostsModule } from '../posts/posts.module';
 
-const entities = [
-  Comments,
-  CommentsLikesInfo,
-  PostsLikesInfo,
-  Posts,
-  Users,
-  BannedUsersOfBlog,
-  UsersEmailConfirmation,
-  Blogs,
-  BannedUsersOfBlog,
-];
-const queryRepositories = [
-  CommentsOrmQueryRepository,
-  CommentsQueryRepository,
-  PostsOrmQueryRepository,
-  PostsQueryRepository,
-  LikesInfoOrmQueryRepository,
-  BlogsQueryRepository,
-  BlogsOrmQueryRepository,
-];
+const entities = [Comments, CommentsLikesInfo];
+const queryRepositories = [CommentsOrmQueryRepository, CommentsQueryRepository];
 const repositories = [
   CommentsRepository,
   CommentsLikesRepository,
   CommentsOrmRepository,
   CommentsLikesOrmRepository,
-  LikesInfoOrmRepository,
 ];
 const useCases = [
   CreateCommentUseCase,
@@ -83,7 +66,9 @@ const useCases = [
   imports: [
     TypeOrmModule.forFeature([...entities]),
     CqrsModule,
+    forwardRef(() => BlogsModule),
     forwardRef(() => UsersModule),
+    forwardRef(() => PostsModule),
   ],
   controllers: [CommentsController],
   providers: [...useCases, ...repositories, ...queryRepositories],
