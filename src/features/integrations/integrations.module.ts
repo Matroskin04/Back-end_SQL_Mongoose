@@ -23,6 +23,6 @@ import { SubscribersOfTgBot } from './domain/subscribers-of-tg-bot.entity';
 
     SubscribersOfTgBotRepository,
   ],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, TelegramAdapter],
 })
 export class IntegrationsModule {}

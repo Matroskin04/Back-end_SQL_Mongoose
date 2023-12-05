@@ -32,6 +32,6 @@ const useCases = [
   ],
   controllers: [DevicesController],
   providers: [...queryRepositories, ...repositories, ...useCases, JwtAdapter],
-  exports: [TypeOrmModule, DevicesOrmRepository],
+  exports: [TypeOrmModule, DevicesOrmRepository, DevicesOrmQueryRepository],
 })
 export class DevicesModule {}
