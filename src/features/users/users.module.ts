@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UsersSaController } from './api/sa/users-sa.controller';
 import { UsersBloggerController } from './api/blogger/users-blogger.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -23,7 +23,9 @@ import { DevicesOrmRepository } from '../devices/infrastructure/typeORM/reposito
 import { BannedUsersOfBlog } from '../blogs/domain/banned-users-of-blog.entity';
 import { Devices } from '../devices/domain/devices.entity';
 import { BlogsOrmQueryRepository } from '../blogs/infrastructure/typeORM/query.repository/blogs-orm.query.repository';
-import { Blogs } from '../blogs/domain/blogs.entity';
+import { BlogsModule } from '../blogs/blogs.module';
+import { DevicesModule } from '../devices/devices.module';
+import { AuthModule } from '../auth/auth.module';
 
 const entities = [
   Users,
@@ -31,20 +33,11 @@ const entities = [
   UsersEmailConfirmation,
   UsersBanInfo,
   BannedUsersOfBlog,
-  Devices,
-  Blogs,
 ];
-const queryRepositories = [
-  UsersQueryRepository,
-  UsersOrmQueryRepository,
-  BlogsOrmQueryRepository,
-];
+const queryRepositories = [UsersQueryRepository, UsersOrmQueryRepository];
 const repositories = [
   UsersRepository,
   UsersOrmRepository,
-  DevicesOrmRepository,
-  EmailConfirmationOrmRepository,
-  PasswordRecoveryOrmRepository,
   UserBanInfoOrmRepository,
 ];
 const useCases = [
@@ -54,7 +47,13 @@ const useCases = [
   DeleteUserUseCase,
 ];
 @Module({
-  imports: [TypeOrmModule.forFeature([...entities]), CqrsModule],
+  imports: [
+    TypeOrmModule.forFeature([...entities]),
+    DevicesModule,
+    forwardRef(() => BlogsModule),
+    forwardRef(() => AuthModule),
+    CqrsModule,
+  ],
   controllers: [UsersSaController, UsersBloggerController],
   providers: [
     ...useCases,

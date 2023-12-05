@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAdapter } from '../../infrastructure/adapters/jwt.adapter';
@@ -35,7 +35,12 @@ const useCases = [
   SendEmailPassRecoveryUseCase,
 ];
 @Module({
-  imports: [CqrsModule, JwtModule.register({}), UsersModule, DevicesModule],
+  imports: [
+    CqrsModule,
+    JwtModule.register({}),
+    forwardRef(() => UsersModule),
+    DevicesModule,
+  ],
   controllers: [AuthController],
   providers: [
     ...repositories,
@@ -45,6 +50,6 @@ const useCases = [
     EmailManager,
     EmailAdapter,
   ],
-  exports: [],
+  exports: [EmailConfirmationOrmRepository, PasswordRecoveryOrmRepository],
 })
 export class AuthModule {}

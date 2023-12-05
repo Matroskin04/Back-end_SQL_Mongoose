@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { BlogsPublicController } from './api/blogs-public.controller';
 import { BlogsBloggerController } from './api/blogs-blogger.controller';
 import { BlogsSAController } from './api/blogs-sa.controller';
@@ -33,6 +33,7 @@ import { Posts } from '../posts/domain/posts.entity';
 import { PostsLikesInfo } from '../posts/domain/posts-likes-info.entity';
 import { CommentsOrmQueryRepository } from '../comments/infrastructure/typeORM/query.repository/comments-orm.query.repository';
 import { Comments } from '../comments/domain/comments.entity';
+import { UsersOrmRepository } from '../users/infrastructure/typeORM/repository/users-orm.repository';
 
 const entities = [
   Blogs,
@@ -70,7 +71,11 @@ const useCases = [
 ];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([...entities]), CqrsModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([...entities]),
+    CqrsModule,
+    forwardRef(() => UsersModule),
+  ],
   controllers: [
     BlogsPublicController,
     BlogsBloggerController,
@@ -83,6 +88,6 @@ const useCases = [
     ...queryRepositories,
     S3StorageAdapter,
   ],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, BlogsOrmQueryRepository],
 })
 export class BlogsModule {}
