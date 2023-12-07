@@ -43,6 +43,7 @@ import { UsersOrmQueryRepository } from '../../users/infrastructure/typeORM/quer
 import stringWidth from 'string-width';
 import { LoginOutputModel } from './models/output/login.output.model';
 import { ApiLogin } from '../../../infrastructure/swagger/login.api.decorator';
+import { ApiRegister } from '../../../infrastructure/swagger/registration.api.decorator';
 @Throttle(5, 10)
 @Controller('/api/auth')
 export class AuthController {
@@ -112,6 +113,7 @@ export class AuthController {
 
   @UseGuards(ValidateEmailRegistrationGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
+  @ApiRegister()
   @Post('registration')
   async registerUser(
     @Body() inputRegisterModel: RegistrationAuthInputModel,
