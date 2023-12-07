@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { TestingController } from '../testing/api/testing.controller';
-import { TestingRepository } from '../testing/repository/testing.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HandleTelegramUpdatesUseCase } from './application/use-cases/handle-telegram-updates.use-case';
 import { StartUseCase } from './application/use-cases/sub-use-cases/start.use-case';
@@ -15,14 +13,17 @@ import { SubscribersOfTgBot } from './domain/subscribers-of-tg-bot.entity';
   imports: [TypeOrmModule.forFeature([SubscribersOfTgBot]), CqrsModule],
   controllers: [TelegramController],
   providers: [
+    //repositories
+    SubscribersOfTgBotRepository,
+
+    //use cases
     HandleTelegramUpdatesUseCase,
     StartUseCase,
 
+    //adapters
     S3StorageAdapter,
     TelegramAdapter,
-
-    SubscribersOfTgBotRepository,
   ],
-  exports: [TypeOrmModule, TelegramAdapter],
+  exports: [TypeOrmModule, TelegramAdapter, SubscribersOfTgBotRepository],
 })
 export class IntegrationsModule {}
