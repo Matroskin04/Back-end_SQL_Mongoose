@@ -11,10 +11,7 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import {
-  UserInfoOutputModel,
-  LoginOutputModel,
-} from './models/output/user-info.output.model';
+import { UserInfoOutputModel } from './models/output/user-info.output.model';
 import { HTTP_STATUS_CODE } from '../../../infrastructure/utils/enums/http-status.enums';
 import { RegistrationAuthInputModel } from './models/input/registration-auth.input.model';
 import { LocalAuthGuard } from '../../../infrastructure/guards/authorization-guards/local-auth.guard';
@@ -44,6 +41,8 @@ import { CreateDeviceCommand } from '../../devices/application/use-cases/create-
 import { DeleteDeviceByRefreshTokenCommand } from '../../devices/application/use-cases/delete-device-by-refresh-token.use-case';
 import { UsersOrmQueryRepository } from '../../users/infrastructure/typeORM/query.repository/users-orm.query.repository';
 import stringWidth from 'string-width';
+import { LoginOutputModel } from './models/output/login.output.model';
+import { ApiLogin } from '../../../infrastructure/swagger/login.api.decorator';
 @Throttle(5, 10)
 @Controller('/api/auth')
 export class AuthController {
@@ -68,6 +67,7 @@ export class AuthController {
   }
 
   @UseGuards(LocalAuthGuard, IsUserBannedByLoginOrEmailGuard)
+  @ApiLogin()
   @Post('login')
   async loginUser(
     @CurrentUserId() userId: string,
