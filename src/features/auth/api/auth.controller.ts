@@ -104,11 +104,15 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @HttpCode(HTTP_STATUS_CODE.NO_CONTENT_204)
   @Post('logout')
-  async logoutUser(@RefreshToken() refreshToken: string): Promise<void> {
+  async logoutUser(
+    @RefreshToken() refreshToken: string,
+    @Res() res: Response,
+  ): Promise<void> {
     await this.commandBus.execute(
       new DeleteDeviceByRefreshTokenCommand(refreshToken),
     );
-    return;
+    res.clearCookie('refreshToken');
+    res.sendStatus(HTTP_STATUS_CODE.NO_CONTENT_204);
   }
 
   @UseGuards(ValidateEmailRegistrationGuard)
