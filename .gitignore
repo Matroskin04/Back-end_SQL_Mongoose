@@ -51,3 +51,4 @@ lerna-debug.log*
 /src/test/app.e2e-spec.js
 /src/test/app.e2e-spec.js.map
 /tsconfig.tsbuildinfo
+/src/testing.js
