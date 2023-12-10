@@ -21,7 +21,7 @@ import { ValidateConfirmationCodeGuard } from '../../../infrastructure/guards/va
 import { ValidateEmailResendingGuard } from '../../../infrastructure/guards/validation-guards/validate-email-resending.guard';
 import { PasswordRecoveryInputModel } from './models/input/password-flow-auth.input.model';
 import { ValidateEmailRegistrationGuard } from '../../../infrastructure/guards/validation-guards/validate-email-registration.guard';
-import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { SkipThrottle, Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { TitleOfDevice } from '../../../infrastructure/decorators/auth/title-of-device.param.decorator';
 import { JwtRefreshGuard } from '../../../infrastructure/guards/authorization-guards/jwt-refresh.guard';
 import { RefreshToken } from '../../../infrastructure/decorators/auth/refresh-token-param.decorator';
@@ -44,7 +44,9 @@ import stringWidth from 'string-width';
 import { LoginOutputModel } from './models/output/login.output.model';
 import { ApiLogin } from '../../../infrastructure/swagger/login.api.decorator';
 import { ApiRegister } from '../../../infrastructure/swagger/registration.api.decorator';
+
 @Throttle(5, 10)
+@UseGuards(ThrottlerGuard)
 @Controller('/api/auth')
 export class AuthController {
   constructor(
